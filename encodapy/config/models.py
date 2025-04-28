@@ -23,8 +23,9 @@ from encodapy.utils.units import DataUnits, TimeUnits
 
 
 class InterfaceModel(BaseModel):
-    """Base class for the interfaces
-    TODO: - How to use this model?
+    """
+    Base class for the interfaces, gives the information if the interface is active or not.
+
     """
 
     mqtt: bool = False

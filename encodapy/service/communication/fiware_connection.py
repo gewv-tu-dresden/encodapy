@@ -15,7 +15,6 @@ import numpy as np
 import pandas as pd
 import requests
 from dateutil import tz
-from pydantic import BaseModel
 from filip.clients.ngsi_v2 import ContextBrokerClient
 from filip.models.base import DataType, FiwareHeaderSecure
 from filip.models.ngsi_v2.base import NamedMetadata
@@ -35,7 +34,9 @@ from encodapy.config import (
     InputModel,
     OutputModel,
     TimerangeTypes,
-    ConfigModel
+    TimeSettingsCalibrationModel,
+    TimeSettingsCalculationModel,
+    TimeSettingsModel
 )
 from encodapy.utils.error_handling import NoCredentials, InterfaceNotActive
 from encodapy.utils.cratedb import CrateDBConnection
@@ -53,85 +54,31 @@ from encodapy.utils.units import (
     get_unit_adjustment_factor,
 )
 
-class FiwareDatapointParameter(BaseModel):
-    """
-    Model for the Fiware datapoint parameter.
-    Contains:
-        entity (ContextEntity): The entity of the datapoint
-        attribute (AttributeModel): The attribute of the datapoint
-        metadata (list[NamedMetadata]): The metadata of the attribute
-    Args:
-        BaseModel (BaseModel): Pydantic BaseModel of a datapoint in fiware
-    """
-    entity: ContextEntity
-    attribute: AttributeModel
-    metadata: list[NamedMetadata]
-
-class FiwareAuth(BaseModel):
-    """
-    Base model for the Fiware authentication.
-    Contains:
-        client_id (str): The client id
-        client_secret (str): The client secret
-        token_url (str): The token url
-        baerer_token (str): The baerer token
-    """
-    client_id:Optional[str]=None
-    client_secret:Optional[str]=None
-    token_url:Optional[str]=None
-    baerer_token:Optional[str]=None
-
-class FiwareParameter(BaseModel):
-    """
-    Model for the Fiware connection parameters.
-    Contains:
-        cb_url (str): The context broker url
-        service (str): The service
-        service_path (str): The service path
-        authentication (Optional[Union[FiwareAuth, None]]): The authentication
-    """
-    cb_url:str
-    service:str
-    service_path:str
-    authentication: Optional[Union[FiwareAuth, None]] = None
-
-class DatabaseParameter(BaseModel):
-    """
-    Model for the database connection parameters.
-    Contains:
-        crate_db_url (str): The CrateDB url
-        crate_db_user (Optional[str]): The CrateDB user
-        crate_db_pw (Optional[str]): The CrateDB password
-        crate_db_ssl (Optional[bool]): The CrateDB ssl
-    """
-    crate_db_url:str
-    crate_db_user:Optional[Union[str, None]]=None
-    crate_db_pw:Optional[str]=""
-    crate_db_ssl:Optional[bool]=True
-
-class FiwareConnectionParameter(BaseModel):
-    """
-    Model for the Fiware connection parameters.
-    Contains:
-        fiware_params (FiwareParameter): The Fiware parameters
-        database_params (DatabaseParameter): The database parameters
-    """
-    fiware_params:FiwareParameter
-    database_params:DatabaseParameter
+from encodapy.service.communication.fiware_models import (
+    FiwareDatapointParameter,
+    FiwareAuth,
+    FiwareParameter,
+    DatabaseParameter,
+    FiwareConnectionParameter
+    )
 
 class FiwareConnection:
     """
     Class for the connection to the Fiware plattform.
     Only a helper class.
+    
+    Args:
+        time_settings (TimeSettingsModel): Time settings for the connection
     """
 
-    def __init__(self):
+    def __init__(self,
+                 time_settings: TimeSettingsModel):
         self.fiware_conn_params: Optional[FiwareConnectionParameter] = None
         self.fiware_token_client: Optional[BaererToken] = None
         self.fiware_header: Optional[FiwareHeaderSecure] = None
         self.cb_client: Optional[ContextBrokerClient] = None
         self.crate_db_client: Optional[CrateDBConnection] = None
-        self.config: Optional[ConfigModel] = None
+        self.time_settings: TimeSettingsModel = time_settings
 
     def load_fiware_params(self):
         """
@@ -184,11 +131,14 @@ class FiwareConnection:
             fiware_params=fiware_params,
             database_params=database_params
         )
+        logger.debug("Fiware connection parameters loaded")
 
     def prepare_fiware_connection(self):
         """
         Prepare the Fiware connection.
         """
+        if self.fiware_conn_params is None:
+            self.load_fiware_params()
         fiware_auth = self.fiware_conn_params.fiware_params.authentication
 
         if fiware_auth is not None:
@@ -538,88 +488,67 @@ class FiwareConnection:
         self,
         time_now: datetime,
         last_timestamp: datetime,
-    ) -> tuple[str, str]:
+        calculation_time_settings: TimeSettingsCalculationModel
+    ) -> tuple[str, str, int]:
         """Funtion to calculate the dates for the calculation method
 
         Args:
             time_now (datetime): Time now
             last_timestamp (datetime): Timestamp of the last output
+            calculation_time_settings (TimeSettingsCalculationModel): Time settings for calculation
 
         Returns:
-            tuple[str, str]: Timestamps for the input data query (from_date, to_date)
+            tuple[str, str, int]: Timestamps for the input data query (from_date, to_date) \
+                and the time step size in seconds
         """
-        calculation = self.config.controller_settings.time_settings.calculation
 
-        if calculation.timerange is not None:
-            return self._calculate_timerange(
+        time_step_seconds = int(
+            calculation_time_settings.timestep
+            * get_time_unit_seconds(calculation_time_settings.timestep_unit)
+        )
+
+        if calculation_time_settings.timerange is not None:
+            from_date, to_date = self._calculate_timerange(
                 time_now,
                 last_timestamp,
-                calculation.timerange * get_time_unit_seconds(calculation.timerange_unit),
-                calculation.timerange_type,
+                calculation_time_settings.timerange
+                * get_time_unit_seconds(calculation_time_settings.timerange_unit),
+                calculation_time_settings.timerange_type,
             )
+            return from_date, to_date, time_step_seconds
         if (
-            calculation.timerange_min is not None
-            and calculation.timerange_max is not None
+            calculation_time_settings.timerange_min is not None
+            and calculation_time_settings.timerange_max is not None
         ):
-            if calculation.timerange_type is TimerangeTypes.ABSOLUTE:
-                return self._calculate_timerange(
+            if calculation_time_settings.timerange_type is TimerangeTypes.ABSOLUTE:
+                from_date, to_date = self._calculate_timerange(
                     time_now,
                     last_timestamp,
-                    calculation.timerange_max * get_time_unit_seconds(calculation.timerange_unit),
-                    calculation.timerange_type,
+                    calculation_time_settings.timerange_max
+                    * get_time_unit_seconds(calculation_time_settings.timerange_unit),
+                    calculation_time_settings.timerange_type,
                 )
+                return from_date, to_date, time_step_seconds
 
-            return self._calculate_timerange_min_max(
+            from_date, to_date = self._calculate_timerange_min_max(
                 time_now,
                 last_timestamp,
-                calculation.timerange_min * get_time_unit_seconds(calculation.timerange_unit),
-                calculation.timerange_max * get_time_unit_seconds(calculation.timerange_unit),
+                calculation_time_settings.timerange_min
+                * get_time_unit_seconds(calculation_time_settings.timerange_unit),
+                calculation_time_settings.timerange_max
+                * get_time_unit_seconds(calculation_time_settings.timerange_unit),
             )
+            return from_date, to_date, time_step_seconds
 
-        logger.error(
-            "No Information about the input time ranges for the calculation in the configuration."
-        )
-        return None, None
-
-    def _calculate_dates(
-        self,
-        method: DataQueryTypes,
-        last_timestamp: Union[datetime, None]
-    ) -> tuple[str, str]:
-        """Function to calculate the dates for the input data query
-
-        Args:
-            method (DataQueryTypes): Method for the calculation
-            time_now (datetime): Time now
-            last_timestamp (datetime): Timestamp of the last output
-
-        Returns:
-            tuple[str, str]: Timestamps for the input data query (from_date, to_date)
-        """
-
-        time_now = datetime.now(timezone.utc)
-
-        from_date, to_date = None, None
-
-        if method is DataQueryTypes.CALCULATION:
-            from_date, to_date = self._handle_calculation_method(
-                time_now, last_timestamp
-            )
-        elif method is DataQueryTypes.CALIBRATION:
-            from_date, to_date = self._handle_calibration_method(
-                time_now, last_timestamp
-            )
-
-        if to_date is None:
-            to_date = time_now.strftime("%Y-%m-%dT%H:%M:%S%z")
-
-        return from_date, to_date
+        raise ValueError("Configuration is not valid, please check the configuration file. "
+                         " No timerange or timerange_min/max available.",
+                         f"Current configuration: {calculation_time_settings}")
 
     def _handle_calibration_method(
         self,
         time_now: datetime,
-        last_timestamp: Union[datetime, None]
-    ) -> tuple[str, str]:
+        calibration_time_settings: TimeSettingsCalibrationModel
+    ) -> tuple[str, str, int]:
         """Funtion to calculate the dates for the calibration method
             - Use the last timestamp of the output entity as the from_date if available
             and time range is relative
@@ -628,37 +557,68 @@ class FiwareConnection:
 
         Args:
             time_now (datetime): Time now
-            last_timestamp (datetime): Timestamp of the last output, if available
+            calibration_time_settings (TimeSettingsCalibrationModel): Time settings for calibration
 
         Returns:
-            tuple[str, str]: Timestamps for the input data query (from_date, to_date)
+            tuple[str, str, int ]: Timestamps for the input data query (from_date, to_date) \
+                and the time step size in seconds
         """
-        calibration_time_settings = (
-            self.config.controller_settings.time_settings.calibration
-        )
 
         timerange = calibration_time_settings.timerange * get_time_unit_seconds(
             calibration_time_settings.timerange_unit
         )
-
-        if (
-            self.config.controller_settings.time_settings.calculation.timerange_type
-            is TimerangeTypes.RELATIVE
-            and last_timestamp is not None
-        ):
-            from_date = (last_timestamp - timedelta(seconds=timerange)).strftime(
-                "%Y-%m-%dT%H:%M:%S%z"
-            )
-            to_date = last_timestamp
-
-            return from_date, None
 
         from_date = (time_now - timedelta(seconds=timerange)).strftime(
             "%Y-%m-%dT%H:%M:%S%z"
         )
         to_date = time_now
 
-        return from_date, to_date
+        time_step_seconds = int(
+            calibration_time_settings.timestep
+            * get_time_unit_seconds(calibration_time_settings.timestep_unit)
+        )
+
+        return from_date, to_date, time_step_seconds
+
+    def _calculate_dates(
+        self,
+        method: DataQueryTypes,
+        last_timestamp: Union[datetime, None],
+        time_settings: TimeSettingsModel,
+    ) -> tuple[str, str, int]:
+        """Function to calculate the dates for the input data query
+
+        Args:
+            method (DataQueryTypes): Method for the calculation
+            time_now (datetime): Time now
+            last_timestamp (datetime): Timestamp of the last output
+            time_settings (TimeSettingsModel): Time settings for the data query
+
+        Returns:
+            tuple[str, str, int]: Timestamps for the input data query (from_date, to_date)
+        """
+
+        time_now = datetime.now(timezone.utc)
+
+        from_date, to_date = None, None
+
+        if method is DataQueryTypes.CALCULATION:
+            from_date, to_date, time_step_seconds = self._handle_calculation_method(
+                time_now, last_timestamp, time_settings.calculation
+            )
+        elif method is DataQueryTypes.CALIBRATION:
+            from_date, to_date, time_step_seconds = self._handle_calibration_method(
+                time_now, time_settings.calibration
+            )
+        else:
+            raise ValueError(
+                f"Method {method} is not supported. Please check the configuration file."
+            )
+
+        if to_date is None:
+            to_date = time_now.strftime("%Y-%m-%dT%H:%M:%S%z")
+
+        return from_date, to_date, time_step_seconds
 
     def get_data_from_datebase(
         self,
@@ -687,8 +647,10 @@ class FiwareConnection:
             - Improve the error handling
         """
 
-        from_date, to_date = self._calculate_dates(
-            method=method, last_timestamp=timestamp_latest_output
+        from_date, to_date, time_step_seconds = self._calculate_dates(
+            method=method,
+            last_timestamp=timestamp_latest_output,
+            time_settings=self.time_settings
         )
 
         df = self.crate_db_client.get_data(
@@ -708,12 +670,7 @@ class FiwareConnection:
 
         # resample the time series with configured time step size
         df.fillna(value=np.nan, inplace=True)
-        time_step_seconds = int(
-            self.config.controller_settings.time_settings.calculation.timestep
-            * get_time_unit_seconds(
-                self.config.controller_settings.time_settings.calculation.timestep_unit
-            )
-        )
+
         df = df.resample(f"""{time_step_seconds}s""").mean(numeric_only=True)
 
         input_attributes = []

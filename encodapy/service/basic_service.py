@@ -46,11 +46,14 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
     def __init__(
         self,
     ) -> None:
-        FiwareConnection.__init__(self)
+        self.config: ConfigModel = self._load_config()
+
+        FiwareConnection.__init__(
+            self,
+            time_settings = self.config.controller_settings.time_settings)
         FileConnection.__init__(self)
         MqttConnection.__init__(self)
 
-        self.config = None
         self.logger = LoggerControl()
 
         self.reload_staticdata = False
@@ -58,7 +61,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
         self.timestamp_health = None
 
-    def _load_config(self):
+    def _load_config(self) -> ConfigModel:
         """
         Function loads the environemtal variables and the config of the service.
 
@@ -67,7 +70,14 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             "CONFIG_PATH", DefaultEnvVariables.CONFIG_PATH.value
         )
 
-        self.config = ConfigModel.from_json(file_path=config_path)
+        config:ConfigModel = ConfigModel.from_json(file_path=config_path)
+
+        return config
+
+    def _load_envs(self) -> None:
+        """
+        Function to load the environment variables
+        """
 
         if self.config.interfaces.fiware:
 
@@ -87,7 +97,6 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
         logger.debug("ENVs succesfully loaded.")
 
-        return config_path
 
     async def prepare_basic_start(self):
         """
@@ -96,7 +105,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         TODO: Implement the other interfaces(MQTT, ...)
         """
 
-        self._load_config()
+        self._load_envs()
 
         if self.config.interfaces.fiware:
             self.prepare_fiware_connection()
@@ -104,8 +113,6 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         if self.config.interfaces.mqtt:
             logger.warning("MQTT interface not implemented yet.")
             raise NotSupportedError
-
-        return
 
     async def prepare_start(self):
         """
