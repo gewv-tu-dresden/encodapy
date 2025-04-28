@@ -126,13 +126,12 @@ class FiwareConnection:
     """
 
     def __init__(self):
-
-        self.fiware_conn_params: FiwareConnectionParameter = None
-        self.fiware_token_client: BaererToken = None
-        self.fiware_header: FiwareHeaderSecure = None
-        self.cb_client: ContextBrokerClient = None
-        self.crate_db_client: CrateDBConnection = None
-        self.config: ConfigModel = None
+        self.fiware_conn_params: Optional[FiwareConnectionParameter] = None
+        self.fiware_token_client: Optional[BaererToken] = None
+        self.fiware_header: Optional[FiwareHeaderSecure] = None
+        self.cb_client: Optional[ContextBrokerClient] = None
+        self.crate_db_client: Optional[CrateDBConnection] = None
+        self.config: Optional[ConfigModel] = None
 
     def load_fiware_params(self):
         """
