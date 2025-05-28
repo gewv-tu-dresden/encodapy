@@ -5,3 +5,4 @@ poetry.lock
 health
 /build/*
 /dist/*
+.vscode/

@@ -26,3 +26,9 @@ class DefaultEnvVariables(Enum):
     START_TIME_FILE = "01.01.2023 00:00"  # TODO: IsoFormat is better?
     TIME_FORMAT_FILE = "%d.%m.%Y %H:%M"
     RELOAD_STATICDATA = False
+
+    MQTT_BROKER = "localhost"
+    MQTT_PORT = 1883
+    MQTT_USERNAME = ""
+    MQTT_PASSWORD = ""
+    MQTT_TOPIC_PREFIX = ""  # used as prefix for all topics

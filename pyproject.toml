@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "encodapy"
-version = "0.2.2"
+version = "0.3.0"
 description = "EnCoDaPy – Energy Control and Data Preparation in Python."
 readme = "README.md"
 repository = "https://github.com/gewv-tu-dresden/encodapy"
