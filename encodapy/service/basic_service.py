@@ -17,7 +17,6 @@ from encodapy.config import (
     Interfaces,
     OutputModel,
 )
-from encodapy.utils.error_handling import NotSupportedError
 from encodapy.utils.health import update_health_file
 from encodapy.utils.logging import LoggerControl
 from encodapy.utils.models import (
@@ -102,8 +101,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             self.prepare_fiware_connection()
 
         if self.config.interfaces.mqtt:
-            logger.warning("MQTT interface not implemented yet.")
-            raise NotSupportedError
+            self.prepare_mqtt_connection()
 
         return
 
@@ -192,7 +190,6 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 output_latest_timestamps.append(output_latest_timestamp)
 
             elif output_entity.interface == Interfaces.FILE:
-
                 entity_timestamps, output_latest_timestamp = (
                     self._get_last_timestamp_for_file_output(output_entity)
                 )
@@ -200,9 +197,14 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 output_latest_timestamps.append(output_latest_timestamp)
                 logger.info("File interface, output_latest_timestamp is not defined.")
 
-            elif output_entity.interface == Interfaces.MQTT:
-                logger.warning("MQTT interface for output_entity not implemented yet.")
-                raise NotSupportedError
+            elif output_entity.interface == Interfaces.MQTT:  # TODO MB: How to handle MQTT interface?
+                entity_timestamps, output_latest_timestamp = (
+                    self._get_last_timestamp_for_mqtt_output(output_entity)
+                )
+                output_timestamps.append(entity_timestamps)
+                output_latest_timestamps.append(output_latest_timestamp)
+                logger.info("MQTT interface, output_latest_timestamp is not defined.")
+
 
             await sleep(0.1)
 
@@ -217,7 +219,6 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         for input_entity in self.config.inputs:
 
             if input_entity.interface == Interfaces.FIWARE:
-
                 input_data.append(
                     self.get_data_from_fiware(
                         method=method,
@@ -227,7 +228,6 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 )
 
             elif input_entity.interface == Interfaces.FILE:
-
                 input_data.append(
                         self.get_data_from_file(
                             method=method,
@@ -235,10 +235,12 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                     )
 
             elif input_entity.interface == Interfaces.MQTT:
-                logger.warning(
-                    "MQTT interface for input_entity is not implemented yet."
+                input_data.append(
+                    self.get_data_from_mqtt(
+                        method=method,
+                        entity=input_entity,
+                    )
                 )
-                raise NotSupportedError
 
             await sleep(0.1)
 
@@ -396,9 +398,10 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 )
 
             elif output_entity.interface is Interfaces.MQTT:
-                # TODO: Implement the sending of the data to the mqtt interface
-                logger.warning("MQTT interface not implemented yet.")
-                raise NotSupportedError
+                self.send_data_to_mqtt(
+                    output_entity=output_entity,
+                    output_attributes=output_attributes,
+                )
 
             await sleep(0.1)
 
