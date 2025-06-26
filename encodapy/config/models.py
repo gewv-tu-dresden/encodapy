@@ -50,12 +50,24 @@ class AttributeModel(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str
-    id_interface: str = id
+    id_interface: Optional[str] = None
     type: AttributeTypes = AttributeTypes.VALUE
     value: Union[str, float, int, bool, Dict, List, DataFrame, None] = None
     unit: Union[DataUnits, None] = None
     datatype: DataType = DataType.NUMBER
     timestamp: Union[datetime, None] = None
+
+    @model_validator(mode="after")
+    def set_id_interface(self) -> "AttributeModel":
+        """
+        Sets the 'id_interface' attribute to the value of 'id' if it is currently None.
+
+        Returns:
+            AttributeModel: The instance with the updated 'id_interface' attribute.
+        """
+        if self.id_interface is None:
+            self.id_interface = self.id
+        return self
 
 
 class CommandModel(BaseModel):
