@@ -1,0 +1,233 @@
+{
+    "name": "mqtt_controller",
+    "interfaces": {
+        "mqtt": true,
+        "fiware": false,
+        "file": false
+    },
+    "inputs": [
+        {
+            "id": "TRNSYS-Outputs",
+            "interface": "mqtt",
+            "id_interface": "MQTT/T207/RBV01/SENDEN",
+            "attributes": [
+                {
+                    "id": "time"
+                },
+                {
+                    "id": "IP_t_a"
+                },
+                {
+                    "id": "IP_t_sen_1"
+                },
+                {
+                    "id": "IP_t_sen_2"
+                },
+                {
+                    "id": "IP_t_sen_3"
+                },
+                {
+                    "id": "IP_t_sen_4"
+                },
+                {
+                    "id": "IP_t_sen_5"
+                },
+                {
+                    "id": "IP_t_sen_6"
+                },
+                {
+                    "id": "IP_t_sen_7"
+                },
+                {
+                    "id": "IP_t_sen_8"
+                },
+                {
+                    "id": "IP_t_sen_9"
+                },
+                {
+                    "id": "IP_t_sen_10"
+                },
+                {
+                    "id": "IP_tA_AP1_3L"
+                },
+                {
+                    "id": "IP_tA_AP2_1R"
+                },
+                {
+                    "id": "IP_tA_AP3_3R"
+                },
+                {
+                    "id": "IP_tA_AP4_1R"
+                },
+                {
+                    "id": "IP_tA_AP5_3L"
+                },
+                {
+                    "id": "IP_tA_HX1"
+                },
+                {
+                    "id": "IP_t_soll_HK"
+                },
+                {
+                    "id": "IP_Q_Netz"
+                },
+                {
+                    "id": "IP_P_PV"
+                }
+            ]
+        },
+        {
+            "id": "PB-Outputs",
+            "interface": "mqtt",
+            "id_interface": "PB",
+            "attributes": [
+                {
+                    "id": "flow_temp"
+                },
+                {
+                    "id": "status"
+                }
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "id": "TRNSYS-Inputs",
+            "interface": "mqtt",
+            "id_interface": "MQTT/T207/SAMMELN",
+            "attributes": [
+                {
+                    "id": "OP_S_PK"
+                },
+                {
+                    "id": "OP_S_PK_TWE"
+                },
+                {
+                    "id": "OP_S_WP"
+                },
+                {
+                    "id": "OP_S_WP_TWE"
+                },
+                {
+                    "id": "OP_Heizzeit"
+                },
+                {
+                    "id": "OP_n_WP"
+                },
+                {
+                    "id": "OP_m_PK"
+                },
+                {
+                    "id": "OP_tA_PK"
+                },
+                {
+                    "id": "OP_Q_PK_BS"
+                },
+                {
+                    "id": "OP_Mod_PK"
+                },
+                {
+                    "id": "trnsys_sammeln",
+                    "id_interface": ""
+                }
+            ],
+            "commands": []
+        }
+    ],
+    "staticdata": [],
+    "controller_components": [
+        {
+            "id": "BioHybrid-controller",
+            "type": "system-controller",
+            "inputs": {
+                "time": {
+                    "entity": "TRNSYS-Outputs",
+                    "attribute": "time"
+                },
+                "t_out": {
+                    "entity": "TRNSYS-Outputs",
+                    "attribute": "IP_t_a"
+                },
+                "t_heat": {
+                    "entity": "TRNSYS-Outputs",
+                    "attribute": "IP_t_sen_2"
+                },
+                "t_heat_set": {
+                    "entity": "TRNSYS-Outputs",
+                    "attribute": "IP_t_soll_HK"
+                },
+                "t_dhw": {
+                    "entity": "TRNSYS-Outputs",
+                    "attribute": "IP_t_sen_4"
+                },
+                "boiler_status": {
+                    "entity": "PB-Outputs",
+                    "attribute": "status"
+                }
+            },
+            "outputs": {
+                "power_on_pk": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "OP_S_PK"
+                },
+                "pk_twe_mode": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "OP_S_PK_TWE"
+                },
+                "power_on_wp": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "OP_S_WP"
+                },
+                "wp_twe_mode": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "OP_S_WP_TWE"
+                },
+                "heating_period": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "OP_Heizzeit"
+                },
+                "n_wp_rel": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "OP_n_WP"
+                },
+                "flow_pk": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "OP_m_PK"
+                },
+                "temp_flow_pk": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "OP_tA_PK"
+                },
+                "heat_pk_fuel": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "OP_Q_PK_BS"
+                },
+                "modulation_pk": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "OP_Mod_PK"
+                },
+                "full_trnsys_message": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "trnsys_sammeln"
+                }
+            },
+            "config": {
+                "temperature_hysteresis": 5
+            }
+        }
+    ],
+    "controller_settings": {
+        "time_settings": {
+            "calculation": {
+                "timerange": 1,
+                "timerange_unit": "minute",
+                "sampling_time": 0.1,
+                "sampling_time_unit": "second"
+            },
+            "calibration": {
+                "timerange": 24,
+                "timerange_unit": "hour"
+            }
+        }
+    }
+}
