@@ -18,7 +18,8 @@ LOG_LEVEL=["WARNING]                        # Level for Logging Messages ("DEBUG
 Furthermore, a running FIWARE platform ([n5geh.platform](https://github.com/N5GEH/n5geh.platform) - "NGSI-v2" version) is required to which a connection can be established with the above specified data. The configuration of the data points in the platform can be created with the following notebook [run_simple_service.ipynb](./run_simple_service.ipynb).
 
 ## Basics
-To create your own custom service, you have to overwrite two functions of the [ControllerBasicService](./../../encodapy/service/basic_service.py):
+To create your own custom service, you have to overwrite three functions of the [ControllerBasicService](./../../encodapy/service/basic_service.py):
+- `prepare_start`: This is a synchronous function that prepares the start of the algorithm and specifies aspects of the service. This should not take long due to health issues in Docker containers. It only needs to be overwritten if other tasks are required after initialisation of the service.
 - `calculation`: Asynchronous function to perform the main calculation in the service
 - `calibration`: Asynchrone function to calibrate the service or coefficients in the service if required
 

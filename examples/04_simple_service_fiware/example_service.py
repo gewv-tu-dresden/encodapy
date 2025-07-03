@@ -30,18 +30,17 @@ class ExampleService(ControllerBasicService):
         """
         Constructor of the class
         """
-        super().__init__()
         self.heater_config = None
+        super().__init__()
 
-    async def prepare_start(self):
+
+    def prepare_start(self):
         """
         Function prepare the start of the service, \
             including the loading configuration of the service
 
         """
-        logger.info("Prepare Start of Service")
-
-        await self.prepare_basic_start()
+        logger.debug("Loading configuration of the service")
 
         self.heater_config = self.get_heat_controller_config()
 

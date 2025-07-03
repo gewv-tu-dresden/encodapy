@@ -41,7 +41,6 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
     """
     Class for processing the data transfer to different connections
     and start a function to do the calculations.
-    TODO: Implement the other interfaces(MQTT, ...)
 
     """
 
@@ -59,6 +58,8 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         self.staticdata = None
 
         self.timestamp_health = None
+
+        self.prepare_basic_start()
 
     def _load_config(self):
         """
@@ -88,35 +89,37 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
         return config_path
 
-    async def prepare_basic_start(self):
+    def prepare_basic_start(self):
         """
         Function to create important objects with the configuration from the configuration
         file (.env) and prepare the start basics of the service.
-        TODO: Implement other interfaces(...)
         """
+        logger.info("Prepare the basic start of the service")
 
         self._load_config()
 
-        if (
-            self.config is not None
-            and getattr(self.config, "interfaces", None) is not None
-        ):
-            if self.config.interfaces.fiware:
+        interfaces = getattr(self.config, "interfaces", None)
+        if interfaces:
+            if getattr(interfaces, "fiware", False):
                 self.prepare_fiware_connection()
 
-            if self.config.interfaces.mqtt:
+            if getattr(interfaces, "mqtt", False):
                 self.prepare_mqtt_connection()
 
-        return
+        self.prepare_start()
 
-    async def prepare_start(self):
+    def prepare_start(self):
         """
-        Function prepare the start of the service (calls the function for the basic preparing)
+        Function prepare the specific aspects of the start of the service \
+            Fuction is called by the function for the basic preparing
+
+        This function can be overwritten in the specific service.
+        
+        The function should not be do anything time consuming, \
+            because the health check is not running yet.
 
         """
-        logger.info("Prepare Start of Service")
-
-        await self.prepare_basic_start()
+        logger.debug("There is nothing else to prepare for the start of the service.")
 
     async def reload_static_data(
         self, method: DataQueryTypes, staticdata: list
@@ -170,9 +173,6 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         Returns:
             InputDataModel: Model with the input data
 
-        TODO:
-            - Implement other interfaces(...)
-            - loading data from a file -> first/last/specific value in file
         """
 
         input_data = []
@@ -204,9 +204,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 output_latest_timestamps.append(output_latest_timestamp)
                 logger.info("File interface, output_latest_timestamp is not defined.")
 
-            elif (
-                output_entity.interface == Interfaces.MQTT
-            ):  # TODO MB: How to handle MQTT interface?
+            elif output_entity.interface == Interfaces.MQTT: #TODO MB: How to handle MQTT interface?
                 entity_timestamps, output_latest_timestamp = (
                     self._get_last_timestamp_for_mqtt_output(output_entity)
                 )

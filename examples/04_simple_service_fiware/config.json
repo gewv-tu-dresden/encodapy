@@ -86,7 +86,7 @@
             "calculation":
             {
                 "timerange":1,
-                "timerange_unit":"hour"
+                "timerange_unit":"minute"
             },
             "calibration":
             {

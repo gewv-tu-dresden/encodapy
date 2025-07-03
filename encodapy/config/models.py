@@ -149,7 +149,7 @@ class ControllerComponentModel(BaseModel):
     ]
     #TODO: How to reference the component types?
     #TODO: How to reference the input/output models?
-    inputs: dict  
+    inputs: dict
     outputs: dict
     config: dict
 

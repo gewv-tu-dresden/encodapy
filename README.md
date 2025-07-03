@@ -58,11 +58,11 @@ You could install the Package via PyPI:
 pip install encodapy
 ```
 To create your own custom service, you have to overwrite two functions of the [ControllerBasicService](./encodapy/service/basic_service.py):
+- `prepare_start`: This is a synchronous function that prepares the start of the algorithm and specifies aspects of the service. This should not take long due to health issues in Docker containers. It only needs to be overwritten if other tasks are required after initialisation of the service.
 - `calculation()`: Asynchronous function to perform the main calculation in the service
-- `calibration()`: Asynchrone function to calibrate the service or coefficients in the service if required
+- `calibration()`: Asynchronous function to calibrate the service or coefficients in the service if only required
 
 To start the service, you need to call
-- `prepare_start()`: To prepare the start of the service
 - `start_calibration()`: To start the calibration if required
 - `start_service()`: To start the service
 

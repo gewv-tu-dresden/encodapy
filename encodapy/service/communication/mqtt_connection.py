@@ -137,7 +137,7 @@ class MqttConnection:
                     if topic in self.mqtt_message_store:
                         logger.warning(
                             f"Topic {topic} from {entity.id} already exists in message store, "
-                            f"overwriting it. This should not happen, check your configuration."
+                            "overwriting it. This should not happen, check your configuration."
                         )
 
                     # set the default value for the attribute
@@ -330,7 +330,7 @@ class MqttConnection:
                 # TODO MB: check if error handling is working correctly
                 logger.error(
                     f"Invalid payload for topic {topic}: {message_payload}. "
-                    f"Setting data as None and unavailable."
+                    "Setting data as None and unavailable."
                 )
 
                 attributes_values.append(
