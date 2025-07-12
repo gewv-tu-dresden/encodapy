@@ -32,18 +32,16 @@ class MQTTControllerTrnsys(ControllerBasicService):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self.controller_config: Optional[ControllerComponentModel] = None
         self.controller_outputs_for_trnsys: Optional[OutputModel] = None
+        super().__init__(*args, **kwargs)
 
-    async def prepare_start(self) -> None:
+    def prepare_start(self) -> None:
         """
         prepare the start of the trnsys controller service
 
         """
         logger.info("Prepare Start of Service")
-
-        await self.prepare_basic_start()
 
         # add own functionality for the current service here
         self.controller_config = self.get_controller_config(
@@ -67,6 +65,9 @@ class MQTTControllerTrnsys(ControllerBasicService):
 
         for component in self.config.controller_components:
             if component.type == type_name:
+                logger.debug(
+                    f"Found heat controller configuration for type '{type_name}'"
+                )
                 return component
         raise ValueError("No heat controller configuration found")
 
@@ -85,6 +86,7 @@ class MQTTControllerTrnsys(ControllerBasicService):
 
         for entity in self.config.outputs:
             if entity.id == output_entity:
+                logger.debug(f"Found output configuration for entity '{output_entity}'")
                 return entity
         raise ValueError(
             f"No output configuration for the entity '{output_entity}' found"
@@ -119,7 +121,7 @@ class MQTTControllerTrnsys(ControllerBasicService):
         self,
         input_entities: list[InputDataEntityModel],
         input_config: dict,
-    ) -> Union[float, int, str, bool]:
+    ) -> Union[float, int, str, bool, None]:
         """
         Function to get the values of the input data
 
@@ -134,7 +136,14 @@ class MQTTControllerTrnsys(ControllerBasicService):
             if input_data.id == input_config["entity"]:
                 for attribute in input_data.attributes:
                     if attribute.id == input_config["attribute"]:
-                        return attribute.data
+                        # check if data type is float, int, str or bool
+                        if isinstance(attribute.data, (float, int, str, bool)):
+                            return attribute.data
+                        else:
+                            logger.warning(
+                                f"Input data {input_config['entity']} with attribute {input_config['attribute']} has unsupported data type: {type(attribute.data)}"
+                            )
+                            return None
         raise ValueError(f"Input data {input_config['entity']} not found")
 
     def check_heater_command(

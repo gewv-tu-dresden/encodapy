@@ -19,7 +19,6 @@ async def main():
 
     service = MQTTControllerTrnsys()
 
-    await service.prepare_start()
     task_for_calibration = asyncio.create_task(service.start_calibration())
     task_for_start_service = asyncio.create_task(service.start_service())
 
