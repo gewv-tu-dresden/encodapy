@@ -111,6 +111,17 @@ class MqttConnection:
         """
         Function to prepare the MQTT message store for all in- and outputs
         (means subscribes to controller itself) and set the default values
+        for all attributes of the entities in the config.
+        Format of the message store:
+        {
+            "topic": {
+                "entity_id": "entity_id",
+                "entity_type": "input/output",
+                "attribute_id": "attribute_id",
+                "payload": value,
+                "timestamp": datetime.now(),
+            }
+        }
         """
         if self.mqtt_message_store:
             logger.warning("MQTT message store is not empty and will be overwritten.")
@@ -146,8 +157,15 @@ class MqttConnection:
                     else:
                         value = None
 
+                    # set the entity_type
+                    if entity in self.config.inputs:
+                        entity_type = "input"
+                    else:
+                        entity_type = "output"
+
                     self.mqtt_message_store[topic] = {
                         "entity_id": entity.id,
+                        "entity_type": entity_type,
                         "attribute_id": attribute.id,
                         "payload": value,
                         "timestamp": datetime.now(),
@@ -267,7 +285,7 @@ class MqttConnection:
         self,
         method: DataQueryTypes,
         entity: InputModel,
-    ) -> Union[InputDataEntityModel, None]:
+    ) -> InputDataEntityModel:
         """
         Function to get the data from the MQTT broker
 
@@ -276,7 +294,7 @@ class MqttConnection:
             entity (InputModel): Input entity
 
         Returns:
-            Union[InputDataEntityModel, None]: Model with input data or None if no data available
+            InputDataEntityModel: Model with input data (data=None if no data available)
         """
         if not hasattr(self, "mqtt_message_store"):
             raise NotSupportedError(
@@ -295,9 +313,12 @@ class MqttConnection:
                 ]
             )
 
-            # check if the topic is in the message store
+            # If the topic is not in the message store, mark the data as unavailable
             if topic not in self.mqtt_message_store:
-                # If the topic is not in the message store, mark the data as unavailable
+                logger.warning(
+                    f"Topic {topic} not found in MQTT message store. "
+                    "Setting data as None and unavailable."
+                )
                 attributes_values.append(
                     InputDataAttributeModel(
                         id=attribute.id,
@@ -310,7 +331,7 @@ class MqttConnection:
                 )
                 continue
 
-            # extract the data from message payload
+            # if the topic is in the message store, extract the data from message payload
             message_payload = self.mqtt_message_store[topic]["payload"]
             try:
                 data = self._extract_payload_value(message_payload)
@@ -321,7 +342,9 @@ class MqttConnection:
                         data=data,
                         data_type=attribute.type,
                         data_available=True,
-                        latest_timestamp_input=self.mqtt_message_store[topic]["timestamp"],
+                        latest_timestamp_input=self.mqtt_message_store[topic][
+                            "timestamp"
+                        ],
                         unit=None,  # TODO MB: Add unit handling if necessary
                     )
                 )
@@ -428,29 +451,45 @@ class MqttConnection:
                 f"Invalid data type for payload value: {type(value)}"
             ) from exc
 
-    def _get_last_timestamp_for_mqtt_output(
-        self, output_entity: OutputModel
-    ) -> tuple[OutputDataEntityModel, Union[datetime, None]]:
+    def _get_last_timestamp_for_mqtt_entity(
+        self, entity: Union[OutputModel, InputModel]
+    ) -> tuple[Union[OutputDataEntityModel, None], Union[datetime, None]]:
         """
-        Function to get the latest timestamps of the output entity from a MQTT message, if exists
+        Function to get the latest timestamps of the entity's attributes from the MQTT message 
+        store, if they exist.
 
         Args:
-            output_entity (OutputModel): Output entity
+            entity (Union[OutputModel, InputModel]): The entity (input or output) for which to get 
+            timestamps.
 
         Returns:
-            tuple[OutputDataEntityModel, Union[datetime, None]]:
-                - OutputDataEntityModel with timestamps for the attributes
-                - the latest timestamp of the output entity for the attribute
-                with the oldest value (None if no timestamp is available)
-        TODO:
-            - why the oldest value? Shouldn't it be the latest value?
+            tuple[Union[OutputDataEntityModel, None], Union[datetime, None]]:
+            - OutputDataEntityModel (for OutputModel) or None (for InputModel)
+            - The oldest timestamp among the entity's attributes (None if no timestamp is available)
         """
 
-
         timestamps: list = []
-        timestamp_latest_output = None
 
-        return (
-            OutputDataEntityModel(id=output_entity.id, attributes_status=timestamps),
-            timestamp_latest_output,
-        )
+        for attribute in self.mqtt_message_store.values():
+            if attribute["entity_id"] == entity.id:
+                timestamps.append(attribute["timestamp"])
+
+        if len(timestamps) > 0:
+            timestamp_latest_attribute = min(
+                item.timestamp_latest_attribute for item in timestamps
+            )
+        else:
+            timestamp_latest_attribute = None
+
+        # Return OutputDataEntityModel and last timestamp for output entity
+        if isinstance(entity, OutputModel):
+            return (
+                OutputDataEntityModel(
+                    id=entity.id,
+                    attributes_status=timestamps,
+                ),
+                timestamp_latest_attribute,
+            )
+
+        # Return only last timestamp if not output entity
+        return (None, timestamp_latest_attribute)

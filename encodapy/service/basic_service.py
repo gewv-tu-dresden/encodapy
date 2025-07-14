@@ -204,9 +204,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 output_latest_timestamps.append(output_latest_timestamp)
                 logger.info("File interface, output_latest_timestamp is not defined.")
 
-            elif output_entity.interface == Interfaces.MQTT: #TODO MB: How to handle MQTT interface?
+            elif output_entity.interface == Interfaces.MQTT:
                 entity_timestamps, output_latest_timestamp = (
-                    self._get_last_timestamp_for_mqtt_output(output_entity)
+                    self._get_last_timestamp_for_mqtt_entity(output_entity)
                 )
                 output_timestamps.append(entity_timestamps)
                 output_latest_timestamps.append(output_latest_timestamp)

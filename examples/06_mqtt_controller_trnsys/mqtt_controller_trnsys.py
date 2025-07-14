@@ -1,7 +1,7 @@
 """
-Description: This module contains the definition of a small example service \
-    in the form of a heat controller based on a two point controller with hysteresis.
-Author: Martin Altenburger
+Description: This module contains the definition of a example service \
+    connected with TRNSYS-TUD to manage a system plant in simulation.
+Author: Maximilian Beyer
 """
 
 from datetime import datetime, timezone
@@ -34,6 +34,7 @@ class MQTTControllerTrnsys(ControllerBasicService):
     def __init__(self, *args, **kwargs):
         self.controller_config: Optional[ControllerComponentModel] = None
         self.controller_outputs_for_trnsys: Optional[OutputModel] = None
+        self.last_output = datetime.now(timezone.utc)
         super().__init__(*args, **kwargs)
 
     def prepare_start(self) -> None:
@@ -215,21 +216,23 @@ class MQTTControllerTrnsys(ControllerBasicService):
         if self.controller_config is None or self.controller_outputs_for_trnsys is None:
             raise ValueError("Prepare the start of the service before calculation")
 
-        # get the current inputs
-        trnsys_inputs, boiler_inputs = self.get_inputs(data=data)
+        # 
 
-        # check if the TRNSYS MQTT messages in store are not empty
-        if not self.check_inputs_are_updated(inputs=trnsys_inputs):
-            logger.debug(
-                "Waiting for MQTT messages from TRNSYS to be fully updated in store..."
-            )
-            # exit calculation and retry
-            return None
-        logger.debug(
-            "TRNSYS MQTT messages were available and up to date in store, continue calculation..."
-        )
-        # reset the MQTT message store for TRNSYS
-        self.reset_mqtt_message_store(inputs=trnsys_inputs)
+        # get the current inputs
+        # trnsys_inputs, boiler_inputs = self.get_inputs(data=data)
+
+        # # check if the TRNSYS MQTT messages in store are not empty
+        # if not self.check_inputs_are_updated(inputs=trnsys_inputs):
+        #     logger.debug(
+        #         "Waiting for MQTT messages from TRNSYS to be fully updated in store..."
+        #     )
+        #     # exit calculation and retry
+        #     return None
+        # logger.debug(
+        #     "TRNSYS MQTT messages were available and up to date in store, continue calculation..."
+        # )
+        # # reset the MQTT message store for TRNSYS
+        # self.reset_mqtt_message_store(inputs=trnsys_inputs)
 
         # add all output values to the output data (None for now)
         components = []
