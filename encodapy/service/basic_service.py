@@ -14,11 +14,13 @@ from encodapy.config import (
     AttributeModel,
     CommandModel,
     ConfigModel,
+    ControllerComponentModel,
     DataQueryTypes,
     DefaultEnvVariables,
     Interfaces,
     OutputModel,
 )
+from encodapy.config.components_basic_config import IOAlocationModel
 from encodapy.service.communication import (
     FileConnection,
     FiwareConnection,
@@ -29,6 +31,7 @@ from encodapy.utils.logging import LoggerControl
 from encodapy.utils.models import (
     DataTransferComponentModel,
     DataTransferModel,
+    InputDataEntityModel,
     InputDataModel,
     OutputDataEntityModel,
     OutputDataModel,
@@ -44,14 +47,11 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
     """
 
-    def __init__(
-        self,
-    ) -> None:
+    def __init__(self) -> None:
         FiwareConnection.__init__(self)
         FileConnection.__init__(self)
         MqttConnection.__init__(self)
 
-        self.config = None
         self.logger = LoggerControl()
 
         self.reload_staticdata = False
@@ -634,3 +634,44 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """
         self.timestamp_health = datetime.now()
         return
+
+    def get_component_config(self, component_id: str) -> ControllerComponentModel:
+        """
+        Function to get the configuration of a specific component from the service configuration
+
+        Args:
+            component_id (str): ID of the component to get the configuration
+            
+        Returns:
+            ControllerComponentModel: Configuration of the component by ID
+
+        Raises:
+            ValueError: If the component with the given ID is not found in the configuration
+        """
+        for component in self.config.controller_components:
+            if component.id == component_id:
+                return component
+        raise ValueError(f"No configuration found for component ID {component_id}")
+
+    def get_input_values(  # TODO: rename to get_input_value
+        self,
+        input_entities: list[InputDataEntityModel],
+        input_config: IOAlocationModel,
+    ) -> Union[float, int, str, bool]:
+        """
+        Function to get the values of the input data for a specific input configuration \
+            of a component of the controller (or a individual one).
+
+        Args:
+            input_entities (list[InputDataEntityModel]): Data of input entities
+            input_config (dict): Configuration of the input
+
+        Returns:
+            Union[float, int, str, bool]: The value of the input data
+        """
+        for input_data in input_entities:
+            if input_data.id == input_config.entity:
+                for attribute in input_data.attributes:
+                    if attribute.id == input_config.attribute:
+                        return attribute.data
+        raise ValueError(f"Input data {input_config['entity']} not found")

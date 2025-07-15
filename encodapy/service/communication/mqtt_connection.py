@@ -37,7 +37,7 @@ class MqttConnection:
 
     def __init__(self) -> None:
         self.mqtt_params: dict = {}
-        self.config: Optional[ConfigModel] = None
+        self.config: ConfigModel
         self.mqtt_client: Optional[mqtt.Client] = None
         self.mqtt_message_store: dict[str, dict] = {}
         self._mqtt_loop_running = False

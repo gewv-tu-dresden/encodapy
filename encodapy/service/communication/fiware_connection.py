@@ -132,7 +132,7 @@ class FiwareConnection:
         self.fiware_header: FiwareHeaderSecure = None
         self.cb_client: ContextBrokerClient = None
         self.crate_db_client: CrateDBConnection = None
-        self.config: Optional[ConfigModel] = None
+        self.config: ConfigModel
 
     def load_fiware_params(self):
         """
