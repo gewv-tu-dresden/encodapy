@@ -96,37 +96,6 @@ class MQTTControllerTrnsys(ControllerBasicService):
             f"No output configuration for the entity '{output_entity}' found"
         )
 
-    # def get_input_values(
-    #     self,
-    #     input_entities: list[InputDataEntityModel],
-    #     input_config: dict,
-    # ) -> Union[float, int, str, bool, None]:
-    #     """
-    #     Function to get the values of the input data
-
-    #     Args:
-    #         input_entities (list[InputDataEntityModel]): Data of input entities
-    #         input_config (dict): Configuration of the input
-
-    #     Returns:
-    #         Union[float, int, str, bool]: The value of the input data
-    #     """
-    #     for input_data in input_entities:
-    #         if input_data.id == input_config["entity"]:
-    #             for attribute in input_data.attributes:
-    #                 if attribute.id == input_config["attribute"]:
-    #                     # check if data type is float, int, str or bool
-    #                     if isinstance(attribute.data, (float, int, str, bool)):
-    #                         return attribute.data
-
-    #                     logger.warning(
-    #                         f"Input data {input_config['entity']} with attribute "
-    #                         f"{input_config['attribute']} has unsupported data type: "
-    #                         f"{type(attribute.data)}"
-    #                     )
-    #                     return None
-    #     raise ValueError(f"Input data {input_config['entity']} not found")
-
     def get_input_entity(
         self, data: InputDataModel, entity_id: str
     ) -> InputDataEntityModel:
@@ -183,8 +152,11 @@ class MQTTControllerTrnsys(ControllerBasicService):
         """
         Function to get the inputs and their values from the entity
 
+        Args:
+            input_entity (InputDataEntityModel): The input entity model
+
         Returns:
-            inputs (dict): Dictionary with the input values
+            inputs (dict): Dictionary in the Format {attribute_id: value}
         """
         inputs = {}
         for attribute in input_entity.attributes:
@@ -205,11 +177,11 @@ class MQTTControllerTrnsys(ControllerBasicService):
 
         return inputs
 
-    def newer_than_timestamp_last_output(
+    def entity_fully_updated_after_last_output(
         self, input_entity: InputDataEntityModel
     ) -> bool:
         """
-        Check if the inputs in MQTT entity are all newer than timestamp of the latest output.
+        Check if the inputs of a MQTT entity are all newer than timestamp of the latest output.
 
         """
         for attribute in input_entity.attributes:
@@ -218,6 +190,8 @@ class MQTTControllerTrnsys(ControllerBasicService):
             if attribute.latest_timestamp_input < self.timestamp_last_output:
                 return False
         return True
+
+    # def get_current_controller_inputs(self,
 
     async def calculation(self, data: InputDataModel) -> Union[DataTransferModel, None]:
         """
@@ -238,11 +212,11 @@ class MQTTControllerTrnsys(ControllerBasicService):
             data=data, entity_id="Boiler-Outputs"
         )
 
-        # get last timestamp of the inputs
-        trnsys_updated = self.newer_than_timestamp_last_output(
+        # get last timestamp of the input entities
+        trnsys_updated = self.entity_fully_updated_after_last_output(
             input_entity=trnsys_input_entity
         )
-        boiler_updated = self.newer_than_timestamp_last_output(
+        boiler_updated = self.entity_fully_updated_after_last_output(
             input_entity=boiler_input_entity
         )
 
@@ -256,6 +230,8 @@ class MQTTControllerTrnsys(ControllerBasicService):
         components = []
         sammeln_payload = ""
 
+        # TODO MB: Calculate the values based on the inputs here, add them to the DataTransferComponentModel and the sammeln_payload
+
         for output_key, output_config in self.controller_config.outputs.items():
             if output_key == "full_trnsys_message":
                 # skip the full output, it is handled separately
@@ -264,8 +240,6 @@ class MQTTControllerTrnsys(ControllerBasicService):
             entity_id = output_config["entity"]
             attribute_id = output_config["attribute"]
 
-            # TODO MB: Calculate the values based on the inputs here, add them to the DataTransferComponentModel and the sammeln_payload
-            
             # add standard message of the outputs to DataTransferComponentModel
             components.append(
                 DataTransferComponentModel(

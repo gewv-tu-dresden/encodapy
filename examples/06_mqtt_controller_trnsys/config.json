@@ -137,7 +137,7 @@
     "staticdata": [],
     "controller_components": [
         {
-            "id": "BioHybrid-controller",
+            "id": "biohybrid-controller",
             "type": "system-controller",
             "inputs": {
                 "time": {
