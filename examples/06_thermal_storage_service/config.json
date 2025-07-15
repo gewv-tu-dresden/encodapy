@@ -1,0 +1,150 @@
+{
+    "name": "thermal_storage_service",
+    "interfaces":{
+        "mqtt": false,
+        "fiware": true,
+        "file": false
+    },
+    "inputs": [
+        {
+            "id": "thermal_storage",
+            "interface": "fiware",
+            "id_interface": "urn:thermal_storage:01",
+            "attributes": [
+                {
+                    "id": "temperature_1", 
+                    "id_interface":"temperature__1",
+                    "type": "value"
+                },
+                {
+                    "id": "temperature_2", 
+                    "id_interface":"temperature__2",
+                    "type": "value"
+                },
+                {
+                    "id": "temperature_3", 
+                    "id_interface":"temperature__3",
+                    "type": "value"
+                },
+                {
+                    "id": "temperature_4", 
+                    "id_interface":"temperature__4",
+                    "type": "value"
+                },
+                {
+                    "id": "temperature_5", 
+                    "id_interface":"temperature__5",
+                    "type": "value"
+                }
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "id": "thermal_storage",
+            "interface": "fiware",
+            "id_interface": "urn:thermal_storage:01",
+            "attributes": [
+                {
+                    "id": "storage__level", 
+                    "id_interface":"storage__level"
+                },
+                {
+                    "id": "storage__energy", 
+                    "id_interface":"storage__energy"
+                }
+            ],
+            "commands":[]
+        }
+    ],
+    "staticdata": [],
+    "controller_components": [
+        {
+            "id": "thermal_storage",
+            "type": "thermal_storage",
+            "inputs": {
+                "temperature_1": {
+                    "entity" : "thermal_storage",
+                    "attribute": "temperature_1"
+                }, 
+                "temperature_2": {
+                    "entity" : "thermal_storage",
+                    "attribute": "temperature_2"
+                }, 
+                "temperature_3": {
+                    "entity" : "thermal_storage",
+                    "attribute": "temperature_3"
+                }, 
+                "temperature_4": {
+                    "entity" : "thermal_storage",
+                    "attribute": "temperature_4"
+                }, 
+                "temperature_5": {
+                    "entity" : "thermal_storage",
+                    "attribute": "temperature_5"
+                }
+            },
+            "outputs":{
+                "storage__level": {
+                    "entity" : "thermal_storage",
+                    "attribute": "storage__level"
+                },
+                "storage__energy": {
+                    "entity" : "thermal_storage",
+                    "attribute": "storage__energy"
+                }
+            },
+            "config": {
+                "sensor_config": {
+                    "sensor_1_name": "temperature_1",
+                    "sensor_1_height": 10,
+                    "sensor_1_limits": {
+                        "minimal_temperature": 65,
+                        "maximal_temperature": 85
+                    },
+                    "sensor_2_name": "temperature_2",
+                    "sensor_2_height": 30,
+                    "sensor_2_limits": {
+                        "minimal_temperature": 65,
+                        "maximal_temperature": 85
+                    },
+                    "sensor_3_name": "temperature_3",
+                    "sensor_3_height": 50,
+                    "sensor_3_limits": {
+                        "minimal_temperature": 65,
+                        "maximal_temperature": 85
+                    },
+                    "sensor_4_name": "temperature_4",
+                    "sensor_4_height": 70,
+                    "sensor_4_limits": {
+                        "minimal_temperature": 65,
+                        "maximal_temperature": 85
+                    },
+                    "sensor_5_name": "temperature_5",
+                    "sensor_5_height": 90,
+                    "sensor_5_limits": {
+                        "minimal_temperature": 65,
+                        "maximal_temperature": 85
+                    }
+                },
+                "volume": 1.5,
+                "medium": "water"
+            }
+        }
+    ],
+    "controller_settings": {
+        "time_settings":
+        {
+            "calculation":
+            {
+                "timerange":1,
+                "timerange_unit":"minute"
+            },
+            "calibration":
+            {
+                "timerange":24,
+                "timerange_unit":"hour"
+            }
+        }
+    }
+}

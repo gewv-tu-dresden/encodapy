@@ -1,6 +1,6 @@
 # Example for usage with a simple service
 ## Overview
-As an example of a simple service using Encodapy, a heating regulator based on a two-position regulator is created. The example shows a connection to a FIWARE platform. The following parts show different aspects of the application:
+As an example of a simple service using EnCoDaPy, a heating regulator based on a two-position regulator is created. The example shows a connection to a FIWARE platform. The following parts show different aspects of the application:
 - [configure_fiware_platform.ipynb](./configure_fiware_platform.ipynb): Notebook to add the needed configuration and values to the fiware platform
 - [config.json](./config.json): Configuration for the service - see [01_config](./../01_config/)
 - [example_service.py](./example_service.py): Code of the service example
