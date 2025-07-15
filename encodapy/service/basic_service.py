@@ -206,7 +206,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
             elif output_entity.interface == Interfaces.MQTT:
                 entity_timestamps, output_latest_timestamp = (
-                    self._get_last_timestamp_for_mqtt_entity(output_entity)
+                    self._get_last_timestamp_for_mqtt_output(output_entity)
                 )
                 output_timestamps.append(entity_timestamps)
                 output_latest_timestamps.append(output_latest_timestamp)
@@ -238,12 +238,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 )
 
             elif input_entity.interface == Interfaces.MQTT:
-                input_data.append(
-                    self.get_data_from_mqtt(
-                        method=method,
-                        entity=input_entity,
-                    )
-                )
+                input_data.append(self.get_data_from_mqtt(entity=input_entity))
 
             await sleep(0.01)
 

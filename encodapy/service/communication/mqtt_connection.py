@@ -15,7 +15,6 @@ from paho.mqtt.enums import CallbackAPIVersion
 
 from encodapy.config import (
     ConfigModel,
-    DataQueryTypes,
     DefaultEnvVariables,
     InputModel,
     Interfaces,
@@ -171,13 +170,13 @@ class MqttConnection:
                         "timestamp": datetime.now(),
                     }
 
-    def assemble_topic_parts(self, parts: list[str]) -> str:
+    def assemble_topic_parts(self, parts: list[str | None]) -> str:
         """
         Function to build a topic from a list of strings.
         Ensures that the resulting topic is correctly formatted with exactly one '/' between parts.
 
         Args:
-            parts (list[str]): List of strings to be joined into a topic.
+            parts (list[str|None]): List of strings to be joined into a topic.
 
         Returns:
             str: The correctly formatted topic.
@@ -193,7 +192,7 @@ class MqttConnection:
 
         # Join the parts with a single '/',
         # stripping leading/trailing slashes from each part to avoid double slashes in the topic
-        topic = "/".join(part.strip("/") for part in parts)
+        topic = "/".join(part.strip("/") for part in parts if isinstance(part, str))
 
         return topic
 
@@ -232,8 +231,8 @@ class MqttConnection:
 
     def on_message(self, _, __, message):
         """
-        Callback function for received messages, stores the decoded message with
-        its timestamp in the message store
+        Callback function for received messages, stores the decoded message with its timestamp
+        in the message store
         """
         if not hasattr(self, "mqtt_message_store"):
             raise NotSupportedError(
@@ -283,14 +282,12 @@ class MqttConnection:
 
     def get_data_from_mqtt(
         self,
-        method: DataQueryTypes,
         entity: InputModel,
     ) -> InputDataEntityModel:
         """
         Function to get the data from the MQTT broker
 
         Args:
-            method (DataQueryTypes): Keyword for type of query
             entity (InputModel): Input entity
 
         Returns:
@@ -316,57 +313,40 @@ class MqttConnection:
             # If the topic is not in the message store, mark the data as unavailable
             if topic not in self.mqtt_message_store:
                 logger.warning(
-                    f"Topic {topic} not found in MQTT message store. "
-                    "Setting data as None and unavailable."
+                    f"Topic {topic} not found in MQTT message store. Setting data as None and "
+                    "unavailable. User should check for possible misconfiguration!"
                 )
-                attributes_values.append(
-                    InputDataAttributeModel(
-                        id=attribute.id,
-                        data=None,
-                        data_type=attribute.type,
-                        data_available=False,
-                        latest_timestamp_input=None,
-                        unit=None,
-                    )
-                )
-                continue
+                data = None
+                data_available = False
+                timestamp = None
 
             # if the topic is in the message store, extract the data from message payload
-            message_payload = self.mqtt_message_store[topic]["payload"]
-            try:
-                data = self._extract_payload_value(message_payload)
-
-                attributes_values.append(
-                    InputDataAttributeModel(
-                        id=attribute.id,
-                        data=data,
-                        data_type=attribute.type,
-                        data_available=True,
-                        latest_timestamp_input=self.mqtt_message_store[topic][
-                            "timestamp"
-                        ],
-                        unit=None,  # TODO MB: Add unit handling if necessary
+            else:
+                message_payload = self.mqtt_message_store[topic]["payload"]
+                try:
+                    data = self._extract_payload_value(message_payload)
+                    data_available = True
+                except ValueError as e:
+                    logger.error(
+                        f"Failed to extract payload value for topic {topic}: {e}. "
+                        "Setting data as None and unavailable."
                     )
-                )
-            except (json.JSONDecodeError, KeyError):
-                # Handle invalid or missing data in the payload
-                # TODO MB: check if error handling is working correctly
-                logger.error(
-                    f"Invalid payload for topic {topic}: {message_payload}. "
-                    "Setting data as None and unavailable."
-                )
+                    data = None
+                    data_available = False
 
-                attributes_values.append(
-                    InputDataAttributeModel(
-                        id=attribute.id,
-                        data=None,
-                        data_type=attribute.type,
-                        data_available=False,
-                        latest_timestamp_input=None,
-                        unit=None,
-                    )
-                )
+                # Get the timestamp from the message store
+                timestamp = self.mqtt_message_store[topic]["timestamp"]
 
+            attributes_values.append(
+                InputDataAttributeModel(
+                    id=attribute.id,
+                    data=data,
+                    data_type=attribute.type,
+                    data_available=data_available,
+                    latest_timestamp_input=timestamp,
+                    unit=None,  # TODO MB: Add unit handling if necessary
+                )
+            )
         return InputDataEntityModel(id=entity.id, attributes=attributes_values)
 
     def send_data_to_mqtt(
@@ -451,20 +431,18 @@ class MqttConnection:
                 f"Invalid data type for payload value: {type(value)}"
             ) from exc
 
-    def _get_last_timestamp_for_mqtt_entity(
+    def get_last_timestamp_for_mqtt_entity(
         self, entity: Union[OutputModel, InputModel]
-    ) -> tuple[Union[OutputDataEntityModel, None], Union[datetime, None]]:
+    ) -> Union[datetime, None]:
         """
-        Function to get the latest timestamps of the entity's attributes from the MQTT message 
+        Function to get the latest timestamps of the entity's attributes from the MQTT message
         store, if they exist.
 
         Args:
-            entity (Union[OutputModel, InputModel]): The entity (input or output) for which to get 
+            entity (Union[OutputModel, InputModel]): The entity (input or output) for which to get
             timestamps.
 
         Returns:
-            tuple[Union[OutputDataEntityModel, None], Union[datetime, None]]:
-            - OutputDataEntityModel (for OutputModel) or None (for InputModel)
             - The oldest timestamp among the entity's attributes (None if no timestamp is available)
         """
 
@@ -475,21 +453,34 @@ class MqttConnection:
                 timestamps.append(attribute["timestamp"])
 
         if len(timestamps) > 0:
-            timestamp_latest_attribute = min(
-                item.timestamp_latest_attribute for item in timestamps
-            )
+            timestamp_latest_attribute = min(timestamps)
         else:
             timestamp_latest_attribute = None
 
-        # Return OutputDataEntityModel and last timestamp for output entity
-        if isinstance(entity, OutputModel):
-            return (
-                OutputDataEntityModel(
-                    id=entity.id,
-                    attributes_status=timestamps,
-                ),
-                timestamp_latest_attribute,
-            )
+        return timestamp_latest_attribute
 
-        # Return only last timestamp if not output entity
-        return (None, timestamp_latest_attribute)
+    def _get_last_timestamp_for_mqtt_output(
+        self, output_entity: OutputModel
+    ) -> tuple[OutputDataEntityModel, Union[datetime, None]]:
+        """
+        Function to get the latest timestamps of the output entity from a MQTT message, if exists
+
+        Args:
+            output_entity (OutputModel): Output entity
+
+        Returns:
+            tuple[OutputDataEntityModel, Union[datetime, None]]:
+                - OutputDataEntityModel with timestamps for the attributes
+                - the latest timestamp of the output entity for the attribute
+                with the oldest value (None if no timestamp is available)
+        TODO:
+            - Just here for compatibility with the old code, should be removed in the future
+        """
+
+        timestamps: list = []
+        timestamp_latest_output = None
+
+        return (
+            OutputDataEntityModel(id=output_entity.id, attributes_status=timestamps),
+            timestamp_latest_output,
+        )
