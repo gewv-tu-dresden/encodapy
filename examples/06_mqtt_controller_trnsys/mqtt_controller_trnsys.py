@@ -186,7 +186,9 @@ class MQTTControllerTrnsys(ControllerBasicService):
     def last_timestamp(self, inputs: dict) -> bool:
         """
         Check if the inputs in MQTT message are all newer than the latest output timestamp.
+
         """
+        # TODO MB: Völling unnötig! Timestamps lassen sich an die Input-Daten direkt anbinden, Anpassung der Funktion get_data_from_mqtt nötig!!!
         _, last_timestamp = self._get_last_timestamp_for_mqtt_entity(
             entity=inputs)
         )
