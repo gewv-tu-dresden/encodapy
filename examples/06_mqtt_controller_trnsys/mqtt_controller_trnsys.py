@@ -98,7 +98,9 @@ class MQTTControllerTrnsys(ControllerBasicService):
         Function to get the inputs from trnsys and the pellet boiler
 
         Returns:
-            dict: The inputs of the heat controller
+            dict: The inputs of the heat controller in the Format
+            TODO MB: WIE IST DAS FORMAT?
+            TODO MB: WIESO GEMEINSAM FÜR TRNSYS UND BOILER IN EINER FUNKTION?
         """
         if self.controller_config is None:
             raise ValueError("No controller configuration found")
@@ -118,7 +120,7 @@ class MQTTControllerTrnsys(ControllerBasicService):
 
         return trnsys_inputs, boiler_inputs
 
-    def get_input_values(
+    def get_input_values(  # TODO MB: WIESO VALUES? WIESO NICHT VALUE?
         self,
         input_entities: list[InputDataEntityModel],
         input_config: dict,
@@ -181,18 +183,15 @@ class MQTTControllerTrnsys(ControllerBasicService):
 
         return 0
 
-    def check_inputs_are_updated(self, inputs: dict) -> bool:
+    def last_timestamp(self, inputs: dict) -> bool:
         """
-        Function to check if the MQTT message store is not None in any attribute.
+        Check if the inputs in MQTT message are all newer than the latest output timestamp.
         """
-        # TODO: check if it would be better to check the timestamps of the inputs
-        for attribute_key, attribute_value in inputs.items():
-            if attribute_value is None:
-                logger.debug(
-                    f"MQTT message store for attribute '{attribute_key}' is None"
-                )
-                return False
-        return True
+        _, last_timestamp = self._get_last_timestamp_for_mqtt_entity(
+            entity=inputs)
+        )
+
+        return last_timestamp
 
     def reset_mqtt_message_store(self, inputs: dict) -> None:
         """
@@ -216,10 +215,12 @@ class MQTTControllerTrnsys(ControllerBasicService):
         if self.controller_config is None or self.controller_outputs_for_trnsys is None:
             raise ValueError("Prepare the start of the service before calculation")
 
-        # 
-
         # get the current inputs
-        # trnsys_inputs, boiler_inputs = self.get_inputs(data=data)
+        trnsys_inputs, boiler_inputs = self.get_inputs(data=data)
+
+        # get last timestamp of the inputs
+        trnsys_inputs_last_timestamp = self.last_timestamp(inputs=trnsys_inputs)
+        boiler_inputs_last_timestamp = self.last_timestamp(inputs=boiler_inputs)
 
         # # check if the TRNSYS MQTT messages in store are not empty
         # if not self.check_inputs_are_updated(inputs=trnsys_inputs):
