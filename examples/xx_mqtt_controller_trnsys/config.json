@@ -148,17 +148,25 @@
                     "entity": "TRNSYS-Outputs",
                     "attribute": "IP_t_a"
                 },
-                "t_heat": {
-                    "entity": "TRNSYS-Outputs",
-                    "attribute": "IP_t_sen_2"
-                },
                 "t_heat_set": {
                     "entity": "TRNSYS-Outputs",
                     "attribute": "IP_t_soll_HK"
                 },
+                "t_heat_lower": {
+                    "entity": "TRNSYS-Outputs",
+                    "attribute": "IP_t_sen_2"
+                },
+                "t_heat_upper": {
+                    "entity": "TRNSYS-Outputs",
+                    "attribute": "IP_t_sen_3"
+                },
                 "t_dhw": {
                     "entity": "TRNSYS-Outputs",
                     "attribute": "IP_t_sen_4"
+                },
+                "boiler_flow_temp": {
+                    "entity": "Boiler-Outputs",
+                    "attribute": "flow_temp"
                 },
                 "boiler_status": {
                     "entity": "Boiler-Outputs",
@@ -212,7 +220,11 @@
                 }
             },
             "config": {
-                "temperature_hysteresis": 5
+                "hysteresis_heat_on": -1,
+                "hysteresis_heat_off": 5,
+                "hysteresis_dhw_on": -1,
+                "hysteresis_dhw_off": 5,
+                "t_dhw_set": 60
             }
         }
     ],
