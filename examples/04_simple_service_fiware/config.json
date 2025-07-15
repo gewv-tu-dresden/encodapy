@@ -1,0 +1,98 @@
+{
+    "name": "example_service",
+    "interfaces":{
+        "mqtt": false,
+        "fiware": true,
+        "file": false
+    },
+    "inputs": [
+        {
+            "id": "thermal_storage",
+            "interface": "fiware",
+            "id_interface": "urn:thermal_storage:01",
+            "attributes": [
+                {
+                    "id": "temperature_measured", 
+                    "id_interface":"temperature__measured",
+                    "type": "value"
+                },
+                {
+                    "id": "temperature_setpoint", 
+                    "id_interface":"temperature__setpoint",
+                    "type": "value"
+                }
+            ]
+        },
+        {
+            "id": "heater",
+            "interface": "fiware",
+            "id_interface": "urn:heater:01",
+            "attributes": [
+                {
+                    "id": "operation__setpoint", 
+                    "id_interface":"operation__setpoint",
+                    "type": "value"
+                }
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "id": "heater",
+            "interface": "fiware",
+            "id_interface": "urn:heater:01",
+            "attributes": [],
+            "commands":[
+                {
+                    "id": "operation__setpoint", 
+                    "id_interface":"operation__setpoint"
+                }
+            ]
+        }
+    ],
+    "staticdata": [],
+    "controller_components": [
+        {
+            "id": "heat_controller",
+            "type": "heat_controller",
+            "inputs": {
+                "temperature_measured": {
+                    "entity" : "thermal_storage",
+                    "attribute": "temperature_measured"
+                }, 
+                "temperature_setpoint": {
+                    "entity" : "thermal_storage",
+                    "attribute": "temperature_setpoint"
+                }, 
+                "heater_status": {
+                    "entity" : "heater",
+                    "attribute": "operation__setpoint"
+                }
+            },
+            "outputs":{
+                "heater_status": {
+                    "entity" : "heater",
+                    "attribute": "operation__setpoint"
+                }
+            },
+            "config": {
+                "temperature_hysteresis": 5
+                }
+        }
+    ],
+    "controller_settings": {
+        "time_settings":
+        {
+            "calculation":
+            {
+                "timerange":1,
+                "timerange_unit":"minute"
+            },
+            "calibration":
+            {
+                "timerange":24,
+                "timerange_unit":"hour"
+            }
+        }
+    }
+}
