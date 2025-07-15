@@ -77,7 +77,7 @@
             ]
         },
         {
-            "id": "PB-Outputs",
+            "id": "Boiler-Outputs",
             "interface": "mqtt",
             "id_interface": "PB",
             "attributes": [
@@ -94,7 +94,7 @@
         {
             "id": "TRNSYS-Inputs",
             "interface": "mqtt",
-            "id_interface": "MQTT/T207/SAMMELN",
+            "id_interface": "MQTT/T207/RBV01/SAMMELN",
             "attributes": [
                 {
                     "id": "OP_S_PK"
@@ -161,7 +161,7 @@
                     "attribute": "IP_t_sen_4"
                 },
                 "boiler_status": {
-                    "entity": "PB-Outputs",
+                    "entity": "Boiler-Outputs",
                     "attribute": "status"
                 }
             },

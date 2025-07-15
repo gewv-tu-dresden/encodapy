@@ -34,7 +34,8 @@ class MQTTControllerTrnsys(ControllerBasicService):
     def __init__(self, *args, **kwargs):
         self.controller_config: Optional[ControllerComponentModel] = None
         self.controller_outputs_for_trnsys: Optional[OutputModel] = None
-        self.last_output = datetime.now(timezone.utc)
+        self.data: Optional[InputDataModel] = None
+        self.timestamp_last_output: datetime = datetime.now()
         super().__init__(*args, **kwargs)
 
     def prepare_start(self) -> None:
@@ -45,9 +46,11 @@ class MQTTControllerTrnsys(ControllerBasicService):
         logger.info("Prepare Start of Service")
 
         # add own functionality for the current service here
+        # get the controller configuration
         self.controller_config = self.get_controller_config(
             type_name="system-controller"
         )
+        # get the output configuration for TRNSYS (needed for the full message "SAMMELN")
         self.controller_outputs_for_trnsys = self.get_output_config(
             output_entity="TRNSYS-Inputs"
         )
@@ -56,10 +59,10 @@ class MQTTControllerTrnsys(ControllerBasicService):
 
     def get_controller_config(self, type_name: str) -> ControllerComponentModel:
         """
-        Function to get the configuration of the heat controller
+        Function to get the configuration of the system controller
 
         Returns:
-            dict: The configuration of the heat controller
+            dict: The configuration of the system controller
         """
         if self.config is None:
             raise ValueError("No configuration found")
@@ -74,7 +77,7 @@ class MQTTControllerTrnsys(ControllerBasicService):
 
     def get_output_config(self, output_entity: str) -> OutputModel:
         """
-        Function to get the output configuration for a specific entity
+        Function to get the output configuration of a specific entity
 
         Args:
             output_entity (str): The ID of the output entity
@@ -93,61 +96,54 @@ class MQTTControllerTrnsys(ControllerBasicService):
             f"No output configuration for the entity '{output_entity}' found"
         )
 
-    def get_inputs(self, data: InputDataModel) -> tuple[dict, dict]:
+    # def get_input_values(
+    #     self,
+    #     input_entities: list[InputDataEntityModel],
+    #     input_config: dict,
+    # ) -> Union[float, int, str, bool, None]:
+    #     """
+    #     Function to get the values of the input data
+
+    #     Args:
+    #         input_entities (list[InputDataEntityModel]): Data of input entities
+    #         input_config (dict): Configuration of the input
+
+    #     Returns:
+    #         Union[float, int, str, bool]: The value of the input data
+    #     """
+    #     for input_data in input_entities:
+    #         if input_data.id == input_config["entity"]:
+    #             for attribute in input_data.attributes:
+    #                 if attribute.id == input_config["attribute"]:
+    #                     # check if data type is float, int, str or bool
+    #                     if isinstance(attribute.data, (float, int, str, bool)):
+    #                         return attribute.data
+
+    #                     logger.warning(
+    #                         f"Input data {input_config['entity']} with attribute "
+    #                         f"{input_config['attribute']} has unsupported data type: "
+    #                         f"{type(attribute.data)}"
+    #                     )
+    #                     return None
+    #     raise ValueError(f"Input data {input_config['entity']} not found")
+
+    def get_input_entity(
+        self, data: InputDataModel, entity_id: str
+    ) -> InputDataEntityModel:
         """
-        Function to get the inputs from trnsys and the pellet boiler
-
-        Returns:
-            dict: The inputs of the heat controller in the Format
-            TODO MB: WIE IST DAS FORMAT?
-            TODO MB: WIESO GEMEINSAM FÜR TRNSYS UND BOILER IN EINER FUNKTION?
-        """
-        if self.controller_config is None:
-            raise ValueError("No controller configuration found")
-
-        trnsys_inputs = {}
-        boiler_inputs = {}
-        for input_key, input_config in self.controller_config.inputs.items():
-            # check if the input is a TRNSYS input or a PB input
-            if input_config["entity"] == "TRNSYS-Outputs":
-                trnsys_inputs[input_key] = self.get_input_values(
-                    input_entities=data.input_entities, input_config=input_config
-                )
-            elif input_config["entity"] == "PB-Outputs":
-                boiler_inputs[input_key] = self.get_input_values(
-                    input_entities=data.input_entities, input_config=input_config
-                )
-
-        return trnsys_inputs, boiler_inputs
-
-    def get_input_values(  # TODO MB: WIESO VALUES? WIESO NICHT VALUE?
-        self,
-        input_entities: list[InputDataEntityModel],
-        input_config: dict,
-    ) -> Union[float, int, str, bool, None]:
-        """
-        Function to get the values of the input data
+        Function to get the input entity from the data
 
         Args:
-            input_entities (list[InputDataEntityModel]): Data of input entities
-            input_config (dict): Configuration of the input
+            data (InputDataModel): The input data model
 
         Returns:
-            Union[float, int, str, bool]: The value of the input data
+            InputDataEntityModel | None: The input entity or None if not found
         """
-        for input_data in input_entities:
-            if input_data.id == input_config["entity"]:
-                for attribute in input_data.attributes:
-                    if attribute.id == input_config["attribute"]:
-                        # check if data type is float, int, str or bool
-                        if isinstance(attribute.data, (float, int, str, bool)):
-                            return attribute.data
-                        else:
-                            logger.warning(
-                                f"Input data {input_config['entity']} with attribute {input_config['attribute']} has unsupported data type: {type(attribute.data)}"
-                            )
-                            return None
-        raise ValueError(f"Input data {input_config['entity']} not found")
+        if data.input_entities:
+            for entity in data.input_entities:
+                if entity.id == entity_id:
+                    return entity
+        raise ValueError(f"Input entity with ID '{entity_id}' not found in data")
 
     def check_heater_command(
         self,
@@ -183,27 +179,45 @@ class MQTTControllerTrnsys(ControllerBasicService):
 
         return 0
 
-    def last_timestamp(self, inputs: dict) -> bool:
+    def get_inputs(self, input_entity: InputDataEntityModel) -> dict:
         """
-        Check if the inputs in MQTT message are all newer than the latest output timestamp.
+        Function to get the inputs and their values from the entity
+
+        Returns:
+            inputs (dict): Dictionary with the input values
+        """
+        inputs = {}
+        for attribute in input_entity.attributes:
+            # check if data type is float, int, str or bool
+            if isinstance(attribute.data, (float, int, str, bool)):
+                data = attribute.data
+
+            else:
+                logger.warning(
+                    f"Input entity {input_entity.id} with attribute "
+                    f"{attribute.id} has unsupported data type: "
+                    f"{type(attribute.data)}"
+                )
+                data = None
+
+            # add the input data to the inputs dictionary
+            inputs[attribute.id] = data
+
+        return inputs
+
+    def newer_than_timestamp_last_output(
+        self, input_entity: InputDataEntityModel
+    ) -> bool:
+        """
+        Check if the inputs in MQTT entity are all newer than timestamp of the latest output.
 
         """
-        # TODO MB: Völling unnötig! Timestamps lassen sich an die Input-Daten direkt anbinden, Anpassung der Funktion get_data_from_mqtt nötig!!!
-        _, last_timestamp = self._get_last_timestamp_for_mqtt_entity(entity=inputs)
-
-        return last_timestamp
-
-    def reset_mqtt_message_store(self, inputs: dict) -> None:
-        """
-        Function to reset the MQTT message store for TRNSYS inputs.
-        This is necessary to wait until TRNSYS send new messages.
-        """
-        # TODO: HIER GEHTS WEITER, RESETTET NOCH NICHT KORREKT
-        # TODO: Reset muss im self.mqtt_message_store sein, dafür Topics nötig
-
-        for attribute_key in inputs.keys():
-            inputs[attribute_key] = False
-            logger.debug(f"Reset MQTT message store for attribute '{attribute_key}'")
+        for attribute in input_entity.attributes:
+            if attribute.latest_timestamp_input is None:
+                return False
+            if attribute.latest_timestamp_input < self.timestamp_last_output:
+                return False
+        return True
 
     async def calculation(self, data: InputDataModel) -> Union[DataTransferModel, None]:
         """
@@ -215,27 +229,30 @@ class MQTTControllerTrnsys(ControllerBasicService):
         if self.controller_config is None or self.controller_outputs_for_trnsys is None:
             raise ValueError("Prepare the start of the service before calculation")
 
-        # get the current inputs
-        trnsys_inputs, boiler_inputs = self.get_inputs(data=data)
+        # get the current input entities from the data
+        trnsys_input_entity = self.get_input_entity(
+            data=data, entity_id="TRNSYS-Outputs"
+        )
+
+        boiler_input_entity = self.get_input_entity(
+            data=data, entity_id="Boiler-Outputs"
+        )
 
         # get last timestamp of the inputs
-        trnsys_inputs_last_timestamp = self.last_timestamp(inputs=trnsys_inputs)
-        boiler_inputs_last_timestamp = self.last_timestamp(inputs=boiler_inputs)
+        trnsys_updated = self.newer_than_timestamp_last_output(
+            input_entity=trnsys_input_entity
+        )
+        boiler_updated = self.newer_than_timestamp_last_output(
+            input_entity=boiler_input_entity
+        )
 
-        # # check if the TRNSYS MQTT messages in store are not empty
-        # if not self.check_inputs_are_updated(inputs=trnsys_inputs):
-        #     logger.debug(
-        #         "Waiting for MQTT messages from TRNSYS to be fully updated in store..."
-        #     )
-        #     # exit calculation and retry
-        #     return None
-        # logger.debug(
-        #     "TRNSYS MQTT messages were available and up to date in store, continue calculation..."
-        # )
-        # # reset the MQTT message store for TRNSYS
-        # self.reset_mqtt_message_store(inputs=trnsys_inputs)
+        # if trnsys_updated is false, continue to wait for new inputs
+        if not trnsys_updated:
+            return None
 
-        # add all output values to the output data (None for now)
+        trnsys_inputs = self.get_inputs(input_entity=trnsys_input_entity)
+        boiler_inputs = self.get_inputs(input_entity=boiler_input_entity)
+
         components = []
         sammeln_payload = ""
 
@@ -247,6 +264,8 @@ class MQTTControllerTrnsys(ControllerBasicService):
             entity_id = output_config["entity"]
             attribute_id = output_config["attribute"]
 
+            # TODO MB: Calculate the values based on the inputs here, add them to the DataTransferComponentModel and the sammeln_payload
+            
             # add standard message of the outputs to DataTransferComponentModel
             components.append(
                 DataTransferComponentModel(
@@ -275,7 +294,7 @@ class MQTTControllerTrnsys(ControllerBasicService):
                     elif output_attribute.id == "tA_PK":
                         trnsys_value = 50
                     else:
-                        trnsys_value = output_attribute.value
+                        trnsys_value = 0
                     trnsys_variable_name = output_attribute.id_interface
                     sammeln_payload += f"{trnsys_variable_name} : {trnsys_value} # "
 
@@ -289,8 +308,8 @@ class MQTTControllerTrnsys(ControllerBasicService):
             )
         )
 
-        # set the trnsys mqtt messages in store to None
-        # self.
+        # set the current time as the new timestamp of the last output
+        self.timestamp_last_output = datetime.now()
 
         return DataTransferModel(components=components)
 

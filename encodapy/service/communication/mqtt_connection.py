@@ -152,9 +152,9 @@ class MqttConnection:
 
                     # set the default value for the attribute
                     if hasattr(attribute, "value"):
-                        value = attribute.value
+                        default_value = attribute.value
                     else:
-                        value = None
+                        default_value = None
 
                     # set the entity_type
                     if entity in self.config.inputs:
@@ -166,8 +166,8 @@ class MqttConnection:
                         "entity_id": entity.id,
                         "entity_type": entity_type,
                         "attribute_id": attribute.id,
-                        "payload": value,
-                        "timestamp": datetime.now(),
+                        "payload": default_value,
+                        "timestamp": None,
                     }
 
     def assemble_topic_parts(self, parts: list[str | None]) -> str:
@@ -430,34 +430,6 @@ class MqttConnection:
             raise ValueError(
                 f"Invalid data type for payload value: {type(value)}"
             ) from exc
-
-    def get_last_timestamp_for_mqtt_entity(
-        self, entity: Union[OutputModel, InputModel]
-    ) -> Union[datetime, None]:
-        """
-        Function to get the latest timestamps of the entity's attributes from the MQTT message
-        store, if they exist.
-
-        Args:
-            entity (Union[OutputModel, InputModel]): The entity (input or output) for which to get
-            timestamps.
-
-        Returns:
-            - The oldest timestamp among the entity's attributes (None if no timestamp is available)
-        """
-
-        timestamps: list = []
-
-        for attribute in self.mqtt_message_store.values():
-            if attribute["entity_id"] == entity.id:
-                timestamps.append(attribute["timestamp"])
-
-        if len(timestamps) > 0:
-            timestamp_latest_attribute = min(timestamps)
-        else:
-            timestamp_latest_attribute = None
-
-        return timestamp_latest_attribute
 
     def _get_last_timestamp_for_mqtt_output(
         self, output_entity: OutputModel
