@@ -32,6 +32,12 @@ class MQTTControllerTrnsys(ControllerBasicService):
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        Constructor of the MQTTControllerTrnsys class
+        Args:
+            *args: Variable length argument list
+            **kwargs: Arbitrary keyword arguments
+        """
         self.controller_config: Optional[ControllerComponentModel] = None
         self.controller_outputs_for_trnsys: Optional[OutputModel] = None
         self.data: Optional[InputDataModel] = None
@@ -45,56 +51,20 @@ class MQTTControllerTrnsys(ControllerBasicService):
         """
         logger.info("Prepare Start of Service")
 
-        # add own functionality for the current service here
-        # get the controller configuration
-        self.controller_config = self.get_controller_config(
-            type_name="system-controller"
+        # using basic service methods to get the controller configuration
+        self.controller_config = next(
+            (
+                c
+                for c in self.config.controller_components
+                if c.type == "system-controller"
+            ),
+            None,
         )
-        # get the output configuration for TRNSYS (needed for the full message "SAMMELN")
-        self.controller_outputs_for_trnsys = self.get_output_config(
-            output_entity="TRNSYS-Inputs"
+        self.controller_outputs_for_trnsys = self._get_output_entity_config(
+            output_entity_id="TRNSYS-Inputs"
         )
 
         logger.info("TRNSYS Controller Service prepared successfully")
-
-    def get_controller_config(self, type_name: str) -> ControllerComponentModel:
-        """
-        Function to get the configuration of the system controller
-
-        Returns:
-            dict: The configuration of the system controller
-        """
-        if self.config is None:
-            raise ValueError("No configuration found")
-
-        for component in self.config.controller_components:
-            if component.type == type_name:
-                logger.debug(
-                    f"Found heat controller configuration for type '{type_name}'"
-                )
-                return component
-        raise ValueError("No heat controller configuration found")
-
-    def get_output_config(self, output_entity: str) -> OutputModel:
-        """
-        Function to get the output configuration of a specific entity
-
-        Args:
-            output_entity (str): The ID of the output entity
-
-        Returns:
-            OutputModel: The output configuration
-        """
-        if self.config is None:
-            raise ValueError("No configuration found")
-
-        for entity in self.config.outputs:
-            if entity.id == output_entity:
-                logger.debug(f"Found output configuration for entity '{output_entity}'")
-                return entity
-        raise ValueError(
-            f"No output configuration for the entity '{output_entity}' found"
-        )
 
     def get_input_entity(
         self, data: InputDataModel, entity_id: str
@@ -203,29 +173,23 @@ class MQTTControllerTrnsys(ControllerBasicService):
         if self.controller_config is None or self.controller_outputs_for_trnsys is None:
             raise ValueError("Prepare the start of the service before calculation")
 
-        # get the current input entities from the data
-        trnsys_input_entity = self.get_input_entity(
-            data=data, entity_id="TRNSYS-Outputs"
-        )
+        # using basic service methods to get the input entities
+        trnsys_input_entity = self.get_input_entity(data, "TRNSYS-Outputs")
+        boiler_input_entity = self.get_input_entity(data, "Boiler-Outputs")
 
-        boiler_input_entity = self.get_input_entity(
-            data=data, entity_id="Boiler-Outputs"
-        )
-
-        # get last timestamp of the input entities
         trnsys_updated = self.entity_fully_updated_after_last_output(
-            input_entity=trnsys_input_entity
+            trnsys_input_entity
         )
         boiler_updated = self.entity_fully_updated_after_last_output(
-            input_entity=boiler_input_entity
+            boiler_input_entity
         )
 
         # if trnsys_updated is false, continue to wait for new inputs
         if not trnsys_updated:
             return None
 
-        trnsys_inputs = self.get_inputs(input_entity=trnsys_input_entity)
-        boiler_inputs = self.get_inputs(input_entity=boiler_input_entity)
+        trnsys_inputs = self.get_inputs(trnsys_input_entity)
+        boiler_inputs = self.get_inputs(boiler_input_entity)
 
         components = []
         sammeln_payload = ""
