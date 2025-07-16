@@ -23,7 +23,7 @@
         {
             "id": "PB-Inputs",
             "interface": "mqtt",
-            "id_interface": "project/systemcontroller/biohybrid/pelletkessel",
+            "id_interface": "project/systemcontroller/biohybrid/regler",
             "attributes": [
                 {
                     "id": "ZundungEin"
