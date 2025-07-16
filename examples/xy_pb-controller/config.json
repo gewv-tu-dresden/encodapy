@@ -1,0 +1,73 @@
+{
+    "name": "mqtt_controller",
+    "interfaces": {
+        "mqtt": true,
+        "fiware": false,
+        "file": false
+    },
+    "inputs": [
+        {
+            "id": "PB-Outputs",
+            "interface": "mqtt",
+            "id_interface": "project/systemcontroller/biohybrid/pelletkessel",
+            "attributes": [
+                {
+                    "id": "WarmwasserTempAktu",
+                    "value": 30,
+                    "unit": "CEL"
+                }
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "id": "PB-Inputs",
+            "interface": "mqtt",
+            "id_interface": "project/systemcontroller/biohybrid/pelletkessel",
+            "attributes": [
+                {
+                    "id": "ZundungEin"
+                }
+            ],
+            "commands": []
+        }
+    ],
+    "staticdata": [],
+    "controller_components": [
+        {
+            "id": "Pelletkessel-Regler",
+            "type": "pb-controller",
+            "inputs": {
+                "t_dhw_measured": {
+                    "entity": "PB-Outputs",
+                    "attribute": "WarmwasserTempAktu"
+                }
+            },
+            "outputs": {
+                "power_on_pk": {
+                    "entity": "PB-Inputs",
+                    "attribute": "ZundungEin"
+                }
+            },
+            "config": {
+                "hysteresis_dhw_on": -1,
+                "hysteresis_dhw_off": 5,
+                "t_dhw_set": 60
+            }
+        }
+    ],
+    "controller_settings": {
+        "time_settings": {
+            "calculation": {
+                "timerange": 1,
+                "timerange_unit": "minute",
+                "sampling_time": 10,
+                "sampling_time_unit": "second"
+            },
+            "calibration": {
+                "timerange": 24,
+                "timerange_unit": "hour"
+            }
+        }
+    }
+}
