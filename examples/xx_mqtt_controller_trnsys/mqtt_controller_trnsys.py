@@ -118,35 +118,6 @@ class MQTTControllerTrnsys(ControllerBasicService):
 
         return 0
 
-    def get_inputs(self, input_entity: InputDataEntityModel) -> dict:
-        """
-        Function to get the inputs and their values from the entity
-
-        Args:
-            input_entity (InputDataEntityModel): The input entity model
-
-        Returns:
-            inputs (dict): Dictionary in the Format {attribute_id: value}
-        """
-        inputs = {}
-        for attribute in input_entity.attributes:
-            # check if data type is float, int, str or bool
-            if isinstance(attribute.data, (float, int, str, bool)):
-                data = attribute.data
-
-            else:
-                logger.warning(
-                    f"Input entity {input_entity.id} with attribute "
-                    f"{attribute.id} has unsupported data type: "
-                    f"{type(attribute.data)}"
-                )
-                data = None
-
-            # add the input data to the inputs dictionary
-            inputs[attribute.id] = data
-
-        return inputs
-
     def entity_fully_updated_after_last_output(
         self, input_entity: InputDataEntityModel
     ) -> bool:
@@ -161,7 +132,55 @@ class MQTTControllerTrnsys(ControllerBasicService):
                 return False
         return True
 
-    # def get_current_controller_inputs(self,
+    def get_controller_inputs(self, input_entities: list[InputDataEntityModel]) -> dict:
+        """
+        Function to get the inputs for the controller from the input entities
+        Args:
+            input_entities (list[InputDataEntityModel]): List of input entities
+        Returns:
+            dict: Dictionary with the inputs in the format {input_key: value}
+        """
+        if self.controller_config is None:
+            raise ValueError("Prepare the start of the service before calculation")
+        
+        inputs = {}
+        for input_key, input_config in self.controller_config.inputs.items():
+            inputs[input_key] = self.get_input_value(
+                input_entities=input_entities, input_config=input_config
+            )
+        return inputs
+
+    def get_input_value(
+        self, input_entities: list[InputDataEntityModel], input_config: dict
+    ) -> Union[float, int, str, bool, None]:
+        """
+        Function to get the value of a specific attribute from the input entities
+
+        Args:
+            input_entities (list[InputDataEntityModel]): List of input entities
+            input_config (dict): Configuration of the input
+
+        Returns:
+            Union[float, int, str, bool]: The value of the attribute data
+        """
+        for input_data in input_entities:
+            if input_data.id == input_config["entity"]:
+                for attribute in input_data.attributes:
+                    if attribute.id == input_config["attribute"]:
+                        # check if data type is float, int, str or bool
+                        if isinstance(attribute.data, (float, int, str, bool)):
+                            data = attribute.data
+
+                        else:
+                            logger.warning(
+                                f"Input entity {input_config['entity']} with attribute "
+                                f"{attribute.id} has unsupported data type: "
+                                f"{type(attribute.data)}"
+                            )
+                            data = None
+                        return data
+                    
+        raise ValueError(f"Input data {input_config['entity']} not found")
 
     async def calculation(self, data: InputDataModel) -> Union[DataTransferModel, None]:
         """
@@ -177,6 +196,7 @@ class MQTTControllerTrnsys(ControllerBasicService):
         trnsys_input_entity = self.get_input_entity(data, "TRNSYS-Outputs")
         boiler_input_entity = self.get_input_entity(data, "Boiler-Outputs")
 
+        # check if the input entities are updated after the last output
         trnsys_updated = self.entity_fully_updated_after_last_output(
             trnsys_input_entity
         )
@@ -184,12 +204,14 @@ class MQTTControllerTrnsys(ControllerBasicService):
             boiler_input_entity
         )
 
-        # if trnsys_updated is false, continue to wait for new inputs
+        # if trnsys_updated is false, return with no outputs to wait for new inputs
         if not trnsys_updated:
             return None
 
-        trnsys_inputs = self.get_inputs(trnsys_input_entity)
-        boiler_inputs = self.get_inputs(boiler_input_entity)
+        # get the inputs needed by the controller from the input entities
+        input_entities = [trnsys_input_entity, boiler_input_entity]
+
+        inputs = self.get_controller_inputs(input_entities)
 
         components = []
         sammeln_payload = ""
