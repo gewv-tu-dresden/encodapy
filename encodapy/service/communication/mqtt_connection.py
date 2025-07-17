@@ -406,9 +406,17 @@ class MqttConnection:
 
         # If the payload is a valid JSON string or dict, extract the value from it if possible
         if isinstance(payload, dict):
-            if "value" in payload.keys():
-                # Extract the value from the dictionary
-                value = payload["value"]
+            # Ensure case-insensitive key check
+            if "value" in {k.lower() for k in payload.keys()}:
+                # Search for actual key that is (case-insensitive) "value" and extract its value
+                for k in payload.keys():
+                    if k.lower() == "value":
+                        value = payload[k]
+                        break
+                else:
+                    raise ValueError(
+                        f"Invalid payload format: 'value' key not found in payload {payload}"
+                    )
             else:
                 raise ValueError(
                     f"Invalid payload format: 'value' key not found in payload {payload}"
