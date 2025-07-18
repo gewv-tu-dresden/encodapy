@@ -84,15 +84,16 @@ class MQTTControllerTrnsys(ControllerBasicService):
                     return entity
         raise ValueError(f"Input entity with ID '{entity_id}' not found in data")
 
-    def check_heater_command(
+    def check_heat_demand(
         self,
         temperature_setpoint: float,
         temperature_measured: float,
         hysteresis: float,
-        heater_status_old: int,
+        demand_status_old: int,
     ) -> int:
         """
-        Function to check if the heater should be on or off \
+        TODO MB: update docstring
+        Function to check if the heat demand should be on or off \
             based on a 2 point controller with hysteresis
 
         Args:
@@ -111,7 +112,7 @@ class MQTTControllerTrnsys(ControllerBasicService):
             return 0
 
         if (
-            heater_status_old
+            demand_status_old
             and temperature_measured > temperature_setpoint - hysteresis
         ):
             return 1
@@ -216,7 +217,7 @@ class MQTTControllerTrnsys(ControllerBasicService):
         components = []
         sammeln_payload = ""
 
-        # TODO MB: Calculate the values based on the inputs here, add them to the DataTransferComponentModel and the sammeln_payload
+        # TODO MB: Calculate the values based on the inputs here, add them to the DataTransferComponentModel and the sammeln_payload, if for TRNSYS-Inputs
 
         for output_key, output_config in self.controller_config.outputs.items():
             if output_key == "full_trnsys_message":
