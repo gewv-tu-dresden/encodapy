@@ -82,10 +82,13 @@
             "id_interface": "PB",
             "attributes": [
                 {
+                    "id": "mass_flow"
+                },
+                {
                     "id": "flow_temp"
                 },
                 {
-                    "id": "status"
+                    "id": "heat_input"
                 }
             ]
         }
@@ -132,6 +135,23 @@
                 }
             ],
             "commands": []
+        },
+        {
+            "id": "Boiler-Inputs",
+            "interface": "mqtt",
+            "id_interface": "PB",
+            "attributes": [
+                {
+                    "id": "IP_tE_PK"
+                },
+                {
+                    "id": "OP_S_Ke"
+                },
+                {
+                    "id": "OP_Mod_PK"
+                }
+            ],
+            "commands": []
         }
     ],
     "staticdata": [],
@@ -152,11 +172,11 @@
                     "entity": "TRNSYS-Outputs",
                     "attribute": "IP_t_soll_HK"
                 },
-                "t_heat_lower": {
+                "t_heat_bot": {
                     "entity": "TRNSYS-Outputs",
                     "attribute": "IP_t_sen_2"
                 },
-                "t_heat_upper": {
+                "t_heat_top": {
                     "entity": "TRNSYS-Outputs",
                     "attribute": "IP_t_sen_3"
                 },
@@ -164,29 +184,53 @@
                     "entity": "TRNSYS-Outputs",
                     "attribute": "IP_t_sen_4"
                 },
-                "boiler_flow_temp": {
+                "t_hp_in_bot": {
+                    "entity": "TRNSYS-Outputs",
+                    "attribute": "IP_tA_AP3_3R"
+                },
+                "t_hp_in_top": {
+                    "entity": "TRNSYS-Outputs",
+                    "attribute": "IP_tA_AP3_3R"
+                },
+                "t_pb_in_bot": {
+                    "entity": "TRNSYS-Outputs",
+                    "attribute": "IP_tA_AP3_3R"
+                },
+                "t_pb_in_top": {
+                    "entity": "TRNSYS-Outputs",
+                    "attribute": "IP_tA_AP3_3R"
+                },
+                "mass_flow_pb": {
+                    "entity": "Boiler-Outputs",
+                    "attribute": "mass_flow"
+                },
+                "t_pb_out": {
                     "entity": "Boiler-Outputs",
                     "attribute": "flow_temp"
                 },
-                "boiler_status": {
+                "heat_input_pb": {
                     "entity": "Boiler-Outputs",
-                    "attribute": "status"
+                    "attribute": "heat_input"
+                },
+                "pv_power": {
+                    "entity": "TRNSYS-Outputs",
+                    "attribute": "IP_P_PV"
                 }
             },
             "outputs": {
-                "power_on_pk": {
+                "power_on_pb": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_S_PK"
                 },
-                "pk_twe_mode": {
+                "pb_twe_mode": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_S_PK_TWE"
                 },
-                "power_on_wp": {
+                "power_on_hp": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_S_WP"
                 },
-                "wp_twe_mode": {
+                "hp_twe_mode": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_S_WP_TWE"
                 },
@@ -194,29 +238,41 @@
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_Heizzeit"
                 },
-                "n_wp_rel": {
+                "n_hp_rel": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_n_WP"
                 },
-                "flow_pk": {
+                "mass_flow_pb": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_m_PK"
                 },
-                "temp_flow_pk": {
+                "t_pb_out": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_tA_PK"
                 },
-                "heat_pk_fuel": {
+                "heat_pb_fuel": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_Q_PK_BS"
                 },
-                "modulation_pk": {
+                "modulation_pb": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_Mod_PK"
                 },
                 "full_trnsys_message": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "trnsys_sammeln"
+                },
+                "t_pb_in_model": {
+                    "entity": "Boiler-Inputs",
+                    "attribute": "IP_tE_PK"
+                },
+                "pb_heat_on_model": {
+                    "entity": "Boiler-Inputs",
+                    "attribute": "OP_S_Ke"
+                },
+                "modulation_pb_model": {
+                    "entity": "Boiler-Inputs",
+                    "attribute": "OP_Mod_PK"
                 }
             },
             "config": {
