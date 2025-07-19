@@ -39,8 +39,8 @@ class MQTTControllerTrnsys(ControllerBasicService):
             **kwargs: Arbitrary keyword arguments
         """
         self.controller_component: Optional[ControllerComponentModel] = None
-        self.service_inputs: Optional[dict] = None
-        self.service_outputs: Optional[dict] = None
+        self.service_inputs: dict = {}
+        self.service_outputs: dict = {}
         self.controller_outputs_for_trnsys: Optional[OutputModel] = None
         self.data: Optional[InputDataModel] = None
         self.timestamp_last_output: datetime = datetime.now()
@@ -63,11 +63,16 @@ class MQTTControllerTrnsys(ControllerBasicService):
             ),
             None,
         )
-
         # get a dict with the outputs of the controller to hold the values
-        if self.controller_component is not None and self.controller_component.outputs is not None:
-            self.service_outputs = {key: 0 for key in self.controller_component.outputs.keys()}
+        if (
+            self.controller_component is not None
+            and self.controller_component.outputs is not None
+        ):
+            self.service_outputs = {
+                key: 0 for key in self.controller_component.outputs.keys()
+            }
         else:
+            self.service_outputs = {}
             self.service_outputs = {}
 
         # TODO MB: may be obsolete, check if outputs for trnsys are seperately needed
@@ -109,7 +114,9 @@ class MQTTControllerTrnsys(ControllerBasicService):
                 return False
         return True
 
-    def get_current_controller_inputs(self, input_entities: list[InputDataEntityModel]) -> dict:
+    def get_current_controller_inputs(
+        self, input_entities: list[InputDataEntityModel]
+    ) -> dict:
         """
         Function to get the inputs for the controller from the input entities
         Args:
@@ -180,17 +187,11 @@ class MQTTControllerTrnsys(ControllerBasicService):
         heat_demand_old = self.heat_demand
 
         # check whether to switch on
-        if (
-            heat_demand_old == 0
-            and t_top < t_set + on_hys
-        ):
+        if heat_demand_old == 0 and t_top < t_set + on_hys:
             self.heat_demand = True
 
         # check whether to switch off
-        if (
-            heat_demand_old == 1
-            and t_bot > t_set + off_hys
-        ):
+        if heat_demand_old == 1 and t_bot > t_set + off_hys:
             self.heat_demand = False
 
         # if demand changed, log it
@@ -207,7 +208,10 @@ class MQTTControllerTrnsys(ControllerBasicService):
             data (InputDataModel): Input data with the measured values for the calculation
         """
         # check if the controller configuration is available
-        if self.controller_component is None or self.controller_outputs_for_trnsys is None:
+        if (
+            self.controller_component is None
+            or self.controller_outputs_for_trnsys is None
+        ):
             raise ValueError("Prepare the start of the service before calculation")
 
         # using basic service methods to get the input entities
@@ -231,18 +235,25 @@ class MQTTControllerTrnsys(ControllerBasicService):
 
         self.service_inputs = self.get_current_controller_inputs(input_entities)
 
+        # TODO MB: Calculate the values based on the inputs from here on
         self.update_heat_demand(
             t_bot=self.service_inputs["t_heat_bot"],
             t_top=self.service_inputs["t_heat_top"],
             t_set=self.service_inputs["t_heat_set"],
             on_hys=self.controller_component.config["hysteresis_heat_on"],
-            off_hys=self.controller_component.config["hysteresis_heat_off"]
+            off_hys=self.controller_component.config["hysteresis_heat_off"],
         )
 
+        # react on heat demand
+        if self.heat_demand:
+            # if heat demand is on, set the outputs for heat pump (test mode)
+            self.service_outputs["power_on_hp"] = 1
+            self.service_outputs["hp_twe_mode"] = 0
+            self.service_outputs["n_hp_rel"] = 1
+
+        # add values to the DataTransferComponentModel and the sammeln_payload, if for TRNSYS-Inputs
         components = []
         sammeln_payload = ""
-
-        # TODO MB: Calculate the values based on the inputs here, add them to the DataTransferComponentModel and the sammeln_payload, if for TRNSYS-Inputs
 
         for output_key, output_config in self.controller_component.outputs.items():
             # skip the full_trnsys_message, it is handled separately
@@ -256,9 +267,13 @@ class MQTTControllerTrnsys(ControllerBasicService):
             if entity_id == "TRNSYS-Inputs":
                 # add it to the full_trnsys_message
                 try:
-                    value = self.service_outputs[output_key] if self.service_outputs is not None else 0
+                    value = (
+                        self.service_outputs[output_key]
+                        if self.service_outputs is not None
+                        else 0
+                    )
                 except KeyError:
-                    # TODO MB: this should not happen, delete this try-except after debugging
+                    # TODO MB: this may never happen, delete this try-except after debugging
                     logger.error(
                         f"Output key '{output_key}' not found in service outputs, set it to 0."
                         " This may indicate a initialization configuration issue."
@@ -307,8 +322,6 @@ class MQTTControllerTrnsys(ControllerBasicService):
                 timestamp=datetime.now(),
             )
         )
-
-
 
         # set the current time as the new timestamp of the last output
         self.timestamp_last_output = datetime.now()
