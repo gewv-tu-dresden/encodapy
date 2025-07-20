@@ -45,6 +45,7 @@ class MQTTControllerTrnsys(ControllerBasicService):
         self.data: Optional[InputDataModel] = None
         self.timestamp_last_output: datetime = datetime.now()
         self.heat_demand: bool = False
+        self.dhw_demand: bool = False
         super().__init__(*args, **kwargs)
 
     def prepare_start(self) -> None:
@@ -201,6 +202,40 @@ class MQTTControllerTrnsys(ControllerBasicService):
             else:
                 logger.info("Heat demand switched OFF")
 
+    def update_dhw_demand(
+        self, t_dhw: float, t_set: float, on_hys: int, off_hys: int
+    ) -> None:
+        """
+        Function to check if a DHW demand is needed based on a sensor in DHW storage
+        Args:
+            t_dhw (float): Temperature of the DHW sensor
+            t_set (float): Set point temperature for DHW
+            on_hys (int): Switch-on hysteresis for DHW
+            off_hys (int): Switch-off hysteresis for DHW
+        Returns:
+            None: set self.dhw_demand to True if DHW demand is needed, False otherwise
+        """
+        if self.controller_component is None:
+            raise ValueError("Prepare the start of the service before calculation")
+
+        # save old demand
+        dhw_demand_old = self.dhw_demand
+
+        # check whether to switch on
+        if dhw_demand_old == 0 and t_dhw < t_set + on_hys:
+            self.dhw_demand = True
+
+        # check whether to switch off
+        if dhw_demand_old == 1 and t_dhw > t_set + off_hys:
+            self.dhw_demand = False
+
+        # if demand changed, log it
+        if dhw_demand_old != self.dhw_demand:
+            if self.dhw_demand:
+                logger.info("DHW demand switched ON")
+            else:
+                logger.info("DHW demand switched OFF")
+
     async def calculation(self, data: InputDataModel) -> Union[DataTransferModel, None]:
         """
         Function to do the calculation
@@ -244,12 +279,41 @@ class MQTTControllerTrnsys(ControllerBasicService):
             off_hys=self.controller_component.config["hysteresis_heat_off"],
         )
 
-        # react on heat demand
+        self.update_dhw_demand(
+            t_dhw=self.service_inputs["t_dhw"],
+            t_set=self.controller_component.config["t_dhw_set"],
+            on_hys=self.controller_component.config["hysteresis_dhw_on"],
+            off_hys=self.controller_component.config["hysteresis_dhw_off"],
+        )
+
+        # react on heat demand (for now: set outputs for heat pump)
         if self.heat_demand:
             # if heat demand is on, set the outputs for heat pump (test mode)
             self.service_outputs["power_on_hp"] = 1
             self.service_outputs["hp_twe_mode"] = 0
             self.service_outputs["n_hp_rel"] = 1
+        else:
+            self.service_outputs["power_on_hp"] = 0
+            self.service_outputs["hp_twe_mode"] = 0
+            self.service_outputs["n_hp_rel"] = 0
+
+        # react on DHW demand (for now: set outputs for pellet boiler)
+        if self.dhw_demand:
+            # trnsys outputs for pellet boiler
+            self.service_outputs["power_on_pb"] = 1
+            self.service_outputs["pb_twe_mode"] = 1
+            # python model outputs for pellet boiler
+            self.service_outputs["t_pb_in_model"] = self.service_inputs["t_pb_in_bot"]
+            self.service_outputs["pb_heat_on_model"] = 1
+            self.service_outputs["modulation_pb_model"] = 10
+        else:
+            # trnsys outputs for pellet boiler
+            self.service_outputs["power_on_pb"] = 0
+            self.service_outputs["pb_twe_mode"] = 0
+            # python model outputs for pellet boiler
+            self.service_outputs["t_pb_in_model"] = self.service_inputs["t_pb_in_bot"]
+            self.service_outputs["pb_heat_on_model"] = 0
+            self.service_outputs["modulation_pb_model"] = 0
 
         # add values to the DataTransferComponentModel and the sammeln_payload, if for TRNSYS-Inputs
         components = []
@@ -260,36 +324,38 @@ class MQTTControllerTrnsys(ControllerBasicService):
             if output_key == "full_trnsys_message":
                 continue
 
+            # get all information needed and the value from the service outputs
             entity_id = output_config["entity"]
             attribute_id = output_config["attribute"]
+            try:
+                value = (
+                    self.service_outputs[output_key]
+                    if self.service_outputs is not None
+                    else 0
+                )
+            except KeyError:
+                # TODO MB: this may never happen, delete this try-except after debugging
+                logger.error(
+                    f"Output key '{output_key}' not found in service outputs, set it to 0."
+                    " This may indicate a initialization configuration issue."
+                )
+                value = 0
 
             # check if the output is needed for TRNSYS
             if entity_id == "TRNSYS-Inputs":
                 # add it to the full_trnsys_message
-                try:
-                    value = (
-                        self.service_outputs[output_key]
-                        if self.service_outputs is not None
-                        else 0
-                    )
-                except KeyError:
-                    # TODO MB: this may never happen, delete this try-except after debugging
-                    logger.error(
-                        f"Output key '{output_key}' not found in service outputs, set it to 0."
-                        " This may indicate a initialization configuration issue."
-                    )
-                    value = 0
                 sammeln_payload += f"{attribute_id} : {value} # "
 
-        #     # add standard message of the outputs to DataTransferComponentModel
-        #     components.append(
-        #         DataTransferComponentModel(
-        #             entity_id=entity_id,
-        #             attribute_id=attribute_id,
-        #             value=None,
-        #             timestamp=datetime.now(timezone.utc),
-        #         )
-        #     )
+            # otherwiese add standard message of the output to DataTransferComponentModel
+            else:
+                components.append(
+                    DataTransferComponentModel(
+                        entity_id=entity_id,
+                        attribute_id=attribute_id,
+                        value=self.service_outputs[output_key],
+                        timestamp=datetime.now(),
+                    )
+                )
 
         #     # build the trnsys payload for the full message
         #     for output_attribute in self.controller_outputs_for_trnsys.attributes:
