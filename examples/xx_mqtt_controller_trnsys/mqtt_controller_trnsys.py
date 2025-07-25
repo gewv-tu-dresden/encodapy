@@ -265,6 +265,10 @@ class MQTTControllerTrnsys(ControllerBasicService):
         if not trnsys_updated:
             return None
 
+        # if boiler_updated is false, return with no outputs to wait for new inputs
+        if not boiler_updated:
+            return None
+
         # get the inputs needed by the controller from the input entities
         input_entities = [trnsys_input_entity, boiler_input_entity]
 
@@ -341,21 +345,19 @@ class MQTTControllerTrnsys(ControllerBasicService):
                 )
                 value = 0
 
-            # check if the output is needed for TRNSYS
+            # check if the output is needed for TRNSYS and add it to the full_trnsys_message
             if entity_id == "TRNSYS-Inputs":
-                # add it to the full_trnsys_message
                 sammeln_payload += f"{attribute_id} : {value} # "
 
-            # otherwiese add standard message of the output to DataTransferComponentModel
-            else:
-                components.append(
-                    DataTransferComponentModel(
-                        entity_id=entity_id,
-                        attribute_id=attribute_id,
-                        value=self.service_outputs[output_key],
-                        timestamp=datetime.now(),
-                    )
+            # add standard message of the output to DataTransferComponentModel
+            components.append(
+                DataTransferComponentModel(
+                    entity_id=entity_id,
+                    attribute_id=attribute_id,
+                    value=self.service_outputs[output_key],
+                    timestamp=datetime.now(),
                 )
+            )
 
         #     # build the trnsys payload for the full message
         #     for output_attribute in self.controller_outputs_for_trnsys.attributes:

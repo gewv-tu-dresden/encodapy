@@ -9,7 +9,7 @@
         {
             "id": "TRNSYS-Outputs",
             "interface": "mqtt",
-            "id_interface": "MQTT/T207/RBV01/SENDEN",
+            "id_interface": "SENDEN",
             "attributes": [
                 {
                     "id": "time"
@@ -97,7 +97,7 @@
         {
             "id": "TRNSYS-Inputs",
             "interface": "mqtt",
-            "id_interface": "MQTT/T207/RBV01/SAMMELN",
+            "id_interface": "SAMMELN",
             "attributes": [
                 {
                     "id": "OP_S_PK"
