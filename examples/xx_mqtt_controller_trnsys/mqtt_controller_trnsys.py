@@ -302,22 +302,24 @@ class MQTTControllerTrnsys(ControllerBasicService):
             self.service_outputs["n_hp_rel"] = 0
 
         # react on DHW demand (for now: set outputs for pellet boiler)
+        self.service_outputs["modulation_pb_model"] = 15
+        self.service_outputs["mass_flow_pb_to-trnsys"] = self.service_inputs["mass_flow_pb"]
+        self.service_outputs["t_pb_out_to-trnsys"] = self.service_inputs["t_pb_out"]
+
         if self.dhw_demand:
             # trnsys outputs for pellet boiler
             self.service_outputs["power_on_pb"] = 1
             self.service_outputs["pb_twe_mode"] = 1
             # python model outputs for pellet boiler
-            self.service_outputs["t_pb_in_model"] = self.service_inputs["t_pb_in_bot"]
+            self.service_outputs["t_pb_in_model"] = self.service_inputs["t_pb_in_top"]
             self.service_outputs["pb_heat_on_model"] = 1
-            self.service_outputs["modulation_pb_model"] = 10
         else:
             # trnsys outputs for pellet boiler
             self.service_outputs["power_on_pb"] = 0
             self.service_outputs["pb_twe_mode"] = 0
             # python model outputs for pellet boiler
-            self.service_outputs["t_pb_in_model"] = self.service_inputs["t_pb_in_bot"]
+            self.service_outputs["t_pb_in_model"] = self.service_inputs["t_pb_in_top"]
             self.service_outputs["pb_heat_on_model"] = 0
-            self.service_outputs["modulation_pb_model"] = 0
 
         # add values to the DataTransferComponentModel and the sammeln_payload, if for TRNSYS-Inputs
         components = []

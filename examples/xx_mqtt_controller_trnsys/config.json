@@ -178,15 +178,15 @@
                 },
                 "t_heat_top": {
                     "entity": "TRNSYS-Outputs",
-                    "attribute": "IP_t_sen_3"
+                    "attribute": "IP_t_sen_5"
                 },
                 "t_dhw": {
                     "entity": "TRNSYS-Outputs",
-                    "attribute": "IP_t_sen_4"
+                    "attribute": "IP_t_sen_8"
                 },
                 "t_hp_in_bot": {
                     "entity": "TRNSYS-Outputs",
-                    "attribute": "IP_tA_AP3_3R"
+                    "attribute": "IP_tA_AP4_1R"
                 },
                 "t_hp_in_top": {
                     "entity": "TRNSYS-Outputs",
@@ -194,11 +194,11 @@
                 },
                 "t_pb_in_bot": {
                     "entity": "TRNSYS-Outputs",
-                    "attribute": "IP_tA_AP3_3R"
+                    "attribute": "IP_tA_AP2_1R"
                 },
                 "t_pb_in_top": {
                     "entity": "TRNSYS-Outputs",
-                    "attribute": "IP_tA_AP3_3R"
+                    "attribute": "IP_tA_AP1_3L"
                 },
                 "mass_flow_pb": {
                     "entity": "Boiler-Outputs",
@@ -242,11 +242,11 @@
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_n_WP"
                 },
-                "mass_flow_pb": {
+                "mass_flow_pb_to-trnsys": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_m_PK"
                 },
-                "t_pb_out": {
+                "t_pb_out_to-trnsys": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_tA_PK"
                 },
