@@ -1,0 +1,131 @@
+{
+    "name": "mqtt_controller",
+    "interfaces": {
+        "mqtt": true,
+        "fiware": false,
+        "file": false
+    },
+    "inputs": [
+        {
+            "id": "TRNSYS-Outputs",
+            "interface": "mqtt",
+            "id_interface": "MQTT/T207/SENDEN",
+            "attributes": [
+                {
+                    "id": "time"
+                },
+                {
+                    "id": "IP_time"
+                },
+                {
+                    "id": "m_Sp_HK"
+                },
+                {
+                    "id": "t_R"
+                },
+                {
+                    "id": "tv_soll"
+                },
+                {
+                    "id": "t_a"
+                },
+                {
+                    "id": "phi_a"
+                }
+            ]
+        },
+        {
+            "id": "WinControl-Outputs",
+            "interface": "mqtt",
+            "id_interface": "project/cel/piezodevice/emu/",
+            "attributes": [
+                {
+                    "id": "T_V,HM1"
+                },
+                {
+                    "id": "T_R,HM1"
+                },
+                {
+                    "id": "V_HM1"
+                }
+            ]
+        }
+    ],
+    "outputs": [
+        {
+            "id": "TRNSYS-Inputs",
+            "interface": "mqtt",
+            "id_interface": "MQTT/T207/SAMMELN",
+            "attributes": [
+                {
+                    "id": "t_Sp_HK_out"
+                },
+                {
+                    "id": "t_R_ist"
+                },
+                {
+                    "id": "m_Sp_HK_ist"
+                },
+                {
+                    "id": "trnsys_sammeln",
+                    "id_interface": ""
+                }
+            ],
+            "commands": []
+        }
+    ],
+    "staticdata": [],
+    "controller_components": [
+        {
+            "id": "piezo_coupler_trnsys-wincontrol",
+            "type": "coupler",
+            "inputs": {
+                "t_heat_actual": {
+                    "entity": "WinControl-Outputs",
+                    "attribute": "T_V,HM1"
+                },
+                "t_return_actual": {
+                    "entity": "WinControl-Outputs",
+                    "attribute": "T_R,HM1"
+                },
+                "m_heat_actual": {
+                    "entity": "WinControl-Outputs",
+                    "attribute": "V_HM1"
+                }
+            },
+            "outputs": {
+                "t_heat": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "t_Sp_HK_out"
+                },
+                "t_return": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "t_R_ist"
+                },
+                "m_heat": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "m_Sp_HK_ist"
+                },
+                "full_trnsys_message": {
+                    "entity": "TRNSYS-Inputs",
+                    "attribute": "trnsys_sammeln"
+                }
+            },
+            "config": {}
+        }
+    ],
+    "controller_settings": {
+        "time_settings": {
+            "calculation": {
+                "timerange": 1,
+                "timerange_unit": "minute",
+                "sampling_time": 0.5,
+                "sampling_time_unit": "second"
+            },
+            "calibration": {
+                "timerange": 24,
+                "timerange_unit": "hour"
+            }
+        }
+    }
+}
