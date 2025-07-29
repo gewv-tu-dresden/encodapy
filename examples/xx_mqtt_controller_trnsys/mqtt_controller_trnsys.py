@@ -290,6 +290,9 @@ class MQTTControllerTrnsys(ControllerBasicService):
             off_hys=self.controller_component.config["hysteresis_dhw_off"],
         )
 
+        # prepare the outputs for the service
+        self.service_outputs["heating_period"] = 1
+
         # react on heat demand (for now: set outputs for heat pump)
         if self.heat_demand:
             # if heat demand is on, set the outputs for heat pump (test mode)
@@ -302,9 +305,14 @@ class MQTTControllerTrnsys(ControllerBasicService):
             self.service_outputs["n_hp_rel"] = 0
 
         # react on DHW demand (for now: set outputs for pellet boiler)
-        self.service_outputs["modulation_pb_model"] = 15
-        self.service_outputs["mass_flow_pb_to-trnsys"] = self.service_inputs["mass_flow_pb"]
+        self.service_outputs["mass_flow_pb_to-trnsys"] = self.service_inputs[
+            "mass_flow_pb"
+        ]
         self.service_outputs["t_pb_out_to-trnsys"] = self.service_inputs["t_pb_out"]
+        self.service_outputs["heat_pb_fuel_to-trnsys"] = self.service_inputs[
+            "heat_input_pb"
+        ]
+        self.service_outputs["modulation_pb_model"] = 15
 
         if self.dhw_demand:
             # trnsys outputs for pellet boiler
@@ -321,7 +329,7 @@ class MQTTControllerTrnsys(ControllerBasicService):
             self.service_outputs["t_pb_in_model"] = self.service_inputs["t_pb_in_top"]
             self.service_outputs["pb_heat_on_model"] = 0
 
-        # add values to the DataTransferComponentModel and the sammeln_payload, if for TRNSYS-Inputs
+        # add values for the DataTransferComponentModel and the sammeln_payload, if for TRNSYS-Inputs
         components = []
         sammeln_payload = ""
 
@@ -360,28 +368,6 @@ class MQTTControllerTrnsys(ControllerBasicService):
                     timestamp=datetime.now(),
                 )
             )
-
-        #     # build the trnsys payload for the full message
-        #     for output_attribute in self.controller_outputs_for_trnsys.attributes:
-        #         if output_attribute.id == attribute_id:
-        #             if output_attribute.id == "OP_S_WP":
-        #                 trnsys_value = 1
-        #             elif output_attribute.id == "OP_S_WP_TWE":
-        #                 trnsys_value = 0
-        #             elif output_attribute.id == "n_WP":
-        #                 trnsys_value = 0.25
-        #             elif output_attribute.id == "S_PK":
-        #                 trnsys_value = 0
-        #             elif output_attribute.id == "S_PK_TWE":
-        #                 trnsys_value = 0
-        #             elif output_attribute.id == "m_PK":
-        #                 trnsys_value = 0
-        #             elif output_attribute.id == "tA_PK":
-        #                 trnsys_value = 50
-        #             else:
-        #                 trnsys_value = 0
-        #             trnsys_variable_name = output_attribute.id_interface
-        #             sammeln_payload += f"{trnsys_variable_name} : {trnsys_value} # "
 
         # add trnsys full message to DataTransferComponentModel
         components.append(

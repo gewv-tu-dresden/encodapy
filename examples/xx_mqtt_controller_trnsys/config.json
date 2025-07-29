@@ -250,7 +250,7 @@
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_tA_PK"
                 },
-                "heat_pb_fuel": {
+                "heat_pb_fuel_to-trnsys": {
                     "entity": "TRNSYS-Inputs",
                     "attribute": "OP_Q_PK_BS"
                 },
