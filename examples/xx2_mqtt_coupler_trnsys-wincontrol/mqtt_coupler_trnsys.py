@@ -237,7 +237,10 @@ class MQTTCouplerTrnsys(ControllerBasicService):
 
             # check if the output is needed for TRNSYS and add it to the full_trnsys_message
             if entity_id == "TRNSYS-Inputs":
-                sammeln_payload += f"{attribute_id} : {value} # "
+                for attribute in self.controller_outputs_for_trnsys.attributes:
+                    if attribute.id == attribute_id:
+                        attribute_id_interface = attribute.id_interface
+                sammeln_payload += f"{attribute_id_interface} : {value} # "
 
             # add standard message of the output to DataTransferComponentModel
             components.append(

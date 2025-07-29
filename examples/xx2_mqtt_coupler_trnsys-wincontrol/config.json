@@ -15,22 +15,28 @@
                     "id": "time"
                 },
                 {
-                    "id": "IP_time"
+                    "id": "IP_time",
+                    "id_interface": "T207_IP_01"
                 },
                 {
-                    "id": "m_Sp_HK"
+                    "id": "m_Sp_HK",
+                    "id_interface": "T207_IP_02"
                 },
                 {
-                    "id": "t_R"
+                    "id": "t_R",
+                    "id_interface": "T207_IP_03"
                 },
                 {
-                    "id": "tv_soll"
+                    "id": "tv_soll",
+                    "id_interface": "T207_IP_04"
                 },
                 {
-                    "id": "t_a"
+                    "id": "t_a",
+                    "id_interface": "T207_IP_05"
                 },
                 {
-                    "id": "phi_a"
+                    "id": "phi_a",
+                    "id_interface": "T207_IP_06"
                 }
             ]
         },
@@ -58,13 +64,16 @@
             "id_interface": "MQTT/T207/SAMMELN",
             "attributes": [
                 {
-                    "id": "t_Sp_HK_out"
+                    "id": "t_Sp_HK_out",
+                    "id_interface": "T207_OP_01"
                 },
                 {
-                    "id": "t_R_ist"
+                    "id": "t_R_ist",
+                    "id_interface": "T207_OP_02"
                 },
                 {
-                    "id": "m_Sp_HK_ist"
+                    "id": "m_Sp_HK_ist",
+                    "id_interface": "T207_OP_03"
                 },
                 {
                     "id": "trnsys_sammeln",
