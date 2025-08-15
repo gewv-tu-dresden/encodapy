@@ -35,6 +35,18 @@
                     "id": "temperature_5", 
                     "id_interface":"temperature__5",
                     "type": "value"
+                },
+                {
+                    "id": "temperature_in", 
+                    "id_interface":"temperature__in",
+                    "type": "value",
+                    "unit" : "CEL"
+                },
+                {
+                    "id": "temperature_out", 
+                    "id_interface":"temperature__out",
+                    "type": "value",
+                    "unit" : "CEL"
                 }
             ]
         }
@@ -47,11 +59,15 @@
             "attributes": [
                 {
                     "id": "storage__level", 
-                    "id_interface":"storage__level"
+                    "id_interface":"storage__level",
+                    "type": "value",
+                    "unit": "P1"
                 },
                 {
                     "id": "storage__energy", 
-                    "id_interface":"storage__energy"
+                    "id_interface":"storage__energy",
+                    "type": "value",
+                    "unit": "WHR" 
                 }
             ],
             "commands":[]
@@ -116,6 +132,14 @@
                 "temperature_5": {
                     "entity" : "thermal_storage",
                     "attribute": "temperature_5"
+                }, 
+                "load_temperature_in": {
+                    "entity" : "thermal_storage",
+                    "attribute": "temperature_in"
+                }, 
+                "load_temperature_out": {
+                    "entity" : "thermal_storage",
+                    "attribute": "temperature_out"
                 }
             },
             "outputs":{
@@ -143,8 +167,10 @@
                 }
             },
             "config": {
-            }
+                "calculation_method" : "connection_limits"
+                }
         }
+        
     ],
     "controller_settings": {
         "time_settings":

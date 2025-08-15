@@ -22,8 +22,21 @@ For a local use of the fiware plattform, youn can use the following docker-compo
 
 ## Functionality
 
-The service uses measurement values from temperature sensors to calculate the thermal energy and state of charge of a thermal storage tank. To achieve this, three to five temperature sensors could be used.
+The service uses measurement values from temperature sensors to calculate the thermal energy and state of charge of a thermal storage tank. To achieve this, three to five temperature sensors in the storage could be used.
 
+The outputs are:
+- The storage charge in percent (0 - 100): `storage__level`
+- The storage energy content in Wh: `storage__energy`
+
+- If the environment variable `RELOAD_STATICDATA` is set to `True`, the `calibration()` function will adjust the static configuration data in each calibration cycle.
+
+There are two calulation methods available. The selection is made in the config file (Controller_Components -> config):
+```
+{"config":  "calculation_method" : "static_limits" / "connection_limits" }
+```
+
+
+### Informations about caluculation method "static_limits"
 The service requires a specific configuration defined by a Pydantic base model and contains:
 - The configuration of the temperature sensors `ThermalStorageTemperatureSensors`:
     - Between three and five sensors could be used.
@@ -40,8 +53,21 @@ The following temperature sensors are required (optional) as inputs, which are u
 - `temperature_4` (optional)
 - `temperature_5` (optional)
 
-The outputs are:
-- The storage charge in percent (0 - 100): `storage__level`
-- The storage energy content in Wh: `storage__energy`
+### Informations about caluculation method "connection_limits"
+The service requires a specific configuration defined by a Pydantic base model and contains:
+- The configuration of the temperature sensors `ThermalStorageAndPipeTemperatureSensors`:
+    - Between three and five sensors for the storage could be used.
+    - For each sensor the name, the height in the tank and the limits needs to be set.
+    - The height of each sensor should be expressed as a percentage (0–100%) from the top down. Sensor 1 should be the highest.
+- The information about the volume of the storage tank
+    - The assumption is made that a cylindrical upright storage tank is used.
+- The medium in the storage tank
 
-- If the environment variable `RELOAD_STATICDATA` is set to `True`, the `calibration()` function will adjust the static configuration data in each calibration cycle.
+The following temperature sensors are required (optional) as inputs, which are used in the configuration of the sensors:
+- `temperature_1`
+- `temperature_2`
+- `temperature_3`
+- `temperature_4` (optional)
+- `temperature_5` (optional)
+- `temperature_in` (return temperature/reference temperature)
+- `temperature_out` (flow temperature)

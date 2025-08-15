@@ -85,3 +85,6 @@ class ControllerComponentStaticData(  # pylint: disable=too-few-public-methods
         - root: The static data as a dictionary with the key as the ID of the static data \
             (like in the config) and the value as the value of the static data.
     """
+
+class ComponentValidationError(Exception):
+    """Custom error for invalid configurations."""

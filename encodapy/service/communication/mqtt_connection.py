@@ -517,7 +517,8 @@ class MqttConnection:
     ) -> Union[str, float, int, bool, dict, list, DataFrame, None]:
         """
         Function to extract data from the payload as needed.
-        # TODO MB: How to use pd.read_json here for Dataframes? https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_json.html#pandas.read_json
+        TODO MB: How to use pd.read_json here for Dataframes? 
+        https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_json.html#pandas.read_json
         """
         if payload is None or payload == "":
             return None

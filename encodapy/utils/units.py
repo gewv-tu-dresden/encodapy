@@ -76,7 +76,7 @@ class DataUnits(Enum):
 
     # Volume / Volumeflow
     LITER = "LTR"  # "l"
-    MTQ = "MTW"  # "m³"
+    MTQ = "MTQ"  # "m³"
     MQH = "MQH"  # "m³/h"
 
     # Energy / Power

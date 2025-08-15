@@ -71,6 +71,7 @@ class BasicComponent:
         for component in config:
             if component.id == component_id:
                 return component
+
         raise ValueError(f"No component configuration found for {component_id}")
 
     def get_component_input(

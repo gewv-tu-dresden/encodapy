@@ -19,11 +19,11 @@ class ThermalStorageService(ControllerBasicService):
 
     """
 
-    def __init__(self):
+    def __init__(self)-> None:
         """
         Constructor for the ThermalStorageService
         """
-        self.thermal_storage:ThermalStorage = None
+        self.thermal_storage: ThermalStorage
         super().__init__()
 
     def prepare_start(self):
@@ -41,32 +41,26 @@ class ThermalStorageService(ControllerBasicService):
 
     async def calculation(self,
                           data: InputDataModel
-                          ):
+                          )-> DataTransferModel:
         """
         Function to do the calculation
 
         Args:
             data (InputDataModel): Input data with the measured values for the calculation
         """
+        if self.thermal_storage.io_model is None:
+            logger.warning("Thermal storage IO model is not set.")
+            return DataTransferModel(components=[])
 
-        input_temperatures = {}
+        self.thermal_storage.set_temperature_values(input_entities=data.input_entities)
 
-        for input_key, input_config in self.thermal_storage.io_model.input.__dict__.items():
-            if input_config is None:
-                continue
-            input_temperatures[input_key], _unit = self.thermal_storage.get_component_input(
-                input_entities=data.input_entities,
-                input_config=input_config)
-
-        self.thermal_storage.set_temperature_values(temperature_values=input_temperatures)
-
+        storage__energy = self.thermal_storage.get_storage_energy_current()
         storage__level = self.thermal_storage.calculate_state_of_charge()
-        logger.debug("Energy Storage Level: " + str(storage__level))
-
-        storage__energy = self.thermal_storage.get_energy_content(storage__level)
-        logger.debug("Energy of the Storage: " + str(storage__energy))
+        logger.debug("Energy Storage Level: " + str(storage__level) + " %")
+        logger.debug("Energy of the Storage: " + str(storage__energy) + " Wh")
 
         components = []
+
 
         # pylint problems see: https://github.com/pylint-dev/pylint/issues/4899
         if self.thermal_storage.io_model.output.storage__level is not None:  # pylint: disable=no-member
@@ -89,7 +83,8 @@ class ThermalStorageService(ControllerBasicService):
 
 
     async def calibration(self,
-                          data: InputDataModel):
+                          data: InputDataModel
+                          )-> None:
         """
         Function to do the calibration of the thermal storage service. 
         This function prepares the thermal storage component with the static data, \

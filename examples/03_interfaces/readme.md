@@ -115,6 +115,7 @@ nessesary ENV's with example:
 
 ```
 PATH_OF_INPUT_FILE = "../validation_data.csv"
+PATH_OF_STATIC_DATA = "path_to_the_file_\\static_data.json"
 START_TIME_FILE = "01.01.2023 06:00"
 TIME_FORMAT_FILE = "%d.%m.%Y %H:%M"
 ```
