@@ -57,7 +57,41 @@
             "commands":[]
         }
     ],
-    "staticdata": [],
+    "staticdata": [
+        {
+            "id": "thermal_storage",
+            "interface": "fiware",
+            "id_interface": "urn:thermal_storage:01",
+            "attributes": [
+                    {"id": "volume", 
+                    "id_interface":"volume",
+                    "type": "value"
+                    }
+            ]
+        },
+        {
+            "id": "thermal_storage",
+            "interface": "fiware",
+            "id_interface": "urn:thermal_storage:01",
+            "attributes": [
+                    {"id": "medium", 
+                    "id_interface":"medium",
+                    "type": "value"
+                    }
+            ]
+        },
+        {
+            "id": "thermal_storage",
+            "interface": "fiware",
+            "id_interface": "urn:thermal_storage:01",
+            "attributes": [
+                    {"id": "sensor_config", 
+                    "id_interface":"sensor_config",
+                    "type": "value"
+                    }
+            ]
+        }
+    ],
     "controller_components": [
         {
             "id": "thermal_storage",
@@ -94,41 +128,21 @@
                     "attribute": "storage__energy"
                 }
             },
-            "config": {
-                "sensor_config": {
-                    "sensor_1_name": "temperature_1",
-                    "sensor_1_height": 10,
-                    "sensor_1_limits": {
-                        "minimal_temperature": 65,
-                        "maximal_temperature": 85
-                    },
-                    "sensor_2_name": "temperature_2",
-                    "sensor_2_height": 30,
-                    "sensor_2_limits": {
-                        "minimal_temperature": 65,
-                        "maximal_temperature": 85
-                    },
-                    "sensor_3_name": "temperature_3",
-                    "sensor_3_height": 50,
-                    "sensor_3_limits": {
-                        "minimal_temperature": 65,
-                        "maximal_temperature": 85
-                    },
-                    "sensor_4_name": "temperature_4",
-                    "sensor_4_height": 70,
-                    "sensor_4_limits": {
-                        "minimal_temperature": 65,
-                        "maximal_temperature": 85
-                    },
-                    "sensor_5_name": "temperature_5",
-                    "sensor_5_height": 90,
-                    "sensor_5_limits": {
-                        "minimal_temperature": 65,
-                        "maximal_temperature": 85
-                    }
+            "staticdata": {
+                "volume": {
+                    "entity" : "thermal_storage",
+                    "attribute": "volume"
                 },
-                "volume": 1.5,
-                "medium": "water"
+                "medium": {
+                    "entity" : "thermal_storage",
+                    "attribute": "medium"
+                },
+                "sensor_config": {
+                    "entity" : "thermal_storage",
+                    "attribute": "sensor_config"
+                }
+            },
+            "config": {
             }
         }
     ],
@@ -138,12 +152,16 @@
             "calculation":
             {
                 "timerange":1,
-                "timerange_unit":"minute"
+                "timerange_unit":"minute",
+                "sampling_time":1,
+                "sampling_time_unit":"minute"
             },
             "calibration":
             {
-                "timerange":24,
-                "timerange_unit":"hour"
+                "timerange":5,
+                "timerange_unit":"minute",
+                "sampling_time":10,
+                "sampling_time_unit":"minute"
             }
         }
     }

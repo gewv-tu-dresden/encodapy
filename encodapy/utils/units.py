@@ -75,7 +75,7 @@ class DataUnits(Enum):
     DEGREECELSIUS = "CEL"  # "°C"
 
     # Volume / Volumeflow
-    LITER = "LIT"  # "l"
+    LITER = "LTR"  # "l"
     MTQ = "MTW"  # "m³"
     MQH = "MQH"  # "m³/h"
 

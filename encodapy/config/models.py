@@ -14,13 +14,12 @@ from filip.models.base import DataType
 
 from encodapy.config.types import (
     AttributeTypes,
-    ControllerComponents,
     Interfaces,
     TimerangeTypes,
 )
 from encodapy.utils.error_handling import ConfigError, InterfaceNotActive
 from encodapy.utils.units import DataUnits, TimeUnits
-
+from encodapy.components.components_basic_config import ControllerComponentModel
 
 class InterfaceModel(BaseModel):
     """Base class for the interfaces
@@ -134,24 +133,6 @@ class OutputModel(BaseModel):
     id_interface: str
     attributes: list[AttributeModel]
     commands: list[CommandModel]
-
-
-class ControllerComponentModel(BaseModel):
-    """
-    Model for the configuration of the controller components.
-    TODO: - Improve the model
-    """
-
-    active: bool = True
-    id: str
-    type: Union[
-        ControllerComponents, str
-    ]
-    #TODO: How to reference the component types?
-    #TODO: How to reference the input/output models?
-    inputs: dict
-    outputs: dict
-    config: dict
 
 
 class TimeSettingsCalculationModel(BaseModel):
@@ -420,3 +401,39 @@ class ConfigModel(BaseModel):
         check_interface_active(self.outputs)
 
         return self
+
+class StaticDataFileAttribute(BaseModel):
+    """
+    Model for static data file attributes.
+    
+    Contains:
+        id (str): The unique identifier for the attribute.
+        value (Union[str, float, int, bool, Dict, List, DataFrame, None]): \
+            The value of the attribute.
+        metadata (Union[dict[str, str], None]): Metadata dictionary or None.
+    """
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    id: str
+    value: Union[str, float, int, bool, Dict, List, DataFrame, None]
+    metadata: Optional[Dict] = None
+
+class StaticDataFileEntity(BaseModel):
+    """
+    Model for static data file entities.
+
+    Contains:
+        id (str): The unique identifier for the entity.
+        attributes (list[StaticDataFileAttribute]): The attributes of the entity.
+    """
+    id: str
+    attributes: list[StaticDataFileAttribute]
+
+class StaticDataFile(BaseModel):
+    """
+    Model for static data files.
+
+    Contains:
+        staticdata (list[StaticDataFileEntity]): The static data entities.
+    """
+    staticdata: list[StaticDataFileEntity]

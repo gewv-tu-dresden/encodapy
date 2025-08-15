@@ -3,26 +3,26 @@ Description: This module contains the definition of a small example service \
     in the form of a heat controller based on a two point controller with hysteresis.
 Author: Martin Altenburger, Maximilian Beyer
 """
+# pylintrc: There are different examples that may be similar, but this is OK.
+# pylint: disable=duplicate-code
 
 from datetime import datetime, timezone
-from typing import Union
 
 from loguru import logger
 
+from encodapy.components.basic_component import BasicComponent
 from encodapy.service import ControllerBasicService
 from encodapy.utils.models import (
     DataTransferComponentModel,
     DataTransferModel,
-    InputDataEntityModel,
     InputDataModel,
 )
-from encodapy.config.models import ControllerComponentModel
 
 
 class MQTTController(ControllerBasicService):
     """
     Class for a small example service
-    Service is used to show the basic structure of a service
+    Service is used to show the basic structure of a service using MQTT
         - read the configuration
         - prepare the start of the service
         - start the service
@@ -31,17 +31,24 @@ class MQTTController(ControllerBasicService):
         - send the data to the output
     """
 
-    def get_heat_controller_config(self) -> ControllerComponentModel:
+    def __init__(self) -> None:
         """
-        Function to get the configuration of the heat controller
+        Constructor of the class
+        """
+        self.controller: BasicComponent
+        super().__init__()
 
-        Returns:
-            dict: The configuration of the heat controller
+    def prepare_start(self):
         """
-        for component in self.config.controller_components:
-            if component.type == "heat_controller":
-                return component
-        raise ValueError("No heat controller configuration found")
+        Function prepare the start of the service, \
+            including the loading configuration and the component of the service
+
+        """
+        logger.debug("Loading configuration of the service")
+
+        for item in self.config.controller_components:
+            if item.type == "BasicComponent":
+                self.controller = BasicComponent(config=item, component_id=item.id)
 
     def check_heater_command(
         self,
@@ -77,28 +84,6 @@ class MQTTController(ControllerBasicService):
 
         return 0
 
-    def get_input_values(
-        self,
-        input_entities: list[InputDataEntityModel],
-        input_config: dict,
-    ) -> Union[float, int, str, bool]:
-        """
-        Function to get the values of the input data
-
-        Args:
-            input_entities (list[InputDataEntityModel]): Data of input entities
-            input_config (dict): Configuration of the input
-
-        Returns:
-            Union[float, int, str, bool]: The value of the input data
-        """
-        for input_data in input_entities:
-            if input_data.id == input_config["entity"]:
-                for attribute in input_data.attributes:
-                    if attribute.id == input_config["attribute"]:
-                        return attribute.data
-        raise ValueError(f"Input data {input_config['entity']} not found")
-
     async def calculation(self, data: InputDataModel):
         """
         Function to do the calculation
@@ -106,26 +91,33 @@ class MQTTController(ControllerBasicService):
             data (InputDataModel): Input data with the measured values for the calculation
         """
 
-        heater_config = self.get_heat_controller_config()
-
         inputs = {}
-        for input_key, input_config in heater_config.inputs.items():
-            inputs[input_key] = self.get_input_values(
+        for (
+            input_key,
+            input_config,
+        ) in self.controller.component_config.inputs.root.items():
+            inputs[input_key], _ = self.controller.get_component_input(
                 input_entities=data.input_entities, input_config=input_config
             )
 
         heater_status = self.check_heater_command(
-            temperature_setpoint=inputs["temperature_setpoint"],
-            temperature_measured=inputs["temperature_measured"],
-            hysteresis=heater_config.config["temperature_hysteresis"],
+            temperature_setpoint=float(inputs["temperature_setpoint"]),
+            temperature_measured=float(inputs["temperature_measured"]),
+            hysteresis=self.controller.component_config.config[
+                "temperature_hysteresis"
+            ],
             heater_status_old=bool(inputs["heater_status"]),
         )
 
         return DataTransferModel(
             components=[
                 DataTransferComponentModel(
-                    entity_id=heater_config.outputs["heater_status"]["entity"],
-                    attribute_id=heater_config.outputs["heater_status"]["attribute"],
+                    entity_id=self.controller.component_config.outputs.root[
+                        "heater_status"
+                    ].entity,
+                    attribute_id=self.controller.component_config.outputs.root[
+                        "heater_status"
+                    ].attribute,
                     value=heater_status,
                     timestamp=datetime.now(timezone.utc),
                 )

@@ -5,9 +5,14 @@ Authors: Martin Altenburger
 
 from enum import Enum
 
-
 class Interfaces(Enum):
-    """Enum class for the interfaces"""
+    """
+    Enum class for the interfaces
+    Possible values:
+    - MQTT (mqtt): MQTT interface
+    - FIWARE (fiware): FIWARE interface
+    - FILE (file): File interface
+    """
 
     MQTT = "mqtt"
     FIWARE = "fiware"
@@ -15,9 +20,12 @@ class Interfaces(Enum):
 
 
 class AttributeTypes(Enum):
-    """Enum class for the attribute types"""
-
-    # TODO: Which types are needed?
+    """
+    Enum class for the attribute types
+    Possible values:
+    - TIMESERIES (timeseries): Timeseries data
+    - VALUE (value): Single value data
+    """
 
     TIMESERIES = "timeseries"
     VALUE = "value"
@@ -26,37 +34,34 @@ class AttributeTypes(Enum):
 class TimerangeTypes(Enum):
     """Enum class for the timedelta types
 
-    Contains:
-    - ABSOLUTE: The timedelta is calculated from the actual time
-    - RELATIVE: The timedelta is calculated from the last timestamp
+    Possible values:
+    - ABSOLUTE (absolute): The timedelta is calculated from the actual time
+    - RELATIVE (relative): The timedelta is calculated from the last timestamp
     """
 
     ABSOLUTE = "absolute"
     RELATIVE = "relative"
 
 
-class ControllerComponents(Enum):
-    """
-    Enum class for the controller components, could be extended by the needed components
-    """
-
-    # TODO: Which components are needed?
-
-    STORAGE = "storage_controller"
-    ENERGYTRENDBAND = "energytrendband_controller"
-    HYGIENICCONTROLLER = "hygienic_controller"
-    SCHEDULE = "schedule_controller"
-
-
 class DataQueryTypes(Enum):
-    """Enum class for the data query types"""
+    """
+    Enum class for the data query types
+    Possible values:
+    - CALCULATION (calculation): Calculation of the data
+    - CALIBRATION (calibration): Calibration of the data
+    """
 
     CALCULATION = "calculation"
     CALIBRATION = "calibration"
 
 
 class FileExtensionTypes(Enum):
-    """Enum class for file Extensions"""
+    """
+    Enum class for file Extensions
+    Possible values:
+    - CSV (csv): Comma-separated values
+    - JSON (json): JavaScript Object Notation
+    """
 
     CSV = ".csv"
     JSON = ".json"

@@ -10,7 +10,6 @@ from encodapy.service.basic_service import ControllerBasicService
 async def main():
     """
     Main function to start the base service
-        - prepare the start of the service
         - start the calibration
         - start the health check
         - start the service
@@ -18,7 +17,6 @@ async def main():
 
     service = ControllerBasicService()
 
-    await service.prepare_start()
     task_calibration = asyncio.create_task(service.start_calibration())
     task_check_health = asyncio.create_task(service.check_health_status())
     task_start_service = asyncio.create_task(service.start_service())
@@ -26,7 +24,7 @@ async def main():
     await asyncio.gather(task_calibration, task_check_health, task_start_service)
 
     while True:
-        await sleep(1)
+        await sleep(0.01)
 
 if __name__ == "__main__":
     asyncio.run(main())

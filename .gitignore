@@ -6,3 +6,4 @@ health
 /build/*
 /dist/*
 .vscode/
+examples/06_thermal_storage_service/config_lab.json

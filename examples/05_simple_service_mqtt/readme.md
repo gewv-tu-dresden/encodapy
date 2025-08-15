@@ -7,6 +7,7 @@ As an example of a simple service using Encodapy with a MQTT interface, a heatin
 - [config.json](./config.json): Configuration for the service - see [01_config](./../01_config/)
 - [mqtt_controller.py](./mqtt_controller.py): Code of the service example
 - [main.py](./main.py): Script to start the service
+- [storage_dummy.py](./storage_dummy.py): Script to send different types of mqtt messages from a dummy storage to the service
 
 To run the example, you could optionally add a `.env` file with the following content (if you do not add your own, the here written standard values will be used):
 
@@ -24,8 +25,16 @@ Furthermore, a running MQTT broker is required to which a connection can be esta
 ## Basics
 
 To create your own custom service, you have to overwrite two functions of the [ControllerBasicService](./../../encodapy/service/basic_service.py):
+
 - `prepare_start`: This is a synchronous function that prepares the start of the algorithm and specifies aspects of the service. This should not take long due to health issues in Docker containers. It only needs to be overwritten if other tasks are required after initialisation of the service.
 - `calculation`: Asynchronous function to perform the main calculation in the service
 - `calibration`: Asynchronous function to calibrate the service or coefficients in the service if required
 
 For the models of the inputs and outputs, see [02_datatransfer](./../02_datatransfer/).
+
+For the possible payloads, see [03_interfaces](./../03_interfaces/).
+
+## Usage
+- To use it, the `.env` file must be created and an MQTT broker with the data in the `.env` file must be available so that a connection can be established.
+- The service is started by executing [`main.py`](./main.py) from the current path.
+- New data can be sent by running the script [`storage_dummy.py`](./storage_dummy.py).

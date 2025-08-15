@@ -21,6 +21,7 @@ from encodapy.config import (
     InputModel,
     OutputModel,
     StaticDataModel,
+    StaticDataFile
 )
 from encodapy.utils.models import (
     InputDataAttributeModel,
@@ -29,6 +30,7 @@ from encodapy.utils.models import (
     StaticDataEntityModel,
 )
 from encodapy.utils.error_handling import NotSupportedError
+from encodapy.utils.units import DataUnits
 
 
 class FileConnection:
@@ -53,6 +55,9 @@ class FileConnection:
         )
         self.file_params["TIME_FORMAT_FILE"] = os.environ.get(
             "TIME_FORMAT_FILE", DefaultEnvVariables.TIME_FORMAT_FILE.value
+        )
+        self.file_params["PATH_OF_STATIC_DATA"] = os.environ.get(
+            "PATH_OF_STATIC_DATA", DefaultEnvVariables.PATH_OF_STATIC_DATA.value
         )
 
     def _get_last_timestamp_for_file_output(
@@ -142,6 +147,9 @@ class FileConnection:
             to the platform is not available
 
         """
+        # TODO: Implement method handling for file interface
+        _ = method  # Acknowledge unused parameter
+
         # attributes_timeseries = {}
         attributes_values = []
         path_of_file = self.file_params["PATH_OF_INPUT_FILE"]
@@ -206,6 +214,8 @@ class FileConnection:
             to the platform is not available
 
         """
+        # TODO: Implement method handling for file interface
+        _ = method  # Acknowledge unused parameter
 
         # attributes_timeseries = {}
         attributes_values = []
@@ -254,6 +264,34 @@ class FileConnection:
 
         return InputDataEntityModel(id=entity.id, attributes=attributes_values)
 
+    def _get_unit_from_file(
+        self,
+        metadata: Union[dict[str, str], None],
+    ) -> Union[DataUnits, None]:
+        """
+        Extracts the unit from the metadata dictionary.
+        
+        Args:
+            metadata (Union[dict[str, str], None]): Metadata dictionary or None.
+        Returns:
+            Union[DataUnits, None]: Extracted data unit or None.
+        """
+
+        if metadata is None:
+            return None
+        if not isinstance(metadata, dict):
+            logger.warning(
+                f"Metadata is not a dictionary: {metadata}"
+            )
+            return None
+        metadata_lowercase = {
+            k.lower(): v for k, v in metadata.items()
+        }
+        unit = metadata_lowercase.get("unitcode", None)
+        if unit:
+            return DataUnits(unit)
+        return None
+
     def get_staticdata_from_file(
         self,
         entity: StaticDataModel,
@@ -270,34 +308,47 @@ class FileConnection:
 
         """
 
+        static_data_path = self.file_params["PATH_OF_STATIC_DATA"]
+
         attributes_values = []
+
+        try:
+            #read data from json file and timestamp
+            with open(static_data_path, encoding="utf-8") as f:
+                static_data = json.load(f)
+        except FileNotFoundError:
+            logger.error(f"Error: File not found ({static_data_path})")
+            # TODO: What to do if the file is not found?
+            return None
+        if isinstance(static_data, list):
+            static_data = {"staticdata": static_data}
+        elif isinstance(static_data, dict):
+            pass
+        else:
+            logger.error(f"Error: Unsupported data format ({static_data_path})")
+            return None
+
+        static_data = StaticDataFile.model_validate(static_data)
 
         for attribute in entity.attributes:
 
-            if attribute.type == AttributeTypes.TIMESERIES:
-                raise NotSupportedError("Timeseries not supported for static data")
-                #TODO: Implement the timeseries
+            for item_entity in static_data.staticdata:
+                for item_attribute in item_entity.attributes:
+                    if item_attribute.id == attribute.id:
 
-            if attribute.type == AttributeTypes.VALUE:
-
-                attributes_values.append(
-                    InputDataAttributeModel(
-                        id=attribute.id,
-                        data=attribute.value,
-                        data_type=AttributeTypes.VALUE,
-                        data_available=True,
-                        latest_timestamp_input=None,
-                    )
-                )
-
-            else:
-                # Not supported attribute type - should not happen
-                raise NotSupportedError(
-                    f"Attribute type {attribute.type} for attribute {attribute.id}"
-                    f"of entity {entity.id} not supported"
-                )
+                        attributes_values.append(
+                                InputDataAttributeModel(
+                                    id=attribute.id,
+                                    data=item_attribute.value,
+                                    unit=self._get_unit_from_file(item_attribute.metadata),
+                                    data_type=AttributeTypes.VALUE,
+                                    data_available=True,
+                                    latest_timestamp_input=None,
+                                    )
+                                )
 
         return StaticDataEntityModel(id=entity.id, attributes=attributes_values)
+
 
     def send_data_to_json_file(
         self,

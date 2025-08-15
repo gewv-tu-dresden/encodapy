@@ -14,13 +14,11 @@ from encodapy.config import (
     AttributeModel,
     CommandModel,
     ConfigModel,
-    ControllerComponentModel,
     DataQueryTypes,
     DefaultEnvVariables,
     Interfaces,
     OutputModel,
 )
-from encodapy.config.components_basic_config import IOAlocationModel
 from encodapy.service.communication import (
     FileConnection,
     FiwareConnection,
@@ -31,7 +29,6 @@ from encodapy.utils.logging import LoggerControl
 from encodapy.utils.models import (
     DataTransferComponentModel,
     DataTransferModel,
-    InputDataEntityModel,
     InputDataModel,
     OutputDataEntityModel,
     OutputDataModel,
@@ -106,6 +103,13 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             if getattr(interfaces, "mqtt", False):
                 self.prepare_mqtt_connection()
 
+        # Load the static data from the configuration, \
+        # maybe it is needed for the preparation of components
+        self.staticdata = self.reload_static_data(
+            method=DataQueryTypes.CALIBRATION, staticdata=[]
+        )
+
+        # Prepare the individual start of the service
         self.prepare_start()
 
     def prepare_start(self):
@@ -121,9 +125,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """
         logger.debug("There is nothing else to prepare for the start of the service.")
 
-    async def reload_static_data(
-        self, method: DataQueryTypes, staticdata: list
-    ) -> list:
+    def reload_static_data(self, method: DataQueryTypes, staticdata: list) -> list:
         """
         Function to reload the static data
         Args:
@@ -159,7 +161,6 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             if static_entity.interface == Interfaces.MQTT:
                 logger.warning("interface MQTT for staticdata not supported")
 
-            await sleep(0.01)
         return staticdata
 
     async def get_data(self, method: DataQueryTypes) -> InputDataModel:
@@ -210,7 +211,6 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 )
                 output_timestamps.append(entity_timestamps)
                 output_latest_timestamps.append(output_latest_timestamp)
-                logger.info("MQTT interface, output_latest_timestamp is not defined.")
 
             await sleep(0.01)
 
@@ -243,9 +243,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             await sleep(0.01)
 
         if self.reload_staticdata or self.staticdata is None:
-            self.staticdata = await self.reload_static_data(
-                method=method, staticdata=[]
-            )
+            self.staticdata = self.reload_static_data(method=method, staticdata=[])
 
         return InputDataModel(
             input_entities=input_data,
@@ -550,12 +548,8 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             logger.debug("Start the Prozess")
             start_time = datetime.now()
 
-            # we have to check the input type, if we need something from the config
             if self.config.interfaces.fiware:
                 self.update_authentication()
-
-            if self.config.interfaces.file:
-                logger.debug("Maybe we have to set the start_time for the file here")
 
             data_input = await self.get_data(method=DataQueryTypes.CALCULATION)
 
@@ -634,44 +628,3 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """
         self.timestamp_health = datetime.now()
         return
-
-    def get_component_config(self, component_id: str) -> ControllerComponentModel:
-        """
-        Function to get the configuration of a specific component from the service configuration
-
-        Args:
-            component_id (str): ID of the component to get the configuration
-            
-        Returns:
-            ControllerComponentModel: Configuration of the component by ID
-
-        Raises:
-            ValueError: If the component with the given ID is not found in the configuration
-        """
-        for component in self.config.controller_components:
-            if component.id == component_id:
-                return component
-        raise ValueError(f"No configuration found for component ID {component_id}")
-
-    def get_input_values(  # TODO: rename to get_input_value
-        self,
-        input_entities: list[InputDataEntityModel],
-        input_config: IOAlocationModel,
-    ) -> Union[float, int, str, bool]:
-        """
-        Function to get the values of the input data for a specific input configuration \
-            of a component of the controller (or a individual one).
-
-        Args:
-            input_entities (list[InputDataEntityModel]): Data of input entities
-            input_config (dict): Configuration of the input
-
-        Returns:
-            Union[float, int, str, bool]: The value of the input data
-        """
-        for input_data in input_entities:
-            if input_data.id == input_config.entity:
-                for attribute in input_data.attributes:
-                    if attribute.id == input_config.attribute:
-                        return attribute.data
-        raise ValueError(f"Input data {input_config['entity']} not found")

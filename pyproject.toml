@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "encodapy"
-version = "0.4.0"
+version = "0.5.0"
 description = "EnCoDaPy – Energy Control and Data Preparation in Python."
 readme = "README.md"
 repository = "https://github.com/gewv-tu-dresden/encodapy"
@@ -14,12 +14,15 @@ authors = [
 packages = [
     { include = "encodapy" }
 ]
+include = [
+    "encodapy/py.typed"
+]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
-pandas = ">=2.1.4,<2.2.0"
+pandas = ">=2.1.4,<=2.3.1"
 nbformat = ">=5.7.1"
-filip = ">=0.5.0"
+filip = ">=0.7.0"
 numpy = ">=1.23.5"
 statsmodels = ">=0.14.4"
 loguru = ">=0.6.0"

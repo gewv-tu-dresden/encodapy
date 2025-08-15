@@ -1,6 +1,6 @@
 # "EnCoDaPy" – Energy Control and Data Preparation in Python.
 
-## Basics
+## Overview
 - The Basic Controller provides a system for 
     - read a configuration
     - receive data
@@ -11,6 +11,11 @@
     - MQTT
     - File
 - The controller has the functionality to read a configuration from JSON and ENV, validate it and return it as a model.
+- The framework provides components that can be used within a service.  
+  For more information and code, see: [encodapy/components/README.md](./encodapy/components/README.md)
+
+- Examples and documentation for each part of the project are available under: [examples](./examples/)
+
 
 ## Configuration
 - The configuration of the service must be provided via `config.json` and has several sections (see the [examples](#examples)):
@@ -19,7 +24,7 @@
     - `inputs`: Configuration of the inputs to the controller
     - `outputs`: Configuration of the outputs
     - `staticdata`: Static data point configuration (Data that is not continuously updated)
-    - `controller_components`: Configuration of the controller components
+    - `controller_components`: Configuration of the controller components, see [encodapy/components/readme.md](./encodapy/components/readme.md)
     - `controller_settings`: General settings about the controller 
 
 - ENVs are required to configure the interfaces / get the config with the default value [`default`]:
@@ -74,6 +79,7 @@ For different examples and documentation, how to use the tool - see [examples](.
 The examples are intended to help you use the tool and understand how it works:
 - the configuration
 - the use
+- the components
 
 ### Units
 - Inputs and outputs get information about the unit. The class [`DataUnits`](./controller_software/utils/units.py) is used for this.

@@ -15,9 +15,10 @@ FIWARE_IOTA= ["http://localhost:4041"]      # URL of the IoT Agent
 FIWARE_CB= ["http://localhost:1026"]        # URL of the Context Broker
 FIWARE_SERVICE= ["thermal_storage_service"] # Name of the FIWARE Service
 FIWARE_SERVICE_PATH= ["/"]                  # FIWARE Service Path, usually "/"
-LOG_LEVEL=["WARNING]                        # Level for Logging Messages ("DEBUG" to get more information)
+LOG_LEVEL=["WARNING"]                        # Level for Logging Messages ("DEBUG" to get more information)
 ```
 Furthermore, a running FIWARE platform ([n5geh.platform](https://github.com/N5GEH/n5geh.platform) - "NGSI-v2" version) is required to which a connection can be established with the above specified data. The configuration of the data points in the platform can be created with the following notebook [run_simple_service.ipynb](./run_simple_service.ipynb).
+For a local use of the fiware plattform, youn can use the following docker-compose.yml https://github.com/N5GEH/n5geh.platform/blob/master/v2/docker-compose.yml
 
 ## Functionality
 
@@ -42,3 +43,5 @@ The following temperature sensors are required (optional) as inputs, which are u
 The outputs are:
 - The storage charge in percent (0 - 100): `storage__level`
 - The storage energy content in Wh: `storage__energy`
+
+- If the environment variable `RELOAD_STATICDATA` is set to `True`, the `calibration()` function will adjust the static configuration data in each calibration cycle.

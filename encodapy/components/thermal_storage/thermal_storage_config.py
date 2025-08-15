@@ -5,7 +5,7 @@ Author: Martin Altenburger
 from typing import Optional
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import model_validator
-from encodapy.config.components_basic_config import IOAlocationModel
+from encodapy.components.components_basic_config import IOAllocationModel
 
 class TemperatureLimits(BaseModel):
     """
@@ -184,25 +184,25 @@ class InputModel(BaseModel):
     in the thermal storage.
     
     Contains:
-        `temperature_1`: IOAlocationModel = first temperature sensor
-        `temperature_2`: IOAlocationModel = second temperature sensor
-        `temperature_3`: IOAlocationModel = third temperature sensor
-        `temperature_4`: Optional[IOAlocationModel] = fourth temperature sensor (optional)
-        `temperature_5`: Optional[IOAlocationModel] = fifth temperature sensor (optional)
+        `temperature_1`: IOAllocationModel = first temperature sensor
+        `temperature_2`: IOAllocationModel = second temperature sensor
+        `temperature_3`: IOAllocationModel = third temperature sensor
+        `temperature_4`: Optional[IOAllocationModel] = fourth temperature sensor (optional)
+        `temperature_5`: Optional[IOAllocationModel] = fifth temperature sensor (optional)
     """
-    temperature_1: IOAlocationModel = Field(
+    temperature_1: IOAllocationModel = Field(
         ...,
         description="Input for the temperature of sensor 1 in the thermal storage")
-    temperature_2: IOAlocationModel = Field(
+    temperature_2: IOAllocationModel = Field(
         ...,
         description="Input for the temperature of sensor 2 in the thermal storage")
-    temperature_3: IOAlocationModel = Field(
+    temperature_3: IOAllocationModel = Field(
         ...,
         description="Input for the temperature of sensor 3 in the thermal storage")
-    temperature_4: Optional[IOAlocationModel] = Field(
+    temperature_4: Optional[IOAllocationModel] = Field(
         None,
         description="Input for the temperature of sensor 4 in the thermal storage")
-    temperature_5: Optional[IOAlocationModel] = Field(
+    temperature_5: Optional[IOAllocationModel] = Field(
         None,
         description="Input for the temperature of sensor 5 in the thermal storage")
 
@@ -212,15 +212,15 @@ class OutputModel(BaseModel):
     in the thermal storage.
     
     Contains:
-        `storage__level`: Optional[IOAlocationModel] = Output for storage charge in percent \
+        `storage__level`: Optional[IOAllocationModel] = Output for storage charge in percent \
             (0-100) (optional)
-        `storage__energy`: Optional[IOAlocationModel] = Output for storage energy in kWh \
+        `storage__energy`: Optional[IOAllocationModel] = Output for storage energy in kWh \
             (optional)
     """
-    storage__level: Optional[IOAlocationModel] = Field(
+    storage__level: Optional[IOAllocationModel] = Field(
         None,
         description="Output for storage charge in percent (0-100)")
-    storage__energy: Optional[IOAlocationModel] = Field(
+    storage__energy: Optional[IOAllocationModel] = Field(
         None,
         description="Output for storage energy in Wh")
 

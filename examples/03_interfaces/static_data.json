@@ -1,0 +1,23 @@
+{
+"staticdata": 
+[
+  {
+    "id": "thermal_storage",
+    "attributes":
+    [
+        {
+          "id": "volume",
+          "value": 500,
+          "metadata": 
+          {
+            "unitCode":"LTR"
+          }
+        },
+        {
+          "id": "medium",
+          "value": "water"
+        }
+    ]
+  }
+]
+}
