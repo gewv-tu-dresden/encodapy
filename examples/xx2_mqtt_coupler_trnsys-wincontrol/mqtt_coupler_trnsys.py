@@ -31,7 +31,7 @@ class MQTTCouplerTrnsys(ControllerBasicService):
         - send the data to the output
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """
         Constructor of the MQTTControllerTrnsys class
         Args:
@@ -70,7 +70,7 @@ class MQTTCouplerTrnsys(ControllerBasicService):
             and self.controller_component.outputs is not None
         ):
             self.service_outputs = {
-                key: 0 for key in self.controller_component.outputs.keys()
+                key: 0 for key in self.controller_component.outputs.root.keys()
             }
         else:
             self.service_outputs = {}
@@ -129,7 +129,7 @@ class MQTTCouplerTrnsys(ControllerBasicService):
             raise ValueError("Prepare the start of the service before calculation")
 
         inputs = {}
-        for input_key, input_config in self.controller_component.inputs.items():
+        for input_key, input_config in self.controller_component.inputs.root.items():
             inputs[input_key] = self.get_input_value(
                 input_entities=input_entities, input_config=input_config
             )
@@ -213,7 +213,7 @@ class MQTTCouplerTrnsys(ControllerBasicService):
         self.service_outputs["t_return"] = self.service_inputs["t_return_actual"]
         self.service_outputs["m_heat"] = self.service_inputs["m_heat_actual"]
 
-        for output_key, output_config in self.controller_component.outputs.items():
+        for output_key, output_config in self.controller_component.outputs.root.items():
             # skip the full_trnsys_message, it is handled separately
             if output_key == "full_trnsys_message":
                 continue
