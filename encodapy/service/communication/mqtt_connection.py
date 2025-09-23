@@ -542,6 +542,12 @@ class MqttConnection:
         if not isinstance(payload, str):
             return payload
 
+        try:
+            # If the payload is a datetime string, return it as string
+            _ = datetime.fromisoformat(payload)
+            return payload
+        except ValueError:
+            pass
         # Try to parse JSON (automatically handles int, float, bool, dicts, lists)
         try:
             parsed = json.loads(payload)
