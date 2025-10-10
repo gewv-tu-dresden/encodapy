@@ -4,7 +4,6 @@ Authors: Martin Altenburger
 """
 
 import json
-import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, ConfigDict, ValidationError, Field
