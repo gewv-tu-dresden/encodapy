@@ -66,3 +66,16 @@ class FileExtensionTypes(Enum):
 
     CSV = ".csv"
     JSON = ".json"
+
+class MQTTFormatTypes(Enum):
+    """
+    Enum class for MQTT format types
+    Possible values:
+    - PLAIN (plain): Plain format
+    - JSON (json): JSON format
+    """
+
+    PLAIN = "plain"
+    FIWARE_ATTR = "fiware-attr"
+    FIWARE_CMDEXE = "fiware-cmdexe"
+    TEMPLATE = "template"

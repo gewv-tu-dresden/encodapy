@@ -4,6 +4,7 @@ Authors: Martin Altenburger
 """
 
 import json
+import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, ConfigDict, ValidationError, Field
@@ -15,10 +16,12 @@ from encodapy.config.types import (
     AttributeTypes,
     Interfaces,
     TimerangeTypes,
+    MQTTFormatTypes,
 )
 from encodapy.utils.error_handling import ConfigError, InterfaceNotActive
 from encodapy.utils.units import DataUnits, TimeUnits
 from encodapy.components.basic_component_config import ControllerComponentModel
+from encodapy.config.mqtt_messages_template import MQTTTemplateConfig
 
 
 class InterfaceModel(BaseModel):
@@ -29,7 +32,6 @@ class InterfaceModel(BaseModel):
     mqtt: bool = False
     fiware: bool = False
     file: bool = False
-
 
 class AttributeModel(BaseModel):
     """
@@ -43,6 +45,8 @@ class AttributeModel(BaseModel):
     - unit: The unit of the attribute
     - datatype: The datatype of the attribute
     - timestamp: The timestamp of the attribute
+    - mqtt_format: The format of the attribute for MQTT \
+        (if not set, the default format is used) - only for mqtt interface needed
 
     """
 
@@ -55,6 +59,7 @@ class AttributeModel(BaseModel):
     unit: Union[DataUnits, None] = None
     datatype: DataType = DataType("Number")
     timestamp: Union[datetime, None] = None
+    mqtt_format: Union[MQTTFormatTypes, MQTTTemplateConfig] = MQTTFormatTypes.PLAIN
 
     @model_validator(mode="after")
     def set_id_interface(self) -> "AttributeModel":
@@ -67,6 +72,45 @@ class AttributeModel(BaseModel):
         if self.id_interface is None:
             self.id_interface = self.id
         return self
+    @model_validator(mode="before")
+    def check_mqtt_format(cls, data: Any) -> Any:
+        """
+        Checks the mqtt_format in the input data and the template configuration. if used.
+
+        Args:
+            data (Any): The input data to check.
+
+        Returns:
+            Any: The input data with the checked mqtt_format.
+        """
+        
+        if "mqtt_format" not in data:
+            pass
+        elif not isinstance(data["mqtt_format"], str):
+            error_message = "The mqtt_format should be a string of type MQTTFormatTypes"
+            logger.error(error_message)
+            raise ValueError(error_message)
+        elif data["mqtt_format"].startswith(MQTTFormatTypes.TEMPLATE.value):
+            env_variable = f"MQTT_{data['mqtt_format'].upper()}"
+            if os.getenv(env_variable) is None:
+                error_message = (
+                    f"Environment variable '{env_variable}' is not set, "
+                    "but needed for template mqtt_format"
+                )
+                logger.error(error_message)
+                data["mqtt_format"] = None
+                raise ValueError(error_message)
+            #TODO Template Verification
+            # data["mqtt_format"] = MQTTFormatTypes.TEMPLATE.value
+        else:
+            try:
+                MQTTFormatTypes(data["mqtt_format"])
+            except ValueError:
+                logger.warning(
+                    f"mqtt_format '{data['mqtt_format']}' is not valid - using default format 'plain'"
+                )
+                data["mqtt_format"] = MQTTFormatTypes.PLAIN.value
+        return data
 
 
 class CommandModel(BaseModel):
@@ -150,7 +194,7 @@ class OutputModel(BaseModel):
     interface: Interfaces
     id_interface: str = Field(default=None)
     attributes: list[AttributeModel]
-    commands: list[CommandModel]
+    commands: list[CommandModel] = []
 
     @model_validator(mode="after")
     def set_id_interface(self) -> "OutputModel":

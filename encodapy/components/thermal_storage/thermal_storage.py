@@ -197,6 +197,7 @@ class ThermalStorage(BasicComponent):
             raise ValueError("Sensor volumes are not set.")
 
         nominal_energy = 0
+        
         for index, _ in enumerate(self.config_data.sensor_config.value.storage_sensors):
 
             temperature_sensor = f"temperature_{index+1}"
@@ -211,6 +212,12 @@ class ThermalStorage(BasicComponent):
                 )
                 logger.error(error_msg)
                 raise AttributeError(error_msg) from e
+            if temperature is None or temperature.value is None:
+                error_msg = (
+                    f"Temperature value for sensor '{temperature_sensor}' is not set."
+                )
+                logger.error(error_msg)
+                raise ValueError(error_msg)
 
             medium_parameter = get_medium_parameter(
                 medium=self.config_data.medium.value,
@@ -333,7 +340,6 @@ class ThermalStorage(BasicComponent):
             ValueError: If the thermal storage is not usable or \
                 the sensor values are not set correctly
         """
-
         super().set_input_data(input_data=input_data)
         if (
             self.config_data.calculation_method.value
@@ -385,7 +391,6 @@ class ThermalStorage(BasicComponent):
         Returns:
             tuple[float, DataUnits]: State of charge of the thermal storage in percent (0-100)
         """
-
         state_of_charge = (
             self.get_storage_energy_current()[0]
             / self.get_storage_energy_nominal()[0]

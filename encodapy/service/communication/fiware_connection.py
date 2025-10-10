@@ -892,17 +892,25 @@ class FiwareConnection:
                         name="unitCode", type=DataType.TEXT, value=attribute.unit.value
                     )
                 )
+                factor_unit_adjustment = 1
             elif attribute.unit is None:
                 logger.debug(
                     f"No information about the unit of the attribute {attribute.id} "
                     f"from entity {output_entity.id} available!"
                 )
+                factor_unit_adjustment = 1
 
             elif fiware_unit is not attribute.unit:
 
                 factor_unit_adjustment = get_unit_adjustment_factor(
                     unit_actual=attribute.unit, unit_target=fiware_unit
                 )
+            else:
+                logger.warning(
+                    f"Unit {attribute.unit} of attribute {attribute.id} from entity "
+                    f"{output_entity.id} not supported!"
+                )
+                factor_unit_adjustment = 1
             if isinstance(attribute.value, pd.DataFrame):
 
                 attrs.append(
@@ -926,18 +934,25 @@ class FiwareConnection:
                     value=attribute.timestamp.strftime("%Y-%m-%dT%H:%M:%S%z"),
                 )
             )
-            attrs.append(
-                NamedContextAttribute(
-                    name=attribute.id_interface,
-                    value=(
-                        attribute.value * factor_unit_adjustment
-                        if attribute.value is not None
-                        else None
-                    ),
-                    type=datatype,
-                    metadata=meta_data,
+
+            try:
+                value = attribute.value * factor_unit_adjustment if attribute.value is not None else None
+            except TypeError as e:
+                value = attribute.value
+            try:
+                attrs.append(
+                    NamedContextAttribute(
+                        name=attribute.id_interface,
+                        value=value,
+                        type=datatype,
+                        metadata=meta_data,
+                    )
                 )
-            )
+            except Exception as e:
+                logger.error(
+                    f"Error while preparing attribute {attribute.id} of entity "
+                    f"{output_entity.id} for FIWARE: {e}"
+                )
 
         cmds = []
         for command in output_commands:

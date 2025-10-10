@@ -1,0 +1,10 @@
+{
+    "topic": "example/topic",
+    "payload": {
+        "output_entity": "__OUTPUT_ENTITY__",
+        "output_attribute": "__OUTPUT_ATTRIBUTE__",
+        "value": "__OUTPUT_VALUE__",
+        "unit": "__OUTPUT_UNIT__",
+        "time": "__OUTPUT_TIME__"
+    }
+}

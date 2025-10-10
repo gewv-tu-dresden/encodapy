@@ -228,7 +228,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 )
                 output_timestamps.append(entity_timestamps)
                 output_latest_timestamps.append(output_latest_timestamp)
-                logger.info("File interface, output_latest_timestamp is not defined.")
+                logger.debug("File interface, output_latest_timestamp is not defined.")
 
             elif output_entity.interface == Interfaces.MQTT:
                 entity_timestamps, output_latest_timestamp = (
@@ -601,7 +601,8 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         # so that the mqtt interfaces is ready and data is available
         if self.config.interfaces.mqtt:
             await self._hold_sampling_time(
-                start_time=datetime.now(), hold_time=sampling_time
+                start_time=datetime.now(),
+                hold_time=float(os.environ.get("MQTT_START_TIME", sampling_time))
             )
 
         while not self.shutdown_event.is_set():
