@@ -25,7 +25,10 @@ class MQTTTemplateConfig(BaseModel):
     payload: Template
 
     @model_validator(mode="before")
-    def load_mqtt_message_template(cls, mqtt_format_template_env: str) -> Any:
+    @classmethod
+    def load_mqtt_message_template(cls,
+                                   mqtt_format_template_env: str
+                                   ) -> Any:
         """
         Load the MQTT message template from the environment variable.
         """
