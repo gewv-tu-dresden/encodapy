@@ -197,7 +197,7 @@ class ThermalStorage(BasicComponent):
             raise ValueError("Sensor volumes are not set.")
 
         nominal_energy = 0
-        
+
         for index, _ in enumerate(self.config_data.sensor_config.value.storage_sensors):
 
             temperature_sensor = f"temperature_{index+1}"

@@ -72,6 +72,7 @@ class AttributeModel(BaseModel):
         if self.id_interface is None:
             self.id_interface = self.id
         return self
+
     @model_validator(mode="before")
     def check_mqtt_format(cls, data: Any) -> Any:
         """
@@ -83,7 +84,7 @@ class AttributeModel(BaseModel):
         Returns:
             Any: The input data with the checked mqtt_format.
         """
-        
+
         if "mqtt_format" not in data:
             pass
         elif not isinstance(data["mqtt_format"], str):
@@ -100,14 +101,14 @@ class AttributeModel(BaseModel):
                 logger.error(error_message)
                 data["mqtt_format"] = None
                 raise ValueError(error_message)
-            #TODO Template Verification
-            # data["mqtt_format"] = MQTTFormatTypes.TEMPLATE.value
+
         else:
             try:
                 MQTTFormatTypes(data["mqtt_format"])
             except ValueError:
                 logger.warning(
-                    f"mqtt_format '{data['mqtt_format']}' is not valid - using default format 'plain'"
+                    f"mqtt_format '{data['mqtt_format']}' is not valid "
+                    "- using default format 'plain'"
                 )
                 data["mqtt_format"] = MQTTFormatTypes.PLAIN.value
         return data

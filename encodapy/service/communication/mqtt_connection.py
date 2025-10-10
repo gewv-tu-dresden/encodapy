@@ -609,7 +609,7 @@ class MqttConnection:
         else:
             raise NotSupportedError(f"MQTT format {output_attribute.mqtt_format} is not supported.")
         return payload
-    
+
     def _prepare_mqtt_topic(self,
                             mqtt_format: MQTTFormatTypes|MQTTTemplateConfig,
                             output_entity__id_interface: str,
@@ -650,7 +650,7 @@ class MqttConnection:
                     ]
                 )
         elif isinstance(mqtt_format, MQTTTemplateConfig):
-            
+
             topic = mqtt_format.topic.render(
                 output_entity=output_entity__id_interface,
                 output_attribute=output_attribute__id_interface,
@@ -659,7 +659,7 @@ class MqttConnection:
             raise NotSupportedError(f"MQTT format {mqtt_format} is not supported.")
 
         return topic
-    
+
     def send_data_to_mqtt(
         self,
         output_entity: OutputModel,
@@ -685,8 +685,8 @@ class MqttConnection:
             )
 
         # publish the data to the MQTT broker
-        for attribute in output_attributes:      
-            
+        for attribute in output_attributes:
+
             try:
                 self.publish(
                     topic=self._prepare_mqtt_topic(

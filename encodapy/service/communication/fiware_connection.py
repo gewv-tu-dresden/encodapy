@@ -936,8 +936,13 @@ class FiwareConnection:
             )
 
             try:
-                value = attribute.value * factor_unit_adjustment if attribute.value is not None else None
+                value = attribute.value * factor_unit_adjustment \
+                    if attribute.value is not None else None
             except TypeError as e:
+                logger.error(
+                    f"Error while adjusting unit for attribute {attribute.id} of entity "
+                    f"{output_entity.id} for FIWARE: {e}"
+                )
                 value = attribute.value
             try:
                 attrs.append(
