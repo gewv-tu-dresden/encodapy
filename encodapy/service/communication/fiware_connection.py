@@ -868,7 +868,7 @@ class FiwareConnection:
         for attribute in output_attributes:
 
             fiware_unit = None
-            factor_unit_adjustment = 1
+            factor_unit_adjustment:float|None = 1.0
 
             if attribute.id_interface in entity_attributes:
                 datatype = entity_attributes[attribute.id_interface].type
@@ -892,13 +892,13 @@ class FiwareConnection:
                         name="unitCode", type=DataType.TEXT, value=attribute.unit.value
                     )
                 )
-                factor_unit_adjustment = 1
+                factor_unit_adjustment = 1.0
             elif attribute.unit is None:
                 logger.debug(
                     f"No information about the unit of the attribute {attribute.id} "
                     f"from entity {output_entity.id} available!"
                 )
-                factor_unit_adjustment = 1
+                factor_unit_adjustment = 1.0
 
             elif fiware_unit is not attribute.unit:
 
@@ -910,7 +910,7 @@ class FiwareConnection:
                     f"Unit {attribute.unit} of attribute {attribute.id} from entity "
                     f"{output_entity.id} not supported!"
                 )
-                factor_unit_adjustment = 1
+                factor_unit_adjustment = 1.0
             if isinstance(attribute.value, pd.DataFrame):
 
                 attrs.append(
@@ -936,8 +936,14 @@ class FiwareConnection:
             )
 
             try:
-                value = attribute.value * factor_unit_adjustment \
-                    if attribute.value is not None else None
+                if factor_unit_adjustment is not None \
+                    and isinstance(attribute.value, (int, float)):
+                    value = attribute.value * factor_unit_adjustment \
+                        if attribute.value is not None else None
+                elif factor_unit_adjustment != 1 and factor_unit_adjustment is not None:
+                    raise TypeError(f"Unsupported type for unit adjustment: {type(attribute.value)}")
+                else:
+                    value = attribute.value
             except TypeError as e:
                 logger.error(
                     f"Error while adjusting unit for attribute {attribute.id} of entity "
