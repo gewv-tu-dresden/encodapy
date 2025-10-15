@@ -596,7 +596,7 @@ class MqttConnection:
             payload[output_attribute.id_interface] = output_attribute.value
             if output_attribute.timestamp is not None and \
                 output_attribute.mqtt_format is MQTTFormatTypes.FIWARE_ATTR:
-                payload["TimeInstant"] = output_attribute.timestamp.isoformat()
+                payload["TimeInstant"] = self._get_iso_timestamp(output_attribute.timestamp)
         elif isinstance(output_attribute.mqtt_format, MQTTTemplateConfig):
             payload = output_attribute.mqtt_format.payload.render(
                 output_entity=output_entity.id_interface,
@@ -728,3 +728,8 @@ class MqttConnection:
             OutputDataEntityModel(id=output_entity.id, attributes_status=timestamps),
             timestamp_latest_output,
         )
+    @staticmethod
+    def _get_iso_timestamp(timestamp: datetime) -> str:
+        time_iso = str(timestamp.astimezone(timezone.utc).replace(tzinfo=None).isoformat()) + 'Z'
+
+        return time_iso
