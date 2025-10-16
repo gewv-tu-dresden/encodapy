@@ -20,6 +20,7 @@ from encodapy.components.thermal_storage.thermal_storage_config import (
     ThermalStorageEnergyTypes,
     ThermalStorageInputData,
     ThermalStorageOutputData,
+    ThermalStorageLoadLevelCheck
 )
 from encodapy.utils.mediums import get_medium_parameter
 from encodapy.utils.models import (
@@ -357,6 +358,8 @@ class ThermalStorage(BasicComponent):
         Returns:
             float: Adjusted state of charge
         """
+        if self.config_data.load_level_check.enabled is False:
+            return state_of_charge
 
         temperature_limits = self._get_sensor_limits(sensor_id=0)
         ref_value = (
@@ -365,21 +368,28 @@ class ThermalStorage(BasicComponent):
                 temperature_limits.maximal_temperature
                 - temperature_limits.minimal_temperature
             )
-            * 0.1
+            * self.config_data.load_level_check.minimal_level
         )
 
+        if self.input_data.temperature_1.value > ref_value:
+            self.config_data.load_level_check.ref_state_of_charge = None
+            return state_of_charge
         if self.input_data.temperature_1.value < temperature_limits.minimal_temperature:
             return 0
-        if self.input_data.temperature_1.value < ref_value:
-            return (
-                self.input_data.temperature_1.value
-                - temperature_limits.minimal_temperature
-            ) / (
-                temperature_limits.maximal_temperature
-                - temperature_limits.minimal_temperature
-            )
+        if self.config_data.load_level_check.ref_state_of_charge is None:
+            self.config_data.load_level_check.ref_state_of_charge = state_of_charge
 
-        return state_of_charge
+        current_factor = (
+            self.input_data.temperature_1.value
+            - temperature_limits.minimal_temperature
+        ) / (
+            temperature_limits.maximal_temperature
+            - temperature_limits.minimal_temperature
+        )
+        return  (
+            current_factor
+            / self.config_data.load_level_check.minimal_level
+            ) * self.config_data.load_level_check.ref_state_of_charge
 
     def get_state_of_charge(self) -> tuple[float, DataUnits]:
         """

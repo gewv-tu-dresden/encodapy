@@ -365,6 +365,26 @@ class DataPointSensorConfig(DataPointGeneral):
     value: ThermalStorageTemperatureSensors
 
 
+class ThermalStorageLoadLevelCheck(BaseModel):
+    """
+    Model for the state of charge check information of the thermal storage service.
+    """
+    enabled: bool = Field(
+        False,
+        description="Enable or disable the state of charge check",
+    )
+    minimal_level: float = Field(
+        10.0,
+        ge=0,
+        le=100,
+        description="Minimal share of the upper temperature of charge level in percent (0-100)",
+    )
+    ref_state_of_charge: float|None = Field(
+        None,
+        ge=0,
+        le=100,
+        description="Reference state of charge level in percent (0-100) | set by the process",
+    )
 class ThermalStorageConfigData(ConfigData):
     """
     Model for the configuration data of the thermal storage service.
@@ -394,4 +414,8 @@ class ThermalStorageConfigData(ConfigData):
             value=ThermalStorageCalculationMethods.STATIC_LIMITS
         ),
         description="Calculation method for the thermal storage",
+    )
+    load_level_check: ThermalStorageLoadLevelCheck = Field(
+        ThermalStorageLoadLevelCheck(),
+        description="Configuration for the state of charge check",
     )
