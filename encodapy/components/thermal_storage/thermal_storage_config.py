@@ -370,11 +370,11 @@ class ThermalStorageLoadLevelCheck(BaseModel):
     Model for the state of charge check information of the thermal storage service.
     """
     enabled: bool = Field(
-        False,
+        True,
         description="Enable or disable the state of charge check",
     )
     minimal_level: float = Field(
-        10.0,
+        15.0,
         ge=0,
         le=100,
         description="Minimal share of the upper temperature of charge level in percent (0-100)",

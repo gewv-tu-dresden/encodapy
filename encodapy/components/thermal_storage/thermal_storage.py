@@ -64,6 +64,8 @@ class ThermalStorage(BasicComponent):
         super().__init__(
             config=config, component_id=component_id, static_data=static_data
         )
+        # Set the default value for the reference state of charge to None - start of the service
+        self.config_data.load_level_check.ref_state_of_charge = None
 
     def _calculate_volume_per_sensor(self) -> dict:
         """
@@ -362,16 +364,16 @@ class ThermalStorage(BasicComponent):
             return state_of_charge
 
         temperature_limits = self._get_sensor_limits(sensor_id=0)
-        ref_value = (
+        ref_temperature = (
             temperature_limits.minimal_temperature
             + (
                 temperature_limits.maximal_temperature
                 - temperature_limits.minimal_temperature
             )
-            * self.config_data.load_level_check.minimal_level
+            * (self.config_data.load_level_check.minimal_level/100)
         )
 
-        if self.input_data.temperature_1.value > ref_value:
+        if self.input_data.temperature_1.value >= ref_temperature:
             self.config_data.load_level_check.ref_state_of_charge = None
             return state_of_charge
         if self.input_data.temperature_1.value < temperature_limits.minimal_temperature:
@@ -383,13 +385,14 @@ class ThermalStorage(BasicComponent):
             self.input_data.temperature_1.value
             - temperature_limits.minimal_temperature
         ) / (
-            temperature_limits.maximal_temperature
+            ref_temperature
             - temperature_limits.minimal_temperature
         )
-        return  (
+
+        return (
             current_factor
-            / self.config_data.load_level_check.minimal_level
-            ) * self.config_data.load_level_check.ref_state_of_charge
+            * self.config_data.load_level_check.ref_state_of_charge
+            )
 
     def get_state_of_charge(self) -> tuple[float, DataUnits]:
         """
