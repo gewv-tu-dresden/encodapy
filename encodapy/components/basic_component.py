@@ -435,7 +435,8 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
                 )
             except ValidationError as e:
                 logger.error(
-                    f"Validating datapoint config failed for {datapoint_name}: {e}"
+                    f"Validating datapoint config failed for {datapoint_name} "
+                    f"of {self.component_config.id}: {e}"
                 )
                 continue
 
