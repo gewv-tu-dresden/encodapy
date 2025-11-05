@@ -6,7 +6,7 @@ Authors: Martin Altenburger
 from datetime import datetime
 from typing import Dict, List, Optional, Union
 from pandas import DataFrame
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from filip.models.ngsi_v2.base import NamedMetadata
 from filip.models.ngsi_v2.context import ContextEntity
 from encodapy.config.models import AttributeModel, CommandModel
@@ -154,6 +154,16 @@ class DataTransferComponentModel(ComponentModel):
     value: Union[str, float, int, bool, Dict, List, DataFrame, None]
     unit: Union[DataUnits, None] = None
     timestamp: Optional[Union[datetime, None]] = None
+
+    @field_validator('value', mode='before')
+    @classmethod
+    def convert_value_to_dict(cls, val):
+        """
+        Convert a Pydantic BaseModel value to a dictionary.
+        """
+        if isinstance(val, BaseModel):
+            return val.model_dump(mode='json')
+        return val
 
 
 class DataTransferModel(BaseModel):
