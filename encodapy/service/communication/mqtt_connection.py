@@ -283,7 +283,8 @@ class MqttConnection:
                 payload = None
 
         except TypeError as e:
-            logger.warning(f"Failed to convert payload: {e}, set it to None")
+            logger.warning(f"Failed to convert payload: {payload}, set it to None "
+                           f"Error-Message: {e}")
             payload = None
 
         return payload
