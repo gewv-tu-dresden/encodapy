@@ -416,6 +416,6 @@ class ThermalStorageConfigData(ConfigData):
         description="Calculation method for the thermal storage",
     )
     load_level_check: ThermalStorageLoadLevelCheck = Field(
-        ThermalStorageLoadLevelCheck(),
+        ThermalStorageLoadLevelCheck.model_validate({}),
         description="Configuration for the state of charge check",
     )

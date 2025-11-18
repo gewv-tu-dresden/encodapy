@@ -4,9 +4,7 @@ Author: Martin Altenburger, Paul Seidel
 """
 
 from typing import Optional, Union
-
 from loguru import logger
-
 from encodapy.components.basic_component import BasicComponent
 from encodapy.components.basic_component_config import (
     ComponentValidationError,
@@ -19,8 +17,7 @@ from encodapy.components.thermal_storage.thermal_storage_config import (
     ThermalStorageConfigData,
     ThermalStorageEnergyTypes,
     ThermalStorageInputData,
-    ThermalStorageOutputData,
-    ThermalStorageLoadLevelCheck
+    ThermalStorageOutputData
 )
 from encodapy.utils.mediums import get_medium_parameter
 from encodapy.utils.models import (
@@ -28,7 +25,6 @@ from encodapy.utils.models import (
     StaticDataEntityModel,
 )
 from encodapy.utils.units import DataUnits
-
 
 class ThermalStorage(BasicComponent):
     """
@@ -178,6 +174,7 @@ class ThermalStorage(BasicComponent):
             )
 
             return limits
+        #TODO Add flexible limits method
 
         logger.warning(
             f"Unknown calculation method: {self.config_data.calculation_method.value}"
