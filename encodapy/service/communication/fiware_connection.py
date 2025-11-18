@@ -3,7 +3,6 @@ Description: This file contains the class FiwareConnections,
 which is used to store the connection parameters for the Fiware and CrateDB connections.
 Author: Martin Altenburger
 """
-
 from asyncio import sleep
 import os
 from datetime import datetime, timedelta, timezone
@@ -24,6 +23,7 @@ from filip.models.ngsi_v2.context import (
     NamedCommand,
     NamedContextAttribute,
 )
+from filip.clients.exceptions import BaseHttpClientException
 from encodapy.config import (
     AttributeModel,
     AttributeTypes,
@@ -212,13 +212,23 @@ class FiwareConnection:
                 with the oldest value (None if no timestamp is available)
         """
 
-        output_attributes_entity = self.cb_client.get_entity_attributes(
-            entity_id=output_entity.id_interface
-        )
+        
+        
+        try:
+            output_attributes_entity = self.cb_client.get_entity_attributes(
+                entity_id=output_entity.id_interface
+            )
 
-        output_attributes_controller = {
-            item.id_interface: item.id for item in output_entity.attributes
-        }
+            output_attributes_controller = {
+                item.id_interface: item.id for item in output_entity.attributes
+            }
+        except requests.exceptions.ConnectionError as err:
+            logger.error(f"""No connection to platform (ConnectionError): {err}""")
+
+            return None
+        except BaseHttpClientException as err:
+            logger.error(f"Could not get entity from FIWARE platform: {err}")
+            return None
 
         timestamps = []
         for attr in list(output_attributes_entity.keys()):
@@ -330,6 +340,9 @@ class FiwareConnection:
         except requests.exceptions.ConnectionError as err:
             logger.error(f"""No connection to platform (ConnectionError): {err}""")
 
+            return None
+        except BaseHttpClientException as err:
+            logger.error(f"Could not get entity from FIWARE platform: {err}")
             return None
 
         for attribute in entity.attributes:
