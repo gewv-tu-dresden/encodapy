@@ -7,6 +7,7 @@ It is possible use different interfaces for the data exchange:
 - File
 
 There are different kinds of datapoints, which are possible (see `encodapy.config.models`):
+
 - Input-Data (see `InputModel`):
   - Data could be stored as attributes (`attributes`)
   - Type of the datapoint could be single-input data (`value`) and time series (`timeseries`)
@@ -93,10 +94,9 @@ When a message is received:
 
 Only **attributes** are supported for this interface; commands are not supported as there would be no meaningful difference.
 
-**Data Transfer Formats**
+#### Data Transfer Formats
 
 You can configure different ways to send data for each output attribute by adding the `mqtt_format` information. The following formats are supported:
-
 
 | MQTT Format (`mqtt_format`) | Topic | Payload | Note |
 |-----------------------------|-------|---------|------|
@@ -105,11 +105,12 @@ You can configure different ways to send data for each output attribute by addin
 | `fiware-cmdexe` | `${MQTT_TOPIC_PREFIX}/ ${entity.id_interface}/ cmdexe` | `{"${attribute.id_interface}": ${attribute.value}}` / `{"example_attribute": 0.0}` | An acknowledgment for a FIWARE command with a JSON-formatted payload. [FIWARE Documentation](https://fiware-zone.readthedocs.io/es/stable/iot-over-mqtt.html) / [FIWARE IoT Agent JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual.html#mqtt-binding) |
 | `template_${YOUR_NAME}` | Defined in the template under the `topic` key | Defined in the template under the `payload` key | Topic and payload are defined by the template(s). |
 
-**Custom Templates**
+#### Custom Templates
 
 You can use custom templates by specifying `template_${YOUR_NAME}` as the `mqtt_format`. The template must be provided using the environment variable `MQTT_TEMPLATE_${YOUR_NAME}`. This variable should contain either a dictionary or a path to a JSON file with the template as a dictionary.
 
 The template configuration requires two keys:
+
 - `topic`: Template for the MQTT topic.
 - `payload`: Template for the MQTT payload.
 
@@ -128,12 +129,11 @@ In the templates you could use placeholders to add the results (attributes):
 
 You can use multiple templates by specifying different template names. See the example template [here](./example_mqtt_template.json).
 
-### Payload Types
+#### Payload Types
 
 The payload values can be of different types. The function `prepare_payload_for_publish` ensures that all payloads are converted to a valid string format for MQTT publishing.
 
-
-### Notes for Custom Services
+#### Notes for Custom Services
 
 - Topics should be constructed consistently and uniquely.
 - Each entity should have its own topic.
@@ -149,7 +149,7 @@ Data exchange with via local file.
 - Read input data from a file (Note: only `.csv` and `.json` is supported currently)
   - csv characteristics:
     - It can be used for single-input data (`value`) and time series (`timeseries`).
-    - Name column of time = "Time", Time in ISO format or a compatible format: https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat
+    - Name column of time = "Time", Time in ISO format or a compatible format: <https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat>
     - csv separator = ";"
     - decimal= ","
     - Column name (specific input) in `.csv` must be the like `${Attribute-id_interface}` from the config (Important: the IDs of the attributes `id_interface` over the the interface "file" must therefore be unique)
@@ -157,12 +157,12 @@ Data exchange with via local file.
   - json characteristics:
     - It can be used for single-input data (`value`)
     - json object contains a list of dicts
-      - id of entity 
-      - attributes:   
+      - id of entity
+      - attributes:
         - `attribute_id`
         - `value`
         - `unit`: As part of DataUnits / optional
-        - `time`: Time in ISO format or a compatible format: https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat / optional
+        - `time`: Time in ISO format or a compatible format: <https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat> / optional
     - An example of this input is attached as [inputs_json-file_interface_example.json](./inputs_json-file_interface_example.json)
 - Read static data from a local file (Note: only `.json` is supported currently)
   - The same structure is used as for the input data from the JSON file.
@@ -173,6 +173,7 @@ Data exchange with via local file.
   - An example of this outputs is attached as [outputs_dhw_calculation_example.json](./outputs_dhw_calculation_example.json), using the the configuration from [n5geh.encodapy/examples/01_config/config.json](./../01_config/config.json)
 
 nessesary ENV's with example:
+
   ```
   PATH_OF_INPUT_FILE = "path_to_the_file/validation_data.csv"
   PATH_OF_STATIC_DATA = "path_to_the_file/static_data.json"

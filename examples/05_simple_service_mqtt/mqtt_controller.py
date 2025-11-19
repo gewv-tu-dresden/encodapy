@@ -25,6 +25,8 @@ from encodapy.utils.models import (
 )
 from encodapy.utils.units import DataUnits
 
+from encodapy.utils.datapoints import DataPointGeneral
+
 
 class MQTTController(ControllerBasicService):
     """
@@ -145,13 +147,16 @@ class MQTTController(ControllerBasicService):
                 else 0.0
             ),
             hysteresis=(
-                self.heater_config.config["temperature_hysteresis"]
+                self.heater_config.config.root["temperature_hysteresis"].value
                 if self.heater_config.config
-                and "temperature_hysteresis" in self.heater_config.config
+                and isinstance(self.heater_config.config.root["temperature_hysteresis"], DataPointGeneral)
+                and "temperature_hysteresis" in self.heater_config.config.root
                 else 5
             ),
             heater_status_old=bool(inputs["heater_status_current"]),
         )
+
+        controller_status = "heating" if heater_status == 1 else "idle"
 
         return DataTransferModel(
             components=[
@@ -163,6 +168,16 @@ class MQTTController(ControllerBasicService):
                         "heater_status_recommand"
                     ].attribute,
                     value=heater_status,
+                    timestamp=datetime.now(timezone.utc),
+                ),
+                DataTransferComponentModel(
+                    entity_id=self.heater_config.outputs.root[
+                        "controller_status"
+                    ].entity,
+                    attribute_id=self.heater_config.outputs.root[
+                        "controller_status"
+                    ].attribute,
+                    value=controller_status,
                     timestamp=datetime.now(timezone.utc),
                 )
             ]
