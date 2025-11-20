@@ -1,6 +1,6 @@
 """
 Description: MQTT message templates - indivuidual formats for MQTT messages
-Author: Martin Altenbruger
+Author: Martin Altenburger
 """
 
 import json
