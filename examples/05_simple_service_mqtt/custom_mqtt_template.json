@@ -1,5 +1,5 @@
 {
-    "topic": "custom_topic/__OUTPUT_ENTITY__/__OUTPUT_ATTRIBUTE__",
+    "topic": "__MQTT_TOPIC_PREFIX__/custom_topic/__OUTPUT_ENTITY__/__OUTPUT_ATTRIBUTE__",
     "payload": {
         "static_value": "a text",
         "value": "__OUTPUT_VALUE__",

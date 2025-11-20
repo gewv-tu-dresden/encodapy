@@ -2,13 +2,15 @@
 Description: MQTT message templates - indivuidual formats for MQTT messages
 Author: Martin Altenbruger
 """
-import os
+
 import json
+import os
 from typing import Any
+
 from jinja2 import Template
+from loguru import logger
 from pydantic import BaseModel, ConfigDict
 from pydantic.functional_validators import model_validator
-from loguru import logger
 
 
 class MQTTTemplateConfig(BaseModel):
@@ -19,6 +21,7 @@ class MQTTTemplateConfig(BaseModel):
         topic (Template): The template for the MQTT topic.
         payload (Template): The template for the MQTT payload.
     """
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     topic: Template
@@ -26,9 +29,7 @@ class MQTTTemplateConfig(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def load_mqtt_message_template(cls,
-                                   mqtt_format_template_env: str
-                                   ) -> Any:
+    def load_mqtt_message_template(cls, mqtt_format_template_env: str) -> Any:
         """
         Load the MQTT message template from the environment variable.
         """
@@ -44,8 +45,10 @@ class MQTTTemplateConfig(BaseModel):
                 with open(mqtt_format_template_info, "r", encoding="utf-8") as file:
                     mqtt_format_template = json.load(file)
             except (FileNotFoundError, json.JSONDecodeError):
-                logger.error(f"MQTT template file {mqtt_format_template_info} "
-                             "not found or invalid.")
+                logger.error(
+                    f"MQTT template file {mqtt_format_template_info} "
+                    "not found or invalid."
+                )
                 return None
 
         else:
@@ -60,20 +63,15 @@ class MQTTTemplateConfig(BaseModel):
 
         return {
             "topic": cls.load_mqtt_template(
-                template_raw=mqtt_format_template,
-                part="topic"
+                template_raw=mqtt_format_template, part="topic"
             ),
             "payload": cls.load_mqtt_template(
-                template_raw=mqtt_format_template,
-                part="payload"
-            )
+                template_raw=mqtt_format_template, part="payload"
+            ),
         }
 
     @classmethod
-    def load_mqtt_template(cls,
-                           template_raw:dict,
-                           part:str
-                           ) -> Template:
+    def load_mqtt_template(cls, template_raw: dict, part: str) -> Template:
         """
         Get the MQTT payload / topic template.
         Template for the MQTT message could be used for formatting and \
@@ -95,21 +93,31 @@ class MQTTTemplateConfig(BaseModel):
         else:
             raise ValueError("Invalid template format. Must be dict or str.")
 
-        parameters = ["__OUTPUT_ENTITY__",
-                      "__OUTPUT_ATTRIBUTE__",
-                      "__OUTPUT_VALUE__",
-                      "__OUTPUT_UNIT__",
-                      "__OUTPUT_TIME__"
-                      ]
+        parameters = [
+            "__OUTPUT_ENTITY__",
+            "__OUTPUT_ATTRIBUTE__",
+            "__OUTPUT_VALUE__",
+            "__OUTPUT_UNIT__",
+            "__OUTPUT_TIME__",
+            "__MQTT_TOPIC_PREFIX__",
+        ]
         for param in parameters:
             if param in template:
-                clean_name = param.strip("_").lower()
-                template = template.replace(
-                    param,
-                    f"{{{{{clean_name}}}}}"
-                )
+                if param == "__MQTT_TOPIC_PREFIX__":
+                    prefix = os.getenv("MQTT_TOPIC_PREFIX", "")
+                    if prefix != "" and not prefix.endswith("/"):
+                        prefix_with_slash = prefix + "/"
+                    else:
+                        prefix_with_slash = prefix
+                    template = template.replace(param + "/", prefix_with_slash)
+                    template = template.replace(param, prefix)
+                else:
+                    clean_name = param.strip("_").lower()
+                    template = template.replace(param, f"{{{{{clean_name}}}}}")
 
             else:
-                logger.debug(f"Parameter {param} not found in payload template for {part}.")
+                logger.debug(
+                    f"Parameter {param} not found in payload template for {part}."
+                )
 
         return Template(template)
