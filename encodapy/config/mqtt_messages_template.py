@@ -1,5 +1,5 @@
 """
-Description: MQTT message templates - indivuidual formats for MQTT messages
+Description: MQTT message templates - individual formats for MQTT messages
 Author: Martin Altenburger
 """
 
