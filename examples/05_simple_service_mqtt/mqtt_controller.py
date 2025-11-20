@@ -149,7 +149,8 @@ class MQTTController(ControllerBasicService):
             hysteresis=(
                 self.heater_config.config.root["temperature_hysteresis"].value
                 if self.heater_config.config
-                and isinstance(self.heater_config.config.root["temperature_hysteresis"], DataPointGeneral)
+                and isinstance(self.heater_config.config.root["temperature_hysteresis"], 
+                               DataPointGeneral)
                 and "temperature_hysteresis" in self.heater_config.config.root
                 else 5
             ),
