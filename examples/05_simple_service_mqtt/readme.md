@@ -36,7 +36,7 @@ For the models of the inputs and outputs, see [02_datatransfer](./../02_datatran
 
 For the possible payloads, see [03_interfaces](./../03_interfaces/).
 
-The example uses the possibilites of the optional "Data Transfer Formats" for Outputs, see [03_interfaces - Outputs](./../03_interfaces/readme.md#outputs).
+The example uses the possibilities of the optional "Data Transfer Formats" for Outputs, see [03_interfaces - Outputs](./../03_interfaces/readme.md#outputs).
 
 - In the config, you can switch the mqtt_format of the output attributes from "boiler-controller".
 - You can build your very own format in [custom_mqtt_template.json](./custom_mqtt_template.json).
