@@ -119,6 +119,7 @@ In the templates you could use placeholders to add the results (attributes):
 - **Topic Template:**
   - `__OUTPUT_ENTITY__`: Replaced with the `id_interface` of the output entity.
   - `__OUTPUT_ATTRIBUTE__`: Replaced with the `id_interface` of the output attribute.
+  - `__MQTT_TOPIC_PREFIX__`: Replaced with the environment variable `MQTT_TOPIC_PREFIX`
 
 - **Payload Template:**
   - `__OUTPUT_ENTITY__`: Replaced with the `id_interface` of the output entity.
