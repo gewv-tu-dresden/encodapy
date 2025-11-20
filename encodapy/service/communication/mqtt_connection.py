@@ -414,7 +414,7 @@ class MqttConnection:
                     item["payload"] = value
                     item["timestamp"] = timestamp
                     debug_message += (
-                        f"Updated MQTT message store for topic {topic} with value: {value} "
+                        f" Updated MQTT message store for topic {topic} with value: {value} "
                         f"and timestamp: {timestamp}"
                     )
                     continue
