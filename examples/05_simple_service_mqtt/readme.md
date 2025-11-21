@@ -9,7 +9,7 @@ As an example of a simple service using Encodapy with a MQTT interface, a heatin
 - [main.py](./main.py): Script to start the service
 - [storage_dummy.py](./storage_dummy.py): Script to send different types of mqtt messages from a dummy storage to the service
 
-To run the example, you *need to add* a `.env` file with the content for MQTT_TEMPLATE_EXAMPLE03 (if you do not add the others, the here written standard values will be used):
+To run the example, you **need to add** a `.env` file with the content for MQTT_TEMPLATE_EXAMPLE03 (if you do not add the others, the here written standard values will be used):
 
 ```env
 MQTT_TEMPLATE_EXAMPLE03 = "custom_mqtt_template.json" # the only mandatory information
@@ -36,7 +36,7 @@ For the models of the inputs and outputs, see [02_datatransfer](./../02_datatran
 
 For the possible payloads, see [03_interfaces](./../03_interfaces/).
 
-The example uses the possibilites of the optional "Data Transfer Formats" for Outputs, see [03_interfaces - Outputs](./../03_interfaces/readme.md#outputs).
+The example uses the possibilities of the optional "Data Transfer Formats" for Outputs, see [03_interfaces - Outputs](./../03_interfaces/readme.md#outputs).
 
 - In the config, you can switch the mqtt_format of the output attributes from "boiler-controller".
 - You can build your very own format in [custom_mqtt_template.json](./custom_mqtt_template.json).

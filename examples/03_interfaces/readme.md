@@ -100,9 +100,9 @@ You can configure different ways to send data for each output attribute by addin
 
 | MQTT Format (`mqtt_format`) | Topic | Payload | Note |
 |-----------------------------|-------|---------|------|
-| `plain` | `${MQTT_TOPIC_PREFIX}/ ${entity.id_interface}/ ${attribute.id_interface}` | `${attribute.value}` / `0` | A plain value with a topic combining the topic prefix and the `id_interface` of the entity and attribute. |
-| `fiware-attr` | `${MQTT_TOPIC_PREFIX}/ ${entity.id_interface}/ attrs` | `{"${attribute.id_interface}": ${attribute.value}, "TimeInstant": "${attribute.timestamp}"}` / `{"example_attribute": 0.0, "TimeInstant": "2025-10-10T13:15:45.286235Z"}` | A FIWARE attribute with a JSON-formatted payload. [FIWARE Documentation](https://fiware-zone.readthedocs.io/es/stable/iot-over-mqtt.html) / [FIWARE IoT Agent JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual.html#mqtt-binding) |
-| `fiware-cmdexe` | `${MQTT_TOPIC_PREFIX}/ ${entity.id_interface}/ cmdexe` | `{"${attribute.id_interface}": ${attribute.value}}` / `{"example_attribute": 0.0}` | An acknowledgment for a FIWARE command with a JSON-formatted payload. [FIWARE Documentation](https://fiware-zone.readthedocs.io/es/stable/iot-over-mqtt.html) / [FIWARE IoT Agent JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual.html#mqtt-binding) |
+| `plain` | `${MQTT_TOPIC_PREFIX}/${entity.id_interface}/${attribute.id_interface}` | `${attribute.value}` / `0` | A plain value with a topic combining the topic prefix and the `id_interface` of the entity and attribute. |
+| `fiware-attr` | `${MQTT_TOPIC_PREFIX}/${entity.id_interface}/attrs` | `{"${attribute.id_interface}": ${attribute.value}, "TimeInstant": "${attribute.timestamp}"}` / `{"example_attribute": 0.0, "TimeInstant": "2025-10-10T13:15:45.286235Z"}` | A FIWARE attribute with a JSON-formatted payload. [FIWARE Documentation](https://fiware-zone.readthedocs.io/es/stable/iot-over-mqtt.html) / [FIWARE IoT Agent JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual.html#mqtt-binding) |
+| `fiware-cmdexe` | `${MQTT_TOPIC_PREFIX}/${entity.id_interface}/cmdexe` | `{"${attribute.id_interface}": ${attribute.value}}` / `{"example_attribute": 0.0}` | An acknowledgment for a FIWARE command with a JSON-formatted payload. [FIWARE Documentation](https://fiware-zone.readthedocs.io/es/stable/iot-over-mqtt.html) / [FIWARE IoT Agent JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual.html#mqtt-binding) |
 | `template_${YOUR_NAME}` | Defined in the template under the `topic` key | Defined in the template under the `payload` key | Topic and payload are defined by the template(s). |
 
 #### Custom Templates
@@ -173,7 +173,7 @@ Data exchange with via local file.
   - same structure like the `inputs.json`
   - An example of this outputs is attached as [outputs_dhw_calculation_example.json](./outputs_dhw_calculation_example.json), using the the configuration from [n5geh.encodapy/examples/01_config/config.json](./../01_config/config.json)
 
-nessesary ENV's with example:
+necessary ENV's with example:
 
   ```
   PATH_OF_INPUT_FILE = "path_to_the_file/validation_data.csv"

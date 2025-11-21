@@ -606,20 +606,31 @@ class MqttConnection:
                 output_unit=output_attribute.unit,
                 output_time=output_attribute.timestamp
             )
-            payload = payload.replace('"None"', 'null')
+            if isinstance(payload, str):
+                try:
+                    parsed = json.loads(payload)
+                    payload = json.dumps(parsed, default=str)
+                except json.JSONDecodeError:
+                    payload = re.sub(r'(:\s*)"(None)"', r'\1null', payload)
+                    payload = payload.replace('"None"', 'null')
+            else:
+                # Use json.dumps to convert None to null in JSON output
+                payload = json.dumps(payload, default=str)
         else:
             raise NotSupportedError(f"MQTT format {output_attribute.mqtt_format} is not supported.")
         return payload
 
     def _prepare_mqtt_topic(self,
-                            mqtt_format: MQTTFormatTypes|MQTTTemplateConfig,
+                            mqtt_format: Union[MQTTFormatTypes, MQTTTemplateConfig],
                             output_entity__id_interface: str,
                             output_attribute__id_interface: str
                             ) -> str:
         """
         Function to prepare the MQTT topic based on the output attribute's mqtt_format.
+
         Args:
-            mqtt_format (MQTTFormatTypes|MQTTTemplateConfig): The MQTT format type or template.
+            mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]): \
+                The MQTT format type or template.
             output_entity__id_interface (str): The output entity's id_interface.
             output_attribute__id_interface (str): The output attribute's id_interface.
         Returns:
@@ -655,6 +666,7 @@ class MqttConnection:
             topic = mqtt_format.topic.render(
                 output_entity=output_entity__id_interface,
                 output_attribute=output_attribute__id_interface,
+                mqtt_topic_prefix=self.mqtt_params["topic_prefix"]
             )
         else:
             raise NotSupportedError(f"MQTT format {mqtt_format} is not supported.")

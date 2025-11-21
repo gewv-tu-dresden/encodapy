@@ -6,7 +6,6 @@ Author: Martin Altenburger
 import asyncio
 import os
 import sys
-from asyncio import sleep
 from datetime import datetime
 from typing import Optional, Union
 
@@ -238,7 +237,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 output_timestamps.append(entity_timestamps)
                 output_latest_timestamps.append(output_latest_timestamp)
 
-            await sleep(0.01)
+            await asyncio.sleep(0.01)
 
         if None in output_latest_timestamps:
             output_latest_timestamp = None
@@ -271,7 +270,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                     )
                 )
 
-            await sleep(0.01)
+            await asyncio.sleep(0.01)
 
         if self.reload_staticdata or self.staticdata is None:
             self.staticdata = self.reload_static_data(method=method, staticdata=[])
@@ -423,7 +422,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                     output_attributes=output_attributes,
                 )
 
-            await sleep(0.01)
+            await asyncio.sleep(0.01)
 
         logger.debug("Finished sending output data")
 
@@ -445,7 +444,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         while ((datetime.now() - start_time).total_seconds()) < hold_time:
             if self.shutdown_event.is_set():
                 break
-            await sleep(0.01)
+            await asyncio.sleep(0.01)
 
     async def calculation(
         self,
