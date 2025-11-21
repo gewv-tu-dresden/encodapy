@@ -612,14 +612,16 @@ class MqttConnection:
         return payload
 
     def _prepare_mqtt_topic(self,
-                            mqtt_format: MQTTFormatTypes|MQTTTemplateConfig,
+                            mqtt_format: Union[MQTTFormatTypes, MQTTTemplateConfig],
                             output_entity__id_interface: str,
                             output_attribute__id_interface: str
                             ) -> str:
         """
         Function to prepare the MQTT topic based on the output attribute's mqtt_format.
+
         Args:
-            mqtt_format (MQTTFormatTypes|MQTTTemplateConfig): The MQTT format type or template.
+            mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]): \
+                The MQTT format type or template.
             output_entity__id_interface (str): The output entity's id_interface.
             output_attribute__id_interface (str): The output attribute's id_interface.
         Returns:

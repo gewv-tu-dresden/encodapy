@@ -63,7 +63,7 @@
     MQTT_USERNAME=      # Username for the MQTT-Broker
     MQTT_PASSWORD=      # Password for the MQTT-Broker
     MQTT_TOPIC_PREFIX=  # Prefix for MQTT-Topics (used for plan and fiware styles)
-    MQTT_TEMPLATE_$$    # ENV with a template for the mqtt-messages or a path to a message template as .json
+    MQTT_TEMPLATE_$$=   # ENV with a template for the mqtt-messages or a path to a message template as .json
     MQTT_START_TIME=    # Time in seconds to wait for the mqtt-broker at the service start
     ```
 

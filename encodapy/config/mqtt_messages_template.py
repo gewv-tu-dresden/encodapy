@@ -5,13 +5,12 @@ Author: Martin Altenburger
 
 import json
 import os
-from typing import Any
-
+from typing import Any, Union, Optional
 from jinja2 import Template
 from loguru import logger
 from pydantic import BaseModel, ConfigDict
 from pydantic.functional_validators import model_validator
-
+from encodapy.config.types import MQTTFormatTypes
 
 class MQTTTemplateConfig(BaseModel):
     """
@@ -29,34 +28,46 @@ class MQTTTemplateConfig(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def load_mqtt_message_template(cls, mqtt_format_template_env: str) -> Any:
+    def load_mqtt_message_template(cls, mqtt_format_template_env: Union[str, dict]) -> Any:
         """
         Load the MQTT message template from the environment variable.
         """
+
+        if isinstance(mqtt_format_template_env, dict):
+            return cls._handle_dict_input(mqtt_format_template_env)
         if not isinstance(mqtt_format_template_env, str):
             return None
+
+        if mqtt_format_template_env in [member.value for member in MQTTFormatTypes]:
+            # return as predefined template in MQTTFormatTypes, should not be handled here
+            return mqtt_format_template_env
         env_variable = f"MQTT_{mqtt_format_template_env.upper()}"
         mqtt_format_template_info = os.getenv(env_variable)
-        if mqtt_format_template_info is None:
-            return None
 
-        if ".json" in mqtt_format_template_info:
-            try:
-                with open(mqtt_format_template_info, "r", encoding="utf-8") as file:
-                    mqtt_format_template = json.load(file)
-            except (FileNotFoundError, json.JSONDecodeError):
-                logger.error(
-                    f"MQTT template file {mqtt_format_template_info} "
-                    "not found or invalid."
-                )
-                return None
 
+        mqtt_format_template: Optional[dict] = None
+        if mqtt_format_template_info is not None:
+
+            if ".json" in mqtt_format_template_info:
+                try:
+                    with open(mqtt_format_template_info, "r", encoding="utf-8") as file:
+                        mqtt_format_template = json.load(file)
+                except (FileNotFoundError, json.JSONDecodeError):
+                    logger.error(
+                        f"MQTT template file {mqtt_format_template_info} "
+                        "not found or invalid."
+                    )
+                    mqtt_format_template = None
+
+            else:
+                try:
+                    mqtt_format_template = json.loads(mqtt_format_template_info)
+                except json.JSONDecodeError:
+                    logger.error("MQTT template string is not a valid JSON.")
+                    mqtt_format_template =  None
         else:
-            try:
-                mqtt_format_template = json.loads(mqtt_format_template_info)
-            except json.JSONDecodeError:
-                logger.error("MQTT template string is not a valid JSON.")
-                return None
+            logger.error(f"Environment variable {env_variable} "
+                         f"for the mqtt-template {mqtt_format_template_env} not found.")
 
         if not isinstance(mqtt_format_template, dict):
             return None
@@ -67,6 +78,31 @@ class MQTTTemplateConfig(BaseModel):
             ),
             "payload": cls.load_mqtt_template(
                 template_raw=mqtt_format_template, part="payload"
+            ),
+        }
+
+    @classmethod
+    def _handle_dict_input(cls, mqtt_format_data: dict) -> dict:
+        """
+        Handle dictionary input for MQTT template.
+
+        Args:
+            mqtt_format_data (dict): The input data dictionary.
+        """
+        if not isinstance(mqtt_format_data, dict):
+            raise ValueError("Input data must be a dictionary.")
+
+        if "topic" not in mqtt_format_data:
+            raise ValueError("MQTT template dict must contain 'topic' key.")
+        if "payload" not in mqtt_format_data:
+            raise ValueError("MQTT template dict must contain 'payload' key.")
+
+        return {
+            "topic": cls.load_mqtt_template(
+                template_raw=mqtt_format_data, part="topic"
+            ),
+            "payload": cls.load_mqtt_template(
+                template_raw=mqtt_format_data, part="payload"
             ),
         }
 

@@ -7,7 +7,7 @@ Author: Martin Altenburger
 from asyncio import sleep
 import os
 from datetime import datetime, timedelta, timezone
-from typing import Union
+from typing import Union, Optional
 import concurrent.futures
 import multiprocessing
 from loguru import logger
@@ -868,7 +868,7 @@ class FiwareConnection:
         for attribute in output_attributes:
 
             fiware_unit = None
-            factor_unit_adjustment:float|None = 1.0
+            factor_unit_adjustment: Optional[float] = 1.0
 
             if attribute.id_interface in entity_attributes:
                 datatype = entity_attributes[attribute.id_interface].type
@@ -940,8 +940,9 @@ class FiwareConnection:
                     and isinstance(attribute.value, (int, float)):
                     value = attribute.value * factor_unit_adjustment \
                         if attribute.value is not None else None
-                elif factor_unit_adjustment != 1 and factor_unit_adjustment is not None:
-                    raise TypeError(f"Unsupported type for unit adjustment: {type(attribute.value)}")
+                elif factor_unit_adjustment != 1.0 and factor_unit_adjustment is not None:
+                    raise TypeError("Unsupported type for unit adjustment: "
+                                    f"{type(attribute.value)}")
                 else:
                     value = attribute.value
             except TypeError as e:
@@ -959,7 +960,7 @@ class FiwareConnection:
                         metadata=meta_data,
                     )
                 )
-            except Exception as e:
+            except (ValueError, TypeError, AttributeError) as e:
                 logger.error(
                     f"Error while preparing attribute {attribute.id} of entity "
                     f"{output_entity.id} for FIWARE: {e}"
