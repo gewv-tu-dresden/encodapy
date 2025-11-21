@@ -36,11 +36,18 @@ class MQTTTemplateConfig(BaseModel):
         if isinstance(mqtt_format_template_env, dict):
             return cls._handle_dict_input(mqtt_format_template_env)
         if not isinstance(mqtt_format_template_env, str):
-            return None
+            raise ValueError(
+                "Invalid type for mqtt_format_template_env: "
+                f"{type(mqtt_format_template_env).__name__}. "
+                "Expected a string or dict."
+            )
 
         if mqtt_format_template_env in [member.value for member in MQTTFormatTypes]:
             # return as predefined template in MQTTFormatTypes, should not be handled here
-            return mqtt_format_template_env
+            raise ValueError(
+                f"MQTT format '{mqtt_format_template_env}' is a predefined format "
+                "and cannot be used as a template."
+            )
         env_variable = f"MQTT_{mqtt_format_template_env.upper()}"
         mqtt_format_template_info = os.getenv(env_variable)
 
@@ -48,7 +55,7 @@ class MQTTTemplateConfig(BaseModel):
         mqtt_format_template: Optional[dict] = None
         if mqtt_format_template_info is not None:
 
-            if ".json" in mqtt_format_template_info:
+            if mqtt_format_template_info.endswith(".json"):
                 try:
                     with open(mqtt_format_template_info, "r", encoding="utf-8") as file:
                         mqtt_format_template = json.load(file)
@@ -64,13 +71,16 @@ class MQTTTemplateConfig(BaseModel):
                     mqtt_format_template = json.loads(mqtt_format_template_info)
                 except json.JSONDecodeError:
                     logger.error("MQTT template string is not a valid JSON.")
-                    mqtt_format_template =  None
+                    mqtt_format_template = None
         else:
             logger.error(f"Environment variable {env_variable} "
                          f"for the mqtt-template {mqtt_format_template_env} not found.")
 
         if not isinstance(mqtt_format_template, dict):
-            return None
+            raise ValueError(
+                "Invalid MQTT template: expected a dict, "
+                f"got {type(mqtt_format_template).__name__} ({mqtt_format_template})."
+            )
 
         return {
             "topic": cls.load_mqtt_template(

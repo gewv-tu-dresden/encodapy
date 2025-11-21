@@ -905,12 +905,7 @@ class FiwareConnection:
                 factor_unit_adjustment = get_unit_adjustment_factor(
                     unit_actual=attribute.unit, unit_target=fiware_unit
                 )
-            else:
-                logger.warning(
-                    f"Unit {attribute.unit} of attribute {attribute.id} from entity "
-                    f"{output_entity.id} not supported!"
-                )
-                factor_unit_adjustment = 1.0
+
             if isinstance(attribute.value, pd.DataFrame):
 
                 attrs.append(
