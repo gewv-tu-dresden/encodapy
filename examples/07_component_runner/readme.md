@@ -1,17 +1,20 @@
 # Component Runner
 
 ## Overview
+
 This example demonstrates how to use the component runner from EnCoDaPy. It provides a standardized way to utilize components (`encodapy.components`). You only need to add the components in the config and connect them via their inputs and outputs. The output from one component can be used as input for another.
 
-
 The example uses a connection to a FIWARE platform, which is needed (see [n5geh.platform](https://github.com/N5GEH/n5geh.platform) - "NGSI-v2" version). The following parts show different aspects of the example:
+
 - [configure_fiware_platform.ipynb](./configure_fiware_platform.ipynb): Notebook to add the needed configuration and values to the fiware platform
 - [config.json](./config.json): Configuration for the service - see [01_config](./../01_config/)
-- [run_components.ipynb](./run_components.ipynb): Notebook to run the service (also possible to run the [service_main/main.py](./../../service_main/main.py) with the necessary envs)
+- [run_components.ipynb](./run_components.ipynb): Notebook to run the service (also possible to run the [encodapy.service.service_main](./../../encodapy/service/service_main.py) with the necessary envs)
 - [main.py](./main.py): Main function to run the service
 
 ## Usage
+
 To run the example, you need to add a [.env](.env):
+
 ```
 FIWARE_IOTA= ["http://localhost:4041"]      # URL of the IoT Agent
 FIWARE_CB= ["http://localhost:1026"]        # URL of the Context Broker
@@ -21,9 +24,11 @@ LOG_LEVEL=["WARNING"]                       # Level for Logging Messages ("DEBUG
 
 RELOAD_STATICDATA=False                     # Should the static data be reloaded?
 ```
+
 ## Functionality
 
 This example shows how two components could work together.
+
 - The "Thermal Storage" component is used to calculate the load level of the thermal storage tank.
 - The "Two Point Controller" component is used to calculate a steering signal for loading the storage tank.
 

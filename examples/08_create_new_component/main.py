@@ -6,10 +6,10 @@ import asyncio
 
 from dotenv import load_dotenv
 
-from service_main.main import main
+from encodapy.service import service_main
 
 load_dotenv()
 print(f"Loaded env: {load_dotenv()}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(service_main())

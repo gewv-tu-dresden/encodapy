@@ -2,16 +2,18 @@
 Main file so start the example service
 """
 
-from typing import Type, cast
 import asyncio
-import signal
 import os
+import signal
+from typing import Type, cast
+
 from loguru import logger
+
 from encodapy.service.basic_service import ControllerBasicService
 from encodapy.service.component_runner_service import ComponentRunnerService
 
 
-async def main(service_class: Type[ControllerBasicService] = ComponentRunnerService):
+async def service_main(service_class: Type[ControllerBasicService] = ComponentRunnerService):
     """
     Main function to start the example service
 
@@ -48,17 +50,14 @@ async def main(service_class: Type[ControllerBasicService] = ComponentRunnerServ
         shutdown_event.set()
 
     try:
-
         signal.signal(signal.SIGINT, lambda s, f: signal_handler())
 
         signal.signal(signal.SIGTERM, lambda s, f: signal_handler())
     except (OSError, AttributeError) as e:
-
         signal.signal(signal.SIGINT, lambda s, f: signal_handler())
         logger.debug(f"Only SIGINT handler registered: {e}")
 
     try:
-
         service_tasks: list[asyncio.Task] = [
             task_for_check_health,
             task_for_calibration,
@@ -106,4 +105,4 @@ async def main(service_class: Type[ControllerBasicService] = ComponentRunnerServ
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(service_main())
