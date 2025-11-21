@@ -2,11 +2,9 @@
 Simple Method to caluculate the energy in a the thermal storage
 Author: Martin Altenburger, Paul Seidel
 """
-
 from typing import Optional, Union
-
+import math
 from loguru import logger
-
 from encodapy.components.basic_component import BasicComponent
 from encodapy.components.basic_component_config import (
     ComponentValidationError,
@@ -19,7 +17,7 @@ from encodapy.components.thermal_storage.thermal_storage_config import (
     ThermalStorageConfigData,
     ThermalStorageEnergyTypes,
     ThermalStorageInputData,
-    ThermalStorageOutputData,
+    ThermalStorageOutputData
 )
 from encodapy.utils.mediums import get_medium_parameter
 from encodapy.utils.models import (
@@ -27,7 +25,6 @@ from encodapy.utils.models import (
     StaticDataEntityModel,
 )
 from encodapy.utils.units import DataUnits
-
 
 class ThermalStorage(BasicComponent):
     """
@@ -63,6 +60,8 @@ class ThermalStorage(BasicComponent):
         super().__init__(
             config=config, component_id=component_id, static_data=static_data
         )
+        # Set the default value for the reference state of charge to None - start of the service
+        self.config_data.load_level_check.ref_state_of_charge = None
 
     def _calculate_volume_per_sensor(self) -> dict:
         """
@@ -175,6 +174,7 @@ class ThermalStorage(BasicComponent):
             )
 
             return limits
+        #TODO Add flexible limits method
 
         logger.warning(
             f"Unknown calculation method: {self.config_data.calculation_method.value}"
@@ -357,29 +357,42 @@ class ThermalStorage(BasicComponent):
         Returns:
             float: Adjusted state of charge
         """
+        if self.config_data.load_level_check.enabled is False:
+            return state_of_charge
 
         temperature_limits = self._get_sensor_limits(sensor_id=0)
-        ref_value = (
+        ref_temperature = (
             temperature_limits.minimal_temperature
             + (
                 temperature_limits.maximal_temperature
                 - temperature_limits.minimal_temperature
             )
-            * 0.1
+            * (self.config_data.load_level_check.minimal_level / 100)
         )
 
+        if self.input_data.temperature_1.value >= ref_temperature:
+            self.config_data.load_level_check.ref_state_of_charge = None
+            return state_of_charge
         if self.input_data.temperature_1.value < temperature_limits.minimal_temperature:
             return 0
-        if self.input_data.temperature_1.value < ref_value:
-            return (
+        if self.config_data.load_level_check.ref_state_of_charge is None:
+            self.config_data.load_level_check.ref_state_of_charge = state_of_charge
+
+        denominator =  ref_temperature - temperature_limits.minimal_temperature
+
+        if math.isclose(denominator, 0, abs_tol=1e-9):
+            logger.debug("Denominator in state of charge adjustment is too small, "
+                         "could not check the thermal storage level.")
+            current_factor = 1.0
+        else:
+            current_factor = (
                 self.input_data.temperature_1.value
                 - temperature_limits.minimal_temperature
-            ) / (
-                temperature_limits.maximal_temperature
-                - temperature_limits.minimal_temperature
+            ) / denominator
+        return (
+            current_factor
+            * self.config_data.load_level_check.ref_state_of_charge
             )
-
-        return state_of_charge
 
     def get_state_of_charge(self) -> tuple[float, DataUnits]:
         """

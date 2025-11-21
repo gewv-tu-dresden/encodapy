@@ -365,17 +365,42 @@ class DataPointSensorConfig(DataPointGeneral):
     value: ThermalStorageTemperatureSensors
 
 
+class ThermalStorageLoadLevelCheck(BaseModel):
+    """
+    Model for the state of charge check information of the thermal storage service.
+    """
+    enabled: bool = Field(
+        True,
+        description="Enable or disable the state of charge check",
+    )
+    minimal_level: float = Field(
+        15.0,
+        gt=0,
+        le=100,
+        description="""Threshold percentage for the upper temperature sensor.
+        When the top sensor falls below this percentage of the temperature range,
+        the state of charge is adjusted. (0-100)""",
+    )
+    ref_state_of_charge: Optional[float] = Field(
+        None,
+        ge=0,
+        le=100,
+        description="Reference state of charge level in percent (0-100) | set by the process",
+    )
+
 class ThermalStorageConfigData(ConfigData):
     """
     Model for the configuration data of the thermal storage service.
     
-    Contains:
-        `volume`: DataPointNumber : Volume of the thermal storage in m³
-        `medium`: DataPointMedium : Medium of the thermal storage
-        `sensor_config`: DataPointSensorConfig : \
+    Arguments:
+        volume (DataPointNumber ): Volume of the thermal storage in m³
+        medium: (DataPointMedium) : Medium of the thermal storage
+        sensor_config: (DataPointSensorConfig) : \
             Sensor configuration of the thermal storage
-        `calculation_method`: DataPointCalculationMethod : \
+        calculation_method: (DataPointCalculationMethod) : \
             Calculation method for the thermal storage
+        load_level_check: (ThermalStorageLoadLevelCheck) : \
+            Configuration for the state of charge check
     """
 
     volume: DataPointNumber = Field(
@@ -394,4 +419,8 @@ class ThermalStorageConfigData(ConfigData):
             value=ThermalStorageCalculationMethods.STATIC_LIMITS
         ),
         description="Calculation method for the thermal storage",
+    )
+    load_level_check: ThermalStorageLoadLevelCheck = Field(
+        ThermalStorageLoadLevelCheck.model_validate({}),
+        description="Configuration for the state of charge check",
     )
