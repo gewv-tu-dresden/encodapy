@@ -607,7 +607,12 @@ class MqttConnection:
                 output_time=output_attribute.timestamp
             )
             if isinstance(payload, str):
-                payload = payload.replace('"None"', 'null')
+                try:
+                    parsed = json.loads(payload)
+                    payload = json.dumps(parsed, default=str)
+                except json.JSONDecodeError:
+                    payload = re.sub(r'(:\s*)"(None)"', r'\1null', payload)
+                    payload = payload.replace('"None"', 'null')
             else:
                 # Use json.dumps to convert None to null in JSON output
                 payload = json.dumps(payload, default=str)
@@ -661,6 +666,7 @@ class MqttConnection:
             topic = mqtt_format.topic.render(
                 output_entity=output_entity__id_interface,
                 output_attribute=output_attribute__id_interface,
+                mqtt_topic_prefix=self.mqtt_params["topic_prefix"]
             )
         else:
             raise NotSupportedError(f"MQTT format {mqtt_format} is not supported.")

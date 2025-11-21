@@ -153,7 +153,7 @@ class OutputModel(BaseModel):
     interface: Interfaces
     id_interface: str = Field(default=None)
     attributes: list[AttributeModel]
-    commands: list[CommandModel] = []
+    commands: list[CommandModel] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def set_id_interface(self) -> "OutputModel":

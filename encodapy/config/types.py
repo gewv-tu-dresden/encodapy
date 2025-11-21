@@ -72,7 +72,9 @@ class MQTTFormatTypes(Enum):
     Enum class for MQTT format types
     Possible values:
     - PLAIN (plain): Plain format
-    - JSON (json): JSON format
+    - FIWARE_ATTR (fiware-attr): FIWARE attribute format
+    - FIWARE_CMDEXE (fiware-cmdexe): FIWARE command execution format
+    - TEMPLATE (template): Template-based format
     """
 
     PLAIN = "plain"

@@ -9,7 +9,7 @@ As an example of a simple service using Encodapy with a MQTT interface, a heatin
 - [main.py](./main.py): Script to start the service
 - [storage_dummy.py](./storage_dummy.py): Script to send different types of mqtt messages from a dummy storage to the service
 
-To run the example, you *need to add* a `.env` file with the content for MQTT_TEMPLATE_EXAMPLE03 (if you do not add the others, the here written standard values will be used):
+To run the example, you **need to add** a `.env` file with the content for MQTT_TEMPLATE_EXAMPLE03 (if you do not add the others, the here written standard values will be used):
 
 ```env
 MQTT_TEMPLATE_EXAMPLE03 = "custom_mqtt_template.json" # the only mandatory information

@@ -74,7 +74,7 @@ class MQTTTemplateConfig(BaseModel):
                     mqtt_format_template = None
         else:
             logger.error(f"Environment variable {env_variable} "
-                         f"for the mqtt-template {mqtt_format_template_env} not found.")
+                         f"for the mqtt-template '{mqtt_format_template_env}' not found.")
 
         if not isinstance(mqtt_format_template, dict):
             raise ValueError(
