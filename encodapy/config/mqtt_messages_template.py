@@ -151,7 +151,9 @@ class MQTTTemplateConfig(BaseModel):
             if param in template:
                 if param == "__MQTT_TOPIC_PREFIX__":
                     prefix = os.getenv("MQTT_TOPIC_PREFIX", "")
-                    if prefix != "" and not prefix.endswith("/"):
+                    if prefix == "":
+                        prefix_with_slash = ""
+                    elif not prefix.endswith("/"):
                         prefix_with_slash = prefix + "/"
                     else:
                         prefix_with_slash = prefix
