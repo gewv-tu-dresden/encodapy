@@ -6,7 +6,7 @@ Author: Martin Altenburger
 from asyncio import sleep
 import os
 from datetime import datetime, timedelta, timezone
-from typing import Union
+from typing import Union, Optional
 import concurrent.futures
 import multiprocessing
 from loguru import logger
@@ -211,9 +211,6 @@ class FiwareConnection:
                 - the latest timestamp of the output entity for the attribute
                 with the oldest value (None if no timestamp is available)
         """
-
-        
-        
         try:
             output_attributes_entity = self.cb_client.get_entity_attributes(
                 entity_id=output_entity.id_interface
@@ -881,7 +878,7 @@ class FiwareConnection:
         for attribute in output_attributes:
 
             fiware_unit = None
-            factor_unit_adjustment:float|None = 1.0
+            factor_unit_adjustment: Optional[float] = 1.0
 
             if attribute.id_interface in entity_attributes:
                 datatype = entity_attributes[attribute.id_interface].type
@@ -918,12 +915,7 @@ class FiwareConnection:
                 factor_unit_adjustment = get_unit_adjustment_factor(
                     unit_actual=attribute.unit, unit_target=fiware_unit
                 )
-            else:
-                logger.warning(
-                    f"Unit {attribute.unit} of attribute {attribute.id} from entity "
-                    f"{output_entity.id} not supported!"
-                )
-                factor_unit_adjustment = 1.0
+
             if isinstance(attribute.value, pd.DataFrame):
 
                 attrs.append(
@@ -953,8 +945,9 @@ class FiwareConnection:
                     and isinstance(attribute.value, (int, float)):
                     value = attribute.value * factor_unit_adjustment \
                         if attribute.value is not None else None
-                elif factor_unit_adjustment != 1 and factor_unit_adjustment is not None:
-                    raise TypeError(f"Unsupported type for unit adjustment: {type(attribute.value)}")
+                elif factor_unit_adjustment != 1.0 and factor_unit_adjustment is not None:
+                    raise TypeError("Unsupported type for unit adjustment: "
+                                    f"{type(attribute.value)}")
                 else:
                     value = attribute.value
             except TypeError as e:
@@ -972,7 +965,7 @@ class FiwareConnection:
                         metadata=meta_data,
                     )
                 )
-            except Exception as e:
+            except (ValueError, TypeError, AttributeError) as e:
                 logger.error(
                     f"Error while preparing attribute {attribute.id} of entity "
                     f"{output_entity.id} for FIWARE: {e}"

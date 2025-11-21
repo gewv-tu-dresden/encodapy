@@ -375,27 +375,32 @@ class ThermalStorageLoadLevelCheck(BaseModel):
     )
     minimal_level: float = Field(
         15.0,
-        ge=0,
+        gt=0,
         le=100,
-        description="Minimal share of the upper temperature of charge level in percent (0-100)",
+        description="""Threshold percentage for the upper temperature sensor.
+        When the top sensor falls below this percentage of the temperature range,
+        the state of charge is adjusted. (0-100)""",
     )
-    ref_state_of_charge: float|None = Field(
+    ref_state_of_charge: Optional[float] = Field(
         None,
         ge=0,
         le=100,
         description="Reference state of charge level in percent (0-100) | set by the process",
     )
+
 class ThermalStorageConfigData(ConfigData):
     """
     Model for the configuration data of the thermal storage service.
     
-    Contains:
-        `volume`: DataPointNumber : Volume of the thermal storage in m³
-        `medium`: DataPointMedium : Medium of the thermal storage
-        `sensor_config`: DataPointSensorConfig : \
+    Arguments:
+        volume (DataPointNumber ): Volume of the thermal storage in m³
+        medium: (DataPointMedium) : Medium of the thermal storage
+        sensor_config: (DataPointSensorConfig) : \
             Sensor configuration of the thermal storage
-        `calculation_method`: DataPointCalculationMethod : \
+        calculation_method: (DataPointCalculationMethod) : \
             Calculation method for the thermal storage
+        load_level_check: (ThermalStorageLoadLevelCheck) : \
+            Configuration for the state of charge check
     """
 
     volume: DataPointNumber = Field(

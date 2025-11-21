@@ -2,8 +2,8 @@
 Simple Method to caluculate the energy in a the thermal storage
 Author: Martin Altenburger, Paul Seidel
 """
-
 from typing import Optional, Union
+import math
 from loguru import logger
 from encodapy.components.basic_component import BasicComponent
 from encodapy.components.basic_component_config import (
@@ -367,7 +367,7 @@ class ThermalStorage(BasicComponent):
                 temperature_limits.maximal_temperature
                 - temperature_limits.minimal_temperature
             )
-            * (self.config_data.load_level_check.minimal_level/100)
+            * (self.config_data.load_level_check.minimal_level / 100)
         )
 
         if self.input_data.temperature_1.value >= ref_temperature:
@@ -378,14 +378,17 @@ class ThermalStorage(BasicComponent):
         if self.config_data.load_level_check.ref_state_of_charge is None:
             self.config_data.load_level_check.ref_state_of_charge = state_of_charge
 
-        current_factor = (
-            self.input_data.temperature_1.value
-            - temperature_limits.minimal_temperature
-        ) / (
-            ref_temperature
-            - temperature_limits.minimal_temperature
-        )
+        denominator =  ref_temperature - temperature_limits.minimal_temperature
 
+        if math.isclose(denominator, 0, abs_tol=1e-9):
+            logger.debug("Denominator in state of charge adjustment is too small, "
+                         "could not check the thermal storage level.")
+            current_factor = 1.0
+        else:
+            current_factor = (
+                self.input_data.temperature_1.value
+                - temperature_limits.minimal_temperature
+            ) / denominator
         return (
             current_factor
             * self.config_data.load_level_check.ref_state_of_charge
