@@ -17,6 +17,7 @@ from encodapy.components.basic_component_config import (
     IOAllocationModel,
 )
 from encodapy.service import ControllerBasicService
+from encodapy.utils.datapoints import DataPointGeneral
 from encodapy.utils.models import (
     DataTransferComponentModel,
     DataTransferModel,
@@ -133,6 +134,19 @@ class MQTTController(ControllerBasicService):
                 input_entities=data.input_entities, input_config=input_config
             )
 
+        # Get hysteresis from configuration, if not available use default value 5
+        if (
+            self.heater_config.config
+            and "temperature_hysteresis" in self.heater_config.config.root
+            and isinstance(
+                self.heater_config.config.root["temperature_hysteresis"],
+                DataPointGeneral,
+            )
+        ):
+            hysteresis = self.heater_config.config.root["temperature_hysteresis"].value
+        else:
+            hysteresis = 5
+
         heater_status = self.check_heater_command(
             temperature_setpoint=(
                 inputs["temperature_setpoint"]
@@ -144,14 +158,11 @@ class MQTTController(ControllerBasicService):
                 if isinstance(inputs["temperature_measured"], (int, float))
                 else 0.0
             ),
-            hysteresis=(
-                self.heater_config.config["temperature_hysteresis"]
-                if self.heater_config.config
-                and "temperature_hysteresis" in self.heater_config.config
-                else 5
-            ),
+            hysteresis=hysteresis,
             heater_status_old=bool(inputs["heater_status_current"]),
         )
+
+        controller_status = "heating" if heater_status == 1 else "idle"
 
         return DataTransferModel(
             components=[
@@ -164,7 +175,17 @@ class MQTTController(ControllerBasicService):
                     ].attribute,
                     value=heater_status,
                     timestamp=datetime.now(timezone.utc),
-                )
+                ),
+                DataTransferComponentModel(
+                    entity_id=self.heater_config.outputs.root[
+                        "controller_status"
+                    ].entity,
+                    attribute_id=self.heater_config.outputs.root[
+                        "controller_status"
+                    ].attribute,
+                    value=controller_status,
+                    timestamp=datetime.now(timezone.utc),
+                ),
             ]
         )
 

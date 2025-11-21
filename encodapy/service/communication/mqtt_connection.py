@@ -1,7 +1,7 @@
 """
 Description: This file contains the class MqttConnection,
 which is used to store the connection parameters for the MQTT broker.
-Author: Maximilian Beyer
+Author: Maximilian Beyer, Martin Altenburger
 """
 
 import json
@@ -9,12 +9,10 @@ import os
 import re
 from datetime import datetime, timezone
 from typing import Optional, Union
-
 import paho.mqtt.client as mqtt
 from loguru import logger
 from paho.mqtt.enums import CallbackAPIVersion
 from pandas import DataFrame
-
 from encodapy.config import (
     ConfigModel,
     DataQueryTypes,
@@ -22,15 +20,16 @@ from encodapy.config import (
     InputModel,
     Interfaces,
     OutputModel,
+    MQTTTemplateConfig,
+    MQTTFormatTypes
 )
 from encodapy.utils.error_handling import ConfigError, NotSupportedError
 from encodapy.utils.models import (
     AttributeModel,
     InputDataAttributeModel,
     InputDataEntityModel,
-    OutputDataEntityModel,
+    OutputDataEntityModel
 )
-
 
 class MqttConnection:
     """
@@ -284,7 +283,8 @@ class MqttConnection:
                 payload = None
 
         except TypeError as e:
-            logger.warning(f"Failed to convert payload: {e}, set it to None")
+            logger.warning(f"Failed to convert payload: {payload}, set it to None "
+                           f"Error-Message: {e}")
             payload = None
 
         return payload
@@ -414,7 +414,7 @@ class MqttConnection:
                     item["payload"] = value
                     item["timestamp"] = timestamp
                     debug_message += (
-                        f"Updated MQTT message store for topic {topic} with value: {value} "
+                        f" Updated MQTT message store for topic {topic} with value: {value} "
                         f"and timestamp: {timestamp}"
                     )
                     continue
@@ -542,6 +542,12 @@ class MqttConnection:
         if not isinstance(payload, str):
             return payload
 
+        try:
+            # If the payload is a datetime string, return it as string
+            _ = datetime.fromisoformat(payload)
+            return payload
+        except ValueError:
+            pass
         # Try to parse JSON (automatically handles int, float, bool, dicts, lists)
         try:
             parsed = json.loads(payload)
@@ -570,6 +576,103 @@ class MqttConnection:
         # if nothing else worked, return the payload as is
         return payload
 
+    def _prepare_mqtt_payload(self,
+                              output_entity: OutputModel,
+                              output_attribute: AttributeModel
+                              ) -> Union[str, float, int, bool, dict, list, DataFrame, None]:
+        """
+        Function to prepare the MQTT payload based on the output attribute's mqtt_format.
+        Args:
+            output_entity (OutputModel): The output entity.
+            output_attribute (AttributeModel): The output attribute.
+        Returns:
+            Union[str, float, int, bool, dict, list, DataFrame, None]: The prepared payload.
+        """
+        payload: Union[str, float, int, bool, dict, list, DataFrame, None] = None
+        if output_attribute.mqtt_format is MQTTFormatTypes.PLAIN:
+            payload = output_attribute.value
+        elif output_attribute.mqtt_format is MQTTFormatTypes.FIWARE_ATTR or \
+             output_attribute.mqtt_format is MQTTFormatTypes.FIWARE_CMDEXE:
+            payload = {}
+            payload[output_attribute.id_interface] = output_attribute.value
+            if output_attribute.timestamp is not None and \
+                output_attribute.mqtt_format is MQTTFormatTypes.FIWARE_ATTR:
+                payload["TimeInstant"] = self._get_iso_timestamp(output_attribute.timestamp)
+        elif isinstance(output_attribute.mqtt_format, MQTTTemplateConfig):
+            payload = output_attribute.mqtt_format.payload.render(
+                output_entity=output_entity.id_interface,
+                output_attribute=output_attribute.id_interface,
+                output_value=output_attribute.value,
+                output_unit=output_attribute.unit,
+                output_time=output_attribute.timestamp
+            )
+            if isinstance(payload, str):
+                try:
+                    parsed = json.loads(payload)
+                    payload = json.dumps(parsed, default=str)
+                except json.JSONDecodeError:
+                    payload = re.sub(r'(:\s*)"(None)"', r'\1null', payload)
+                    payload = payload.replace('"None"', 'null')
+            else:
+                # Use json.dumps to convert None to null in JSON output
+                payload = json.dumps(payload, default=str)
+        else:
+            raise NotSupportedError(f"MQTT format {output_attribute.mqtt_format} is not supported.")
+        return payload
+
+    def _prepare_mqtt_topic(self,
+                            mqtt_format: Union[MQTTFormatTypes, MQTTTemplateConfig],
+                            output_entity__id_interface: str,
+                            output_attribute__id_interface: str
+                            ) -> str:
+        """
+        Function to prepare the MQTT topic based on the output attribute's mqtt_format.
+
+        Args:
+            mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]): \
+                The MQTT format type or template.
+            output_entity__id_interface (str): The output entity's id_interface.
+            output_attribute__id_interface (str): The output attribute's id_interface.
+        Returns:
+            str: The prepared MQTT topic.
+        """
+        topic = ""
+        if mqtt_format is MQTTFormatTypes.PLAIN:
+            topic = self.assemble_topic_parts(
+                    [
+                        self.mqtt_params["topic_prefix"],
+                        output_entity__id_interface,
+                        output_attribute__id_interface
+                    ]
+                )
+        elif mqtt_format is MQTTFormatTypes.FIWARE_ATTR:
+            topic = self.assemble_topic_parts(
+                    [
+                        self.mqtt_params["topic_prefix"],
+                        output_entity__id_interface,
+                        "attrs",
+                    ]
+                )
+        elif mqtt_format is MQTTFormatTypes.FIWARE_CMDEXE:
+            topic = self.assemble_topic_parts(
+                    [
+                        self.mqtt_params["topic_prefix"],
+                        output_entity__id_interface,
+                        "cmdexe",
+                    ]
+                )
+        elif isinstance(mqtt_format, MQTTTemplateConfig):
+
+            topic = mqtt_format.topic.render(
+                output_entity=output_entity__id_interface,
+                output_attribute=output_attribute__id_interface,
+                mqtt_topic_prefix=self.mqtt_params["topic_prefix"]
+            )
+        else:
+            raise NotSupportedError(f"MQTT format {mqtt_format} is not supported.")
+
+        return topic
+
     def send_data_to_mqtt(
         self,
         output_entity: OutputModel,
@@ -596,15 +699,25 @@ class MqttConnection:
 
         # publish the data to the MQTT broker
         for attribute in output_attributes:
-            topic = self.assemble_topic_parts(
-                [
-                    self.mqtt_params["topic_prefix"],
-                    output_entity.id_interface,
-                    attribute.id_interface,
-                ]
-            )
-            payload = attribute.value
-            self.publish(topic, payload)
+
+            try:
+                self.publish(
+                    topic=self._prepare_mqtt_topic(
+                        mqtt_format=attribute.mqtt_format,
+                        output_entity__id_interface=output_entity.id_interface,
+                        output_attribute__id_interface=attribute.id_interface
+                        ),
+                    payload=self._prepare_mqtt_payload(
+                        output_entity=output_entity,
+                        output_attribute=attribute
+                    )
+                )
+            except (ValueError, KeyError, NotSupportedError) as e:
+                logger.error(
+                    f"Failed to publish data for attribute {attribute.id} "
+                    f"of entity {output_entity.id}: {e}"
+                )
+                continue
 
     def _get_last_timestamp_for_mqtt_output(
         self, output_entity: OutputModel
@@ -628,3 +741,8 @@ class MqttConnection:
             OutputDataEntityModel(id=output_entity.id, attributes_status=timestamps),
             timestamp_latest_output,
         )
+    @staticmethod
+    def _get_iso_timestamp(timestamp: datetime) -> str:
+        time_iso = str(timestamp.astimezone(timezone.utc).replace(tzinfo=None).isoformat()) + 'Z'
+
+        return time_iso

@@ -56,6 +56,15 @@
     PATH_OF_INPUT_FILE = "path_to_the_file/validation_data.csv"
     PATH_OF_STATIC_DATA = "path_to_the_file/static_data.json"
     START_TIME_FILE = "2023-01-01 00:00"  # Default / It needs to be ISO compatible (https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat).
+
+    # MQTT-Interface
+    MQTT_HOST=              # Host of the MQTT-Broker
+    MQTT_PORT=              # Port of the MQTT-Broker
+    MQTT_USERNAME=          # Username for the MQTT-Broker
+    MQTT_PASSWORD=          # Password for the MQTT-Broker
+    MQTT_TOPIC_PREFIX=      # Prefix for MQTT-Topics (used for plan and fiware styles)
+    MQTT_TEMPLATE_<NAME>=   # ENV with a template for the mqtt-messages or a path to a message template as .json (e.g., MQTT_TEMPLATE_EXAMPLE03)
+    MQTT_START_TIME=        # Time in seconds to wait for the mqtt-broker at the service start
     ```
 
 ## Usage

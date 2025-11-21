@@ -7,7 +7,7 @@ Author: Martin Altenburger
 from asyncio import sleep
 import os
 from datetime import datetime, timedelta, timezone
-from typing import Union
+from typing import Union, Optional
 import concurrent.futures
 import multiprocessing
 from loguru import logger
@@ -868,7 +868,7 @@ class FiwareConnection:
         for attribute in output_attributes:
 
             fiware_unit = None
-            factor_unit_adjustment = 1
+            factor_unit_adjustment: Optional[float] = 1.0
 
             if attribute.id_interface in entity_attributes:
                 datatype = entity_attributes[attribute.id_interface].type
@@ -892,17 +892,20 @@ class FiwareConnection:
                         name="unitCode", type=DataType.TEXT, value=attribute.unit.value
                     )
                 )
+                factor_unit_adjustment = 1.0
             elif attribute.unit is None:
                 logger.debug(
                     f"No information about the unit of the attribute {attribute.id} "
                     f"from entity {output_entity.id} available!"
                 )
+                factor_unit_adjustment = 1.0
 
             elif fiware_unit is not attribute.unit:
 
                 factor_unit_adjustment = get_unit_adjustment_factor(
                     unit_actual=attribute.unit, unit_target=fiware_unit
                 )
+
             if isinstance(attribute.value, pd.DataFrame):
 
                 attrs.append(
@@ -926,18 +929,37 @@ class FiwareConnection:
                     value=attribute.timestamp.strftime("%Y-%m-%dT%H:%M:%S%z"),
                 )
             )
-            attrs.append(
-                NamedContextAttribute(
-                    name=attribute.id_interface,
-                    value=(
-                        attribute.value * factor_unit_adjustment
-                        if attribute.value is not None
-                        else None
-                    ),
-                    type=datatype,
-                    metadata=meta_data,
+
+            try:
+                if factor_unit_adjustment is not None \
+                    and isinstance(attribute.value, (int, float)):
+                    value = attribute.value * factor_unit_adjustment \
+                        if attribute.value is not None else None
+                elif factor_unit_adjustment != 1.0 and factor_unit_adjustment is not None:
+                    raise TypeError("Unsupported type for unit adjustment: "
+                                    f"{type(attribute.value)}")
+                else:
+                    value = attribute.value
+            except TypeError as e:
+                logger.error(
+                    f"Error while adjusting unit for attribute {attribute.id} of entity "
+                    f"{output_entity.id} for FIWARE: {e}"
                 )
-            )
+                value = attribute.value
+            try:
+                attrs.append(
+                    NamedContextAttribute(
+                        name=attribute.id_interface,
+                        value=value,
+                        type=datatype,
+                        metadata=meta_data,
+                    )
+                )
+            except (ValueError, TypeError, AttributeError) as e:
+                logger.error(
+                    f"Error while preparing attribute {attribute.id} of entity "
+                    f"{output_entity.id} for FIWARE: {e}"
+                )
 
         cmds = []
         for command in output_commands:

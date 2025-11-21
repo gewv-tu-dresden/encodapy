@@ -76,7 +76,12 @@ def get_component_model(
     else:
         raise ValueError(f"Unknown model type: {model_type}")
 
-    config_module = importlib.import_module(module_path)
+    try:
+        config_module = importlib.import_module(module_path)
+    except ImportError as e:
+        logger.error(f"Error importing module {module_path}: {e}")
+        return None
+
     model_name = "".join(part.capitalize() for part in component_type.split("_"))
 
     model_name = model_name if model_subname is None else f"{model_name}{model_subname}"

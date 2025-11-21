@@ -16,7 +16,10 @@ from encodapy.utils.models import (
     DataTransferComponentModel,
     AttributeTypes,
 )
-from encodapy.components.basic_component import BasicComponent
+from encodapy.components.basic_component import (
+    BasicComponent,
+    ComponentValidationError
+)
 from encodapy.components.component_loader import get_component_class_model
 
 
@@ -144,7 +147,7 @@ class ComponentRunnerService(ControllerBasicService):
             try:
                 component_results = component.run(data)
 
-            except ValueError as e:
+            except (ValueError, AttributeError, KeyError, TypeError, ComponentValidationError) as e:
                 logger.error(
                     f"Error occurred while running component "
                     f"{component.component_config.id}: {e}"

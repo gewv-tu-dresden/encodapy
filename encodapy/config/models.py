@@ -15,10 +15,12 @@ from encodapy.config.types import (
     AttributeTypes,
     Interfaces,
     TimerangeTypes,
+    MQTTFormatTypes,
 )
 from encodapy.utils.error_handling import ConfigError, InterfaceNotActive
 from encodapy.utils.units import DataUnits, TimeUnits
 from encodapy.components.basic_component_config import ControllerComponentModel
+from encodapy.config.mqtt_messages_template import MQTTTemplateConfig
 
 
 class InterfaceModel(BaseModel):
@@ -29,7 +31,6 @@ class InterfaceModel(BaseModel):
     mqtt: bool = False
     fiware: bool = False
     file: bool = False
-
 
 class AttributeModel(BaseModel):
     """
@@ -43,7 +44,8 @@ class AttributeModel(BaseModel):
     - unit: The unit of the attribute
     - datatype: The datatype of the attribute
     - timestamp: The timestamp of the attribute
-
+    - mqtt_format: The format of the attribute for MQTT \
+        (if not set, the default format is used) - only for mqtt interface needed
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -55,6 +57,7 @@ class AttributeModel(BaseModel):
     unit: Union[DataUnits, None] = None
     datatype: DataType = DataType("Number")
     timestamp: Union[datetime, None] = None
+    mqtt_format: Union[MQTTFormatTypes, MQTTTemplateConfig] = MQTTFormatTypes.PLAIN
 
     @model_validator(mode="after")
     def set_id_interface(self) -> "AttributeModel":
@@ -150,7 +153,7 @@ class OutputModel(BaseModel):
     interface: Interfaces
     id_interface: str = Field(default=None)
     attributes: list[AttributeModel]
-    commands: list[CommandModel]
+    commands: list[CommandModel] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def set_id_interface(self) -> "OutputModel":

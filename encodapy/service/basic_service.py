@@ -3,14 +3,15 @@ Module for the basic service class for the data processing and transfer via diff
 Author: Martin Altenburger
 """
 
+import asyncio
 import os
 import sys
-from asyncio import sleep
 from datetime import datetime
-from typing import Union, Optional
-import asyncio
+from typing import Optional, Union
+
 from loguru import logger
 from pydantic import ValidationError
+
 from encodapy.config import (
     AttributeModel,
     CommandModel,
@@ -147,10 +148,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """
         logger.debug("There is nothing else to prepare for the start of the service.")
 
-    def reload_static_data(self,
-                           method: DataQueryTypes,
-                           staticdata: list
-                           ) -> list[StaticDataEntityModel]:
+    def reload_static_data(
+        self, method: DataQueryTypes, staticdata: list
+    ) -> list[StaticDataEntityModel]:
         """
         Function to reload the static data
         Args:
@@ -228,7 +228,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 )
                 output_timestamps.append(entity_timestamps)
                 output_latest_timestamps.append(output_latest_timestamp)
-                logger.info("File interface, output_latest_timestamp is not defined.")
+                logger.debug("File interface, output_latest_timestamp is not defined.")
 
             elif output_entity.interface == Interfaces.MQTT:
                 entity_timestamps, output_latest_timestamp = (
@@ -237,7 +237,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 output_timestamps.append(entity_timestamps)
                 output_latest_timestamps.append(output_latest_timestamp)
 
-            await sleep(0.01)
+            await asyncio.sleep(0.01)
 
         if None in output_latest_timestamps:
             output_latest_timestamp = None
@@ -250,21 +250,17 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         for input_entity in self.config.inputs:
             if input_entity.interface == Interfaces.FIWARE:
                 fiware_input = self.get_data_from_fiware(
-                        method=method,
-                        entity=input_entity,
-                        timestamp_latest_output=output_latest_timestamp,
-                    )
+                    method=method,
+                    entity=input_entity,
+                    timestamp_latest_output=output_latest_timestamp,
+                )
                 if fiware_input is not None:
-                    input_data.append(
-                        fiware_input
-                    )
+                    input_data.append(fiware_input)
 
             elif input_entity.interface == Interfaces.FILE:
                 file_input = self.get_data_from_file(method=method, entity=input_entity)
                 if file_input is not None:
-                    input_data.append(
-                        file_input
-                    )
+                    input_data.append(file_input)
 
             elif input_entity.interface == Interfaces.MQTT:
                 input_data.append(
@@ -274,7 +270,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                     )
                 )
 
-            await sleep(0.01)
+            await asyncio.sleep(0.01)
 
         if self.reload_staticdata or self.staticdata is None:
             self.staticdata = self.reload_static_data(method=method, staticdata=[])
@@ -426,7 +422,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                     output_attributes=output_attributes,
                 )
 
-            await sleep(0.01)
+            await asyncio.sleep(0.01)
 
         logger.debug("Finished sending output data")
 
@@ -448,7 +444,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         while ((datetime.now() - start_time).total_seconds()) < hold_time:
             if self.shutdown_event.is_set():
                 break
-            await sleep(0.01)
+            await asyncio.sleep(0.01)
 
     async def calculation(
         self,
@@ -601,7 +597,8 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         # so that the mqtt interfaces is ready and data is available
         if self.config.interfaces.mqtt:
             await self._hold_sampling_time(
-                start_time=datetime.now(), hold_time=sampling_time
+                start_time=datetime.now(),
+                hold_time=float(os.environ.get("MQTT_START_TIME", sampling_time)),
             )
 
         while not self.shutdown_event.is_set():
@@ -663,7 +660,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """
         Function to check the health-status of the service
         """
-        logger.debug("Start the the Health-Check")
+        logger.debug("Start the Health-Check")
         while not self.shutdown_event.is_set():
             start_time = datetime.now()
             sampling_time = (

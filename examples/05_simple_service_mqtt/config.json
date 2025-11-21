@@ -44,7 +44,12 @@
                 {
                     "id": "switch_on_boiler",
                     "id_interface": "pb_heat_on",
-                    "value": 0
+                    "mqtt_format": "plain"
+                },
+                {
+                    "id": "status",
+                    "id_interface": "status",
+                    "mqtt_format": "template_example03"
                 }
             ],
             "commands": []
@@ -73,10 +78,16 @@
                 "heater_status_recommand": {
                     "entity": "boiler-controller",
                     "attribute": "switch_on_boiler"
+                },
+                "controller_status": {
+                    "entity": "boiler-controller",
+                    "attribute": "status"
                 }
             },
             "config": {
-                "temperature_hysteresis": 5
+                "temperature_hysteresis": {
+                    "value": 5
+                }
             }
         }
     ],
