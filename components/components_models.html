@@ -1,0 +1,721 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Component Configuration Models &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=da2a414a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Built-in Components" href="built_in_components.html" />
+    <link rel="prev" title="Component Architecture of EnCoDaPy" href="components.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">“EnCoDaPy” – Energy Control and Data Preparation in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_service.html">EnCoDaPy Basic Service</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../components.html">EnCoDaPy Components</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="components.html">Component Architecture of EnCoDaPy</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Component Configuration Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-model">Configuration Model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.components.basic_component_config.ControllerComponentModel"><code class="docutils literal notranslate"><span class="pre">ControllerComponentModel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-encodapy.components.basic_component_config">Specific Sub-Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.components.basic_component_config.ComponentData"><code class="docutils literal notranslate"><span class="pre">ComponentData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.components.basic_component_config.ComponentIOModel"><code class="docutils literal notranslate"><span class="pre">ComponentIOModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.components.basic_component_config.ConfigData"><code class="docutils literal notranslate"><span class="pre">ConfigData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.components.basic_component_config.ConfigDataPoints"><code class="docutils literal notranslate"><span class="pre">ConfigDataPoints</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.components.basic_component_config.IOAllocationModel"><code class="docutils literal notranslate"><span class="pre">IOAllocationModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.components.basic_component_config.IOModell"><code class="docutils literal notranslate"><span class="pre">IOModell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.components.basic_component_config.InputData"><code class="docutils literal notranslate"><span class="pre">InputData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.components.basic_component_config.OutputData"><code class="docutils literal notranslate"><span class="pre">OutputData</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="built_in_components.html">Built-in Components</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../components.html">EnCoDaPy Components</a></li>
+      <li class="breadcrumb-item active">Component Configuration Models</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/main/docs/source/components/components_models.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="component-configuration-models">
+<h1>Component Configuration Models<a class="headerlink" href="#component-configuration-models" title="Link to this heading"></a></h1>
+<section id="configuration-model">
+<h2>Configuration Model<a class="headerlink" href="#configuration-model" title="Link to this heading"></a></h2>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ControllerComponentModel">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.components.basic_component_config.</span></span><span class="sig-name descname"><span class="pre">ControllerComponentModel</span></span><a class="reference internal" href="../_modules/encodapy/components/basic_component_config.html#ControllerComponentModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.basic_component_config.ControllerComponentModel" title="Link to this definition"></a></dt>
+<dd><p>Model for the configuration of the controller components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>active</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Whether the component is active or not</p></li>
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The id of the component</p></li>
+<li><p><strong>type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The type of the component (e.g. thermal storage, heat pump, etc. /             needs to be defined for individual components)</p></li>
+<li><p><strong>inputs</strong> (<a class="reference internal" href="#encodapy.components.basic_component_config.IOModell" title="encodapy.components.basic_component_config.IOModell"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOModell</span></code></a>) – The inputs of the component as a dictionary with IOAllocationModel             for the individual inputs</p></li>
+<li><p><strong>outputs</strong> (<a class="reference internal" href="#encodapy.components.basic_component_config.IOModell" title="encodapy.components.basic_component_config.IOModell"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOModell</span></code></a>) – The outputs of the component as a dictionary with IOAllocationModel             for the individual outputs</p></li>
+<li><p><strong>config</strong> (<a class="reference internal" href="#encodapy.components.basic_component_config.ConfigDataPoints" title="encodapy.components.basic_component_config.ConfigDataPoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigDataPoints</span></code></a>) – The configuration of the component as a dictionary with             IOAllocationModel for the individual static data or DataPointModel with direct values</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ControllerComponentModel&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for the configuration of the controller components.\n\nAttributes:\n    active (bool): Whether the component is active or not\n    id (str): The id of the component\n    type (str): The type of the component (e.g. thermal storage, heat pump, etc. /             needs to be defined for individual components)\n    inputs (IOModell): The inputs of the component as a dictionary with IOAllocationModel             for the individual inputs\n    outputs (IOModell): The outputs of the component as a dictionary with IOAllocationModel             for the individual outputs\n    config (ConfigDataPoints): The configuration of the component as a dictionary with             IOAllocationModel for the individual static data or DataPointModel with direct values&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;active&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Active&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/IOModell&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/IOModell&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/ConfigDataPoints&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;ConfigDataPoints&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">               </span><span class="p">{</span>
+<span class="w">                  </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/IOAllocationModel&quot;</span>
+<span class="w">               </span><span class="p">},</span>
+<span class="w">               </span><span class="p">{</span>
+<span class="w">                  </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DataPointGeneral&quot;</span>
+<span class="w">               </span><span class="p">}</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for the configuration of config data points.\n\nSee also :class:`~encodapy.components.basic_component_config.IOAllocationModel` and\n:class:`~encodapy.utils.datapoints.DataPointGeneral`.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ConfigDataPoints&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;DataPointGeneral&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for datapoints of the controller component.\n\nAttributes:\n    value (Any): The value of the datapoint, which can be of various types             (string, float, int, boolean, dictionary, list, DataFrame, or None).\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DataUnits&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date-time&quot;</span><span class="p">,</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;value&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataPointGeneral&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTQ&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;P1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;OHM&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;VLT&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataUnits&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;IOAllocationModel&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for the input or output allocation.\n\nAttributes:\n    entity (str): ID of the entity to which the input or output is allocated\n    attribute (str): ID of the attribute to which the input or output is allocated&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ID of the entity to which the input or output is allocated&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Entity&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;attribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ID of the attribute to which the input or output is allocated&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Attribute&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;entity&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;attribute&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IOAllocationModel&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;IOModell&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/IOAllocationModel&quot;</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for the input, staticdata and output of a component.\n\nIt contains a dictionary with the key as the ID of the input, output or static data\nand the value as the allocation model\n\nSee also :class:`~encodapy.components.basic_component_config.IOAllocationModel`.\n\nThere is no validation for this.\nIt is used to create the the ComponentIOModel for each component.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IOModell&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;type&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;outputs&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ControllerComponentModel.active">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">active</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#encodapy.components.basic_component_config.ControllerComponentModel.active" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ControllerComponentModel.id">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.components.basic_component_config.ControllerComponentModel.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ControllerComponentModel.type">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.components.basic_component_config.ControllerComponentModel.type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ControllerComponentModel.inputs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.components.basic_component_config.IOModell" title="encodapy.components.basic_component_config.IOModell"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOModell</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.components.basic_component_config.ControllerComponentModel.inputs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ControllerComponentModel.outputs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">outputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.components.basic_component_config.IOModell" title="encodapy.components.basic_component_config.IOModell"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOModell</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.components.basic_component_config.ControllerComponentModel.outputs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ControllerComponentModel.config">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference internal" href="#encodapy.components.basic_component_config.ConfigDataPoints" title="encodapy.components.basic_component_config.ConfigDataPoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigDataPoints</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#encodapy.components.basic_component_config.ControllerComponentModel.config" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-encodapy.components.basic_component_config">
+<span id="specific-sub-models"></span><h2>Specific Sub-Models<a class="headerlink" href="#module-encodapy.components.basic_component_config" title="Link to this heading"></a></h2>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ComponentData">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.components.basic_component_config.</span></span><span class="sig-name descname"><span class="pre">ComponentData</span></span><a class="reference internal" href="../_modules/encodapy/components/basic_component_config.html#ComponentData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.basic_component_config.ComponentData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic Validation v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Basemodel for the configuration of the datapoints of a component</p>
+<p>Base for <a class="reference internal" href="#encodapy.components.basic_component_config.InputData" title="encodapy.components.basic_component_config.InputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputData</span></code></a>,         <a class="reference internal" href="#encodapy.components.basic_component_config.OutputData" title="encodapy.components.basic_component_config.OutputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">OutputData</span></code></a>        and <a class="reference internal" href="#encodapy.components.basic_component_config.ConfigData" title="encodapy.components.basic_component_config.ConfigData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigData</span></code></a></p>
+<p>Provides a validator to check the units of the input values         and convert them if necessary.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ComponentData&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Basemodel for the configuration of the datapoints of a component\n\nBase for :class:`~encodapy.components.basic_component_config.InputData`,         :class:`~encodapy.components.basic_component_config.OutputData`        and :class:`~encodapy.components.basic_component_config.ConfigData`\n\nProvides a validator to check the units of the input values         and convert them if necessary.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p></dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ComponentIOModel">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.components.basic_component_config.</span></span><span class="sig-name descname"><span class="pre">ComponentIOModel</span></span><a class="reference internal" href="../_modules/encodapy/components/basic_component_config.html#ComponentIOModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.basic_component_config.ComponentIOModel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic Validation v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Model for the input and output of the thermal storage service.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">InputModel</span></code>) – Input configuration for the thermal storage service</p></li>
+<li><p><strong>output</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">OutputModel</span></code>) – Output configuration for the thermal storage service</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ComponentIOModel&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for the input and output of the thermal storage service.\n\nAttributes:\n    input (:class:`~encodapy.utils.datapoints.InputModel`):             Input configuration for the thermal storage service\n    output (:class:`~encodapy.utils.datapoints.OutputModel`):             Output configuration for the thermal storage service&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;allOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/InputData&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Input configuration for the thermal storage service&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;output&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;allOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/OutputData&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Output configuration for the thermal storage service&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;InputData&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base model for the component input configuration.\n\nSubclass this and declare fields for each input datapoint. InputData\ninherits the unit-checking validator from         :class:`~encodapy.components.basic_component_config.ComponentData`,\nwhich will validate and convert units when possible.\n\nFields should be instances of :class:`~encodapy.utils.datapoints.DataPointGeneral`\n(or subclasses thereof) so the validator can handle unit and value conversion.\n\nNeeds to be implemented for the specific component.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;InputData&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;OutputData&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base model for the component output configuration.\n\nSubclass this and declare fields for each output datapoint. OutputData\ninherits the unit-checking validator from         :class:`~encodapy.components.basic_component_config.ComponentData`,\nwhich will validate and convert units when possible.\n\nFields should be instances of :class:`~encodapy.utils.datapoints.DataPointGeneral`\n(or subclasses thereof) so the validator can handle unit and value conversion.\n\nNeeds to be implemented for the specific component.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OutputData&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;input&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;output&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ComponentIOModel.input">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">input</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.components.basic_component_config.InputData" title="encodapy.components.basic_component_config.InputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputData</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.components.basic_component_config.ComponentIOModel.input" title="Link to this definition"></a></dt>
+<dd><p>Input configuration for the thermal storage service</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ComponentIOModel.output">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.components.basic_component_config.OutputData" title="encodapy.components.basic_component_config.OutputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">OutputData</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.components.basic_component_config.ComponentIOModel.output" title="Link to this definition"></a></dt>
+<dd><p>Output configuration for the thermal storage service</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ConfigData">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.components.basic_component_config.</span></span><span class="sig-name descname"><span class="pre">ConfigData</span></span><a class="reference internal" href="../_modules/encodapy/components/basic_component_config.html#ConfigData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.basic_component_config.ConfigData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#encodapy.components.basic_component_config.ComponentData" title="encodapy.components.basic_component_config.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a></p>
+<p>Base model for the component static configuration data.</p>
+<p>Subclass this and declare fields for each static configuration datapoint. ConfigData
+inherits the unit-checking validator from         <a class="reference internal" href="#encodapy.components.basic_component_config.ComponentData" title="encodapy.components.basic_component_config.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a>,
+which will validate and convert units when possible.</p>
+<p>Fields should be instances of <a class="reference internal" href="../basic_service/utils_models.html#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a>
+(or subclasses thereof) so the validator can handle unit and value conversion.</p>
+<p>Needs to be implemented by the user if static configuration is required.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ConfigData&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base model for the component static configuration data.\n\nSubclass this and declare fields for each static configuration datapoint. ConfigData\ninherits the unit-checking validator from         :class:`~encodapy.components.basic_component_config.ComponentData`,\nwhich will validate and convert units when possible.\n\nFields should be instances of :class:`~encodapy.utils.datapoints.DataPointGeneral`\n(or subclasses thereof) so the validator can handle unit and value conversion.\n\nNeeds to be implemented by the user if static configuration is required.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p></dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.ConfigDataPoints">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.components.basic_component_config.</span></span><span class="sig-name descname"><span class="pre">ConfigDataPoints</span></span><a class="reference internal" href="../_modules/encodapy/components/basic_component_config.html#ConfigDataPoints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.basic_component_config.ConfigDataPoints" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RootModel[Dict[str,</span> <span class="pre">Union[IOAllocationModel,</span> <span class="pre">DataPointGeneral]]]</span></code></p>
+<p>Model for the configuration of config data points.</p>
+<p>See also <a class="reference internal" href="#encodapy.components.basic_component_config.IOAllocationModel" title="encodapy.components.basic_component_config.IOAllocationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOAllocationModel</span></code></a> and
+<a class="reference internal" href="../basic_service/utils_models.html#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a>.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ConfigDataPoints&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for the configuration of config data points.\n\nSee also :class:`~encodapy.components.basic_component_config.IOAllocationModel` and\n:class:`~encodapy.utils.datapoints.DataPointGeneral`.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;DataPointGeneral&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for datapoints of the controller component.\n\nAttributes:\n    value (Any): The value of the datapoint, which can be of various types             (string, float, int, boolean, dictionary, list, DataFrame, or None).\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DataUnits&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date-time&quot;</span><span class="p">,</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;value&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataPointGeneral&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTQ&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;P1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;OHM&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;VLT&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataUnits&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;IOAllocationModel&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for the input or output allocation.\n\nAttributes:\n    entity (str): ID of the entity to which the input or output is allocated\n    attribute (str): ID of the attribute to which the input or output is allocated&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ID of the entity to which the input or output is allocated&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Entity&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;attribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ID of the attribute to which the input or output is allocated&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Attribute&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;entity&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;attribute&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IOAllocationModel&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">         </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/IOAllocationModel&quot;</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DataPointGeneral&quot;</span>
+<span class="w">         </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p></dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.IOAllocationModel">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.components.basic_component_config.</span></span><span class="sig-name descname"><span class="pre">IOAllocationModel</span></span><a class="reference internal" href="../_modules/encodapy/components/basic_component_config.html#IOAllocationModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.basic_component_config.IOAllocationModel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic Validation v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Model for the input or output allocation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entity</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – ID of the entity to which the input or output is allocated</p></li>
+<li><p><strong>attribute</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – ID of the attribute to which the input or output is allocated</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IOAllocationModel&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for the input or output allocation.\n\nAttributes:\n    entity (str): ID of the entity to which the input or output is allocated\n    attribute (str): ID of the attribute to which the input or output is allocated&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ID of the entity to which the input or output is allocated&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Entity&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;attribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ID of the attribute to which the input or output is allocated&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Attribute&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;entity&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;attribute&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.IOAllocationModel.entity">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">entity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.components.basic_component_config.IOAllocationModel.entity" title="Link to this definition"></a></dt>
+<dd><p>ID of the entity to which the input or output is allocated</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.IOAllocationModel.attribute">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attribute</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.components.basic_component_config.IOAllocationModel.attribute" title="Link to this definition"></a></dt>
+<dd><p>ID of the attribute to which the input or output is allocated</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.IOModell">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.components.basic_component_config.</span></span><span class="sig-name descname"><span class="pre">IOModell</span></span><a class="reference internal" href="../_modules/encodapy/components/basic_component_config.html#IOModell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.basic_component_config.IOModell" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RootModel[Dict[str,</span> <span class="pre">IOAllocationModel]]</span></code></p>
+<p>Model for the input, staticdata and output of a component.</p>
+<p>It contains a dictionary with the key as the ID of the input, output or static data
+and the value as the allocation model</p>
+<p>See also <a class="reference internal" href="#encodapy.components.basic_component_config.IOAllocationModel" title="encodapy.components.basic_component_config.IOAllocationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOAllocationModel</span></code></a>.</p>
+<p>There is no validation for this.
+It is used to create the the ComponentIOModel for each component.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IOModell&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for the input, staticdata and output of a component.\n\nIt contains a dictionary with the key as the ID of the input, output or static data\nand the value as the allocation model\n\nSee also :class:`~encodapy.components.basic_component_config.IOAllocationModel`.\n\nThere is no validation for this.\nIt is used to create the the ComponentIOModel for each component.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;IOAllocationModel&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for the input or output allocation.\n\nAttributes:\n    entity (str): ID of the entity to which the input or output is allocated\n    attribute (str): ID of the attribute to which the input or output is allocated&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ID of the entity to which the input or output is allocated&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Entity&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;attribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ID of the attribute to which the input or output is allocated&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Attribute&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;entity&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;attribute&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IOAllocationModel&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/IOAllocationModel&quot;</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p></dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.InputData">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.components.basic_component_config.</span></span><span class="sig-name descname"><span class="pre">InputData</span></span><a class="reference internal" href="../_modules/encodapy/components/basic_component_config.html#InputData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.basic_component_config.InputData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#encodapy.components.basic_component_config.ComponentData" title="encodapy.components.basic_component_config.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a></p>
+<p>Base model for the component input configuration.</p>
+<p>Subclass this and declare fields for each input datapoint. InputData
+inherits the unit-checking validator from         <a class="reference internal" href="#encodapy.components.basic_component_config.ComponentData" title="encodapy.components.basic_component_config.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a>,
+which will validate and convert units when possible.</p>
+<p>Fields should be instances of <a class="reference internal" href="../basic_service/utils_models.html#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a>
+(or subclasses thereof) so the validator can handle unit and value conversion.</p>
+<p>Needs to be implemented for the specific component.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;InputData&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base model for the component input configuration.\n\nSubclass this and declare fields for each input datapoint. InputData\ninherits the unit-checking validator from         :class:`~encodapy.components.basic_component_config.ComponentData`,\nwhich will validate and convert units when possible.\n\nFields should be instances of :class:`~encodapy.utils.datapoints.DataPointGeneral`\n(or subclasses thereof) so the validator can handle unit and value conversion.\n\nNeeds to be implemented for the specific component.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p></dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.components.basic_component_config.OutputData">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.components.basic_component_config.</span></span><span class="sig-name descname"><span class="pre">OutputData</span></span><a class="reference internal" href="../_modules/encodapy/components/basic_component_config.html#OutputData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.basic_component_config.OutputData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#encodapy.components.basic_component_config.ComponentData" title="encodapy.components.basic_component_config.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a></p>
+<p>Base model for the component output configuration.</p>
+<p>Subclass this and declare fields for each output datapoint. OutputData
+inherits the unit-checking validator from         <a class="reference internal" href="#encodapy.components.basic_component_config.ComponentData" title="encodapy.components.basic_component_config.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a>,
+which will validate and convert units when possible.</p>
+<p>Fields should be instances of <a class="reference internal" href="../basic_service/utils_models.html#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a>
+(or subclasses thereof) so the validator can handle unit and value conversion.</p>
+<p>Needs to be implemented for the specific component.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OutputData&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base model for the component output configuration.\n\nSubclass this and declare fields for each output datapoint. OutputData\ninherits the unit-checking validator from         :class:`~encodapy.components.basic_component_config.ComponentData`,\nwhich will validate and convert units when possible.\n\nFields should be instances of :class:`~encodapy.utils.datapoints.DataPointGeneral`\n(or subclasses thereof) so the validator can handle unit and value conversion.\n\nNeeds to be implemented for the specific component.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="components.html" class="btn btn-neutral float-left" title="Component Architecture of EnCoDaPy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="built_in_components.html" class="btn btn-neutral float-right" title="Built-in Components" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

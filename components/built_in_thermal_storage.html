@@ -1,0 +1,194 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thermal Storage &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=da2a414a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Thermal Storage Configuration Models" href="built_in_thermal_storage_models.html" />
+    <link rel="prev" title="Built-in Components" href="built_in_components.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">“EnCoDaPy” – Energy Control and Data Preparation in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_service.html">EnCoDaPy Basic Service</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../components.html">EnCoDaPy Components</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="components.html">Component Architecture of EnCoDaPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="components_models.html">Component Configuration Models</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="built_in_components.html">Built-in Components</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="built_in_components.html#thermal-storage">Thermal Storage</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Thermal Storage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="built_in_thermal_storage_models.html">Thermal Storage Configuration Models</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="built_in_components.html#two-point-controller">Two Point Controller</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../components.html">EnCoDaPy Components</a></li>
+          <li class="breadcrumb-item"><a href="built_in_components.html">Built-in Components</a></li>
+      <li class="breadcrumb-item active">Thermal Storage</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/main/docs/source/components/built_in_thermal_storage.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="thermal-storage">
+<h1>Thermal Storage<a class="headerlink" href="#thermal-storage" title="Link to this heading"></a></h1>
+<p>This is a component for calculating the thermal storage capacity of a cylindrical upright tank, which is required for different steering concepts.</p>
+<section id="functionality">
+<h2>Functionality<a class="headerlink" href="#functionality" title="Link to this heading"></a></h2>
+<p>The component uses measurement values from temperature sensors to calculate the thermal energy and state of charge of a thermal storage tank. To achieve this, three to ten temperature sensors in the storage could be used.</p>
+<section id="outputs">
+<h3>Outputs<a class="headerlink" href="#outputs" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Storage charge in percent (0–100): <code class="docutils literal notranslate"><span class="pre">storage__level</span></code></p></li>
+<li><p>Storage energy content in Wh: <code class="docutils literal notranslate"><span class="pre">storage__energy</span></code></p></li>
+<li><p>Additional storable energy in Wh: <code class="docutils literal notranslate"><span class="pre">storage__loading_potential_nominal</span></code></p></li>
+</ul>
+<p>A overview is avaiable als Pydantic BaseModel <code class="docutils literal notranslate"><span class="pre">ThermalStorageOutputData</span></code> in in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a>.</p>
+</section>
+<section id="calculation-methods">
+<h3>Calculation Methods<a class="headerlink" href="#calculation-methods" title="Link to this heading"></a></h3>
+<p>Two calculation methods are available, selected via the component configuration:</p>
+<ul class="simple">
+<li><p><strong>Static Limits</strong>: Defined in the sensor configuration (<code class="docutils literal notranslate"><span class="pre">static_limits</span></code>)</p></li>
+<li><p><strong>Connection Limits</strong>: Uses temperature sensors from the in- and outflow as limits (<code class="docutils literal notranslate"><span class="pre">connection_limits</span></code>)</p></li>
+</ul>
+<p>The default method is <strong>Static Limits</strong>.</p>
+</section>
+</section>
+<section id="component-configuration">
+<h2>Component Configuration<a class="headerlink" href="#component-configuration" title="Link to this heading"></a></h2>
+<p>The service requires a specific configuration defined by a Pydantic <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>, which includes:</p>
+<ul class="simple">
+<li><p><strong>Temperature Sensors Configuration</strong> (<code class="docutils literal notranslate"><span class="pre">ThermalStorageTemperatureSensors</span></code>):</p>
+<ul>
+<li><p>Between three and ten sensors can be used.</p></li>
+<li><p>For each sensor, specify the name, height in the tank (as a percentage from the top down, 0–100%), and limits.</p></li>
+<li><p>Sensor 1 should be the highest.</p></li>
+</ul>
+</li>
+<li><p><strong>Storage Tank Volume</strong>: Assumes a cylindrical upright storage tank.</p></li>
+<li><p><strong>Medium in the Storage Tank</strong></p></li>
+<li><p><strong>Calculation Method</strong> (see above)</p></li>
+</ul>
+<p>Configuration parameters must be set as datapoints or connections to static data in the config file. For more details, see the <code class="docutils literal notranslate"><span class="pre">ThermalStorageConfigData</span></code> <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a>.</p>
+</section>
+<section id="inputs">
+<h2>Inputs<a class="headerlink" href="#inputs" title="Link to this heading"></a></h2>
+<p>The following temperature sensors are required (optional) as inputs, as defined in the sensor configuration:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_1</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_2</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_3</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_4</span></code> (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_5</span></code> (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_6</span></code> (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_7</span></code> (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_8</span></code> (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_9</span></code> (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_10</span></code> (optional)</p></li>
+</ul>
+<p>If you want to use load connection sensors as references for the limits, provide the following inputs (<code class="docutils literal notranslate"><span class="pre">connection_limits</span></code>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">load_temperature_in</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load_temperature_out</span></code></p></li>
+</ul>
+<p>For detailed documentation of the inputs, see the <code class="docutils literal notranslate"><span class="pre">ThermalStorageInputData</span></code> <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a>.</p>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
+<p>A example how the component could be used is avaiable in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/06_thermal_storage_service">examples/06_thermal_storage_service</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="built_in_components.html" class="btn btn-neutral float-left" title="Built-in Components" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="built_in_thermal_storage_models.html" class="btn btn-neutral float-right" title="Thermal Storage Configuration Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,593 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>encodapy.components.thermal_storage.thermal_storage_config &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=da2a414a" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readme.html">“EnCoDaPy” – Energy Control and Data Preparation in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../basic_service.html">EnCoDaPy Basic Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../components.html">EnCoDaPy Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">encodapy.components.thermal_storage.thermal_storage_config</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for encodapy.components.thermal_storage.thermal_storage_config</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Description: Configuration models for the thermal storage component</span>
+<span class="sd">Author: Martin Altenburger</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.functional_validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.basic_component_config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ComponentValidationError</span><span class="p">,</span>
+    <span class="n">InputData</span><span class="p">,</span>
+    <span class="n">OutputData</span><span class="p">,</span>
+    <span class="n">ConfigData</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DataPointNumber</span><span class="p">,</span>
+    <span class="n">DataPointMedium</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.mediums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Medium</span>
+
+<span class="c1"># Split between real imports and mock classes for Sphinx</span>
+<span class="n">IS_BUILDING_DOCS</span> <span class="o">=</span> <span class="s2">&quot;BUILDING_DOCS&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">IS_BUILDING_DOCS</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataPointGeneral</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Mock-Class for Sphinx</span>
+<div class="viewcode-block" id="DataPointGeneral">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.DataPointGeneral">[docs]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">DataPointGeneral</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mock-Class for Sphinx documentation.</span>
+<span class="sd">        </span>
+<span class="sd">        For more information, see the real DataPointGeneral class: \</span>
+<span class="sd">            :class:`encodapy.utils.datapoints.DataPointGeneral`.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="TemperatureLimits">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.TemperatureLimits">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TemperatureLimits</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configuration of the temperature limits in the termal storage</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        minimal_temperature: Minimal temperature in the thermal storage in °C</span>
+<span class="sd">        maximal_temperature: Maximal temperature in the thermal storage in °C</span>
+<span class="sd">        reference_temperature: Reference temperature in the storage in °C (default: 0°C)</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if the minimal temperature is heighter than the maximal temperature</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">minimal_temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Minimal temperature in the thermal storage in °C&quot;</span>
+    <span class="p">)</span>
+    <span class="n">maximal_temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximal temperature in the storage in °C&quot;</span>
+    <span class="p">)</span>
+    <span class="n">reference_temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Reference temperature in the storage in °C&quot;</span>
+    <span class="p">)</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_timerange_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TemperatureLimits&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the timerange parameters.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if the minimal temperature is heighter than the maximal temperature</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            TemperatureLimits: The model with the validated parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimal_temperature</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximal_temperature</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The minimal temperature should be lower than the maximal temperature&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+
+<div class="viewcode-block" id="StorageSensorConfig">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.StorageSensorConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StorageSensorConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configuration for the storage sensor in the thermal storage</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        height: Height of the sensor in percent (0=top, 100=bottom)</span>
+<span class="sd">        limits: Temperature limits for the sensor</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">height</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Height of the sensor in percent (0=top, 100=bottom)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">limits</span><span class="p">:</span> <span class="n">TemperatureLimits</span></div>
+
+
+
+<div class="viewcode-block" id="ThermalStorageTemperatureSensors">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageTemperatureSensors">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ThermalStorageTemperatureSensors</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configuration for the temperature sensors in the thermal storage</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        storage_sensors: List of temperature sensors in the thermal storage</span>
+
+<span class="sd">    It is required to set at least 3 sensors and no more than 10 sensors. The heights of the sensors</span>
+<span class="sd">    must be between 0 and 100 percent and in ascending order.</span>
+
+<span class="sd">    It is possible to add more information to sensors, thats the reason why this model is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">storage_sensors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">StorageSensorConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of temperature sensors (3–10 sensors)&quot;</span>
+    <span class="p">)</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_storage_tank_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ThermalStorageTemperatureSensors&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the storage tank sensors:</span>
+<span class="sd">            - At least 3 sensors are required</span>
+<span class="sd">            - No more than 10 sensors are allowed</span>
+<span class="sd">            - Sensor heights must be between 0 and 100 percent</span>
+<span class="sd">            - Sensor heights must be in ascending order</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if the sensors are not set correctly</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ThermalStorageTemperatureSensors: The model with the validated parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_sensors</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least 3 storage sensors are required.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_sensors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No more than 10 storage sensors are allowed.&quot;</span><span class="p">)</span>
+
+        <span class="n">storage_sensor_height_ref</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">storage_sensor</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_sensors</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">storage_sensor</span><span class="o">.</span><span class="n">height</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">storage_sensor</span><span class="o">.</span><span class="n">height</span> <span class="o">&gt;</span> <span class="mf">100.0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Height of the sensor must be between 0 and 100 percent.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">storage_sensor</span><span class="o">.</span><span class="n">height</span> <span class="o">&lt;</span> <span class="n">storage_sensor_height_ref</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sensor heights must be in ascending order.&quot;</span><span class="p">)</span>
+            <span class="n">storage_sensor_height_ref</span> <span class="o">=</span> <span class="n">storage_sensor</span><span class="o">.</span><span class="n">height</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="ThermalStorageTemperatureSensors.get_number_of_sensors">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageTemperatureSensors.get_number_of_sensors">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_of_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of storage sensors configured in the thermal storage.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of storage sensors configured.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_sensors</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ThermalStorageInputData">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ThermalStorageInputData</span><span class="p">(</span><span class="n">InputData</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the input of the thermal storage service, containing the temperature sensors</span>
+<span class="sd">    in the thermal storage.</span>
+
+<span class="sd">    The temperature sensors need to be set from 1 to 10, \</span>
+<span class="sd">        no sensors are allowed to be missing between the others.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        temperature_1 (DataPointNumber): first temperature sensor</span>
+<span class="sd">        temperature_2 (DataPointNumber): second temperature sensor</span>
+<span class="sd">        temperature_3 (DataPointNumber): third temperature sensor</span>
+<span class="sd">        temperature_4 (Optional[DataPointNumber]): fourth temperature sensor (optional)</span>
+<span class="sd">        temperature_5 (Optional[DataPointNumber]): fifth temperature sensor (optional)</span>
+<span class="sd">        temperature_6 (Optional[DataPointNumber]): sixth temperature sensor (optional)</span>
+<span class="sd">        temperature_7 (Optional[DataPointNumber]): seventh temperature sensor (optional)</span>
+<span class="sd">        temperature_8 (Optional[DataPointNumber]): eighth temperature sensor (optional)</span>
+<span class="sd">        temperature_9 (Optional[DataPointNumber]): ninth temperature sensor (optional)</span>
+<span class="sd">        temperature_10 (Optional[DataPointNumber]): tenth temperature sensor (optional)</span>
+<span class="sd">        temperature_in (Optional[DataPointNumber]): consumer return temperature sensor \</span>
+<span class="sd">            (optional)</span>
+<span class="sd">        temperature_out (Optional[DataPointNumber]): consumer flow temperature sensor \</span>
+<span class="sd">            (optional)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">temperature_1</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input for the temperature of sensor 1 in the thermal storage&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;CEL&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">temperature_2</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input for the temperature of sensor 2 in the thermal storage&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;CEL&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">temperature_3</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input for the temperature of sensor 3 in the thermal storage&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;CEL&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">temperature_4</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input for the temperature of sensor 4 in the thermal storage&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;CEL&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">temperature_5</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input for the temperature of sensor 5 in the thermal storage&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;CEL&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">temperature_6</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input for the temperature of sensor 6 in the thermal storage&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;CEL&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">temperature_7</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input for the temperature of sensor 7 in the thermal storage&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;CEL&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">temperature_8</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input for the temperature of sensor 8 in the thermal storage&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;CEL&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">temperature_9</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input for the temperature of sensor 9 in the thermal storage&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;CEL&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">temperature_10</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input for the temperature of sensor 10 in the thermal storage&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;CEL&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">load_temperature_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input for the return temperature into the thermal storage (consumer)&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;CEL&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">load_temperature_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input for the flow temperature from the thermal storage (consumer)&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;CEL&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_storage_temperature_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ThermalStorageInputData&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that the storage sensors are configured.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">previous_key</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">previous_key</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="n">previous_key</span> <span class="ow">is</span> <span class="kc">False</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ComponentValidationError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Temperature sensor </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is configured, &quot;</span>
+                    <span class="s2">&quot;but the previous sensor is not configured. &quot;</span>
+                    <span class="s2">&quot;Please check the configuration.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="ThermalStorageInputData.check_load_connection_sensors">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData.check_load_connection_sensors">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_load_connection_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the load connection sensors are set</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If any of the load connection sensors are not configured.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_temperature_in</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ComponentValidationError</span><span class="p">(</span>
+                <span class="s2">&quot;Load temperature inflow sensor is not configured.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_temperature_out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ComponentValidationError</span><span class="p">(</span>
+                <span class="s2">&quot;Load temperature outflow sensor is not configured.&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ThermalStorageInputData.get_number_storage_sensors">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData.get_number_storage_sensors">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_number_storage_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the number of storage sensors configured in the thermal storage.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of storage sensors configured.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ThermalStorageOutputData">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageOutputData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ThermalStorageOutputData</span><span class="p">(</span><span class="n">OutputData</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the output of the thermal storage service, containing the temperature sensors</span>
+<span class="sd">    in the thermal storage.</span>
+
+<span class="sd">    Each output data point is associated with a specific calculation method, \</span>
+<span class="sd">        which is defined in the `json_schema_extra` field as `calculation`.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        storage__level (Optional[DataPointNumber]): Output for storage charge in percent \</span>
+<span class="sd">            (0-100) (optional)</span>
+<span class="sd">        storage__energy (Optional[DataPointNumber]): Output for storage energy in Wh (optional)</span>
+<span class="sd">        storage__loading_potential_nominal (Optional[DataPointNumber]): \</span>
+<span class="sd">            Output for storage loading potential in Wh (optional)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">storage__level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output for storage charge in percent (0-100)&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;P1&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">storage__energy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output for storage energy in Wh&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;WHR&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">storage__loading_potential_nominal</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointNumber</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Output for storage loading potential in Wh&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;WHR&quot;</span><span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ThermalStorageCalculationMethods">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageCalculationMethods">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ThermalStorageCalculationMethods</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enum for the calculation methods of the thermal storage service.</span>
+
+<span class="sd">    Members:</span>
+<span class="sd">        STATIC_LIMITS (&quot;static_limits&quot;): Static limits given by the configuration</span>
+<span class="sd">        CONNECTION_LIMITS (&quot;connection_limits&quot;): Uses the temperature sensors from the \</span>
+<span class="sd">            in- and outflow as limits</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">STATIC_LIMITS</span> <span class="o">=</span> <span class="s2">&quot;static_limits&quot;</span>
+    <span class="n">CONNECTION_LIMITS</span> <span class="o">=</span> <span class="s2">&quot;connection_limits&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ThermalStorageEnergyTypes">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageEnergyTypes">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ThermalStorageEnergyTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enum for the energy types of the thermal storage service.</span>
+<span class="sd">    </span>
+<span class="sd">    Members:</span>
+<span class="sd">        Nominal (&quot;nominal&quot;): Nominal energy of the thermal storage \</span>
+<span class="sd">            between the temperature limits</span>
+<span class="sd">        Minimal (&quot;minimal&quot;): Minimal energy of the thermal storage \</span>
+<span class="sd">            at the lower temperature limit</span>
+<span class="sd">        Maximal (&quot;maximal&quot;): Maximal energy of the thermal storage \</span>
+<span class="sd">            at the upper temperature limit</span>
+<span class="sd">        Current (&quot;current&quot;): Current energy of the thermal storage \</span>
+<span class="sd">            based on the current temperatures</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">NOMINAL</span> <span class="o">=</span> <span class="s2">&quot;nominal&quot;</span>
+    <span class="n">MINIMAL</span> <span class="o">=</span> <span class="s2">&quot;minimal&quot;</span>
+    <span class="n">MAXIMAL</span> <span class="o">=</span> <span class="s2">&quot;maximal&quot;</span>
+    <span class="n">CURRENT</span> <span class="o">=</span> <span class="s2">&quot;current&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="DataPointCalculationMethod">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.DataPointCalculationMethod">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataPointCalculationMethod</span><span class="p">(</span><span class="n">DataPointGeneral</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for datapoints of the controller component which define the calculation method.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        value: The value of the datapoint, which is a string representing the calculation method</span>
+<span class="sd">        unit: Optional unit of the datapoint, if applicable</span>
+<span class="sd">        time: Optional timestamp of the datapoint, if applicable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">value</span><span class="p">:</span> <span class="n">ThermalStorageCalculationMethods</span></div>
+
+
+<div class="viewcode-block" id="DataPointSensorConfig">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.DataPointSensorConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataPointSensorConfig</span><span class="p">(</span><span class="n">DataPointGeneral</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for datapoints of the controller component which define the sensor configuration.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        value: The value of the datapoint, which is a SensorConfig \</span>
+<span class="sd">            representing the sensor configuration</span>
+<span class="sd">        unit: Optional unit of the datapoint, if applicable</span>
+<span class="sd">        time: Optional timestamp of the datapoint, if applicable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">value</span><span class="p">:</span> <span class="n">ThermalStorageTemperatureSensors</span></div>
+
+
+
+<div class="viewcode-block" id="ThermalStorageLoadLevelCheck">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageLoadLevelCheck">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ThermalStorageLoadLevelCheck</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the state of charge check information of the thermal storage service.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Enable or disable the state of charge check&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">minimal_level</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mf">15.0</span><span class="p">,</span>
+        <span class="n">gt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Threshold percentage for the upper temperature sensor.</span>
+<span class="s2">        When the top sensor falls below this percentage of the temperature range,</span>
+<span class="s2">        the state of charge is adjusted. (0-100)&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ref_state_of_charge</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">le</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Reference state of charge level in percent (0-100) | set by the process&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ThermalStorageConfigData">
+<a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ThermalStorageConfigData</span><span class="p">(</span><span class="n">ConfigData</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the configuration data of the thermal storage service.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        volume (DataPointNumber ): Volume of the thermal storage in m³</span>
+<span class="sd">        medium (DataPointMedium) : Medium of the thermal storage</span>
+<span class="sd">        sensor_config (DataPointSensorConfig) : \</span>
+<span class="sd">            Sensor configuration of the thermal storage</span>
+<span class="sd">        calculation_method (DataPointCalculationMethod) : \</span>
+<span class="sd">            Calculation method for the thermal storage</span>
+<span class="sd">        load_level_check: (ThermalStorageLoadLevelCheck) : \</span>
+<span class="sd">            Configuration for the state of charge check</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">volume</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Volume of the thermal storage in m³&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;MTQ&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">medium</span><span class="p">:</span> <span class="n">DataPointMedium</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">DataPointMedium</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">Medium</span><span class="o">.</span><span class="n">WATER</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Medium of the thermal storage&quot;</span>
+    <span class="p">)</span>
+    <span class="n">sensor_config</span><span class="p">:</span> <span class="n">DataPointSensorConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Sensor configuration of the thermal storage&quot;</span>
+    <span class="p">)</span>
+    <span class="n">calculation_method</span><span class="p">:</span> <span class="n">DataPointCalculationMethod</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">DataPointCalculationMethod</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">ThermalStorageCalculationMethods</span><span class="o">.</span><span class="n">STATIC_LIMITS</span>
+        <span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Calculation method for the thermal storage&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">load_level_check</span><span class="p">:</span> <span class="n">ThermalStorageLoadLevelCheck</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">ThermalStorageLoadLevelCheck</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({}),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Configuration for the state of charge check&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

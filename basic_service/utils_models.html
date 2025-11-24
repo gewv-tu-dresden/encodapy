@@ -1,0 +1,1255 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Utility Models &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=da2a414a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Communication Interfaces" href="interfaces.html" />
+    <link rel="prev" title="Basic Configuration" href="config_models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">“EnCoDaPy” – Energy Control and Data Preparation in Python</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../basic_service.html">EnCoDaPy Basic Service</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="config_models.html">Basic Configuration</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Utility Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-encodapy.config.types">Types</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.config.types.AttributeTypes"><code class="docutils literal notranslate"><span class="pre">AttributeTypes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.config.types.DataQueryTypes"><code class="docutils literal notranslate"><span class="pre">DataQueryTypes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.config.types.FileExtensionTypes"><code class="docutils literal notranslate"><span class="pre">FileExtensionTypes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.config.types.Interfaces"><code class="docutils literal notranslate"><span class="pre">Interfaces</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.config.types.MQTTFormatTypes"><code class="docutils literal notranslate"><span class="pre">MQTTFormatTypes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.config.types.TimerangeTypes"><code class="docutils literal notranslate"><span class="pre">TimerangeTypes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc"><code class="docutils literal notranslate"><span class="pre">MQTTTemplateConfigDoc</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-encodapy.utils.datapoints">Datapoints</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral"><code class="docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointNumber"><code class="docutils literal notranslate"><span class="pre">DataPointNumber</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointString"><code class="docutils literal notranslate"><span class="pre">DataPointString</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointDict"><code class="docutils literal notranslate"><span class="pre">DataPointDict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointBool"><code class="docutils literal notranslate"><span class="pre">DataPointBool</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointMedium"><code class="docutils literal notranslate"><span class="pre">DataPointMedium</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-encodapy.utils.units">Units</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.units.DataUnits"><code class="docutils literal notranslate"><span class="pre">DataUnits</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.units.TimeUnits"><code class="docutils literal notranslate"><span class="pre">TimeUnits</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.units.TimeUnitsSeconds"><code class="docutils literal notranslate"><span class="pre">TimeUnitsSeconds</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.units.get_time_unit_seconds"><code class="docutils literal notranslate"><span class="pre">get_time_unit_seconds()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.units.get_unit_adjustment_factor"><code class="docutils literal notranslate"><span class="pre">get_unit_adjustment_factor()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-encodapy.utils.mediums">Mediums</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.mediums.Medium"><code class="docutils literal notranslate"><span class="pre">Medium</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.mediums.MediumParameters"><code class="docutils literal notranslate"><span class="pre">MediumParameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.mediums.get_medium_parameter"><code class="docutils literal notranslate"><span class="pre">get_medium_parameter()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="interfaces.html">Communication Interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internal_models.html">Internal Models</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../components.html">EnCoDaPy Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../basic_service.html">EnCoDaPy Basic Service</a></li>
+      <li class="breadcrumb-item active">Utility Models</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/main/docs/source/basic_service/utils_models.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="utility-models">
+<h1>Utility Models<a class="headerlink" href="#utility-models" title="Link to this heading"></a></h1>
+<section id="module-encodapy.config.types">
+<span id="types"></span><h2>Types<a class="headerlink" href="#module-encodapy.config.types" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="encodapy.config.types.AttributeTypes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.config.types.</span></span><span class="sig-name descname"><span class="pre">AttributeTypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/encodapy/config/types.html#AttributeTypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.config.types.AttributeTypes" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Enum class for the attribute types</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TIMESERIES</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Timeseries data “timeseries”</p></li>
+<li><p><strong>VALUE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Single value data “value”</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.AttributeTypes.TIMESERIES">
+<span class="sig-name descname"><span class="pre">TIMESERIES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'timeseries'</span></em><a class="headerlink" href="#encodapy.config.types.AttributeTypes.TIMESERIES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.AttributeTypes.VALUE">
+<span class="sig-name descname"><span class="pre">VALUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'value'</span></em><a class="headerlink" href="#encodapy.config.types.AttributeTypes.VALUE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="encodapy.config.types.DataQueryTypes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.config.types.</span></span><span class="sig-name descname"><span class="pre">DataQueryTypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/encodapy/config/types.html#DataQueryTypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.config.types.DataQueryTypes" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Enum class for the data query types, used for the functions to get data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>CALCULATION</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Calculation of the data “calculation”</p></li>
+<li><p><strong>CALIBRATION</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Calibration of the data “calibration”</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.DataQueryTypes.CALCULATION">
+<span class="sig-name descname"><span class="pre">CALCULATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'calculation'</span></em><a class="headerlink" href="#encodapy.config.types.DataQueryTypes.CALCULATION" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.DataQueryTypes.CALIBRATION">
+<span class="sig-name descname"><span class="pre">CALIBRATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'calibration'</span></em><a class="headerlink" href="#encodapy.config.types.DataQueryTypes.CALIBRATION" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="encodapy.config.types.FileExtensionTypes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.config.types.</span></span><span class="sig-name descname"><span class="pre">FileExtensionTypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/encodapy/config/types.html#FileExtensionTypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.config.types.FileExtensionTypes" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Enum class for file Extensions,        used for the file interface and defines the possible file formats</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>CSV</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Comma-separated values “csv”</p></li>
+<li><p><strong>JSON</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – JavaScript Object Notation “json”</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.FileExtensionTypes.CSV">
+<span class="sig-name descname"><span class="pre">CSV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.csv'</span></em><a class="headerlink" href="#encodapy.config.types.FileExtensionTypes.CSV" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.FileExtensionTypes.JSON">
+<span class="sig-name descname"><span class="pre">JSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.json'</span></em><a class="headerlink" href="#encodapy.config.types.FileExtensionTypes.JSON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="encodapy.config.types.Interfaces">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.config.types.</span></span><span class="sig-name descname"><span class="pre">Interfaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/encodapy/config/types.html#Interfaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.config.types.Interfaces" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Enum class for the interfaces</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>MQTT</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – MQTT interface “mqtt”</p></li>
+<li><p><strong>FIWARE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – FIWARE interface “fiware”</p></li>
+<li><p><strong>FILE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – File interface “file”</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.Interfaces.FILE">
+<span class="sig-name descname"><span class="pre">FILE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'file'</span></em><a class="headerlink" href="#encodapy.config.types.Interfaces.FILE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.Interfaces.FIWARE">
+<span class="sig-name descname"><span class="pre">FIWARE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fiware'</span></em><a class="headerlink" href="#encodapy.config.types.Interfaces.FIWARE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.Interfaces.MQTT">
+<span class="sig-name descname"><span class="pre">MQTT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mqtt'</span></em><a class="headerlink" href="#encodapy.config.types.Interfaces.MQTT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="encodapy.config.types.MQTTFormatTypes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.config.types.</span></span><span class="sig-name descname"><span class="pre">MQTTFormatTypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/encodapy/config/types.html#MQTTFormatTypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.config.types.MQTTFormatTypes" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Enum class for MQTT format types
+Possible values:
+- PLAIN (plain): Plain format
+- FIWARE_ATTR (fiware-attr): FIWARE attribute format
+- FIWARE_CMDEXE (fiware-cmdexe): FIWARE command execution format
+- TEMPLATE (template): Template-based format</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.MQTTFormatTypes.FIWARE_ATTR">
+<span class="sig-name descname"><span class="pre">FIWARE_ATTR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fiware-attr'</span></em><a class="headerlink" href="#encodapy.config.types.MQTTFormatTypes.FIWARE_ATTR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.MQTTFormatTypes.FIWARE_CMDEXE">
+<span class="sig-name descname"><span class="pre">FIWARE_CMDEXE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fiware-cmdexe'</span></em><a class="headerlink" href="#encodapy.config.types.MQTTFormatTypes.FIWARE_CMDEXE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.MQTTFormatTypes.PLAIN">
+<span class="sig-name descname"><span class="pre">PLAIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'plain'</span></em><a class="headerlink" href="#encodapy.config.types.MQTTFormatTypes.PLAIN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.MQTTFormatTypes.TEMPLATE">
+<span class="sig-name descname"><span class="pre">TEMPLATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'template'</span></em><a class="headerlink" href="#encodapy.config.types.MQTTFormatTypes.TEMPLATE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="encodapy.config.types.TimerangeTypes">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.config.types.</span></span><span class="sig-name descname"><span class="pre">TimerangeTypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/encodapy/config/types.html#TimerangeTypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.config.types.TimerangeTypes" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Enum class for the timedelta types, used for the functions to get timeseries data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ABSOLUTE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The timedelta is calculated from the actual time “absolute”</p></li>
+<li><p><strong>RELATIVE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The timedelta is calculated from the last timestamp “relative”</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.TimerangeTypes.ABSOLUTE">
+<span class="sig-name descname"><span class="pre">ABSOLUTE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'absolute'</span></em><a class="headerlink" href="#encodapy.config.types.TimerangeTypes.ABSOLUTE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.types.TimerangeTypes.RELATIVE">
+<span class="sig-name descname"><span class="pre">RELATIVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'relative'</span></em><a class="headerlink" href="#encodapy.config.types.TimerangeTypes.RELATIVE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.config.mqtt_messages_template.</span></span><span class="sig-name descname"><span class="pre">MQTTTemplateConfigDoc</span></span><a class="reference internal" href="../_modules/encodapy/config/mqtt_messages_template.html#MQTTTemplateConfigDoc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc" title="Link to this definition"></a></dt>
+<dd><p>Model for MQTT template configuration.</p>
+<p><strong>Mock class for documentation purposes.</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the actual implementation, <cite>topic</cite> and <cite>payload</cite> are <cite>jinja2.Template</cite> objects.
+This mock uses <cite>dict</cite> to avoid import issues during documentation generation.</p>
+<p>For more information,            see <a class="reference internal" href="interfaces.html#encodapy.config.mqtt_messages_template.MQTTTemplateConfig" title="encodapy.config.mqtt_messages_template.MQTTTemplateConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">MQTTTemplateConfig</span></code></a>.</p>
+</div>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc.topic">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">topic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc.topic" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc.payload">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">payload</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc.payload" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-encodapy.utils.datapoints">
+<span id="datapoints"></span><h2>Datapoints<a class="headerlink" href="#module-encodapy.utils.datapoints" title="Link to this heading"></a></h2>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointGeneral">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointGeneral</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointGeneral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointGeneral" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic Validation v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Model for datapoints of the controller component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Any</span></code>) – The value of the datapoint, which can be of various types             (string, float, int, boolean, dictionary, list, DataFrame, or None).</p></li>
+<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[DataUnits]</span></code>) – Optional unit of the datapoint, if applicable.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[datetime]</span></code>) – Optional timestamp of the datapoint, if applicable.</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataPointGeneral&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for datapoints of the controller component.\n\nAttributes:\n    value (Any): The value of the datapoint, which can be of various types             (string, float, int, boolean, dictionary, list, DataFrame, or None).\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DataUnits&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date-time&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTQ&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;P1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;OHM&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;VLT&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataUnits&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;value&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointGeneral.value">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.utils.datapoints.DataPointGeneral.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointGeneral.unit">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataUnits</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#encodapy.utils.datapoints.DataPointGeneral.unit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointGeneral.time">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#encodapy.utils.datapoints.DataPointGeneral.time" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointNumber">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointNumber</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointNumber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointNumber" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
+<p>Model for datapoints of the controller component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span> <span class="pre">|</span> <span class="pre">int</span></code>) – The value of the datapoint, which is a number (float, int).</p></li>
+<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[DataUnits]</span></code>) – Optional unit of the datapoint, if applicable.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[datetime]</span></code>) – Optional timestamp of the datapoint, if applicable.</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataPointNumber&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for datapoints of the controller component.\n\nAttributes:\n    value (float | int): The value of the datapoint, which is a number (float, int).\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DataUnits&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date-time&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTQ&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;P1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;OHM&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;VLT&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataUnits&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;value&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointNumber.value">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> <span class="pre">|</span> <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.utils.datapoints.DataPointNumber.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointString">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointString</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointString" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
+<p>Model for datapoints of the controller component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The value of the datapoint, which is a string.</p></li>
+<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[DataUnits]</span></code>) – Optional unit of the datapoint, if applicable.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[datetime]</span></code>) – Optional timestamp of the datapoint, if applicable.</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataPointString&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for datapoints of the controller component.\n\nAttributes:\n    value (str): The value of the datapoint, which is a string.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DataUnits&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date-time&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTQ&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;P1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;OHM&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;VLT&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataUnits&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;value&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointString.value">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.utils.datapoints.DataPointString.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointDict">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointDict</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointDict" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
+<p>Model for datapoints of the controller component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>) – The value of the datapoint, which is a dictionary.</p></li>
+<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[DataUnits]</span></code>) – Optional unit of the datapoint, if applicable.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[datetime]</span></code>) – Optional timestamp of the datapoint, if applicable.</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataPointDict&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for datapoints of the controller component.\n\nAttributes:\n    value (dict): The value of the datapoint, which is a dictionary.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DataUnits&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date-time&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTQ&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;P1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;OHM&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;VLT&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataUnits&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;value&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointDict.value">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.utils.datapoints.DataPointDict.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointBool">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointBool</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointBool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointBool" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
+<p>Model for datapoints of the controller component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – The value of the datapoint, which is a boolean.</p></li>
+<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[DataUnits]</span></code>) – Optional unit of the datapoint, if applicable.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[datetime]</span></code>) – Optional timestamp of the datapoint, if applicable.</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataPointBool&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for datapoints of the controller component.\n\nAttributes:\n    value (bool): The value of the datapoint, which is a boolean.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DataUnits&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date-time&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTQ&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;P1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;OHM&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;VLT&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataUnits&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;value&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointBool.value">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.utils.datapoints.DataPointBool.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointMedium">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointMedium</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointMedium"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointMedium" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
+<p>Model for datapoints of the controller component which define the medium.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Medium</span></code>) – The value of the datapoint, which is a Medium representing the medium.</p></li>
+<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[DataUnits]</span></code>) – Optional unit of the datapoint, if applicable.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[datetime]</span></code>) – Optional timestamp of the datapoint, if applicable.</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataPointMedium&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for datapoints of the controller component which define the medium.\n\nAttributes:\n    value (Medium): The value of the datapoint, which is a Medium representing the medium.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/Medium&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DataUnits&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date-time&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTQ&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;P1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;OHM&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;VLT&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataUnits&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;Medium&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;const&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;water&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Enum class for the mediums\n\nTODO: Add more mediums&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Medium&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;value&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointMedium.value">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.utils.mediums.Medium" title="encodapy.utils.mediums.Medium"><code class="xref py py-class docutils literal notranslate"><span class="pre">Medium</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.utils.datapoints.DataPointMedium.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-encodapy.utils.units">
+<span id="units"></span><h2>Units<a class="headerlink" href="#module-encodapy.utils.units" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.units.</span></span><span class="sig-name descname"><span class="pre">DataUnits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/encodapy/utils/units.html#DataUnits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.units.DataUnits" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Possible units for the data
+Units which are defined by Unit Code (<a class="reference external" href="https://unece.org/trade/cefact/UNLOCODE-Download">https://unece.org/trade/cefact/UNLOCODE-Download</a>
+or <a class="reference external" href="https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv">https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv</a>)
+or here: <a class="reference external" href="https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf">https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf</a>
+.. todo:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>- Is there a better way to handle the units?
+- Add more units?
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.CMT">
+<span class="sig-name descname"><span class="pre">CMT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'CMT'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.CMT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.DEGREECELSIUS">
+<span class="sig-name descname"><span class="pre">DEGREECELSIUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'CEL'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.DEGREECELSIUS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.E32">
+<span class="sig-name descname"><span class="pre">E32</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'E32'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.E32" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.HOUR">
+<span class="sig-name descname"><span class="pre">HOUR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HUR'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.HOUR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.KELVIN">
+<span class="sig-name descname"><span class="pre">KELVIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KEL'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.KELVIN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.KWH">
+<span class="sig-name descname"><span class="pre">KWH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KWH'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.KWH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.L2">
+<span class="sig-name descname"><span class="pre">L2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'L2'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.L2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.LITER">
+<span class="sig-name descname"><span class="pre">LITER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LTR'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.LITER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.MINUTE">
+<span class="sig-name descname"><span class="pre">MINUTE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MIN'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.MINUTE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.MQH">
+<span class="sig-name descname"><span class="pre">MQH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MQH'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.MQH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.MQS">
+<span class="sig-name descname"><span class="pre">MQS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MQS'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.MQS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.MTK">
+<span class="sig-name descname"><span class="pre">MTK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MTK'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.MTK" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.MTQ">
+<span class="sig-name descname"><span class="pre">MTQ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MTQ'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.MTQ" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.MTR">
+<span class="sig-name descname"><span class="pre">MTR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MTR'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.MTR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.MTS">
+<span class="sig-name descname"><span class="pre">MTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MTS'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.MTS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.OHM">
+<span class="sig-name descname"><span class="pre">OHM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'OHM'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.OHM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.PERCENT">
+<span class="sig-name descname"><span class="pre">PERCENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'P1'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.PERCENT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.SECOND">
+<span class="sig-name descname"><span class="pre">SECOND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SEC'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.SECOND" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.VLT">
+<span class="sig-name descname"><span class="pre">VLT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'VLT'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.VLT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.WHR">
+<span class="sig-name descname"><span class="pre">WHR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'WHR'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.WHR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.WTT">
+<span class="sig-name descname"><span class="pre">WTT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'WTT'</span></em><a class="headerlink" href="#encodapy.utils.units.DataUnits.WTT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="encodapy.utils.units.TimeUnits">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.units.</span></span><span class="sig-name descname"><span class="pre">TimeUnits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/encodapy/utils/units.html#TimeUnits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.units.TimeUnits" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Possible time units for the time series data</p>
+<p>TODO: Is it better to use standard time units? Like in the unit code?</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.TimeUnits.DAY">
+<span class="sig-name descname"><span class="pre">DAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'day'</span></em><a class="headerlink" href="#encodapy.utils.units.TimeUnits.DAY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.TimeUnits.HOUR">
+<span class="sig-name descname"><span class="pre">HOUR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'hour'</span></em><a class="headerlink" href="#encodapy.utils.units.TimeUnits.HOUR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.TimeUnits.MINUTE">
+<span class="sig-name descname"><span class="pre">MINUTE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'minute'</span></em><a class="headerlink" href="#encodapy.utils.units.TimeUnits.MINUTE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.TimeUnits.MONTH">
+<span class="sig-name descname"><span class="pre">MONTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'month'</span></em><a class="headerlink" href="#encodapy.utils.units.TimeUnits.MONTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.TimeUnits.SECOND">
+<span class="sig-name descname"><span class="pre">SECOND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'second'</span></em><a class="headerlink" href="#encodapy.utils.units.TimeUnits.SECOND" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="encodapy.utils.units.TimeUnitsSeconds">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.units.</span></span><span class="sig-name descname"><span class="pre">TimeUnitsSeconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/encodapy/utils/units.html#TimeUnitsSeconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.units.TimeUnitsSeconds" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Seconds for the time units</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.TimeUnitsSeconds.DAY">
+<span class="sig-name descname"><span class="pre">DAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">86400.0</span></em><a class="headerlink" href="#encodapy.utils.units.TimeUnitsSeconds.DAY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.TimeUnitsSeconds.HOUR">
+<span class="sig-name descname"><span class="pre">HOUR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3600.0</span></em><a class="headerlink" href="#encodapy.utils.units.TimeUnitsSeconds.HOUR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.TimeUnitsSeconds.MINUTE">
+<span class="sig-name descname"><span class="pre">MINUTE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60.0</span></em><a class="headerlink" href="#encodapy.utils.units.TimeUnitsSeconds.MINUTE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.TimeUnitsSeconds.MONTH">
+<span class="sig-name descname"><span class="pre">MONTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2592000.0</span></em><a class="headerlink" href="#encodapy.utils.units.TimeUnitsSeconds.MONTH" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.TimeUnitsSeconds.SECOND">
+<span class="sig-name descname"><span class="pre">SECOND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#encodapy.utils.units.TimeUnitsSeconds.SECOND" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="encodapy.utils.units.get_time_unit_seconds">
+<span class="sig-prename descclassname"><span class="pre">encodapy.utils.units.</span></span><span class="sig-name descname"><span class="pre">get_time_unit_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#encodapy.utils.units.TimeUnits" title="encodapy.utils.units.TimeUnits"><span class="pre">TimeUnits</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><span class="pre">DataUnits</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/encodapy/utils/units.html#get_time_unit_seconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.units.get_time_unit_seconds" title="Link to this definition"></a></dt>
+<dd><p>Funktion to get the seconds for a time unit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time_unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Union[TimeUnits</span></code>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DataUnits]</span></code>) – time unit / Name of the time unit             If you use DataUnits, only the units which are also in TimeUnits are valid</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of seconds for the time unit            or None if the time unit is not available</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>, None]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>time_unit</strong> (<a class="reference internal" href="#encodapy.utils.units.TimeUnits" title="encodapy.utils.units.TimeUnits"><em>TimeUnits</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><em>DataUnits</em></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="encodapy.utils.units.get_unit_adjustment_factor">
+<span class="sig-prename descclassname"><span class="pre">encodapy.utils.units.</span></span><span class="sig-name descname"><span class="pre">get_unit_adjustment_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_actual</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><span class="pre">DataUnits</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><span class="pre">DataUnits</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/encodapy/utils/units.html#get_unit_adjustment_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.units.get_unit_adjustment_factor" title="Link to this definition"></a></dt>
+<dd><p>Function to get the adjustment factor for the conversion of units</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit_actual</strong> (<a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataUnits</span></code></a>) – Actual unit</p></li>
+<li><p><strong>unit_target</strong> (<a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataUnits</span></code></a>) – Target unit</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Adjustment factor for the conversion of the units, if found</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>unit_actual</strong> (<a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><em>DataUnits</em></a>)</p></li>
+<li><p><strong>unit_target</strong> (<a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><em>DataUnits</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-encodapy.utils.mediums">
+<span id="mediums"></span><h2>Mediums<a class="headerlink" href="#module-encodapy.utils.mediums" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="encodapy.utils.mediums.Medium">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.mediums.</span></span><span class="sig-name descname"><span class="pre">Medium</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/encodapy/utils/mediums.html#Medium"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.mediums.Medium" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Enum class for the mediums</p>
+<p>TODO: Add more mediums</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.mediums.Medium.WATER">
+<span class="sig-name descname"><span class="pre">WATER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'water'</span></em><a class="headerlink" href="#encodapy.utils.mediums.Medium.WATER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.utils.mediums.MediumParameters">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.mediums.</span></span><span class="sig-name descname"><span class="pre">MediumParameters</span></span><a class="reference internal" href="../_modules/encodapy/utils/mediums.html#MediumParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.mediums.MediumParameters" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic Validation v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Base class for the medium parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cp</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Specific heat capacity [kJ/kgK]</p></li>
+<li><p><strong>rho</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Density [kg/m³]</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MediumParameters&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base class for the medium parameters\n\nAttributes:\n    cp (float): Specific heat capacity [kJ/kgK]\n    rho (float): Density [kg/m\u00b3]&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;cp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cp&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;rho&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rho&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;cp&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;rho&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.mediums.MediumParameters.cp">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.utils.mediums.MediumParameters.cp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.mediums.MediumParameters.rho">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rho</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.utils.mediums.MediumParameters.rho" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="encodapy.utils.mediums.get_medium_parameter">
+<span class="sig-prename descclassname"><span class="pre">encodapy.utils.mediums.</span></span><span class="sig-name descname"><span class="pre">get_medium_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">medium</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#encodapy.utils.mediums.Medium" title="encodapy.utils.mediums.Medium"><span class="pre">Medium</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#encodapy.utils.mediums.MediumParameters" title="encodapy.utils.mediums.MediumParameters"><span class="pre">MediumParameters</span></a></span></span><a class="reference internal" href="../_modules/encodapy/utils/mediums.html#get_medium_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.mediums.get_medium_parameter" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Function to get the medium parameter</dt><dd><ul class="simple">
+<li><p>const values, if no temperature is set</p></li>
+<li><dl class="simple">
+<dt>calculation of cp and rho (constant pressure) as approximation of Glück</dt><dd><ul>
+<li><p><a class="reference external" href="https://berndglueck.de/stoffwerte.php">https://berndglueck.de/stoffwerte.php</a></p></li>
+<li><p>“Zustandswerte Luft Wasser Dampf”  ISBN 3-345-00487-9</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>medium</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Mediums</span></code>) – The medium</p></li>
+<li><p><strong>temperature</strong> – float = None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The parameters of the medium</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#encodapy.utils.mediums.MediumParameters" title="encodapy.utils.mediums.MediumParameters">MediumParameters</a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>medium</strong> (<a class="reference internal" href="#encodapy.utils.mediums.Medium" title="encodapy.utils.mediums.Medium"><em>Medium</em></a>)</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="config_models.html" class="btn btn-neutral float-left" title="Basic Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="interfaces.html" class="btn btn-neutral float-right" title="Communication Interfaces" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

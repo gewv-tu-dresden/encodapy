@@ -1,0 +1,653 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>encodapy.config.models &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=da2a414a" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">“EnCoDaPy” – Energy Control and Data Preparation in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../basic_service.html">EnCoDaPy Basic Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../components.html">EnCoDaPy Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">encodapy.config.models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for encodapy.config.models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Description: This file contains the models for the configuration of the system controller.</span>
+<span class="sd">Authors: Martin Altenburger</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">ValidationError</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.functional_validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">filip.models.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AttributeTypes</span><span class="p">,</span>
+    <span class="n">Interfaces</span><span class="p">,</span>
+    <span class="n">TimerangeTypes</span><span class="p">,</span>
+    <span class="n">MQTTFormatTypes</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.error_handling</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigError</span><span class="p">,</span> <span class="n">InterfaceNotActive</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataUnits</span><span class="p">,</span> <span class="n">TimeUnits</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.basic_component_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ControllerComponentModel</span>
+<span class="c1"># Import MQTTTemplateConfigDoc for sphinx documentation generation</span>
+<span class="n">IS_BUILDING_DOCS</span> <span class="o">=</span> <span class="s2">&quot;BUILDING_DOCS&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">IS_BUILDING_DOCS</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.mqtt_messages_template</span><span class="w"> </span><span class="kn">import</span> <span class="n">MQTTTemplateConfig</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.mqtt_messages_template</span><span class="w"> </span><span class="kn">import</span> <span class="n">MQTTTemplateConfigDoc</span> <span class="k">as</span> <span class="n">MQTTTemplateConfig</span>
+
+<div class="viewcode-block" id="InterfaceModel">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.InterfaceModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InterfaceModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for the interfaces</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        mqtt (bool): Whether the MQTT interface is active. Defaults to False.</span>
+<span class="sd">        fiware (bool): Whether the FIWARE interface is active. Defaults to False.</span>
+<span class="sd">        file (bool): Whether the FILE interface is active. Defaults to False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mqtt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">fiware</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="AttributeModel">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.AttributeModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AttributeModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configuration class for representing attributes with metadata, value, \</span>
+<span class="sd">        and optional interface-specific identifier.</span>
+
+<span class="sd">    This class models attributes with a unique ID, type, value, unit, and timestamp.</span>
+<span class="sd">    If `id_interface` is not set, it defaults to the value of `id`.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id (str): The unique identifier of the attribute.</span>
+<span class="sd">        id_interface (str): The interface-specific identifier. Defaults to `None`.</span>
+<span class="sd">            If not set, it will be automatically set to the value of `id`.</span>
+<span class="sd">        type (AttributeTypes): The type of the attribute. Defaults to `AttributeTypes.VALUE`.</span>
+<span class="sd">        value (Union[str, float, int, bool, Dict, List, pd.DataFrame, None]): \</span>
+<span class="sd">            The value of the attribute. Defaults to `None`.</span>
+<span class="sd">        unit (Optional[DataUnits]): The unit of measurement for the value. Defaults to `None`.</span>
+<span class="sd">        datatype (DataType): The data type of the attribute. Defaults to `DataType(&quot;Number&quot;)`.</span>
+<span class="sd">        timestamp (Optional[datetime]): The timestamp of the attribute. Defaults to `None`.</span>
+<span class="sd">        mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]): \</span>
+<span class="sd">            The format of the attribute for MQTT (if not set, the default format is used) \</span>
+<span class="sd">                - only for mqtt interface needed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">id_interface</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">AttributeTypes</span> <span class="o">=</span> <span class="n">AttributeTypes</span><span class="o">.</span><span class="n">VALUE</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataUnits</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">datatype</span><span class="p">:</span> <span class="n">DataType</span> <span class="o">=</span> <span class="n">DataType</span><span class="p">(</span><span class="s2">&quot;Number&quot;</span><span class="p">)</span>
+    <span class="n">timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mqtt_format</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MQTTFormatTypes</span><span class="p">,</span> <span class="n">MQTTTemplateConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">MQTTFormatTypes</span><span class="o">.</span><span class="n">PLAIN</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_id_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AttributeModel&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the &#39;id_interface&#39; attribute to the value of &#39;id&#39; if it is currently None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            AttributeModel: The instance with the updated &#39;id_interface&#39; attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_interface</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id_interface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+
+<div class="viewcode-block" id="CommandModel">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.CommandModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CommandModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configuration class for the commands</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id (str): The id of the command</span>
+<span class="sd">        id_interface (str | None): The id of the command on the interface \</span>
+<span class="sd">            (if not set, the id is used)</span>
+<span class="sd">        value (Union[str, int, float, List, Dict, None]): The value of the command</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">id_interface</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_id_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;CommandModel&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the &#39;id_interface&#39; attribute to the value of &#39;id&#39;</span>
+<span class="sd">        if it is currently None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_interface</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id_interface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+
+<div class="viewcode-block" id="InputModel">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.InputModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InputModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the configuration of inputs.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id (str): The id of the input</span>
+<span class="sd">        interface (Interfaces): The interface of the input</span>
+<span class="sd">        id_interface (str | None): The id of the input on the interface, default is the id</span>
+<span class="sd">        attributes (list[AttributeModel]): A list of attributes for the input as AttributeModel</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">interface</span><span class="p">:</span> <span class="n">Interfaces</span>
+    <span class="n">id_interface</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">attributes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AttributeModel</span><span class="p">]</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_id_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;InputModel&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the &#39;id_interface&#39; attribute to the value of &#39;id&#39;</span>
+<span class="sd">        if it is currently None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_interface</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id_interface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+
+<div class="viewcode-block" id="StaticDataModel">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.StaticDataModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StaticDataModel</span><span class="p">(</span><span class="n">InputModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the configuration of inputs.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id (str): The id of the input</span>
+<span class="sd">        interface (Interfaces): The interface of the input</span>
+<span class="sd">        id_interface (str | None): The id of the input on the interface</span>
+<span class="sd">        attributes (list[AttributeModel]): A list of attributes for the static data \</span>
+<span class="sd">            as AttributeModel</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="OutputModel">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.OutputModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OutputModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the configuration of outputs.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: The id of the output</span>
+<span class="sd">        interface: The interface of the output</span>
+<span class="sd">        id_interface: The id of the output on the interface, default is the id</span>
+<span class="sd">        attributes: The attributes of the output</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">interface</span><span class="p">:</span> <span class="n">Interfaces</span>
+    <span class="n">id_interface</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">attributes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AttributeModel</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CommandModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_id_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;OutputModel&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the &#39;id_interface&#39; attribute to the value of &#39;id&#39;</span>
+<span class="sd">        if it is currently None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_interface</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id_interface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+
+<div class="viewcode-block" id="TimeSettingsCalculationModel">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.TimeSettingsCalculationModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeSettingsCalculationModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for the calculation time settings of the controller / system.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        timerange: The timerange for the calculation (if only one value is needed and primary value\</span>
+<span class="sd">            , otherwise use timerange_min and timerange_max)</span>
+<span class="sd">        timerange_min: The minimum timerange for the calculation (only used if timerange is not set\</span>
+<span class="sd">            and timerange_max is set too)</span>
+<span class="sd">        timerange_max: The maximum timerange for the calculation (only used if timerange is not set\</span>
+<span class="sd">            and timerange_min is set too)</span>
+<span class="sd">        timerange_type: Type of time period, relative to the last result or absolute at the current\</span>
+<span class="sd">            time (if not set, the default type is absolute)</span>
+<span class="sd">        timerange_unit: The unit of the timerange (if not set, the default unit is minute)</span>
+<span class="sd">        timestep: The timestep for the calculation (if not set, the default value is 1), the\</span>
+<span class="sd">            related unit is defined in the timestep_unit attribute</span>
+<span class="sd">        timestep_unit: The unit of the timestep (if not set, the default unit is second)</span>
+<span class="sd">        sampling_time: The sampling time for the calculation (if not set, the default value is 1),\</span>
+<span class="sd">            the related unit is defined in the sampling_time_unit attribute</span>
+<span class="sd">        sampling_time_unit: The unit of the sampling time (if not set, the default unit is minute)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">timerange</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">timerange_min</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">timerange_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">timerange_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimerangeTypes</span><span class="p">]</span> <span class="o">=</span> <span class="n">TimerangeTypes</span><span class="o">.</span><span class="n">ABSOLUTE</span>
+    <span class="n">timerange_unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimeUnits</span><span class="p">]</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">MINUTE</span>
+
+    <span class="n">timestep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">timestep_unit</span><span class="p">:</span> <span class="n">TimeUnits</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">SECOND</span>
+
+    <span class="n">sampling_time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">sampling_time_unit</span><span class="p">:</span> <span class="n">TimeUnits</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">MINUTE</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_timerange_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSettingsCalculationModel&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the timerange parameters.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the timerange parameters are not set correctly</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            TimeSettingsCalculationModel: The model with the validated parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timerange</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timerange_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">timerange_max</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Either &#39;timerange&#39; or &#39;timerange_min&#39; and &#39;timerange_max&#39; must be set.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timerange</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timerange_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">timerange_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Either &#39;timerange&#39; or both &#39;timerange_min&#39; and &#39;timerange_max&#39; should be set, </span><span class="se">\</span>
+<span class="s2">                not both. Using &#39;timerange&#39; as the only value.&quot;</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">timerange_min</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timerange_max</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_timestep_units</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks the units of the times in the configuration and provides feedback (debug logging)</span>
+<span class="sd">        if the default values are used</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Any): The data to check (input data)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The data with the checked timestep units</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;timestep&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No timestep is set - using default value &#39;1&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;timestep_unit&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No timestep unit is set - using default unit &#39;second&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;sampling_time&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No sampling time is set - using default value &#39;1&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;sampling_time_unit&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No sampling time unit is set - using default unit &#39;minute&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;timerange_unit&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No timerange unit is set - using default unit &#39;minute&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;timerange_type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No timerange type is set - using default type &#39;absolute&#39;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+
+<div class="viewcode-block" id="TimeSettingsCalibrationModel">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.TimeSettingsCalibrationModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeSettingsCalibrationModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for the calibration time settings of the controller / system.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        timerange: The timerange for the calibration (if not set, the default value is 1), \</span>
+<span class="sd">            the related unit is defined in the timerange_unit attribute</span>
+<span class="sd">        timerange_unit: The unit of the timerange (if not set, the default unit is minute)</span>
+<span class="sd">        timestep: The timestep for the calibration (if not set, the default value is 1), \</span>
+<span class="sd">            the related unit is defined in the timestep_unit attribute</span>
+<span class="sd">        timestep_unit: The unit of the timestep (if not set, the default unit is second)</span>
+<span class="sd">        sampling_time: The sampling time for the calibration (if not set, the default value is 1), \</span>
+<span class="sd">            the related unit is defined in the sampling_time_unit attribute</span>
+<span class="sd">        sampling_time_unit: The unit of the sampling time (if not set, the default unit is day)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">timerange</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">timerange_unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimeUnits</span><span class="p">]</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">MINUTE</span>
+
+    <span class="n">timestep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">timestep_unit</span><span class="p">:</span> <span class="n">TimeUnits</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">SECOND</span>
+
+    <span class="n">sampling_time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">sampling_time_unit</span><span class="p">:</span> <span class="n">TimeUnits</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">DAY</span></div>
+
+
+
+<div class="viewcode-block" id="TimeSettingsResultsModel">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.TimeSettingsResultsModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeSettingsResultsModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Settings for the timesteps of the results.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">timestep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">timestep_unit</span><span class="p">:</span> <span class="n">TimeUnits</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">SECOND</span></div>
+
+
+
+<div class="viewcode-block" id="TimeSettingsModel">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.TimeSettingsModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeSettingsModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for the time settings of the controller / system.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        calculation: The timeranges and settings für the calculation</span>
+<span class="sd">        calibration: The timeranges and settings for the calibration</span>
+<span class="sd">        results: The timesettings for the results</span>
+
+<span class="sd">    TODO: Add the needed fields - calibration?</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">calculation</span><span class="p">:</span> <span class="n">TimeSettingsCalculationModel</span>
+    <span class="n">calibration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimeSettingsCalibrationModel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">results</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimeSettingsResultsModel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="ControllerSettingModel">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.ControllerSettingModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ControllerSettingModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the configuration of the controller settings.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        time_settings: The time settings for the controller</span>
+<span class="sd">        specific_settings: The specific settings for the controller - not defined as a model</span>
+
+<span class="sd">    TODO: What is needed here?</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">time_settings</span><span class="p">:</span> <span class="n">TimeSettingsModel</span>
+    <span class="n">specific_settings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+
+<div class="viewcode-block" id="ConfigModel">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.ConfigModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base model for the configuration of the system controller.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        interfaces (InterfaceModel): Configuration of the system controller interfaces.</span>
+<span class="sd">        inputs (list[InputModel]): List of input configurations for the system controller.</span>
+<span class="sd">        outputs (ist[OutputModel]): Output configurations for the system controller.</span>
+<span class="sd">        staticdata (list[StaticDataModel]): \</span>
+<span class="sd">            Static configuration data for devices managed by the system controller.</span>
+<span class="sd">        controller_components (list[ControllerComponentModel]): Components used by the controller.</span>
+<span class="sd">        controller_settings (ControllerSettingModel): Settings for the controller.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="n">interfaces</span><span class="p">:</span> <span class="n">InterfaceModel</span>
+    <span class="n">inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">InputModel</span><span class="p">]</span>
+    <span class="n">outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">OutputModel</span><span class="p">]</span>
+    <span class="n">staticdata</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">StaticDataModel</span><span class="p">]</span>
+
+    <span class="n">controller_components</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ControllerComponentModel</span><span class="p">]</span>
+
+    <span class="n">controller_settings</span><span class="p">:</span> <span class="n">ControllerSettingModel</span>
+
+<div class="viewcode-block" id="ConfigModel.from_json">
+<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.ConfigModel.from_json">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the configuration from a JSON file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">config_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">config_data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t load the json file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s2">&quot;Coudn&#39;t load configuration from json file&quot;</span><span class="p">)</span></div>
+
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_interfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ConfigModel&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the interfaces of the input / output.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If no interface is set or the interface is not active \</span>
+<span class="sd">                and in use for input or output</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ConfigModel: The model with the validated interfaces</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">mqtt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">fiware</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">file</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InterfaceNotActive</span><span class="p">(</span><span class="s2">&quot;At least one interface must be set.&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">check_interface_active</span><span class="p">(</span>
+            <span class="n">datapoints</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+                <span class="n">List</span><span class="p">[</span><span class="n">InputModel</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">StaticDataModel</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">OutputModel</span><span class="p">]</span>
+            <span class="p">],</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Check if the interface is active for the datapoints.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                datapoints (Union[InputModel, StaticDataModel, OutputModel]): \</span>
+<span class="sd">                    The datapoints to check</span>
+
+<span class="sd">            Raises:</span>
+<span class="sd">                ValueError: If the datapoints are not valid</span>
+<span class="sd">                InterfaceNotActive: If the interface is not active \</span>
+<span class="sd">                    but used for the datapoints</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">datapoints</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datapoints</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">InputModel</span><span class="p">):</span>
+                <span class="n">config_part</span> <span class="o">=</span> <span class="s2">&quot;input&quot;</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datapoints</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">StaticDataModel</span><span class="p">):</span>
+                <span class="n">config_part</span> <span class="o">=</span> <span class="s2">&quot;static data&quot;</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datapoints</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OutputModel</span><span class="p">):</span>
+                <span class="n">config_part</span> <span class="o">=</span> <span class="s2">&quot;output&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The input data is not valid&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">datapoint</span> <span class="ow">in</span> <span class="n">datapoints</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">datapoint</span><span class="o">.</span><span class="n">interface</span> <span class="o">==</span> <span class="n">Interfaces</span><span class="o">.</span><span class="n">MQTT</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">mqtt</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InterfaceNotActive</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;The MQTT interface is used for the </span><span class="si">{</span><span class="n">config_part</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="n">datapoint</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
+                        <span class="s2">&quot;but not set in the configuration.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">datapoint</span><span class="o">.</span><span class="n">interface</span> <span class="o">==</span> <span class="n">Interfaces</span><span class="o">.</span><span class="n">FIWARE</span>
+                    <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">fiware</span>
+                <span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">InterfaceNotActive</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;The FIWARE interface is used for the </span><span class="si">{</span><span class="n">config_part</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="n">datapoint</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
+                        <span class="s2">&quot;but not set in the configuration.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">datapoint</span><span class="o">.</span><span class="n">interface</span> <span class="o">==</span> <span class="n">Interfaces</span><span class="o">.</span><span class="n">FILE</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">file</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InterfaceNotActive</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;The FILE interface is used for the </span><span class="si">{</span><span class="n">config_part</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="n">datapoint</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
+                        <span class="s2">&quot;but not set in the configuration.&quot;</span>
+                    <span class="p">)</span>
+
+        <span class="n">check_interface_active</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="n">check_interface_active</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">staticdata</span><span class="p">)</span>
+        <span class="n">check_interface_active</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+
+<div class="viewcode-block" id="DataFileAttribute">
+<a class="viewcode-back" href="../../../basic_service/interfaces.html#encodapy.config.models.DataFileAttribute">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataFileAttribute</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for data file attributes.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        id (str): The unique identifier for the attribute.</span>
+<span class="sd">        value (Union[str, float, int, bool, Dict, List, DataFrame, None]): \</span>
+<span class="sd">            The value of the attribute.</span>
+<span class="sd">        unit (Optional[DataUnits]): The unit of the attribute.</span>
+<span class="sd">        time (Optional[str]): The timestamp of the attribute as a string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataUnits</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="DataFileEntity">
+<a class="viewcode-back" href="../../../basic_service/interfaces.html#encodapy.config.models.DataFileEntity">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataFileEntity</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for data file entities.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id (str): The unique identifier for the entity.</span>
+<span class="sd">        attributes (list[DataFileAttribute]): The attributes of the entity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">attributes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataFileAttribute</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="DataFile">
+<a class="viewcode-back" href="../../../basic_service/interfaces.html#encodapy.config.models.DataFile">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataFile</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for static data files.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        data (list[DataFileEntity]): The data entities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataFileEntity</span><span class="p">]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

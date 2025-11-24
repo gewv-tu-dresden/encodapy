@@ -1,0 +1,424 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>encodapy.utils.models &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=da2a414a" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">“EnCoDaPy” – Energy Control and Data Preparation in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../basic_service.html">EnCoDaPy Basic Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../components.html">EnCoDaPy Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">encodapy.utils.models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for encodapy.utils.models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Description: This file contains the models for the use in the system controller itself.</span>
+<span class="sd">Authors: Martin Altenburger</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">field_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">filip.models.ngsi_v2.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedMetadata</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">filip.models.ngsi_v2.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContextEntity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeModel</span><span class="p">,</span> <span class="n">CommandModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeTypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataUnits</span>
+
+
+<div class="viewcode-block" id="InputDataAttributeModel">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.InputDataAttributeModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InputDataAttributeModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for a attribute of input data of the system controller.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id (str): The id of the input data attribute</span>
+<span class="sd">        data (Union[str, float, int, bool, Dict, List, DataFrame, None]): \</span>
+<span class="sd">            The input data as a DataFrame or a single value</span>
+<span class="sd">        unit (Union[DataUnits, None]): The unit of the input data</span>
+<span class="sd">        data_type (AttributeTypes): The type of the input data (AttributeTypes)</span>
+<span class="sd">        data_available (bool): If the data is available</span>
+<span class="sd">        latest_timestamp_input (Union[datetime, None]): \</span>
+<span class="sd">            The latest timestamp of the input data from the query or None,\</span>
+<span class="sd">            if the data is not available</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DataUnits</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">data_type</span><span class="p">:</span> <span class="n">AttributeTypes</span>
+    <span class="n">data_available</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">latest_timestamp_input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="InputDataEntityModel">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.InputDataEntityModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InputDataEntityModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the input data of the system controller.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: The id of the input data entity</span>
+<span class="sd">        attributes: List of the input data attributes as InputDataAttributeModel</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">attributes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">InputDataAttributeModel</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="StaticDataEntityModel">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.StaticDataEntityModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StaticDataEntityModel</span><span class="p">(</span><span class="n">InputDataEntityModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the static data of the system controller, same like InputDataEntityModel.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: The id of the input data entity</span>
+<span class="sd">        attributes: List of the input data attributes as InputDataAttributeModel</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="OutputDataAttributeModel">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.OutputDataAttributeModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OutputDataAttributeModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for a attribute of output data of the system controller - status based on the status\</span>
+<span class="sd">        of the interface.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: The id of the output data attribute</span>
+<span class="sd">        latest_timestamp_output: The latest timestamp of the output data from the query or None,\</span>
+<span class="sd">            if the data is not available</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">latest_timestamp_output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="OutputDataEntityModel">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.OutputDataEntityModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OutputDataEntityModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the status of the output data of the system controller.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: The id of the output entity</span>
+<span class="sd">        latest_timestamp_output: The latest timestamp of the output data from the query or None,\</span>
+<span class="sd">            if the data is not available</span>
+<span class="sd">        attributes: List of the output data attributes as OutputDataAttributeModel</span>
+<span class="sd">        commands: List of the output data commands as OutputDataCommandModel</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">attributes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">AttributeModel</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">attributes_status</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">OutputDataAttributeModel</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">CommandModel</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="InputDataModel">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.InputDataModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InputDataModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the input data of the system controller.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        input_entities: List of the input data entities as InputDataEntityModel</span>
+<span class="sd">        output_entities: List of the output data entities as OutputDataEntityModel</span>
+<span class="sd">        static_entities: List of the static data entities as StaticDataEntityModel</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">input_entities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">InputDataEntityModel</span><span class="p">]</span>
+    <span class="n">output_entities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">OutputDataEntityModel</span><span class="p">]</span>
+    <span class="n">static_entities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">StaticDataEntityModel</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="OutputDataModel">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.OutputDataModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OutputDataModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the output data of the system controller.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        entities: List of the output data entitys as OutputDataEntityModel</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">entities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">OutputDataEntityModel</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="ComponentModel">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.ComponentModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ComponentModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the dataflow (input/output) of the controller.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        entity: The entity (input / output) of the datapoint for the controller</span>
+<span class="sd">        attribute: The attribute of the datapoint for the controller</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">entity_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">attribute_id</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+
+<div class="viewcode-block" id="DataTransferComponentModel">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.DataTransferComponentModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataTransferComponentModel</span><span class="p">(</span><span class="n">ComponentModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the components of the data transfer between calculation and the basic service.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        entity_id: The id of the entity of the component</span>
+<span class="sd">        attribute_id: The id of the attribute of the component</span>
+<span class="sd">        value: The output data value as OutputDataModel</span>
+<span class="sd">        unit: The unit of the output data</span>
+<span class="sd">        timestamp: The timestamp of the output</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DataUnits</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;before&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_value_to_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert a Pydantic BaseModel value to a dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">val</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span></div>
+
+
+
+<div class="viewcode-block" id="DataTransferModel">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.DataTransferModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataTransferModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the data transfer between calculation and the basic service.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        components: List of the components of the data transfer as DataTransferComponentModel</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">components</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataTransferComponentModel</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+
+<span class="c1"># Models for the Fiware Connection</span>
+<div class="viewcode-block" id="MetaDataModel">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.MetaDataModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MetaDataModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the metadata of datapoints of the controller.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        timestamp: The timestamp of the data</span>
+<span class="sd">        unit: The unit of the data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">timestamp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DataUnits</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="FiwareDatapointParameter">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.FiwareDatapointParameter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FiwareDatapointParameter</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the Fiware datapoint parameter.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        entity (ContextEntity): The entity of the datapoint</span>
+<span class="sd">        attribute (AttributeModel): The attribute of the datapoint</span>
+<span class="sd">        metadata (list[NamedMetadata]): The metadata of the attribute</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">entity</span><span class="p">:</span> <span class="n">ContextEntity</span>
+    <span class="n">attribute</span><span class="p">:</span> <span class="n">AttributeModel</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">NamedMetadata</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="FiwareAuth">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.FiwareAuth">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FiwareAuth</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base model for the Fiware authentication.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        client_id (str): The client id</span>
+<span class="sd">        client_secret (str): The client secret</span>
+<span class="sd">        token_url (str): The token url</span>
+<span class="sd">        baerer_token (str): The baerer token</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">client_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">client_secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">token_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">baerer_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="FiwareParameter">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.FiwareParameter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FiwareParameter</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the Fiware connection parameters.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        cb_url (str): The context broker url</span>
+<span class="sd">        service (str): The service</span>
+<span class="sd">        service_path (str): The service path</span>
+<span class="sd">        authentication (Optional[Union[FiwareAuth, None]]): The authentication</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cb_url</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">service</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">service_path</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">authentication</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">FiwareAuth</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="DatabaseParameter">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.DatabaseParameter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseParameter</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the database connection parameters.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        crate_db_url (str): The CrateDB url</span>
+<span class="sd">        crate_db_user (Optional[str]): The CrateDB user</span>
+<span class="sd">        crate_db_pw (Optional[str]): The CrateDB password</span>
+<span class="sd">        crate_db_ssl (Optional[bool]): The CrateDB ssl</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">crate_db_url</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">crate_db_user</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">crate_db_pw</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">crate_db_ssl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="FiwareConnectionParameter">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.FiwareConnectionParameter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FiwareConnectionParameter</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the Fiware connection parameters.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        fiware_params (FiwareParameter): The Fiware parameters</span>
+<span class="sd">        database_params (DatabaseParameter): The database parameters</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fiware_params</span><span class="p">:</span> <span class="n">FiwareParameter</span>
+    <span class="n">database_params</span><span class="p">:</span> <span class="n">DatabaseParameter</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

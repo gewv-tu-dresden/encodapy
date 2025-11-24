@@ -1,0 +1,216 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>encodapy.components.two_point_controller.two_point_controller_config &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=da2a414a" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readme.html">“EnCoDaPy” – Energy Control and Data Preparation in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../basic_service.html">EnCoDaPy Basic Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../components.html">EnCoDaPy Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">encodapy.components.two_point_controller.two_point_controller_config</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for encodapy.components.two_point_controller.two_point_controller_config</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Description: Configuration model for the two-point controller component.</span>
+<span class="sd">Author: Martin Altenburger</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.basic_component_config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">InputData</span><span class="p">,</span>
+    <span class="n">OutputData</span><span class="p">,</span>
+    <span class="n">ConfigData</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataPointGeneral</span><span class="p">,</span> <span class="n">DataPointNumber</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_unit_adjustment_factor</span>
+
+
+<div class="viewcode-block" id="TwoPointControllerInputData">
+<a class="viewcode-back" href="../../../../components/built_in_two_point_controller_models.html#encodapy.components.two_point_controller.two_point_controller_config.TwoPointControllerInputData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TwoPointControllerInputData</span><span class="p">(</span><span class="n">InputData</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the input of the two-point controller component.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        current_value (DataPointNumber): The current value of the input.</span>
+<span class="sd">        latest_control_signal (DataPointNumber): The latest control signal output \</span>
+<span class="sd">            from the two-point controller.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">current_value</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Current value of the input, typically a sensor reading&quot;</span>
+    <span class="p">)</span>
+    <span class="n">latest_control_signal</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Latest control signal output from the two-point controller&quot;</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TwoPointControllerOutputData">
+<a class="viewcode-back" href="../../../../components/built_in_two_point_controller_models.html#encodapy.components.two_point_controller.two_point_controller_config.TwoPointControllerOutputData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TwoPointControllerOutputData</span><span class="p">(</span><span class="n">OutputData</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the output of the two-point controller component.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        control_signal (DataPointNumber): The control signal output from the two-point controller.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">control_signal</span><span class="p">:</span> <span class="n">DataPointGeneral</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Control signal output from the two-point controller&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="TwoPointControllerConfigData">
+<a class="viewcode-back" href="../../../../components/built_in_two_point_controller_models.html#encodapy.components.two_point_controller.two_point_controller_config.TwoPointControllerConfigData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TwoPointControllerConfigData</span><span class="p">(</span><span class="n">ConfigData</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model for the configuration data of the thermal storage service.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">hysteresis</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Hysteresis value for the two-point controller&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">setpoint</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Setpoint value for the two-point controller&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">command_enabled</span><span class="p">:</span> <span class="n">DataPointGeneral</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">DataPointGeneral</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Value representing the enabled state of the control signal&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">command_disabled</span><span class="p">:</span> <span class="n">DataPointGeneral</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">DataPointGeneral</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Value representing the disabled state of the control signal&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_unit_setpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validator to check if the units of hysteresis and setpoint are the same.</span>
+<span class="sd">        If not, it tries to convert the hysteresis to the unit of the setpoint.</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hysteresis</span> <span class="o">=</span> <span class="n">DataPointNumber</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hysteresis</span><span class="p">)</span>
+        <span class="n">setpoint</span> <span class="o">=</span> <span class="n">DataPointNumber</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoint</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span> <span class="o">!=</span> <span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span>
+            <span class="ow">and</span> <span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Units of hysteresis (</span><span class="si">{</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">) and setpoint (</span><span class="si">{</span><span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">) &quot;</span>
+                <span class="s2">&quot;are not the same. Please check your configuration.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">unit_adjustment_factor</span> <span class="o">=</span> <span class="n">get_unit_adjustment_factor</span><span class="p">(</span>
+                <span class="n">unit_actual</span><span class="o">=</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">unit_target</span><span class="o">=</span><span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">unit_adjustment_factor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Unit of hysteresis is </span><span class="si">{</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">, but expected </span><span class="si">{</span><span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="s2">&quot;Could not convert, because units are not compatible &quot;</span>
+                    <span class="s2">&quot;or no adjustment factor found.&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span>
+
+            <span class="n">hysteresis</span><span class="o">.</span><span class="n">value</span> <span class="o">*=</span> <span class="n">unit_adjustment_factor</span>
+            <span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hysteresis</span> <span class="o">=</span> <span class="n">DataPointNumber</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

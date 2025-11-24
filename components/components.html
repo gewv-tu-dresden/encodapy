@@ -1,0 +1,415 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Component Architecture of EnCoDaPy &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=da2a414a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Component Configuration Models" href="components_models.html" />
+    <link rel="prev" title="EnCoDaPy Components" href="../components.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">“EnCoDaPy” – Energy Control and Data Preparation in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_service.html">EnCoDaPy Basic Service</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../components.html">EnCoDaPy Components</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Component Architecture of EnCoDaPy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#structure-of-the-component-code">Structure of the Component Code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#highlights">Highlights</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-structure">Module Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#available-components">Available Components</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#component-configuration">Component Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#shared-configuration-elements">Shared Configuration Elements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example-configuration">Example Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#implementing-a-new-component">Implementing a New Component</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#infos-for-the-new-component">Infos for the New Component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#details-to-create-a-new-component">Details to create a New Component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-the-new-component">Using the New Component</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="components_models.html">Component Configuration Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="built_in_components.html">Built-in Components</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../components.html">EnCoDaPy Components</a></li>
+      <li class="breadcrumb-item active">Component Architecture of EnCoDaPy</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/main/docs/source/components/components.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="component-architecture-of-encodapy">
+<h1>Component Architecture of EnCoDaPy<a class="headerlink" href="#component-architecture-of-encodapy" title="Link to this heading"></a></h1>
+<section id="structure-of-the-component-code">
+<h2>Structure of the Component Code<a class="headerlink" href="#structure-of-the-component-code" title="Link to this heading"></a></h2>
+<p>This module provides a structured way to define and manage components for use within the <code class="docutils literal notranslate"><span class="pre">EnCoDaPy</span></code> framework.</p>
+<section id="highlights">
+<h3>Highlights<a class="headerlink" href="#highlights" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Custom module for component definitions.</p></li>
+<li><p>Components are imported via <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> to enable simplified access.</p></li>
+<li><p>All components inherit from a base component with shared logic and configuration.</p></li>
+<li><p>Modular structure improves maintainability and reusability.</p></li>
+</ul>
+</section>
+<section id="module-structure">
+<h3>Module Structure<a class="headerlink" href="#module-structure" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Component module: <code class="docutils literal notranslate"><span class="pre">encodapy.components</span></code></p></li>
+<li><p>Base component: <code class="docutils literal notranslate"><span class="pre">encodapy.components.basic_component</span></code></p></li>
+<li><p>Base configuration: <code class="docutils literal notranslate"><span class="pre">encodapy.components.basic_component_config</span></code></p></li>
+<li><p>Individual component: <code class="docutils literal notranslate"><span class="pre">encodapy.components.$Component</span></code> (imported via <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>)</p></li>
+</ul>
+</section>
+<section id="available-components">
+<h3>Available Components<a class="headerlink" href="#available-components" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>ThermalStorage (<code class="docutils literal notranslate"><span class="pre">thermal_storage</span></code>): Thermal storage component to calculate the stored energy using temperature sensors.<br />
+An example can be found under: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/06_thermal_storage_service"><code class="docutils literal notranslate"><span class="pre">examples/06_thermal_storage_service</span></code></a></p></li>
+<li><p>TwoPointController (<code class="docutils literal notranslate"><span class="pre">two_point_controller</span></code>): Two-Point-Controller component for the steering of the loading process of a thermal storage or other processes.<br />
+An example can be found under: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/07_component_runner"><code class="docutils literal notranslate"><span class="pre">examples/07_component_runner</span></code></a></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="component-configuration">
+<h2>Component Configuration<a class="headerlink" href="#component-configuration" title="Link to this heading"></a></h2>
+<p>Component configuration must be customized per use case. It is recommended to validate the configuration during component initialization. This structure is formalized and can be validated using Pydantic.</p>
+<section id="shared-configuration-elements">
+<h3>Shared Configuration Elements<a class="headerlink" href="#shared-configuration-elements" title="Link to this heading"></a></h3>
+<p>Common configuration elements used across multiple components can be placed in:<br />
+<code class="docutils literal notranslate"><span class="pre">encodapy.components.basic_component_config</span></code></p>
+<section id="controllercomponentmodel">
+<h4><code class="docutils literal notranslate"><span class="pre">ControllerComponentModel</span></code><a class="headerlink" href="#controllercomponentmodel" title="Link to this heading"></a></h4>
+<p>This is a model for configuring components that form part of the general configuration of a service.</p>
+</section>
+<section id="iomodell">
+<h4><code class="docutils literal notranslate"><span class="pre">IOModell</span></code><a class="headerlink" href="#iomodell" title="Link to this heading"></a></h4>
+<p>Root-Modell to describe the structur of the Inputs, Outputs and static data (<code class="docutils literal notranslate"><span class="pre">$INPUT_OR_OUTPUT_VARIABLE</span></code>) of a component as a dictionary of <code class="docutils literal notranslate"><span class="pre">IOAllocationModel</span></code>, like:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;INPUT_OR_OUTPUT_VARIABLE_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IOAllocationModel&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;INPUT_OR_OUTPUT_VARIABLE_2&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IOAllocationModel&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="ioallocationmodel">
+<h4><code class="docutils literal notranslate"><span class="pre">IOAllocationModel</span></code><a class="headerlink" href="#ioallocationmodel" title="Link to this heading"></a></h4>
+<p>Defines how inputs, outputs and static data of a component are mapped to specific entities and attributes.</p>
+<p>The expected format for each input or output (<code class="docutils literal notranslate"><span class="pre">$INPUT_OR_OUTPUT_VARIABLE</span></code>) within the controller components (<code class="docutils literal notranslate"><span class="pre">controller_components</span></code>) configuration is:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;INPUT_OR_OUTPUT_VARIABLE&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;entity_id&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;attribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;attribute_id&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="controllercomponentstaticdata">
+<h4><code class="docutils literal notranslate"><span class="pre">ControllerComponentStaticData</span></code><a class="headerlink" href="#controllercomponentstaticdata" title="Link to this heading"></a></h4>
+<p>A model for storing the static data of a component as a dict of <code class="docutils literal notranslate"><span class="pre">ControllerComponentStaticDataAttribute</span></code> in a Pydantic root model.</p>
+</section>
+<section id="controllercomponentstaticdataattribute">
+<h4><code class="docutils literal notranslate"><span class="pre">ControllerComponentStaticDataAttribute</span></code><a class="headerlink" href="#controllercomponentstaticdataattribute" title="Link to this heading"></a></h4>
+<p>Model for the static data attributes of the controller component, is part if the <code class="docutils literal notranslate"><span class="pre">ControllerComponentStaticData</span></code>-Model.</p>
+</section>
+</section>
+<section id="example-configuration">
+<h3>Example Configuration<a class="headerlink" href="#example-configuration" title="Link to this heading"></a></h3>
+<p>An example of how a Pydantic model can be used to validate the configuration of a component is available at:<br />
+<a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/thermal_storage/thermal_storage_config.py"><code class="docutils literal notranslate"><span class="pre">encodapy/components/thermal_storage/thermal_storage_config.py</span></code></a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="implementing-a-new-component">
+<h2>Implementing a New Component<a class="headerlink" href="#implementing-a-new-component" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>an example is provided in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/08_create_new_component"><code class="docutils literal notranslate"><span class="pre">examples/08_create_new_component</span></code></a></p></li>
+</ul>
+<section id="infos-for-the-new-component">
+<h3>Infos for the New Component<a class="headerlink" href="#infos-for-the-new-component" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Inherits from <code class="docutils literal notranslate"><span class="pre">BasicComponent</span></code></p></li>
+<li><p>Automatically gains:</p>
+<ul class="simple">
+<li><p>Configuration parsing</p></li>
+<li><p>Input discovery logic (to be triggered by the service)</p></li>
+<li><p>A function to run the component and calculates all the outputs mentioned in the configuration.</p></li>
+</ul>
+</li>
+<li><p>Each component needs the same structure in a module called <code class="docutils literal notranslate"><span class="pre">*.$new_component</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>: can be empty</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">new_component.py</span></code>: The Python module that initialises the class <code class="docutils literal notranslate"><span class="pre">NewComponent</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">new_component_config.py</span></code>: The Python module containing all the necessary configurations.</p></li>
+</ul>
+<p>Make sure the names follow this convention if you want to use the component runner.</p>
+</li>
+</ul>
+</section>
+<section id="details-to-create-a-new-component">
+<h3>Details to create a New Component<a class="headerlink" href="#details-to-create-a-new-component" title="Link to this heading"></a></h3>
+<ul>
+<li><p>When implementing a new component, begin by initializing the base class in <code class="docutils literal notranslate"><span class="pre">NewComponent</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">NewComponent</span><span class="p">(</span><span class="n">BasicComponent</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Class for a new component</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+      <span class="bp">self</span><span class="p">,</span>
+      <span class="n">config</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ControllerComponentModel</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">ControllerComponentModel</span><span class="p">]],</span>
+      <span class="n">component_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+      <span class="n">static_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">StaticDataEntityModel</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+  <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="c1"># Add the necessary instance variables here</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">example_variable</span><span class="p">:</span><span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span>
+      
+      <span class="c1"># Add the type declaration for the following variables so that autofill works properly</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">config_data</span><span class="p">:</span> <span class="n">NewComponentConfigData</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">:</span> <span class="n">NewComponentInputData</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">output_data</span><span class="p">:</span> <span class="n">NewComponentOutputData</span>
+
+       <span class="c1"># Prepare Basic Parts / needs to be the latest part</span>
+      <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+          <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">component_id</span><span class="o">=</span><span class="n">component_id</span><span class="p">,</span> <span class="n">static_data</span><span class="o">=</span><span class="n">static_data</span>
+      <span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Important</strong>: The <code class="docutils literal notranslate"><span class="pre">component_id</span></code> must match a key in the provided configuration. If not, the component will raise a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> during initialization.</p>
+</li>
+<li><p>The Configuration(<code class="docutils literal notranslate"><span class="pre">new_component_config.py</span></code>) needs as a minimum:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">NewComponentInputData(InputData)</span></code>: A definition of the input datapoints.</p>
+<p>You can add information about the default values in die Field-Information and also for units using a <code class="docutils literal notranslate"><span class="pre">Field</span></code> definition with the <code class="docutils literal notranslate"><span class="pre">json_schema_extra</span></code> key:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.basic_component_config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+  <span class="n">InputData</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+  <span class="n">DataPointGeneral</span><span class="p">,</span>
+  <span class="n">DataPointNumber</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NewComponentInputData</span><span class="p">(</span><span class="n">InputData</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Input model for the new component</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">input_value</span><span class="p">:</span> <span class="n">DataPointGeneral</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input of the new component&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;$unit_value&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">input_value_with_default</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">DataPointNumber</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input of the new component&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;$unit_value&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>See https://docs.pydantic.dev/latest/concepts/models/#basic-model-usage for information on the general usage of optional fields and default values.</p>
+<p>The value of the variable <code class="docutils literal notranslate"><span class="pre">&quot;$unit_value&quot;</span></code> must be a valid unit from the <code class="docutils literal notranslate"><span class="pre">encodapy.utils.units.DataUnits</span></code> such as <code class="docutils literal notranslate"><span class="pre">&quot;CEL&quot;</span></code> for °C. If possible, the unit will also be transformed.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NewComponentOutputData(OutputData)</span></code>: A definition of the available output datapoints / results.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.basic_component_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutputData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataPointGeneral</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NewComponentOutputData</span><span class="p">(</span><span class="n">OutputData</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Output model for the new component</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">result</span><span class="p">:</span> <span class="n">DataPointGeneral</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Result of the new component&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;$unit_value&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">optional_result</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointGeneral</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is an optional result of the new component and does not need to be exported.&quot;</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;$unit_value&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>If you only want to use some of the possible results, you need to set them to  <code class="docutils literal notranslate"><span class="pre">Optional[DataPoint</span> <span class="pre">model]</span></code></strong> Therefore, there is no need to export them all in the service. If you add them all without ‘Optional’, you will get a ‘ValidationError’ if not all outputs are configured in the service configuration.</p>
+<p>As with the <code class="docutils literal notranslate"><span class="pre">NewComponentInputData</span></code>, you could also add information about the unit. If possible, the unit will also be transformed.</p>
+<p>The data points in this base model must be set in the <code class="docutils literal notranslate"><span class="pre">calculate()</span></code> function of each component so that the base component can handle them.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NewComponentConfigData(ConfigData)</span></code>: A definition of the required static data to check during the initilisazion. It should look like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.basic_component_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataPointGeneral</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NewComponentConfigData</span><span class="p">(</span><span class="n">ConfigData</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Model for the configuration data of the thermal storage service.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">config_value</span><span class="p">:</span> <span class="n">DataPointGeneral</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Static value for the new component&quot;</span>
+<span class="p">)</span>
+<span class="n">optional_config_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointGeneral</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">DataPointGeneral</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Optional static value for the new component&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>You do not need this definition if you don’t want to use static data.<br />
+You could add optional data that does not need to be set in the configuration. This should resemble the second field in the model.</p>
+</li>
+</ul>
+<p>All datapoints need to have the type <code class="docutils literal notranslate"><span class="pre">DataPointGeneral</span></code> (see <code class="docutils literal notranslate"><span class="pre">encodapy.utils.datapoints</span></code>) or a specialized version of it. This type defines that the datapoints can have the following attributes:</p>
+<ul class="simple">
+<li><p>a <code class="docutils literal notranslate"><span class="pre">value</span></code></p></li>
+<li><p>a <code class="docutils literal notranslate"><span class="pre">unit</span></code> (as <code class="docutils literal notranslate"><span class="pre">DataUnits</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">encodapy.utils.units.DataUnits</span></code>)</p></li>
+<li><p>a <code class="docutils literal notranslate"><span class="pre">time</span></code> (as a datetime object)</p></li>
+</ul>
+<p>The following specialized versions restrict the type of <code class="docutils literal notranslate"><span class="pre">value</span></code> to ensure type consistency in calculations:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">DataPointNumber</span></code> for numbers (<code class="docutils literal notranslate"><span class="pre">float</span></code>/<code class="docutils literal notranslate"><span class="pre">int</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DataPointString</span></code> for text (<code class="docutils literal notranslate"><span class="pre">str</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DataPointDict</span></code> for dictionaries (<code class="docutils literal notranslate"><span class="pre">dict</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DataPointBool</span></code> for booleans (<code class="docutils literal notranslate"><span class="pre">bool</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DataPointMedium</span></code> for mediums (see <code class="docutils literal notranslate"><span class="pre">encodapy.utils.mediums</span></code>)</p></li>
+</ul>
+<p>You can define your own datatype by subclassing <code class="docutils literal notranslate"><span class="pre">DataPointGeneral</span></code> if you need a specialized version. This approach is also useful for defining default values when the value involves more than just a number.</p>
+</li>
+<li><p>If the new component requires preparation before the first run, this should be added to the <code class="docutils literal notranslate"><span class="pre">prepare_component()</span></code> function.</p></li>
+<li><p>The basic component will handle the inputs, configuration data and outputs.</p>
+<ul class="simple">
+<li><p>In order to use the autofil function in your IDE, you need to add a declaration of the types of <code class="docutils literal notranslate"><span class="pre">self.input_data</span></code>, <code class="docutils literal notranslate"><span class="pre">self.config_data</span></code> and <code class="docutils literal notranslate"><span class="pre">self.output_data</span></code>.</p></li>
+<li><p>This basic function collects the data and enables you to query it using the InputData model, which is based on a Pydantic BaseModel: <code class="docutils literal notranslate"><span class="pre">self.input_data.input_value</span></code>. If you do not want to use the internal function <code class="docutils literal notranslate"><span class="pre">set_input_values(input_entities:</span> <span class="pre">list[InputDataEntityModel])</span></code>, you can add a custom function to handle the inputs.</p></li>
+<li><p>The configuration data is available in the same way: <code class="docutils literal notranslate"><span class="pre">self.config_data.config_value</span></code>.</p></li>
+<li><p>The new component requires a function <code class="docutils literal notranslate"><span class="pre">calculate()</span></code> to calculate the results, using the component’s internal value storage and other background functions. These functions needs to set the <code class="docutils literal notranslate"><span class="pre">self.output_data</span> <span class="pre">=</span> <span class="pre">NewComponentOutputData(...)</span></code>.
+This data will be used by the basic component and the basic service/component runner service to create the output for the different interfaces.</p></li>
+</ul>
+</li>
+<li><p>If the new component requires calibration, you should extend the function <code class="docutils literal notranslate"><span class="pre">calibrate()</span></code>. In the basic component, this function is only used to update static data.</p></li>
+</ul>
+</section>
+<section id="using-the-new-component">
+<h3>Using the New Component<a class="headerlink" href="#using-the-new-component" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>If you are using the structure for a new component, you can specify the module path in your project’s configuration as the component type, as shown in the following example:</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="nt">&quot;controller_components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;example_controller&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$your_project.$your_modules.$new_component&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="c1">// ...</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Be careful: the module path must contain at least one dot. Otherwise, the framework will not recognise the component as an individual one.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../components.html" class="btn btn-neutral float-left" title="EnCoDaPy Components" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="components_models.html" class="btn btn-neutral float-right" title="Component Configuration Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

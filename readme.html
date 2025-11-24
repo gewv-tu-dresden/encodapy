@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>“EnCoDaPy” – Energy Control and Data Preparation in Python &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=da2a414a" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="EnCoDaPy Basic Service" href="basic_service.html" />
+    <link rel="prev" title="EnCoDaPy Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">“EnCoDaPy” – Energy Control and Data Preparation in Python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#customer-service-based-on-the-controllerbasicservice">Customer service based on the ControllerBasicService</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-components-with-the-componentrunnerservice">Run Components with the ComponentRunnerService</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#units">Units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deployment">Deployment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#copyright">Copyright</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#related-projects">Related projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#acknowledgments">Acknowledgments</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="basic_service.html">EnCoDaPy Basic Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">EnCoDaPy Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">“EnCoDaPy” – Energy Control and Data Preparation in Python</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/main/docs/source/readme.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="encodapy-energy-control-and-data-preparation-in-python">
+<h1>“EnCoDaPy” – Energy Control and Data Preparation in Python<a class="headerlink" href="#encodapy-energy-control-and-data-preparation-in-python" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>The Basic Service provides a system to</p>
+<ul>
+<li><p>read a configuration</p></li>
+<li><p>receive data</p></li>
+<li><p>start a calculation</p></li>
+<li><p>return the results</p></li>
+</ul>
+</li>
+<li><p>This interaction is possible with several interfaces, see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/03_interfaces">examples/03_interfaces</a>:</p>
+<ul>
+<li><p>FIWARE-API</p></li>
+<li><p>MQTT</p></li>
+<li><p>File</p></li>
+</ul>
+</li>
+<li><p>The controller has the functionality to read a configuration from JSON and ENV, validate it and return it as a model.</p></li>
+<li><p>The framework provides components that can be used within a service. This is the recommended solution for running a functional service.
+For more information and code, see: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/readme.md">encodapy/components/readme.md</a></p></li>
+<li><p>Further documentation can be found <a class="reference external" href="https://gewv-tu-dresden.github.io/encodapy/">here</a>.</p></li>
+<li><p>Examples and documentation for each part of the project are available under: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples">examples</a></p></li>
+</ul>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>The configuration of the service must be provided via <code class="docutils literal notranslate"><span class="pre">config.json</span></code> and has several sections (see the <a class="reference external" href="https://gewv-tu-dresden.github.io/encodapy/basic_service.html">documentation</a> or the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples">examples</a>):</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Controller name - for documentation purposes only</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interfaces</span></code>: Indicates which interfaces are active</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inputs</span></code>: Configuration of the inputs to the controller</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outputs</span></code>: Configuration of the outputs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">staticdata</span></code>: Static data point configuration (Data that is not continuously updated)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">controller_components</span></code>: Configuration of the controller components, see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/readme.md">encodapy/components/readme.md</a> or the <a class="reference external" href="https://gewv-tu-dresden.github.io/encodapy/components.html">documentation</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">controller_settings</span></code>: General settings about the controller</p></li>
+</ul>
+</li>
+<li><p>Environmental variables are required to configure the basic service and the interfaces. For more information, see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/config/env_values.py">encodapy/config/env_values</a> or the <a class="reference external" href="https://gewv-tu-dresden.github.io/encodapy/">documentation</a>.</p></li>
+</ul>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h2>
+<p>You could install the Package via <a class="reference external" href="https://pypi.org/project/encodapy/">PyPI</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">encodapy</span>
+</pre></div>
+</div>
+<p>There are two ways to use the Package:</p>
+<section id="customer-service-based-on-the-controllerbasicservice">
+<h3>Customer service based on the ControllerBasicService<a class="headerlink" href="#customer-service-based-on-the-controllerbasicservice" title="Link to this heading"></a></h3>
+<p>To create your own custom service, you have to overwrite two functions of the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/service/basic_service.py">ControllerBasicService</a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">prepare_start()</span></code>: This is a synchronous function that prepares the start of the algorithm and specifies aspects of the service. This should not take long due to health issues in Docker containers. It only needs to be overwritten if other tasks are required after initialisation of the service.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calculation()</span></code>: Asynchronous function to perform the main calculation in the service</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calibration()</span></code>: Asynchronous function to calibrate the service or coefficients and update StaticData in the service if only required</p></li>
+</ul>
+<p>To start the service, you need to call</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">start_calibration()</span></code>: To start the calibration if required</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_service()</span></code>: To start the service</p></li>
+</ul>
+<p>For more details, see the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples">examples</a></p>
+</section>
+<section id="run-components-with-the-componentrunnerservice">
+<h3>Run Components with the ComponentRunnerService<a class="headerlink" href="#run-components-with-the-componentrunnerservice" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>You could use components to run them with the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/service/component_runner_service.py">ComponentRunnerService</a></p></li>
+<li><p>Frist, create a configuration, then start the service:</p>
+<ul>
+<li><p>as shown in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/07_component_runner">examples/07_component_runner</a></p></li>
+<li><p>by running the service with the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/service_main/main.py">main.py</a>.</p></li>
+</ul>
+</li>
+<li><p>If you need additional components, please see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components">encodapy/components</a>:</p>
+<ul>
+<li><p>You can use components from <code class="docutils literal notranslate"><span class="pre">encodapy/components</span></code> or create your own</p></li>
+<li><p>An easy way to build your own component is shown in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/08_create_new_component">examples/08_create_new_component</a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h3>
+<p>For different examples and documentation, how to use the tool - see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples">examples</a>.</p>
+<p>The examples are intended to help you use the tool and understand how it works:</p>
+<ul class="simple">
+<li><p>the configuration</p></li>
+<li><p>the use</p></li>
+<li><p>the components</p></li>
+</ul>
+</section>
+<section id="units">
+<h3>Units<a class="headerlink" href="#units" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Inputs and outputs get information about the unit. The class <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/controller_software/utils/units.py"><code class="docutils literal notranslate"><span class="pre">DataUnits</span></code></a> is used for this.</p></li>
+<li><p>More units must be added manually.</p></li>
+<li><p>Timeranges:</p>
+<ul>
+<li><p>Timeranges for data queries are different for calculation and calibration.</p></li>
+<li><p>The following timeranges are possible</p>
+<ul>
+<li><p>‘“minute”’</p></li>
+<li><p>‘“hour”’</p></li>
+<li><p>‘“day”’</p></li>
+<li><p>‘“month”’ (30 days for simple use)</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Today, there ist no adjustment for different units. Its a TODO for the future</p></li>
+</ul>
+</section>
+<section id="deployment">
+<h3>Deployment<a class="headerlink" href="#deployment" title="Link to this heading"></a></h3>
+<p>The recommended way to run the service is:</p>
+<ul class="simple">
+<li><p>Create a Python environment using Poetry (see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/pyproject.toml">pyproject.toml</a>).</p></li>
+<li><p>Use a Docker container for production deployments (create a custom image using the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/dockerfile">dockerfile</a>).</p></li>
+</ul>
+</section>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading"></a></h2>
+<p>This project is licensed under the BSD License - see the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/LICENSE">LICENSE</a> file for details.</p>
+</section>
+<section id="copyright">
+<h2>Copyright<a class="headerlink" href="#copyright" title="Link to this heading"></a></h2>
+<p><a href="https://tu-dresden.de/ing/maschinenwesen/iet/gewv"> <img alt="GEWV" src="https://wwwpub.zih.tu-dresden.de/~s8407010/GEWV_Logo.svg" height="75"> </a></p>
+<p>2024-2025, TUD Dresden University of Technology, Chair of Building Energy Systems and Heat Supply</p>
+</section>
+<section id="related-projects">
+<h2>Related projects<a class="headerlink" href="#related-projects" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>EnOB: N5GEH-Serv - National 5G Energy Hub <br>
+<a href="https://n5geh.de/"> <img alt="National 5G Energy Hub"
+src="https://avatars.githubusercontent.com/u/43948851?s=200&v=4" height="150"></a></p></li>
+<li><p>EnOB: TWE-Flex - Optimisation and flexibilisation of domestic hot water heating systems <br>
+<a href="https://n5geh.de/twe-flex/"> Project Website </a></p></li>
+<li><p>EnEff: E³ - Low-emission and energy-efficient energy supply in urban areas using the latest intelligent ICT structures <br>
+<a href="https://n5geh.de/e3/"> Project Website </a></p></li>
+</ul>
+</section>
+<section id="acknowledgments">
+<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Link to this heading"></a></h2>
+<p>We gratefully acknowledge the financial support of the Federal Ministry for Economic Affairs and Energy.</p>
+<p><a href="https://www.bundeswirtschaftsministerium.de/Navigation/EN/Home/home.html"> <img alt="BMWE"
+src="https://wwwpub.zih.tu-dresden.de/~s8407010/BMWE_gefoerdert_en_RGB.svg" style="height:200px; width:auto; max-width:none;"> </a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="EnCoDaPy Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="basic_service.html" class="btn btn-neutral float-right" title="EnCoDaPy Basic Service" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
