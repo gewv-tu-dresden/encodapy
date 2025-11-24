@@ -34,8 +34,8 @@ class MQTTTemplateConfig(BaseModel):
 
     The evironment variable `MQTT_TEMPLATE_<NAME>` (or variables for multiple templates) \
         must be set, where `<NAME>` is the name of the template to load.\
-            It isn't loaded automatically from a `.env` file
-    The dictionary must contain the keys `topic` and `payload`, an could look like this:
+            It isn't loaded automatically from a `.env` file. 
+    The dictionary must contain the keys `topic` and `payload`, and could look like this:
 
     .. code-block:: json
 
