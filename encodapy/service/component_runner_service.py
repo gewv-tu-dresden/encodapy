@@ -173,5 +173,5 @@ class ComponentRunnerService(ControllerBasicService):
         logger.debug("The calibration of the components has begun.")
         for component in self.components:
             component.calibrate(
-                static_data=data.static_entities if self.reload_staticdata else None
+                static_data=data.static_entities if self.env.reload_staticdata else None
             )

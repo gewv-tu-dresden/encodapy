@@ -18,7 +18,7 @@ class TwoPointControllerInputData(InputData):
     """
     Model for the input of the two-point controller component.
     
-    Contains:
+    Attributes:
         current_value (DataPointNumber): The current value of the input.
         latest_control_signal (DataPointNumber): The latest control signal output \
             from the two-point controller.
@@ -31,12 +31,11 @@ class TwoPointControllerInputData(InputData):
         ..., description="Latest control signal output from the two-point controller"
     )
 
-
 class TwoPointControllerOutputData(OutputData):
     """
     Model for the output of the two-point controller component.
 
-    Contains:
+    Attributes:
         control_signal (DataPointNumber): The control signal output from the two-point controller.
     """
 

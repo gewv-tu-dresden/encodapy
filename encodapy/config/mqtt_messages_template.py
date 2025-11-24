@@ -16,9 +16,49 @@ class MQTTTemplateConfig(BaseModel):
     """
     Model for MQTT template configuration.
 
-    Contains:
-        topic (Template): The template for the MQTT topic.
-        payload (Template): The template for the MQTT payload.
+    Loads and validates MQTT topic and payload templates from environment variables / \
+        file as dictionary. Templates support the following placeholders:
+
+        - ``__OUTPUT_ENTITY__``: The entity ID of the output.
+        - ``__OUTPUT_ATTRIBUTE__``: The attribute ID of the output.
+        - ``__OUTPUT_VALUE__``: The value of the output.
+        - ``__OUTPUT_UNIT__``: The unit of the output.
+        - ``__OUTPUT_TIME__``: The timestamp of the output.
+        - ``__MQTT_TOPIC_PREFIX__``: The MQTT topic prefix from environment variables.
+
+    The dictionary to build the templates can be provided in three ways:
+
+        1. As a dictionary directly to the model.
+        2. Via an environment variable `MQTT_TEMPLATE_<NAME>` as a string.
+        3. Via a file path stored in an environment variable `MQTT_TEMPLATE_<NAME>`.
+
+    The evironment variable `MQTT_TEMPLATE_<NAME>` (or variables for multiple templates) \
+        must be set, where `<NAME>` is the name of the template to load.\
+            It isn't loaded automatically from a `.env` file
+    The dictionary must contain the keys `topic` and `payload`, an could look like this:
+
+    .. code-block:: json
+
+        {
+            "topic": "sensors/{{output_entity}}/{{output_attribute}}",
+            "payload": {
+                "value": "__OUTPUT_VALUE__",
+                "info_dict": {
+                    "output_entity": "__OUTPUT_ENTITY__",
+                    "output_attribute": "__OUTPUT_ATTRIBUTE__",
+                    "output_time": "__OUTPUT_TIME__"
+                }
+            }
+        }
+
+    Please see the examples for this.
+
+    Arguments:
+        topic (Template): The Jinja2 template for the MQTT topic.
+        payload (Template): The Jinja2 template for the MQTT payload.
+
+    Raises:
+        ValueError: If the input is invalid or templates cannot be loaded.
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -30,7 +70,17 @@ class MQTTTemplateConfig(BaseModel):
     @classmethod
     def load_mqtt_message_template(cls, mqtt_format_template_env: Union[str, dict]) -> Any:
         """
-        Load the MQTT message template from the environment variable.
+        Load the MQTT message template from an environment variable or dictionary.
+
+        Args:
+            mqtt_format_template_env: Either a string (environment variable name) or a dictionary
+                                      containing `topic` and `payload` templates.
+
+        Returns:
+            dict: A dictionary with `topic` and `payload` as `jinja2.Template` objects.
+
+        Raises:
+            ValueError: If the input is invalid or templates cannot be loaded.
         """
 
         if isinstance(mqtt_format_template_env, dict):
@@ -50,7 +100,6 @@ class MQTTTemplateConfig(BaseModel):
             )
         env_variable = f"MQTT_{mqtt_format_template_env.upper()}"
         mqtt_format_template_info = os.getenv(env_variable)
-
 
         mqtt_format_template: Optional[dict] = None
         if mqtt_format_template_info is not None:
@@ -94,10 +143,17 @@ class MQTTTemplateConfig(BaseModel):
     @classmethod
     def _handle_dict_input(cls, mqtt_format_data: dict) -> dict:
         """
-        Handle dictionary input for MQTT template.
+        Validate and process dictionary input for MQTT templates.
 
         Args:
-            mqtt_format_data (dict): The input data dictionary.
+            mqtt_format_data: Dictionary containing `topic` and `payload` templates.
+                            Each template can be a `str` or `dict`.
+
+        Returns:
+            dict: Processed templates for `topic` and `payload`.
+
+        Raises:
+            ValueError: If `mqtt_format_data` is missing `topic` or `payload` keys.
         """
         if not isinstance(mqtt_format_data, dict):
             raise ValueError("Input data must be a dictionary.")
@@ -119,17 +175,17 @@ class MQTTTemplateConfig(BaseModel):
     @classmethod
     def load_mqtt_template(cls, template_raw: dict, part: str) -> Template:
         """
-        Get the MQTT payload / topic template.
-        Template for the MQTT message could be used for formatting and \
-            possible values are:
-            - __OUTPUT_ENTITY__: The entity ID of the output from the component configuration.
-            - __OUTPUT_ATTRIBUTE__: The attribute ID of the output from the component configuration.
-            - __OUTPUT_VALUE__: The value of the output from the calculation.
-            - __OUTPUT_UNIT__: The unit of the output from the calculation.
-            - __OUTPUT_TIME__: The timestamp of the output from the calculation.
+        Process a raw template string or dictionary into a `jinja2.Template`.
+
+        Args:
+            template_raw: Raw template data (str or dict).
+            part: Either "topic" or "payload".
 
         Returns:
-            Optional[Template]: The MQTT payload template or None if not defined.
+            Template: The rendered Jinja2 template.
+
+        Raises:
+            ValueError: If the template format is invalid.
         """
         template_raw = template_raw.get(part, {})
         if isinstance(template_raw, dict):
@@ -169,3 +225,19 @@ class MQTTTemplateConfig(BaseModel):
                 )
 
         return Template(template)
+
+class MQTTTemplateConfigDoc(BaseModel):
+    """
+    Model for MQTT template configuration.
+
+    **Mock class for documentation purposes.**
+    
+    Note:
+        In the actual implementation, `topic` and `payload` are `jinja2.Template` objects.
+        This mock uses `dict` to avoid import issues during documentation generation.
+        
+        For more information,\
+            see :class:`~encodapy.config.mqtt_messages_template.MQTTTemplateConfig`.
+    """
+    topic: dict
+    payload: dict

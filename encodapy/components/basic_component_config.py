@@ -17,9 +17,9 @@ class IOAllocationModel(BaseModel):
     """
     Model for the input or output allocation.
 
-    Contains:
-        `entity`: ID of the entity to which the input or output is allocated
-        `attribute`: ID of the attribute to which the input or output is allocated
+    Attributes:
+        entity (str): ID of the entity to which the input or output is allocated
+        attribute (str): ID of the attribute to which the input or output is allocated
     """
 
     entity: str = Field(
@@ -37,7 +37,9 @@ class IOModell(
     Model for the input, staticdata and output of a component.
 
     It contains a dictionary with the key as the ID of the input, output or static data
-    and the value as the allocation model.
+    and the value as the allocation model
+    
+    See also :class:`~encodapy.components.basic_component_config.IOAllocationModel`.
 
     There is no validation for this.
     It is used to create the the ComponentIOModel for each component.
@@ -49,23 +51,27 @@ class ConfigDataPoints(
 ):  # pylint: disable=too-few-public-methods
     """
     Model for the configuration of config data points.
+    
+    See also :class:`~encodapy.components.basic_component_config.IOAllocationModel` and
+    :class:`~encodapy.utils.datapoints.DataPointGeneral`.
     """
 
 
 class ControllerComponentModel(BaseModel):
     """
     Model for the configuration of the controller components.
-    Contains:
-    - active: Whether the component is active or not
-    - id: The id of the component
-    - type: The type of the component (e.g. thermal storage, heat pump, etc. / \
-        needs to be defined for individual components)
-    - inputs: The inputs of the component as a dictionary with IOAllocationModel \
-        for the individual inputs
-    - outputs: The outputs of the component as a dictionary with IOAllocationModel \
-        for the individual outputs
-    - config: The configuration of the component as a dictionary with IOAllocationModel \
-          for the individual static data or DataPointModel with direct values
+    
+    Attributes:
+        active (bool): Whether the component is active or not
+        id (str): The id of the component
+        type (str): The type of the component (e.g. thermal storage, heat pump, etc. / \
+            needs to be defined for individual components)
+        inputs (IOModell): The inputs of the component as a dictionary with IOAllocationModel \
+            for the individual inputs
+        outputs (IOModell): The outputs of the component as a dictionary with IOAllocationModel \
+            for the individual outputs
+        config (ConfigDataPoints): The configuration of the component as a dictionary with \
+            IOAllocationModel for the individual static data or DataPointModel with direct values
     """
 
     active: Optional[bool] = True
@@ -81,7 +87,9 @@ class ComponentData(BaseModel):
     """
     Basemodel for the configuration of the datapoints of a component
 
-    Base for InputData, OutputData and ConfigData
+    Base for :class:`~encodapy.components.basic_component_config.InputData`, \
+        :class:`~encodapy.components.basic_component_config.OutputData`\
+        and :class:`~encodapy.components.basic_component_config.ConfigData`
     
     Provides a validator to check the units of the input values \
         and convert them if necessary.
@@ -130,46 +138,59 @@ class ComponentData(BaseModel):
 
 class OutputData(ComponentData):
     """
-    Basemodel for the configuration of the outputs of a component
+    Base model for the component output configuration.
 
-    Needs to be implemented by the user.
-    
-    Provides a validator to check the units of the input values \
-        and convert them if necessary.
+    Subclass this and declare fields for each output datapoint. OutputData
+    inherits the unit-checking validator from \
+        :class:`~encodapy.components.basic_component_config.ComponentData`,
+    which will validate and convert units when possible.
+
+    Fields should be instances of :class:`~encodapy.utils.datapoints.DataPointGeneral`
+    (or subclasses thereof) so the validator can handle unit and value conversion.
+
+    Needs to be implemented for the specific component.
     """
 
 
 class InputData(ComponentData):
     """
-    Basemodel for the configuration of the inputs of a component
-    
-    Needs to be implemented by the user.
-    
-    Provides a validator to check the units of the input values \
-        and convert them if necessary.
-    Only works if the value is a number (int or float) and the datapoint \
-        is a DataPointGeneral or a SubModel.
-    """
+    Base model for the component input configuration.
 
+    Subclass this and declare fields for each input datapoint. InputData
+    inherits the unit-checking validator from \
+        :class:`~encodapy.components.basic_component_config.ComponentData`,
+    which will validate and convert units when possible.
+
+    Fields should be instances of :class:`~encodapy.utils.datapoints.DataPointGeneral`
+    (or subclasses thereof) so the validator can handle unit and value conversion.
+    
+    Needs to be implemented for the specific component.
+    """
 
 class ConfigData(ComponentData):
     """
-    Basemodel for the configuration data of a component
-    
-    Needs to be implemented by the user, if static configuration is needed.
-    
-    Provides a validator to check the units of the input values \
-        and convert them if necessary.
-    """
+    Base model for the component static configuration data.
 
+    Subclass this and declare fields for each static configuration datapoint. ConfigData
+    inherits the unit-checking validator from \
+        :class:`~encodapy.components.basic_component_config.ComponentData`,
+    which will validate and convert units when possible.
+
+    Fields should be instances of :class:`~encodapy.utils.datapoints.DataPointGeneral`
+    (or subclasses thereof) so the validator can handle unit and value conversion.
+
+    Needs to be implemented by the user if static configuration is required.
+    """
 
 class ComponentIOModel(BaseModel):
     """
     Model for the input and output of the thermal storage service.
 
-    Contains:
-        `input`: InputModel = Input configuration for the thermal storage service
-        `output`: OutputModel = Output configuration for the thermal storage service
+    Attributes:
+        input (:class:`~encodapy.utils.datapoints.InputModel`): \
+            Input configuration for the thermal storage service
+        output (:class:`~encodapy.utils.datapoints.OutputModel`): \
+            Output configuration for the thermal storage service
     """
 
     input: InputData = Field(

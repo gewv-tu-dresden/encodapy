@@ -3,7 +3,6 @@ Description: This file contains the class FiwareConnections,
 which is used to store the connection parameters for the Fiware and CrateDB connections.
 Author: Paul Seidel
 """
-
 import os
 import json
 import pathlib
@@ -17,12 +16,12 @@ from encodapy.config import (
     AttributeTypes,
     CommandModel,
     DataQueryTypes,
-    DefaultEnvVariables,
     FileExtensionTypes,
     InputModel,
     OutputModel,
     StaticDataModel,
     DataFile,
+    FileEnvVariables
 )
 from encodapy.config.models import DataFileEntity
 from encodapy.utils.models import (
@@ -41,26 +40,15 @@ class FileConnection:
     Only a helper class.
     """
 
-    def __init__(self):
-        self.file_params = {}
+    def __init__(self) -> None:
+        self.file_params : FileEnvVariables
 
-    def load_file_params(self):
+    def load_file_params(self) -> None:
         """
         Function to load the file parameters
         """
         logger.debug("Load config for File interface")
-        self.file_params["PATH_OF_INPUT_FILE"] = os.environ.get(
-            "PATH_OF_INPUT_FILE", DefaultEnvVariables.PATH_OF_INPUT_FILE.value
-        )
-        self.file_params["START_TIME_FILE"] = os.environ.get(
-            "START_TIME_FILE", DefaultEnvVariables.START_TIME_FILE.value
-        )
-        self.file_params["PATH_OF_STATIC_DATA"] = os.environ.get(
-            "PATH_OF_STATIC_DATA", DefaultEnvVariables.PATH_OF_STATIC_DATA.value
-        )
-        self.file_params["PATH_OF_RESULTS"] = os.environ.get(
-            "PATH_OF_RESULTS", DefaultEnvVariables.PATH_OF_RESULTS.value
-        )
+        self.file_params = FileEnvVariables()
 
     def _get_last_timestamp_for_file_output(
         self, output_entity: OutputModel
@@ -113,7 +101,7 @@ class FileConnection:
         """
 
         file_extension = pathlib.Path(
-            self.file_params["PATH_OF_INPUT_FILE"]
+            self.file_params.path_of_input_file
         ).suffix.lower()
 
         if file_extension == FileExtensionTypes.CSV.value:
@@ -154,7 +142,7 @@ class FileConnection:
 
         # attributes_timeseries = {}
         attributes_values = []
-        path_of_file = self.file_params["PATH_OF_INPUT_FILE"]
+        path_of_file = self.file_params.path_of_input_file
         try:
             data = pd.read_csv(path_of_file, sep=";", parse_dates=["Time"], decimal=",")
             # Add tz to time index, if not in iso format
@@ -353,7 +341,7 @@ class FileConnection:
 
         data = self._get_data_from_json_file(
             entity=entity,
-            path_of_file=self.file_params["PATH_OF_INPUT_FILE"],
+            path_of_file=self.file_params.path_of_input_file,
             data_type="inputdata"
         )
         if not isinstance(data, InputDataEntityModel):
@@ -378,7 +366,7 @@ class FileConnection:
 
         data = self._get_data_from_json_file(
             entity=entity,
-            path_of_file=self.file_params["PATH_OF_STATIC_DATA"],
+            path_of_file=self.file_params.path_of_static_data,
             data_type="staticdata"
         )
         if not isinstance(data, StaticDataEntityModel):
@@ -409,7 +397,7 @@ class FileConnection:
         commands = []
         logger.debug("Write outputs to json-output-files")
 
-        path_to_results = self.file_params["PATH_OF_RESULTS"]
+        path_to_results = self.file_params.path_of_results
 
         if not os.path.exists(path_to_results):
             os.makedirs(path_to_results)
