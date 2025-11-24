@@ -115,14 +115,11 @@ def suppress_pydantic_parameters(app, what, name, obj, options, lines):
     """Removes parameter sections from Pydantic models."""
     if what == "class" and hasattr(obj, '__pydantic_core_schema__'):
         # Remove parameter-related lines from the docstring
-        in_parameters_section = False
         new_lines = []
         i = 0
         while i < len(lines):
             line = lines[i]
             if line.strip() == "Parameters" or line.strip().startswith("Parameters:"):
-                # Find the end of the Parameters section
-                in_parameters_section = True
                 # Skip this line and the following parameters
                 i += 1
                 while i < len(lines) and (

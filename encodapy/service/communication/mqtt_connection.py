@@ -29,7 +29,6 @@ from encodapy.utils.models import (
     InputDataAttributeModel,
     InputDataEntityModel,
     OutputDataEntityModel
-    OutputDataEntityModel
 )
 
 class MqttConnection:

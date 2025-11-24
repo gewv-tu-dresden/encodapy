@@ -405,29 +405,6 @@ class ThermalStorageLoadLevelCheck(BaseModel):
         description="Reference state of charge level in percent (0-100) | set by the process",
     )
 
-class ThermalStorageLoadLevelCheck(BaseModel):
-    """
-    Model for the state of charge check information of the thermal storage service.
-    """
-    enabled: bool = Field(
-        True,
-        description="Enable or disable the state of charge check",
-    )
-    minimal_level: float = Field(
-        15.0,
-        gt=0,
-        le=100,
-        description="""Threshold percentage for the upper temperature sensor.
-        When the top sensor falls below this percentage of the temperature range,
-        the state of charge is adjusted. (0-100)""",
-    )
-    ref_state_of_charge: Optional[float] = Field(
-        None,
-        ge=0,
-        le=100,
-        description="Reference state of charge level in percent (0-100) | set by the process",
-    )
-
 class ThermalStorageConfigData(ConfigData):
     """
     Model for the configuration data of the thermal storage service.

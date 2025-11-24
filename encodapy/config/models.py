@@ -15,8 +15,7 @@ from encodapy.config.types import (
     AttributeTypes,
     Interfaces,
     TimerangeTypes,
-    MQTTFormatTypes,
-    MQTTFormatTypes,
+    MQTTFormatTypes
 )
 from encodapy.utils.error_handling import ConfigError, InterfaceNotActive
 from encodapy.utils.units import DataUnits, TimeUnits
@@ -103,7 +102,7 @@ class CommandModel(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str
-    id_interface: str = Field(default=None)
+    id_interface: str = Field(default="")
     value: Union[str, int, float, List, Dict, None] = None
 
     @model_validator(mode="after")
@@ -111,7 +110,7 @@ class CommandModel(BaseModel):
         """Sets the 'id_interface' attribute to the value of 'id'
         if it is currently None.
         """
-        if self.id_interface is None:
+        if self.id_interface == "":
             self.id_interface = self.id
         return self
 
@@ -130,7 +129,7 @@ class InputModel(BaseModel):
 
     id: str
     interface: Interfaces
-    id_interface: str = Field(default=None)
+    id_interface: str = Field(default="")
     attributes: list[AttributeModel]
 
     @model_validator(mode="after")
@@ -138,7 +137,7 @@ class InputModel(BaseModel):
         """Sets the 'id_interface' attribute to the value of 'id'
         if it is currently None.
         """
-        if self.id_interface is None:
+        if self.id_interface == "":
             self.id_interface = self.id
         return self
 
@@ -170,7 +169,7 @@ class OutputModel(BaseModel):
 
     id: str
     interface: Interfaces
-    id_interface: str = Field(default=None)
+    id_interface: str = Field(default="")
     attributes: list[AttributeModel]
     commands: list[CommandModel] = Field(default_factory=list)
 
@@ -179,7 +178,7 @@ class OutputModel(BaseModel):
         """Sets the 'id_interface' attribute to the value of 'id'
         if it is currently None.
         """
-        if self.id_interface is None:
+        if self.id_interface == "":
             self.id_interface = self.id
         return self
 
