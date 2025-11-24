@@ -16,6 +16,7 @@ from encodapy.config.types import (
     Interfaces,
     TimerangeTypes,
     MQTTFormatTypes,
+    MQTTFormatTypes,
 )
 from encodapy.utils.error_handling import ConfigError, InterfaceNotActive
 from encodapy.utils.units import DataUnits, TimeUnits

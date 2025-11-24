@@ -2,6 +2,7 @@
 Description: This file contains the class MqttConnection,
 which is used to store the connection parameters for the MQTT broker.
 Author: Maximilian Beyer, Martin Altenburger
+Author: Maximilian Beyer, Martin Altenburger
 """
 
 import json
@@ -27,6 +28,7 @@ from encodapy.utils.models import (
     AttributeModel,
     InputDataAttributeModel,
     InputDataEntityModel,
+    OutputDataEntityModel
     OutputDataEntityModel
 )
 

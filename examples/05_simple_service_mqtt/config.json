@@ -50,6 +50,12 @@
                     "id": "status",
                     "id_interface": "status",
                     "mqtt_format": "template_example03"
+                    "mqtt_format": "plain"
+                },
+                {
+                    "id": "status",
+                    "id_interface": "status",
+                    "mqtt_format": "template_example03"
                 }
             ],
             "commands": []
