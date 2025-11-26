@@ -4,7 +4,9 @@ Author: Martin Altenburger, Paul Seidel
 """
 from typing import Optional, Union
 import math
+from datetime import datetime
 from loguru import logger
+import pandas as pd
 from encodapy.components.basic_component import BasicComponent
 from encodapy.components.basic_component_config import (
     ComponentValidationError,
@@ -17,7 +19,15 @@ from encodapy.components.thermal_storage.thermal_storage_config import (
     ThermalStorageConfigData,
     ThermalStorageEnergyTypes,
     ThermalStorageInputData,
-    ThermalStorageOutputData
+    ThermalStorageOutputData,
+    TemperatureExtrema
+)
+#TODO remove
+# from encodapy.components.thermal_storage.calibration_file import (
+#     save_calibration_json
+# )
+from encodapy.components.thermal_storage.calibration_data import (
+    CalibrationData
 )
 from encodapy.utils.mediums import get_medium_parameter
 from encodapy.utils.models import (
@@ -56,12 +66,16 @@ class ThermalStorage(BasicComponent):
         self.input_data: ThermalStorageInputData
         self.output_data: ThermalStorageOutputData
 
+        self.sensor_values_stored: dict[int, pd.Series] = {}
+        # TODO: maybe use other structure from collections import deque or np.array --> less ram
+
         # Prepare Basic Parts / needs to be the latest part
         super().__init__(
             config=config, component_id=component_id, static_data=static_data
         )
         # Set the default value for the reference state of charge to None - start of the service
         self.config_data.load_level_check.ref_state_of_charge = None
+        self.calibration_data = CalibrationData(db_path=self.config_data.calibration.db_path)
 
     def _calculate_volume_per_sensor(self) -> dict:
         """
@@ -174,13 +188,56 @@ class ThermalStorage(BasicComponent):
             )
 
             return limits
-        #TODO Add flexible limits method
+
+        if (
+            self.config_data.calculation_method.value
+            == ThermalStorageCalculationMethods.HISTORICAL_LIMITS
+        ):
+            #TODO Add flexible limits method
+            return config_limits
 
         logger.warning(
             f"Unknown calculation method: {self.config_data.calculation_method.value}"
         )
 
         return config_limits
+
+    def get_storage_temperature_sensor_value(self,
+                                             sensor_index:int) -> DataPointNumber:
+        """
+        Function to get the temperature value of a sensor in the thermal storage
+        Args:
+            sensor_index (int): ID of the sensor in the thermal storage (0=top, 1=second, ...)
+        
+        Returns:
+            DataPointNumber: Temperature value of the sensor in the thermal storage in °C
+        """
+        temperature_sensor = f"temperature_{sensor_index+1}"
+        try:
+            temperature: DataPointNumber = getattr(
+                self.input_data, temperature_sensor
+            )
+        except AttributeError as e:
+            error_msg = (
+                f"Temperature sensor '{temperature_sensor}' "
+                "not found in input data."
+            )
+            logger.error(error_msg)
+            raise AttributeError(error_msg) from e
+        if not isinstance(temperature, DataPointNumber):
+            error_msg = (
+                f"Temperature sensor '{temperature_sensor}' "
+                "is not of type DataPointNumber."
+            )
+            logger.error(error_msg)
+            raise TypeError(error_msg)
+        if temperature is None or temperature.value is None:
+            error_msg = (
+                f"Temperature value for sensor '{temperature_sensor}' is not set."
+            )
+            logger.error(error_msg)
+            raise ValueError(error_msg)
+        return temperature
 
     def get_storage_energy_content(
         self, energy_type: ThermalStorageEnergyTypes
@@ -199,25 +256,7 @@ class ThermalStorage(BasicComponent):
         nominal_energy = 0
 
         for index, _ in enumerate(self.config_data.sensor_config.value.storage_sensors):
-
-            temperature_sensor = f"temperature_{index+1}"
-            try:
-                temperature: DataPointNumber = getattr(
-                    self.input_data, temperature_sensor
-                )
-            except AttributeError as e:
-                error_msg = (
-                    f"Temperature sensor '{temperature_sensor}' "
-                    "not found in input data."
-                )
-                logger.error(error_msg)
-                raise AttributeError(error_msg) from e
-            if temperature is None or temperature.value is None:
-                error_msg = (
-                    f"Temperature value for sensor '{temperature_sensor}' is not set."
-                )
-                logger.error(error_msg)
-                raise ValueError(error_msg)
+            temperature = self.get_storage_temperature_sensor_value(sensor_index=index)
 
             medium_parameter = get_medium_parameter(
                 medium=self.config_data.medium.value,
@@ -510,3 +549,160 @@ class ThermalStorage(BasicComponent):
             storage__level=state_of_charge_datapoint,
             storage__loading_potential_nominal=loading_potential_datapoint,
         )
+
+        if self.config_data.calculation_method.value \
+            == ThermalStorageCalculationMethods.HISTORICAL_LIMITS:
+            logger.debug("Storing thermal storage sensor values.")
+            self.store_storage_temperature_history()
+
+    def store_storage_temperature_history(self)-> None:
+        """
+        Function to store the temperature history of the thermal storage
+
+        Stores the temperature values of each sensor in a pandas Series
+        in the sensor_values_stored dictionary with the sensor index as key.
+
+        TODO: Maybe use other structure collections.deque or np.array --> less ram
+        """
+        #TODO Implement temperature history storage
+        for index, _ in enumerate(self.config_data.sensor_config.value.storage_sensors):
+            try:
+                temperature = self.get_storage_temperature_sensor_value(sensor_index=index)
+                # Store the temperature value in the history ??
+                if not isinstance(temperature.value, (int, float)):
+                    raise ValueError("Temperature value is not a number.")
+                if temperature.time is None:
+                    raise ValueError("Temperature time is not set.")
+                if index not in self.sensor_values_stored:
+                    self.sensor_values_stored[index] = pd.Series(
+                        dtype=float,
+                        index=pd.DatetimeIndex([], tz="UTC"))
+
+                self.sensor_values_stored[index].at[pd.to_datetime(temperature.time)] = \
+                    float(temperature.value)
+            except (AttributeError, ValueError, TypeError) as e:
+                logger.warning(f"Could not store temperature for sensor {index}: {e}")
+                continue
+
+    def handle_storage_sensor_historical_data(self,
+                                               sensor_index:int
+                                               ) -> Optional[TemperatureExtrema]:
+        """
+        Function to handle the historical data of a storage sensor
+        Args:
+            sensor_index (int): Index of the sensor in the thermal storage
+        Returns:
+            Optional[TemperatureExtrema]: Historical data of the sensor
+        """
+
+        historical_data = self.sensor_values_stored.get(sensor_index, None)
+
+        if historical_data is None:
+            logger.warning(f"No historical data found for sensor {sensor_index}.")
+            return None
+
+        timerange = (historical_data.index.max() - historical_data.index.min()).total_seconds() / 60
+        new_extrema: Optional[TemperatureExtrema] = None
+        if timerange >= self.config_data.calibration.historical_timerange_minimum:
+            new_extrema = TemperatureExtrema(
+                minimal_temperature=min(historical_data),
+                maximal_temperature=max(historical_data),
+                time=datetime.utcnow()
+            )
+        old_extrema: Optional[TemperatureExtrema] = None
+        if self.calibration_data.db_path is not None:
+            old_extrema = self.calibration_data.load_extrema_sqlite(sensor_index=sensor_index)
+
+        if old_extrema is not None and new_extrema is not None:
+            temperature_extrema = TemperatureExtrema(
+                minimal_temperature=min(
+                    new_extrema.minimal_temperature,
+                    old_extrema.minimal_temperature
+                ),
+                maximal_temperature=max(
+                    new_extrema.maximal_temperature,
+                    old_extrema.maximal_temperature
+                ),
+                time=datetime.utcnow()
+            )
+        elif new_extrema is not None:
+            temperature_extrema = new_extrema
+        elif old_extrema is not None:
+            temperature_extrema = old_extrema
+        else:
+            logger.warning(
+                f"Could not determine extrema for sensor {sensor_index}."
+            )
+            return None
+
+        #TODO remove
+        # if self.config_data.calibration.storage_path is not None:
+        #     save_calibration_json(
+        #         path=self.config_data.calibration.storage_path,
+        #         data=temperature_extrema.model_dump(),
+        #     )
+
+        if self.calibration_data.db_path is not None:
+            self.calibration_data.save_extrema_sqlite(
+                sensor_index=sensor_index,
+                extrema=temperature_extrema
+            )
+
+        return temperature_extrema
+
+    def calibrate_historical_based_sensor_configuration(self)-> None:
+        """
+        Function to calibrate the thermal storage component based on historical data
+        
+        Uses historical temperature data to adjust the sensor configuration limits
+        """
+        for index, _ in enumerate(self.config_data.sensor_config.value.storage_sensors):
+
+            sensor_config = self.config_data.sensor_config.value.storage_sensors[index]
+
+            historical_data = self.handle_storage_sensor_historical_data(sensor_index=index)
+
+            if historical_data is None:
+                logger.warning(
+                    f"Could not calibrate sensor {index} due to missing historical data.")
+                continue
+            #TODO Maybe we need an offset?
+            minimal_temperature = (
+                historical_data.minimal_temperature
+                * (1-self.config_data.calibration.historical_data_margin/100)
+                + sensor_config.limits.minimal_temperature
+                ) / 2
+            maximal_temperature = (
+                historical_data.maximal_temperature
+                * (1+self.config_data.calibration.historical_data_margin/100)
+                + sensor_config.limits.maximal_temperature
+                ) / 2
+
+            try:
+                # Calibrate the sensor configuration based on historical data
+                # For example, adjust the limits based on historical temperature data
+                sensor_config.limits = TemperatureLimits(
+                    minimal_temperature=minimal_temperature,
+                    maximal_temperature=maximal_temperature,
+                    reference_temperature=sensor_config.limits.reference_temperature,
+                )
+
+                self.config_data.sensor_config.value.storage_sensors[index] = sensor_config
+                #TODO Store calibrated configuration somewhere?
+            except ValueError as e:
+                logger.error(f"Error during calibration of sensor {index}: {e}")
+                continue
+
+    def calibrate(self,
+                  static_data: Optional[list[StaticDataEntityModel]] = None
+                  )-> None:
+        """
+        Function to calibrate the thermal storage component
+        """
+        logger.debug("Calibrating thermal storage component.")
+        logger.debug(f"Calibration method: "
+                     f"{self.config_data.calculation_method.value}")
+        if self.config_data.calculation_method.value \
+            == ThermalStorageCalculationMethods.HISTORICAL_LIMITS:
+            logger.debug("Calibrating thermal storage based on historical data.")
+            self.calibrate_historical_based_sensor_configuration()

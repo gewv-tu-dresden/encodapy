@@ -5,6 +5,7 @@ Author: Martin Altenburger
 
 from typing import Optional
 from enum import Enum
+from datetime import datetime
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import model_validator
 from encodapy.components.basic_component_config import (
@@ -308,13 +309,15 @@ class ThermalStorageCalculationMethods(Enum):
     """
     Enum for the calculation methods of the thermal storage service.
 
-    Contains:
-        - STATIC_LIMITS: Static limits given by the configuration
-        - RETURN_LIMITS: Uses the temperature sensors from the in- and outflow as limits
+    Arguments:
+        STATIC_LIMITS: Static limits given by the configuration
+        RETURN_LIMITS: Uses the temperature sensors from the in- and outflow as limits
+        HISTORICAL_LIMITS: Uses historical data to determine the limits
     """
 
     STATIC_LIMITS = "static_limits"
     CONNECTION_LIMITS = "connection_limits"
+    HISTORICAL_LIMITS = "historical_limits"
 
 
 class ThermalStorageEnergyTypes(Enum):
@@ -387,7 +390,32 @@ class ThermalStorageLoadLevelCheck(BaseModel):
         le=100,
         description="Reference state of charge level in percent (0-100) | set by the process",
     )
+class ThermalStorageCalibrationConfig(BaseModel):
+    """
+    Model for the calibration configuration of the thermal storage service.
+    """
 
+    historical_data_margin: float = Field(
+        5.0,
+        ge=0,
+        le=100,
+        description="Margin in percent to adjust historical data temperatures "
+        "for state of charge calculation (0-100)",
+    )
+    historical_timerange_minimum: int = Field(
+        60,
+        ge=0,
+        description="Minimum timerange in minutes for historical data to be considered "
+    )
+    #TODO remove
+    # storage_path: Optional[str] = Field(
+    #     "./thermal_storage_calibration_data",
+    #     description="Path to store calibration data (optional)",
+    # )
+    db_path: Optional[str] = Field(
+        "./thermal_storage_calibration_data",
+        description="Path to store calibration data (optional)",
+    )
 class ThermalStorageConfigData(ConfigData):
     """
     Model for the configuration data of the thermal storage service.
@@ -423,4 +451,26 @@ class ThermalStorageConfigData(ConfigData):
     load_level_check: ThermalStorageLoadLevelCheck = Field(
         ThermalStorageLoadLevelCheck.model_validate({}),
         description="Configuration for the state of charge check",
+    )
+    calibration: ThermalStorageCalibrationConfig = Field(
+        ThermalStorageCalibrationConfig.model_validate({}),
+        description="Calibration configuration for the thermal storage",
+    )
+
+class TemperatureExtrema(BaseModel):
+    """
+    Model for storing temperature extrema (min and max) for a sensor.
+    """
+
+    minimal_temperature: float = Field(
+        ...,
+        description="Minimal recorded temperature for the sensor in °C"
+    )
+    maximal_temperature: float = Field(
+        ...,
+        description="Maximal recorded temperature for the sensor in °C"
+    )
+    time: datetime = Field(
+        ...,
+        description="Timestamp of when the extrema were recorded"
     )
