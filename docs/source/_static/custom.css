@@ -1,0 +1,38 @@
+/* custom.css — make the main content wider and improve wrapping for long names */
+
+/* Increase maximum content width (adjust px as desired) */
+.wy-nav-content,
+.document {
+  max-width: 1200px; /* increase from default */
+}
+
+/* Ensure long tokens (names, signatures, table cells) wrap instead of overflowing */
+.rst-content,
+.rst-content code,
+.rst-content pre,
+td, th,
+.sig-name,
+.sig-prename,
+.sig-param {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
+/* Tables: allow line breaks in table cells */
+table.docutils td,
+table.docutils th {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* If the theme uses a fixed container class, allow it to grow a bit */
+.wy-body-for-nav {
+  max-width: none;
+}
+
+/* Fine-tune for very long connected identifiers */
+.sig-name .pre,
+.sig-name {
+  white-space: normal;
+}

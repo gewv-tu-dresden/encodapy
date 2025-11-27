@@ -2,8 +2,8 @@
 Description: Configuration models for the thermal storage component
 Author: Martin Altenburger
 """
-
-from typing import Optional, Union
+import os
+from typing import Optional, TYPE_CHECKING
 from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel, Field
@@ -14,16 +14,33 @@ from encodapy.components.basic_component_config import (
     OutputData,
     ConfigData,
 )
-from encodapy.utils.datapoints import DataPointGeneral, DataPointNumber, DataPointMedium
+from encodapy.utils.datapoints import (
+    DataPointNumber,
+    DataPointMedium
+)
 from encodapy.utils.mediums import Medium
 
+# Split between real imports and mock classes for Sphinx
+IS_BUILDING_DOCS = "BUILDING_DOCS" in os.environ
+if TYPE_CHECKING or not IS_BUILDING_DOCS:
+    from encodapy.utils.datapoints import DataPointGeneral
+else:
+    # Mock-Class for Sphinx
+    class DataPointGeneral(BaseModel):
+        """Mock-Class for Sphinx documentation.
+        
+        For more information, see the real DataPointGeneral class: \
+            :class:`encodapy.utils.datapoints.DataPointGeneral`.
+        """
 
 class TemperatureLimits(BaseModel):
     """
-    Configuration of the temperature limits in the termal storage, contains:
-        - `minimal_temperature`: Minimal temperature in the thermal storage in °C
-        - `maximal_temperature`: Maximal temperature in the thermal storage in °C
-        - `reference_temperature`: Reference temperature in the storage in °C (default: 0°C)
+    Configuration of the temperature limits in the termal storage
+    
+    Attributes:
+        minimal_temperature: Minimal temperature in the thermal storage in °C
+        maximal_temperature: Maximal temperature in the thermal storage in °C
+        reference_temperature: Reference temperature in the storage in °C (default: 0°C)
 
     Raises:
         ValueError: if the minimal temperature is heighter than the maximal temperature
@@ -62,7 +79,7 @@ class StorageSensorConfig(BaseModel):
     """
     Configuration for the storage sensor in the thermal storage
 
-    Arguments:
+    Attributes:
         name: Optional name of the sensor
         height: Height of the sensor in percent (0=top, 100=bottom)
         limits (:class:`encodapy.components.thermal_storage.TemperatureLimits`): \
@@ -85,8 +102,8 @@ class ThermalStorageTemperatureSensors(BaseModel):
     """
     Configuration for the temperature sensors in the thermal storage
 
-    Contains:
-        `storage_sensors`: List of temperature sensors in the thermal storage
+    Attributes:
+        storage_sensors: List of temperature sensors in the thermal storage
 
     It is required to set at least 3 sensors and no more than 10 sensors. The heights of the sensors
     must be between 0 and 100 percent and in ascending order.
@@ -148,20 +165,20 @@ class ThermalStorageInputData(InputData):
     The temperature sensors need to be set from 1 to 10, \
         no sensors are allowed to be missing between the others.
 
-    Contains:
-        `temperature_1` (DataPointNumber): first temperature sensor
-        `temperature_2` (DataPointNumber): second temperature sensor
-        `temperature_3` (DataPointNumber): third temperature sensor
-        `temperature_4` (Optional[DataPointNumber]): fourth temperature sensor (optional)
-        `temperature_5` (Optional[DataPointNumber]): fifth temperature sensor (optional)
-        `temperature_6` (Optional[DataPointNumber]): sixth temperature sensor (optional)
-        `temperature_7` (Optional[DataPointNumber]): seventh temperature sensor (optional)
-        `temperature_8` (Optional[DataPointNumber]): eighth temperature sensor (optional)
-        `temperature_9` (Optional[DataPointNumber]): ninth temperature sensor (optional)
-        `temperature_10` (Optional[DataPointNumber]): tenth temperature sensor (optional)
-        `temperature_in` (Optional[DataPointNumber]): consumer return temperature sensor \
+    Attributes:
+        temperature_1 (DataPointNumber): first temperature sensor
+        temperature_2 (DataPointNumber): second temperature sensor
+        temperature_3 (DataPointNumber): third temperature sensor
+        temperature_4 (Optional[DataPointNumber]): fourth temperature sensor (optional)
+        temperature_5 (Optional[DataPointNumber]): fifth temperature sensor (optional)
+        temperature_6 (Optional[DataPointNumber]): sixth temperature sensor (optional)
+        temperature_7 (Optional[DataPointNumber]): seventh temperature sensor (optional)
+        temperature_8 (Optional[DataPointNumber]): eighth temperature sensor (optional)
+        temperature_9 (Optional[DataPointNumber]): ninth temperature sensor (optional)
+        temperature_10 (Optional[DataPointNumber]): tenth temperature sensor (optional)
+        temperature_in (Optional[DataPointNumber]): consumer return temperature sensor \
             (optional)
-        `temperature_out` (Optional[DataPointNumber]): consumer flow temperature sensor \
+        temperature_out (Optional[DataPointNumber]): consumer flow temperature sensor \
             (optional)
     """
 
@@ -285,11 +302,11 @@ class ThermalStorageOutputData(OutputData):
     Each output data point is associated with a specific calculation method, \
         which is defined in the `json_schema_extra` field as `calculation`.
 
-    Contains:
-        `storage__level`: Optional[DataPointNumber] : Output for storage charge in percent \
+    Attributes:
+        storage__level (Optional[DataPointNumber]): Output for storage charge in percent \
             (0-100) (optional)
-        `storage__energy`: Optional[DataPointNumber] : Output for storage energy in Wh (optional)
-        `storage__loading_potential_nominal`: Optional[DataPointNumber] : \
+        storage__energy (Optional[DataPointNumber]): Output for storage energy in Wh (optional)
+        storage__loading_potential_nominal (Optional[DataPointNumber]): \
             Output for storage loading potential in Wh (optional)
     """
 
@@ -314,7 +331,7 @@ class ThermalStorageCalculationMethods(Enum):
     """
     Enum for the calculation methods of the thermal storage service.
 
-    Arguments:
+    Members:
         STATIC_LIMITS: Static limits given by the configuration
         RETURN_LIMITS: Uses the temperature sensors from the in- and outflow as limits
         HISTORICAL_LIMITS: Uses historical data to determine the limits
@@ -329,7 +346,7 @@ class ThermalStorageEnergyTypes(Enum):
     """
     Enum for the energy types of the thermal storage service.
     
-    Contains:
+    Members:
         Nominal ("nominal"): Nominal energy of the thermal storage \
             between the temperature limits
         Minimal ("minimal"): Minimal energy of the thermal storage \
@@ -350,7 +367,7 @@ class DataPointCalculationMethod(DataPointGeneral):
     """
     Model for datapoints of the controller component which define the calculation method.
 
-    Contains:
+    Attributes:
         value: The value of the datapoint, which is a string representing the calculation method
         unit: Optional unit of the datapoint, if applicable
         time: Optional timestamp of the datapoint, if applicable
@@ -358,12 +375,11 @@ class DataPointCalculationMethod(DataPointGeneral):
 
     value: ThermalStorageCalculationMethods
 
-
 class DataPointSensorConfig(DataPointGeneral):
     """
     Model for datapoints of the controller component which define the sensor configuration.
 
-    Contains:
+    Attributes:
         value: The value of the datapoint, which is a SensorConfig \
             representing the sensor configuration
         unit: Optional unit of the datapoint, if applicable
@@ -444,10 +460,10 @@ class ThermalStorageConfigData(ConfigData):
     
     Arguments:
         volume (DataPointNumber ): Volume of the thermal storage in m³
-        medium: (DataPointMedium) : Medium of the thermal storage
-        sensor_config: (DataPointSensorConfig) : \
+        medium (DataPointMedium) : Medium of the thermal storage
+        sensor_config (DataPointSensorConfig) : \
             Sensor configuration of the thermal storage
-        calculation_method: (DataPointCalculationMethod) : \
+        calculation_method (DataPointCalculationMethod) : \
             Calculation method for the thermal storage
         load_level_check: (ThermalStorageLoadLevelCheck) : \
             Configuration for the state of charge check

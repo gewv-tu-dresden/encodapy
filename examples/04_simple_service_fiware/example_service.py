@@ -7,10 +7,9 @@ Author: Martin Altenburger
 # pylintrc: There are different examples that may be similar, but this is OK.
 # pylint: disable=duplicate-code
 from datetime import datetime, timezone
-from typing import Union
-
+from typing import Union, Optional
+import asyncio
 from loguru import logger
-
 from encodapy.service import ControllerBasicService
 from encodapy.utils.models import (
     DataTransferComponentModel,
@@ -36,12 +35,12 @@ class ExampleService(ControllerBasicService):
         - send the data to the output
     """
 
-    def __init__(self) -> None:
+    def __init__(self, shutdown_event: Optional[asyncio.Event] = None) -> None:
         """
         Constructor of the class
         """
         self.heater_config: ControllerComponentModel
-        super().__init__()
+        super().__init__(shutdown_event=shutdown_event)
 
     def prepare_start(self):
         """

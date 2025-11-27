@@ -2,10 +2,10 @@
 Description: This file contains the class MqttConnection,
 which is used to store the connection parameters for the MQTT broker.
 Author: Maximilian Beyer, Martin Altenburger
+Author: Maximilian Beyer, Martin Altenburger
 """
 
 import json
-import os
 import re
 from datetime import datetime, timezone
 from typing import Optional, Union
@@ -16,12 +16,12 @@ from pandas import DataFrame
 from encodapy.config import (
     ConfigModel,
     DataQueryTypes,
-    DefaultEnvVariables,
     InputModel,
     Interfaces,
     OutputModel,
     MQTTTemplateConfig,
-    MQTTFormatTypes
+    MQTTFormatTypes,
+    MQTTEnvVariables
 )
 from encodapy.utils.error_handling import ConfigError, NotSupportedError
 from encodapy.utils.models import (
@@ -42,7 +42,7 @@ class MqttConnection:
         Constructor for the MqttConnection class.
         Initializes the MQTT parameters and the MQTT client.
         """
-        self.mqtt_params: dict = {}
+        self.mqtt_params: MQTTEnvVariables
         self.config: ConfigModel
         self.mqtt_client: Optional[mqtt.Client] = None
         self.mqtt_message_store: dict[str, dict] = {}
@@ -51,31 +51,10 @@ class MqttConnection:
     def load_mqtt_params(self) -> None:
         """
         Function to load the MQTT parameters from the environment variables
-        or use the default values from the DefaultEnvVariables class.
+        or use the default values.
         """
-        # the IP of the broker
-        self.mqtt_params["host"] = os.environ.get(
-            "MQTT_HOST", DefaultEnvVariables.MQTT_HOST.value
-        )
-        # the port of the broker
-        self.mqtt_params["port"] = int(
-            os.environ.get("MQTT_PORT", DefaultEnvVariables.MQTT_PORT.value)
-        )
-        # the username to connect to the broker
-        self.mqtt_params["username"] = os.environ.get(
-            "MQTT_USERNAME", DefaultEnvVariables.MQTT_USERNAME.value
-        )
-        # the password to connect to the broker
-        self.mqtt_params["password"] = os.environ.get(
-            "MQTT_PASSWORD", DefaultEnvVariables.MQTT_PASSWORD.value
-        )
-        # the topic prefix to use for the topics
-        self.mqtt_params["topic_prefix"] = os.environ.get(
-            "MQTT_TOPIC_PREFIX", DefaultEnvVariables.MQTT_TOPIC_PREFIX.value
-        )
+        self.mqtt_params = MQTTEnvVariables()
 
-        if not self.mqtt_params["host"] or not self.mqtt_params["port"]:
-            raise ConfigError("MQTT host and port must be set")
 
     def prepare_mqtt_connection(self) -> None:
         """
@@ -89,18 +68,18 @@ class MqttConnection:
 
         # set username and password for the MQTT client
         self.mqtt_client.username_pw_set(
-            username=self.mqtt_params["username"], password=self.mqtt_params["password"]
+            username=self.mqtt_params.username, password=self.mqtt_params.password
         )
 
         # try to connect to the MQTT broker
         try:
             self.mqtt_client.connect(
-                host=self.mqtt_params["host"], port=self.mqtt_params["port"]
+                host=self.mqtt_params.host, port=self.mqtt_params.port
             )
         except Exception as e:
             raise ConfigError(
-                f"Could not connect to MQTT broker {self.mqtt_params['host']}:"
-                f"{self.mqtt_params['port']} with given login information - {e}"
+                f"Could not connect to MQTT broker {self.mqtt_params.host}:"
+                f"{self.mqtt_params.port} with given login information - {e}"
             ) from e
 
         # prepare the message store
@@ -142,7 +121,7 @@ class MqttConnection:
             if entity.interface == Interfaces.MQTT:
                 # add the entity itself to the message store
                 topic = self.assemble_topic_parts(
-                    [self.mqtt_params["topic_prefix"], entity.id_interface]
+                    [self.mqtt_params.topic_prefix, entity.id_interface]
                 )
 
                 self._add_item_to_mqtt_message_store(
@@ -154,7 +133,7 @@ class MqttConnection:
                 for attribute in entity.attributes:
                     topic = self.assemble_topic_parts(
                         [
-                            self.mqtt_params["topic_prefix"],
+                            self.mqtt_params.topic_prefix,
                             entity.id_interface,
                             attribute.id_interface,
                         ]
@@ -482,7 +461,7 @@ class MqttConnection:
             # construct the topic for the attribute
             topic = self.assemble_topic_parts(
                 [
-                    self.mqtt_params["topic_prefix"],
+                    self.mqtt_params.topic_prefix,
                     entity.id_interface,
                     attribute.id_interface,
                 ]
@@ -640,7 +619,7 @@ class MqttConnection:
         if mqtt_format is MQTTFormatTypes.PLAIN:
             topic = self.assemble_topic_parts(
                     [
-                        self.mqtt_params["topic_prefix"],
+                        self.mqtt_params.topic_prefix,
                         output_entity__id_interface,
                         output_attribute__id_interface
                     ]
@@ -648,7 +627,7 @@ class MqttConnection:
         elif mqtt_format is MQTTFormatTypes.FIWARE_ATTR:
             topic = self.assemble_topic_parts(
                     [
-                        self.mqtt_params["topic_prefix"],
+                        self.mqtt_params.topic_prefix,
                         output_entity__id_interface,
                         "attrs",
                     ]
@@ -656,7 +635,7 @@ class MqttConnection:
         elif mqtt_format is MQTTFormatTypes.FIWARE_CMDEXE:
             topic = self.assemble_topic_parts(
                     [
-                        self.mqtt_params["topic_prefix"],
+                        self.mqtt_params.topic_prefix,
                         output_entity__id_interface,
                         "cmdexe",
                     ]
@@ -666,7 +645,7 @@ class MqttConnection:
             topic = mqtt_format.topic.render(
                 output_entity=output_entity__id_interface,
                 output_attribute=output_attribute__id_interface,
-                mqtt_topic_prefix=self.mqtt_params["topic_prefix"]
+                mqtt_topic_prefix=self.mqtt_params.topic_prefix
             )
         else:
             raise NotSupportedError(f"MQTT format {mqtt_format} is not supported.")

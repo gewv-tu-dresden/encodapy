@@ -9,10 +9,11 @@ from enum import Enum
 class Interfaces(Enum):
     """
     Enum class for the interfaces
-    Possible values:
-    - MQTT (mqtt): MQTT interface
-    - FIWARE (fiware): FIWARE interface
-    - FILE (file): File interface
+
+    Attributes:
+        MQTT (str): MQTT interface "mqtt"
+        FIWARE (str): FIWARE interface "fiware"
+        FILE (str): File interface "file"
     """
 
     MQTT = "mqtt"
@@ -23,9 +24,10 @@ class Interfaces(Enum):
 class AttributeTypes(Enum):
     """
     Enum class for the attribute types
-    Possible values:
-    - TIMESERIES (timeseries): Timeseries data
-    - VALUE (value): Single value data
+    
+    Attributes:
+        TIMESERIES (str): Timeseries data "timeseries"
+        VALUE (str): Single value data "value"
     """
 
     TIMESERIES = "timeseries"
@@ -33,11 +35,12 @@ class AttributeTypes(Enum):
 
 
 class TimerangeTypes(Enum):
-    """Enum class for the timedelta types
+    """
+    Enum class for the timedelta types, used for the functions to get timeseries data
 
-    Possible values:
-    - ABSOLUTE (absolute): The timedelta is calculated from the actual time
-    - RELATIVE (relative): The timedelta is calculated from the last timestamp
+    Attributes:
+        ABSOLUTE (str): The timedelta is calculated from the actual time "absolute"
+        RELATIVE (str): The timedelta is calculated from the last timestamp "relative"
     """
 
     ABSOLUTE = "absolute"
@@ -46,10 +49,11 @@ class TimerangeTypes(Enum):
 
 class DataQueryTypes(Enum):
     """
-    Enum class for the data query types
-    Possible values:
-    - CALCULATION (calculation): Calculation of the data
-    - CALIBRATION (calibration): Calibration of the data
+    Enum class for the data query types, used for the functions to get data
+
+    Attributes:
+        CALCULATION (str): Calculation of the data "calculation"
+        CALIBRATION (str): Calibration of the data "calibration"
     """
 
     CALCULATION = "calculation"
@@ -58,10 +62,12 @@ class DataQueryTypes(Enum):
 
 class FileExtensionTypes(Enum):
     """
-    Enum class for file Extensions
-    Possible values:
-    - CSV (csv): Comma-separated values
-    - JSON (json): JavaScript Object Notation
+    Enum class for file Extensions,\
+        used for the file interface and defines the possible file formats
+
+    Attributes:
+        CSV (str): Comma-separated values "csv"
+        JSON (str): JavaScript Object Notation "json"
     """
 
     CSV = ".csv"

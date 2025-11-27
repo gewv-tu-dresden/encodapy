@@ -4,7 +4,6 @@ which is used to store the connection parameters for the Fiware and CrateDB conn
 Author: Martin Altenburger
 """
 from asyncio import sleep
-import os
 from datetime import datetime, timedelta, timezone
 from typing import Union, Optional
 import concurrent.futures
@@ -29,7 +28,6 @@ from encodapy.config import (
     AttributeTypes,
     CommandModel,
     DataQueryTypes,
-    DefaultEnvVariables,
     InputModel,
     OutputModel,
     TimerangeTypes,
@@ -55,6 +53,7 @@ from encodapy.utils.units import (
     get_time_unit_seconds,
     get_unit_adjustment_factor,
 )
+from encodapy.config.env_values import FiwareEnvVariables
 
 
 class FiwareConnection:
@@ -63,7 +62,7 @@ class FiwareConnection:
     Only a helper class.
     """
 
-    def __init__(self):
+    def __init__(self)-> None:
 
         self.fiware_conn_params: FiwareConnectionParameter = None
         self.fiware_token_client: BaererToken = None
@@ -72,28 +71,27 @@ class FiwareConnection:
         self.crate_db_client: CrateDBConnection = None
         self.config: ConfigModel
 
-    def load_fiware_params(self):
+    def load_fiware_params(self)->None:
         """
         Load the Fiware connection parameters.
         """
+        fiware_env = FiwareEnvVariables()
 
-        if os.getenv(
-            "FIWARE_AUTH", str(DefaultEnvVariables.FIWARE_AUTH.value)
-        ).lower() in ("true", "1", "t"):
+        if fiware_env.auth:
 
             if (
-                os.environ.get("FIWARE_CLIENT_ID") is not None
-                and os.environ.get("FIWARE_CLIENT_PW") is not None
-                and os.environ.get("FIWARE_TOKEN_URL") is not None
+                fiware_env.client_id is not None
+                and fiware_env.client_pw is not None
+                and fiware_env.token_url is not None
             ):
                 fiware_auth = FiwareAuth(
-                    client_id=os.environ.get("FIWARE_CLIENT_ID"),
-                    client_secret=os.environ.get("FIWARE_CLIENT_PW"),
-                    token_url=os.environ.get("FIWARE_TOKEN_URL"),
+                    client_id=fiware_env.client_id,
+                    client_secret=fiware_env.client_pw,
+                    token_url=str(fiware_env.token_url),
                 )
-            elif os.environ.get("FIWARE_BAERER_TOKEN") is not None:
+            elif fiware_env.baerer_token is not None:
                 fiware_auth = FiwareAuth(
-                    baerer_token=os.environ.get("FIWARE_BAERER_TOKEN")
+                    baerer_token=fiware_env.baerer_token
                 )
             else:
                 logger.error("No authentication credentials available")
@@ -102,30 +100,17 @@ class FiwareConnection:
             fiware_auth = None
 
         fiware_params = FiwareParameter(
-            cb_url=os.environ.get("CB_URL", DefaultEnvVariables.CB_URL.value),
-            service=os.environ.get(
-                "FIWARE_SERVICE", DefaultEnvVariables.FIWARE_SERVICE.value
-            ),
-            service_path=os.environ.get(
-                "FIWARE_SERVICE_PATH", DefaultEnvVariables.FIWARE_SERVICE_PATH.value
-            ),
+            cb_url=str(fiware_env.cb_url),
+            service=fiware_env.service,
+            service_path=fiware_env.service_path,
             authentication=fiware_auth,
         )
 
         database_params = DatabaseParameter(
-            crate_db_url=os.environ.get(
-                "CRATE_DB_URL", DefaultEnvVariables.CRATE_DB_URL.value
-            ),
-            crate_db_user=os.environ.get(
-                "CRATE_DB_USER", DefaultEnvVariables.CRATE_DB_USER.value
-            ),
-            crate_db_pw=os.environ.get(
-                "CRATE_DB_PW", DefaultEnvVariables.CRATE_DB_PW.value
-            ),
-            crate_db_ssl=os.environ.get(
-                "CRATE_DB_SSL", str(DefaultEnvVariables.CRATE_DB_SSL.value)
-            ).lower()
-            in ("true", "1", "t"),
+            crate_db_url=str(fiware_env.crate_db_url),
+            crate_db_user=fiware_env.crate_db_user,
+            crate_db_pw=fiware_env.crate_db_pw,
+            crate_db_ssl=fiware_env.crate_db_ssl,
         )
 
         self.fiware_conn_params = FiwareConnectionParameter(

@@ -58,6 +58,6 @@ class ThermalStorageService(ControllerBasicService):
         Args:
             data (InputDataModel): InputDataModel for the thermal storage component
         """
-        if self.reload_staticdata:
+        if self.env.reload_staticdata:
             logger.debug("Reloading static data for thermal storage")
             self.thermal_storage.calibrate(static_data=data.static_entities)

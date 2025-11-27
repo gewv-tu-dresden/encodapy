@@ -1,4 +1,4 @@
-# Component Architecture of `EnCoDaPy`
+# Component Architecture of EnCoDaPy
 
 ## Structure of the Component Code
 
@@ -45,11 +45,12 @@ This is a model for configuring components that form part of the general configu
 Root-Modell to describe the structur of the Inputs, Outputs and static data (`$INPUT_OR_OUTPUT_VARIABLE`) of a component as a dictionary of `IOAllocationModel`, like:
 
 ```json
-
+{
   "inputs": {
-    "$INPUT_OR_OUTPUT_VARIABLE_1": IOAllocationModel,
-    "$INPUT_OR_OUTPUT_VARIABLE_2": IOAllocationModel
+    "INPUT_OR_OUTPUT_VARIABLE_1": "IOAllocationModel",
+    "INPUT_OR_OUTPUT_VARIABLE_2": "IOAllocationModel"
   }
+}
 
 ```
 
@@ -61,7 +62,7 @@ The expected format for each input or output (`$INPUT_OR_OUTPUT_VARIABLE`) withi
 
 ```json
 {
-  "$INPUT_OR_OUTPUT_VARIABLE": {
+  "INPUT_OR_OUTPUT_VARIABLE": {
     "entity": "entity_id",
     "attribute": "attribute_id"
   }
@@ -253,14 +254,16 @@ An example of how a Pydantic model can be used to validate the configuration of 
 - If you are using the structure for a new component, you can specify the module path in your project's configuration as the component type, as shown in the following example:
 
 ```json
-  ...
+{
+  // ...
   "controller_components": [
       {
           "id": "example_controller",
           "type": "$your_project.$your_modules.$new_component",
-          ...
+          // ...
       }
     ]
-  ...
+  // ...
+}
 ```
 - Be careful: the module path must contain at least one dot. Otherwise, the framework will not recognise the component as an individual one.

@@ -6,9 +6,9 @@ Author: Martin Altenburger, Maximilian Beyer
 
 # pylintrc: There are different examples that may be similar, but this is OK.
 # pylint: disable=duplicate-code
-
+import asyncio
+from typing import Optional
 from datetime import datetime, timezone
-
 from loguru import logger
 from pandas import DataFrame
 
@@ -26,7 +26,6 @@ from encodapy.utils.models import (
 )
 from encodapy.utils.units import DataUnits
 
-
 class MQTTController(ControllerBasicService):
     """
     Class for a small example service
@@ -39,12 +38,12 @@ class MQTTController(ControllerBasicService):
         - send the data to the output
     """
 
-    def __init__(self) -> None:
+    def __init__(self, shutdown_event: Optional[asyncio.Event] = None) -> None:
         """
         Constructor of the class
         """
         self.heater_config = ControllerComponentModel
-        super().__init__()
+        super().__init__(shutdown_event=shutdown_event)
 
     def prepare_start(self):
         """
