@@ -8,7 +8,7 @@ Example of the use of the thermal storage component in EnCoDaPy. The example use
 - [config.json](./config.json): Configuration for the service - see [01_config](./../01_config/)
 - [thermal_storage_service.py](./thermal_storage_service.py): Code of the service for the thermal storage
 - [main.py](./main.py): Script to start the service
-- [run_thermal_storage_service.ipynb](./run_thermal_storage_service.ipynb): Notebook to run the service (oder Nutzung von [encodapy.service.service_main](./../../encodapy/service/service_main.py))
+- [run_thermal_storage_service.ipynb](./run_thermal_storage_service.ipynb): Notebook to run the service (you can also run [encodapy.service.service_main](./../../encodapy/service/service_main.py))
 
 ## Usage
 
@@ -25,6 +25,6 @@ RELOAD_STATICDATA=False                     # Should the static data be reloaded
 ```
 
 Furthermore, a running FIWARE platform ([n5geh.platform](https://github.com/N5GEH/n5geh.platform) - "NGSI-v2" version) is required to which a connection can be established with the above specified data. The configuration of the data points in the platform can be created with the following notebook [run_simple_service.ipynb](./run_simple_service.ipynb).
-For a local use of the fiware plattform, youn can use the following docker-compose.yml <https://github.com/N5GEH/n5geh.platform/blob/master/v2/docker-compose.yml>
+For a local usage of the FIWARE platform, you can use the following docker-compose.yml: https://github.com/N5GEH/n5geh.platform/blob/master/v2/docker-compose.yml
 
 See the documentation under [encodapy/components/thermal_storage](./../../encodapy/components/thermal_storage/readme.md) for more details.

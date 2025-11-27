@@ -17,7 +17,7 @@ FIWARE_IOTA= ["http://localhost:4041"]      # URL of the IoT Agent
 FIWARE_CB= ["http://localhost:1026"]        # URL of the Context Broker
 FIWARE_SERVICE= ["example_service"]         # Name of the FIWARE Service
 FIWARE_SERVICE_PATH= ["/"]                  # FIWARE Service Path, usually "/"
-LOG_LEVEL= ["WARNING"]                      # Level for Logging Messages ("DEBUG" to get more information)
+LOG_LEVEL=["WARNING"]                       # Level for Logging Messages ("DEBUG" to get more information)
 ```
 
 Furthermore, a running FIWARE platform ([n5geh.platform](https://github.com/N5GEH/n5geh.platform) - "NGSI-v2" version) is required to which a connection can be established with the above specified data. The configuration of the data points in the platform can be created with the following notebook [run_simple_service.ipynb](./run_simple_service.ipynb).
