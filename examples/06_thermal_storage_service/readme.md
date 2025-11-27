@@ -24,7 +24,7 @@ LOG_LEVEL=["WARNING"]                       # Level for Logging Messages ("DEBUG
 RELOAD_STATICDATA=False                     # Should the static data be reloaded?
 ```
 
-Furthermore, a running FIWARE platform ([n5geh.platform](https://github.com/N5GEH/n5geh.platform) - "NGSI-v2" version) is required to which a connection can be established with the above specified data. The configuration of the data points in the platform can be created with the following notebook [run_simple_service.ipynb](./run_simple_service.ipynb).
+Furthermore, a running FIWARE platform ([n5geh.platform](https://github.com/N5GEH/n5geh.platform) - "NGSI-v2" version) is required to which a connection can be established with the above specified data. The configuration of the data points in the platform can be created with the following notebook [run_thermal_storage_service.ipynb](./run_thermal_storage_service.ipynb).
 For a local usage of the FIWARE platform, you can use the following docker-compose.yml: https://github.com/N5GEH/n5geh.platform/blob/master/v2/docker-compose.yml
 
 See the documentation under [encodapy/components/thermal_storage](./../../encodapy/components/thermal_storage/readme.md) for more details.

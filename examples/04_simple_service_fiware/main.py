@@ -1,5 +1,5 @@
 """
-Main file so start the example service
+Main file to start the example service
 """
 
 import asyncio
