@@ -2,30 +2,39 @@
 Description: This file contains the models for the configuration of the system controller.
 Authors: Martin Altenburger
 """
-
+import os
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
 from pydantic import BaseModel, ConfigDict, ValidationError, Field
 from pydantic.functional_validators import model_validator
 from loguru import logger
-from pandas import DataFrame
+import pandas as pd
 from filip.models.base import DataType
 from encodapy.config.types import (
     AttributeTypes,
     Interfaces,
     TimerangeTypes,
-    MQTTFormatTypes,
+    MQTTFormatTypes
 )
 from encodapy.utils.error_handling import ConfigError, InterfaceNotActive
 from encodapy.utils.units import DataUnits, TimeUnits
 from encodapy.components.basic_component_config import ControllerComponentModel
-from encodapy.config.mqtt_messages_template import MQTTTemplateConfig
-
+# Import MQTTTemplateConfigDoc for sphinx documentation generation
+IS_BUILDING_DOCS = "BUILDING_DOCS" in os.environ
+if TYPE_CHECKING or not IS_BUILDING_DOCS:
+    from encodapy.config.mqtt_messages_template import MQTTTemplateConfig
+else:
+    from encodapy.config.mqtt_messages_template import MQTTTemplateConfigDoc as MQTTTemplateConfig
 
 class InterfaceModel(BaseModel):
     """
     Base class for the interfaces
+    
+    Attributes:
+        mqtt (bool): Whether the MQTT interface is active. Defaults to False.
+        fiware (bool): Whether the FIWARE interface is active. Defaults to False.
+        file (bool): Whether the FILE interface is active. Defaults to False.
     """
 
     mqtt: bool = False
@@ -34,29 +43,36 @@ class InterfaceModel(BaseModel):
 
 class AttributeModel(BaseModel):
     """
-    Base class for the attributes
+    Configuration class for representing attributes with metadata, value, \
+        and optional interface-specific identifier.
 
-    Contains:
-    - id: The id of the attribute
-    - id_interface: The id of the attribute on the interface (if not set, the id is used)
-    - type: The type of the attribute
-    - value: The value of the attribute
-    - unit: The unit of the attribute
-    - datatype: The datatype of the attribute
-    - timestamp: The timestamp of the attribute
-    - mqtt_format: The format of the attribute for MQTT \
-        (if not set, the default format is used) - only for mqtt interface needed
+    This class models attributes with a unique ID, type, value, unit, and timestamp.
+    If `id_interface` is not set, it defaults to the value of `id`.
+
+    Attributes:
+        id (str): The unique identifier of the attribute.
+        id_interface (str): The interface-specific identifier. Defaults to `None`.
+            If not set, it will be automatically set to the value of `id`.
+        type (AttributeTypes): The type of the attribute. Defaults to `AttributeTypes.VALUE`.
+        value (Union[str, float, int, bool, Dict, List, pd.DataFrame, None]): \
+            The value of the attribute. Defaults to `None`.
+        unit (Optional[DataUnits]): The unit of measurement for the value. Defaults to `None`.
+        datatype (DataType): The data type of the attribute. Defaults to `DataType("Number")`.
+        timestamp (Optional[datetime]): The timestamp of the attribute. Defaults to `None`.
+        mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]): \
+            The format of the attribute for MQTT (if not set, the default format is used) \
+                - only for mqtt interface needed
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str
-    id_interface: str = Field(default=None)
+    id_interface: str = Field(default="")
     type: AttributeTypes = AttributeTypes.VALUE
-    value: Union[str, float, int, bool, Dict, List, DataFrame, None] = None
-    unit: Union[DataUnits, None] = None
+    value: Union[str, float, int, bool, Dict, List, pd.DataFrame, None] = None
+    unit: Optional[DataUnits] = None
     datatype: DataType = DataType("Number")
-    timestamp: Union[datetime, None] = None
+    timestamp: Optional[datetime] = None
     mqtt_format: Union[MQTTFormatTypes, MQTTTemplateConfig] = MQTTFormatTypes.PLAIN
 
     @model_validator(mode="after")
@@ -67,25 +83,26 @@ class AttributeModel(BaseModel):
         Returns:
             AttributeModel: The instance with the updated 'id_interface' attribute.
         """
-        if self.id_interface is None:
+        if self.id_interface == "":
             self.id_interface = self.id
         return self
 
 
 class CommandModel(BaseModel):
     """
-    Base class for the commands
+    Configuration class for the commands
 
-    Contains:
-    - id: The id of the command
-    - id_interface: The id of the command on the interface (if not set, the id is used)
-    - value: The value of the command
+    Attributes:
+        id (str): The id of the command
+        id_interface (str | None): The id of the command on the interface \
+            (if not set, the id is used)
+        value (Union[str, int, float, List, Dict, None]): The value of the command
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str
-    id_interface: str = Field(default=None)
+    id_interface: str = Field(default="")
     value: Union[str, int, float, List, Dict, None] = None
 
     @model_validator(mode="after")
@@ -93,7 +110,7 @@ class CommandModel(BaseModel):
         """Sets the 'id_interface' attribute to the value of 'id'
         if it is currently None.
         """
-        if self.id_interface is None:
+        if self.id_interface == "":
             self.id_interface = self.id
         return self
 
@@ -102,17 +119,17 @@ class InputModel(BaseModel):
     """
     Model for the configuration of inputs.
 
-    Contains:
-    - id: The id of the input
-    - interface: The interface of the input
-    - id_interface: The id of the input on the interface, default is the id
-    - attributes: A list of attributes for the input as AttributeModel
+    Attributes:
+        id (str): The id of the input
+        interface (Interfaces): The interface of the input
+        id_interface (str | None): The id of the input on the interface, default is the id
+        attributes (list[AttributeModel]): A list of attributes for the input as AttributeModel
 
     """
 
     id: str
     interface: Interfaces
-    id_interface: str = Field(default=None)
+    id_interface: str = Field(default="")
     attributes: list[AttributeModel]
 
     @model_validator(mode="after")
@@ -120,7 +137,7 @@ class InputModel(BaseModel):
         """Sets the 'id_interface' attribute to the value of 'id'
         if it is currently None.
         """
-        if self.id_interface is None:
+        if self.id_interface == "":
             self.id_interface = self.id
         return self
 
@@ -129,11 +146,12 @@ class StaticDataModel(InputModel):
     """
     Model for the configuration of inputs.
 
-    Contains:
-    - id: The id of the input
-    - interface: The interface of the input
-    - id_interface: The id of the input on the interface
-    - attributes: A list of attributes for the static data as AttributeModel
+    Attributes:
+        id (str): The id of the input
+        interface (Interfaces): The interface of the input
+        id_interface (str | None): The id of the input on the interface
+        attributes (list[AttributeModel]): A list of attributes for the static data \
+            as AttributeModel
 
     """
 
@@ -142,16 +160,16 @@ class OutputModel(BaseModel):
     """
     Model for the configuration of outputs.
 
-    Contains:
-    - id: The id of the output
-    - interface: The interface of the output
-    - id_interface: The id of the output on the interface, default is the id
-    - attributes: The attributes of the output
+    Attributes:
+        id: The id of the output
+        interface: The interface of the output
+        id_interface: The id of the output on the interface, default is the id
+        attributes: The attributes of the output
     """
 
     id: str
     interface: Interfaces
-    id_interface: str = Field(default=None)
+    id_interface: str = Field(default="")
     attributes: list[AttributeModel]
     commands: list[CommandModel] = Field(default_factory=list)
 
@@ -160,7 +178,7 @@ class OutputModel(BaseModel):
         """Sets the 'id_interface' attribute to the value of 'id'
         if it is currently None.
         """
-        if self.id_interface is None:
+        if self.id_interface == "":
             self.id_interface = self.id
         return self
 
@@ -169,22 +187,22 @@ class TimeSettingsCalculationModel(BaseModel):
     """
     Base class for the calculation time settings of the controller / system.
 
-    Contains:
-    - timerange: The timerange for the calculation (if only one value is needed and primary value,
-    otherwise use timerange_min and timerange_max)
-    - timerange_min: The minimum timerange for the calculation (only used if timerange is not set
-    and timerange_max is set too)
-    - timerange_max: The maximum timerange for the calculation (only used if timerange is not set
-    and timerange_min is set too)
-    - timerange_type: Type of time period, relative to the last result or absolute at the current
-    time (if not set, the default type is absolute)
-    - timerange_unit: The unit of the timerange (if not set, the default unit is minute)
-    - timestep: The timestep for the calculation (if not set, the default value is 1), the
-    related unit is defined in the timestep_unit attribute
-    - timestep_unit: The unit of the timestep (if not set, the default unit is second)
-    - sampling_time: The sampling time for the calculation (if not set, the default value is 1),
-    the related unit is defined in the sampling_time_unit attribute
-    - sampling_time_unit: The unit of the sampling time (if not set, the default unit is minute)
+    Attributes:
+        timerange: The timerange for the calculation (if only one value is needed and primary value\
+            , otherwise use timerange_min and timerange_max)
+        timerange_min: The minimum timerange for the calculation (only used if timerange is not set\
+            and timerange_max is set too)
+        timerange_max: The maximum timerange for the calculation (only used if timerange is not set\
+            and timerange_min is set too)
+        timerange_type: Type of time period, relative to the last result or absolute at the current\
+            time (if not set, the default type is absolute)
+        timerange_unit: The unit of the timerange (if not set, the default unit is minute)
+        timestep: The timestep for the calculation (if not set, the default value is 1), the\
+            related unit is defined in the timestep_unit attribute
+        timestep_unit: The unit of the timestep (if not set, the default unit is second)
+        sampling_time: The sampling time for the calculation (if not set, the default value is 1),\
+            the related unit is defined in the sampling_time_unit attribute
+        sampling_time_unit: The unit of the sampling time (if not set, the default unit is minute)
     """
 
     timerange: Optional[float] = None
@@ -261,16 +279,16 @@ class TimeSettingsCalibrationModel(BaseModel):
     """
     Base class for the calibration time settings of the controller / system.
 
-    Contains:
-    - timerange: The timerange for the calibration (if not set, the default value is 1),
-    the related unit is defined in the timerange_unit attribute
-    - timerange_unit: The unit of the timerange (if not set, the default unit is minute)
-    - timestep: The timestep for the calibration (if not set, the default value is 1),
-    the related unit is defined in the timestep_unit attribute
-    - timestep_unit: The unit of the timestep (if not set, the default unit is second)
-    - sampling_time: The sampling time for the calibration (if not set, the default value is 1),
-    the related unit is defined in the sampling_time_unit attribute
-    - sampling_time_unit: The unit of the sampling time (if not set, the default unit is day)
+    Attributes:
+        timerange: The timerange for the calibration (if not set, the default value is 1), \
+            the related unit is defined in the timerange_unit attribute
+        timerange_unit: The unit of the timerange (if not set, the default unit is minute)
+        timestep: The timestep for the calibration (if not set, the default value is 1), \
+            the related unit is defined in the timestep_unit attribute
+        timestep_unit: The unit of the timestep (if not set, the default unit is second)
+        sampling_time: The sampling time for the calibration (if not set, the default value is 1), \
+            the related unit is defined in the sampling_time_unit attribute
+        sampling_time_unit: The unit of the sampling time (if not set, the default unit is day)
 
     """
 
@@ -297,10 +315,10 @@ class TimeSettingsModel(BaseModel):
     """
     Base class for the time settings of the controller / system.
 
-    Contains:
-    - calculation: The timeranges and settings für the calculation
-    - calibration: The timeranges and settings for the calibration
-    - results: The timesettings for the results
+    Attributes:
+        calculation: The timeranges and settings für the calculation
+        calibration: The timeranges and settings for the calibration
+        results: The timesettings for the results
 
     TODO: Add the needed fields - calibration?
     """
@@ -314,9 +332,9 @@ class ControllerSettingModel(BaseModel):
     """
     Model for the configuration of the controller settings.
 
-    Contains:
-    - time_settings: The time settings for the controller
-    - specific_settings: The specific settings for the controller - not defined as a model
+    Attributes:
+        time_settings: The time settings for the controller
+        specific_settings: The specific settings for the controller - not defined as a model
 
     TODO: What is needed here?
     """
@@ -327,19 +345,20 @@ class ControllerSettingModel(BaseModel):
 
 class ConfigModel(BaseModel):
     """
-    Base Model for the configuration
+    Base model for the configuration of the system controller.
 
-    Contains:
-    - interfaces: The interfaces of the system controller
-    - inputs: The inputs of the system controller
-    - outputs: The outputs of the system controller
-    - staticdata: The static configuration data for devices the system controller
-    - controller_components: The components of the controller
-    - controller_settings: The settings for the controller
+    Attributes:
+        interfaces (InterfaceModel): Configuration of the system controller interfaces.
+        inputs (list[InputModel]): List of input configurations for the system controller.
+        outputs (ist[OutputModel]): Output configurations for the system controller.
+        staticdata (list[StaticDataModel]): \
+            Static configuration data for devices managed by the system controller.
+        controller_components (list[ControllerComponentModel]): Components used by the controller.
+        controller_settings (ControllerSettingModel): Settings for the controller.
     """
 
-    interfaces: InterfaceModel
 
+    interfaces: InterfaceModel
     inputs: list[InputModel]
     outputs: list[OutputModel]
     staticdata: list[StaticDataModel]
@@ -441,7 +460,7 @@ class DataFileAttribute(BaseModel):
     """
     Model for data file attributes.
     
-    Contains:
+    Attributes:
         id (str): The unique identifier for the attribute.
         value (Union[str, float, int, bool, Dict, List, DataFrame, None]): \
             The value of the attribute.
@@ -452,7 +471,7 @@ class DataFileAttribute(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str
-    value: Union[str, float, int, bool, Dict, List, DataFrame, None]
+    value: Union[str, float, int, bool, Dict, List, pd.DataFrame, None]
     unit: Optional[DataUnits] = None
     time: Optional[str] = None
 
@@ -461,7 +480,7 @@ class DataFileEntity(BaseModel):
     """
     Model for data file entities.
 
-    Contains:
+    Attributes:
         id (str): The unique identifier for the entity.
         attributes (list[DataFileAttribute]): The attributes of the entity.
     """
@@ -474,7 +493,7 @@ class DataFile(BaseModel):
     """
     Model for static data files.
 
-    Contains:
+    Attributes:
         data (list[DataFileEntity]): The data entities.
     """
 

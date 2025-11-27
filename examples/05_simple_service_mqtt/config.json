@@ -50,6 +50,11 @@
                     "id": "status",
                     "id_interface": "status",
                     "mqtt_format": "template_example03"
+                },
+                {
+                    "id": "status",
+                    "id_interface": "status",
+                    "mqtt_format": "template_example03"
                 }
             ],
             "commands": []
@@ -86,7 +91,8 @@
             },
             "config": {
                 "temperature_hysteresis": {
-                    "value": 5
+                    "value": 5,
+                    "unit": "CEL"
                 }
             }
         }

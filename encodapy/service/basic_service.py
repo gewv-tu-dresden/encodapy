@@ -2,13 +2,10 @@
 Module for the basic service class for the data processing and transfer via different interfaces.
 Author: Martin Altenburger
 """
-
-import asyncio
-import os
 import sys
 from datetime import datetime
 from typing import Optional, Union
-
+import asyncio
 from loguru import logger
 from pydantic import ValidationError
 
@@ -17,9 +14,9 @@ from encodapy.config import (
     CommandModel,
     ConfigModel,
     DataQueryTypes,
-    DefaultEnvVariables,
     Interfaces,
     OutputModel,
+    BasicEnvVariables
 )
 from encodapy.service.communication import (
     FileConnection,
@@ -53,10 +50,10 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         MqttConnection.__init__(self)
 
         self.shutdown_event = shutdown_event or asyncio.Event()
-        self.logger = LoggerControl()
+        self.env: BasicEnvVariables = BasicEnvVariables()
+        self.logger = LoggerControl(log_level=self.env.log_level)
 
-        self.reload_staticdata = False
-        self.staticdata = None
+        self.staticdata: Optional[list[StaticDataEntityModel]] = None
 
         self.timestamp_health = None
 
@@ -67,12 +64,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         Function loads the environemtal variables and the config of the service.
 
         """
-        config_path = os.environ.get(
-            "CONFIG_PATH", DefaultEnvVariables.CONFIG_PATH.value
-        )
 
         try:
-            self.config = ConfigModel.from_json(file_path=config_path)
+            self.config = ConfigModel.from_json(file_path=self.env.config_path)
         except (
             FileNotFoundError,
             ValidationError,
@@ -91,13 +85,8 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         if self.config.interfaces.mqtt:
             self.load_mqtt_params()
 
-        self.reload_staticdata = os.getenv(
-            "RELOAD_STATICDATA", str(DefaultEnvVariables.RELOAD_STATICDATA.value)
-        ).lower() in ("true", "1", "t")
+        logger.debug("Config succesfully loaded.")
 
-        logger.debug("ENVs succesfully loaded.")
-
-        return config_path
 
     def prepare_basic_start(self):
         """
@@ -272,7 +261,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
             await asyncio.sleep(0.01)
 
-        if self.reload_staticdata or self.staticdata is None:
+        if self.env.reload_staticdata or self.staticdata is None:
             self.staticdata = self.reload_static_data(method=method, staticdata=[])
 
         return InputDataModel(
@@ -593,13 +582,11 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         )
 
         logger.info("Start the Service")
-        # Hold the sampling time at the beginning,
-        # so that the mqtt interfaces is ready and data is available
-        if self.config.interfaces.mqtt:
-            await self._hold_sampling_time(
-                start_time=datetime.now(),
-                hold_time=float(os.environ.get("MQTT_START_TIME", sampling_time)),
-            )
+        # Hold the service for a time at the beginning,
+        await self._hold_sampling_time(
+            start_time=datetime.now(),
+            hold_time=self.env.start_hold_time,
+        )
 
         while not self.shutdown_event.is_set():
             logger.debug("Start the Prozess")

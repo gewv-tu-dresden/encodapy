@@ -16,11 +16,11 @@ class DataPointGeneral(BaseModel):
     """
     Model for datapoints of the controller component.
     
-    Contains:
-        value: The value of the datapoint, which can be of various types \
-            (string, float, int, boolean, dictionary, list, DataFrame, or None)
-        unit: Optional unit of the datapoint, if applicable
-        time: Optional timestamp of the datapoint, if applicable
+    Attributes:
+        value (Any): The value of the datapoint, which can be of various types \
+            (string, float, int, boolean, dictionary, list, DataFrame, or None).
+        unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.
+        time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -34,10 +34,10 @@ class DataPointNumber(DataPointGeneral):
     """
     Model for datapoints of the controller component.
 
-    Contains:
-        value: The value of the datapoint, which is a number (float, int)
-        unit: Optional unit of the datapoint, if applicable
-        time: Optional timestamp of the datapoint, if applicable
+    Attributes:
+        value (float | int): The value of the datapoint, which is a number (float, int).
+        unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.
+        time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.
     """
 
     value: float | int
@@ -47,10 +47,10 @@ class DataPointString(DataPointGeneral):
     """
     Model for datapoints of the controller component.
 
-    Contains:
-        value: The value of the datapoint, which is a string
-        unit: Optional unit of the datapoint, if applicable
-        time: Optional timestamp of the datapoint, if applicable
+    Attributes:
+        value (str): The value of the datapoint, which is a string.
+        unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.
+        time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.
     """
 
     value: str
@@ -60,10 +60,10 @@ class DataPointDict(DataPointGeneral):
     """
     Model for datapoints of the controller component.
 
-    Contains:
-        value: The value of the datapoint, which is a dictionary
-        unit: Optional unit of the datapoint, if applicable
-        time: Optional timestamp of the datapoint, if applicable
+    Attributes:
+        value (dict): The value of the datapoint, which is a dictionary.
+        unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.
+        time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.
     """
 
     value: dict
@@ -73,10 +73,10 @@ class DataPointBool(DataPointGeneral):
     """
     Model for datapoints of the controller component.
 
-    Contains:
-        value: The value of the datapoint, which is a boolean
-        unit: Optional unit of the datapoint, if applicable
-        time: Optional timestamp of the datapoint, if applicable
+    Attributes:
+        value (bool): The value of the datapoint, which is a boolean.
+        unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.
+        time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.
     """
 
     value: bool
@@ -86,10 +86,10 @@ class DataPointMedium(DataPointGeneral):
     """
     Model for datapoints of the controller component which define the medium.
 
-    Contains:
-        value: The value of the datapoint, which is a Medium representing the medium
-        unit: Optional unit of the datapoint, if applicable
-        time: Optional timestamp of the datapoint, if applicable
+    Attributes:
+        value (Medium): The value of the datapoint, which is a Medium representing the medium.
+        unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.
+        time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.
     """
 
     value: Medium

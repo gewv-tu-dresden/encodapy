@@ -1,5 +1,5 @@
 [MASTER]
 fail-under = 9.5
-
+ignore=docs
 disable=
     fixme

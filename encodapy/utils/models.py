@@ -18,14 +18,16 @@ class InputDataAttributeModel(BaseModel):
     """
     Model for a attribute of input data of the system controller.
 
-    Contains:
-    - id: The id of the input data attribute
-    - data: The input data as a DataFrame or a single value
-    - unit: The unit of the input data
-    - data_type: The type of the input data (AttributeTypes)
-    - data_available: If the data is available
-    - latest_timestamp_input: The latest timestamp of the input data from the query or None,\
-        if the data is not available
+    Attributes:
+        id (str): The id of the input data attribute
+        data (Union[str, float, int, bool, Dict, List, DataFrame, None]): \
+            The input data as a DataFrame or a single value
+        unit (Union[DataUnits, None]): The unit of the input data
+        data_type (AttributeTypes): The type of the input data (AttributeTypes)
+        data_available (bool): If the data is available
+        latest_timestamp_input (Union[datetime, None]): \
+            The latest timestamp of the input data from the query or None,\
+            if the data is not available
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -42,9 +44,9 @@ class InputDataEntityModel(BaseModel):
     """
     Model for the input data of the system controller.
 
-    Contains:
-    - id: The id of the input data entity
-    - attributes: List of the input data attributes as InputDataAttributeModel
+    Attributes:
+        id: The id of the input data entity
+        attributes: List of the input data attributes as InputDataAttributeModel
     """
 
     id: str
@@ -55,9 +57,9 @@ class StaticDataEntityModel(InputDataEntityModel):
     """
     Model for the static data of the system controller, same like InputDataEntityModel.
 
-    Contains:
-    - id: The id of the input data entity
-    - attributes: List of the input data attributes as InputDataAttributeModel
+    Attributes:
+        id: The id of the input data entity
+        attributes: List of the input data attributes as InputDataAttributeModel
     """
 
 
@@ -66,10 +68,10 @@ class OutputDataAttributeModel(BaseModel):
     Model for a attribute of output data of the system controller - status based on the status\
         of the interface.
 
-    Contains:
-    - id: The id of the output data attribute
-    - latest_timestamp_output: The latest timestamp of the output data from the query or None,\
-        if the data is not available
+    Attributes:
+        id: The id of the output data attribute
+        latest_timestamp_output: The latest timestamp of the output data from the query or None,\
+            if the data is not available
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -82,13 +84,12 @@ class OutputDataEntityModel(BaseModel):
     """
     Model for the status of the output data of the system controller.
 
-    Contains:
-    - id: The id of the output entity
-    - latest_timestamp_output: The latest timestamp of the output data from the query or None,\
-        if the data is not available
-
-    - attributes: List of the output data attributes as OutputDataAttributeModel
-    - commands: List of the output data commands as OutputDataCommandModel
+    Attributes:
+        id: The id of the output entity
+        latest_timestamp_output: The latest timestamp of the output data from the query or None,\
+            if the data is not available
+        attributes: List of the output data attributes as OutputDataAttributeModel
+        commands: List of the output data commands as OutputDataCommandModel
 
     """
 
@@ -102,10 +103,10 @@ class InputDataModel(BaseModel):
     """
     Model for the input data of the system controller.
 
-    Contains:
-    - input_entities: List of the input data entities as InputDataEntityModel
-    - output_entities: List of the output data entities as OutputDataEntityModel
-    - static_entities: List of the static data entities as StaticDataEntityModel
+    Attributes:
+        input_entities: List of the input data entities as InputDataEntityModel
+        output_entities: List of the output data entities as OutputDataEntityModel
+        static_entities: List of the static data entities as StaticDataEntityModel
     """
 
     input_entities: list[InputDataEntityModel]
@@ -117,8 +118,8 @@ class OutputDataModel(BaseModel):
     """
     Model for the output data of the system controller.
 
-    Contains:
-    - output_entitys: List of the output data entitys as OutputDataEntityModel
+    Attributes:
+        entities: List of the output data entitys as OutputDataEntityModel
     """
 
     entities: list[OutputDataEntityModel]
@@ -128,9 +129,9 @@ class ComponentModel(BaseModel):
     """
     Model for the dataflow (input/output) of the controller.
 
-    Contains:
-    - entity: The entity (input / output) of the datapoint for the controller
-    - attribute: The attribute of the datapoint for the controller
+    Attributes:
+        entity: The entity (input / output) of the datapoint for the controller
+        attribute: The attribute of the datapoint for the controller
     """
 
     entity_id: str
@@ -141,12 +142,12 @@ class DataTransferComponentModel(ComponentModel):
     """
     Model for the components of the data transfer between calculation and the basic service.
 
-    Contains:
-    - entity_id: The id of the entity of the component
-    - attribute_id: The id of the attribute of the component
-    - value: The output data value as OutputDataModel
-    - unit: The unit of the output data
-    - timestamp: The timestamp of the output
+    Attributes:
+        entity_id: The id of the entity of the component
+        attribute_id: The id of the attribute of the component
+        value: The output data value as OutputDataModel
+        unit: The unit of the output data
+        timestamp: The timestamp of the output
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -170,8 +171,8 @@ class DataTransferModel(BaseModel):
     """
     Model for the data transfer between calculation and the basic service.
 
-    Contains:
-    - components: List of the components of the data transfer as DataTransferComponentModel
+    Attributes:
+        components: List of the components of the data transfer as DataTransferComponentModel
     """
 
     components: list[DataTransferComponentModel] = []
@@ -182,9 +183,9 @@ class MetaDataModel(BaseModel):
     """
     Model for the metadata of datapoints of the controller.
 
-    Contains:
-    - timestamp: The timestamp of the data
-    - unit: The unit of the data
+    Attributes:
+        timestamp: The timestamp of the data
+        unit: The unit of the data
     """
 
     timestamp: Union[datetime, None] = None
@@ -194,12 +195,11 @@ class MetaDataModel(BaseModel):
 class FiwareDatapointParameter(BaseModel):
     """
     Model for the Fiware datapoint parameter.
-    Contains:
+
+    Attributes:
         entity (ContextEntity): The entity of the datapoint
         attribute (AttributeModel): The attribute of the datapoint
         metadata (list[NamedMetadata]): The metadata of the attribute
-    Args:
-        BaseModel (BaseModel): Pydantic BaseModel of a datapoint in fiware
     """
 
     entity: ContextEntity
@@ -210,7 +210,8 @@ class FiwareDatapointParameter(BaseModel):
 class FiwareAuth(BaseModel):
     """
     Base model for the Fiware authentication.
-    Contains:
+
+    Attributes:
         client_id (str): The client id
         client_secret (str): The client secret
         token_url (str): The token url
@@ -226,7 +227,8 @@ class FiwareAuth(BaseModel):
 class FiwareParameter(BaseModel):
     """
     Model for the Fiware connection parameters.
-    Contains:
+
+    Attributes:
         cb_url (str): The context broker url
         service (str): The service
         service_path (str): The service path
@@ -242,7 +244,8 @@ class FiwareParameter(BaseModel):
 class DatabaseParameter(BaseModel):
     """
     Model for the database connection parameters.
-    Contains:
+
+    Attributes:
         crate_db_url (str): The CrateDB url
         crate_db_user (Optional[str]): The CrateDB user
         crate_db_pw (Optional[str]): The CrateDB password
@@ -258,7 +261,8 @@ class DatabaseParameter(BaseModel):
 class FiwareConnectionParameter(BaseModel):
     """
     Model for the Fiware connection parameters.
-    Contains:
+
+    Attributes:
         fiware_params (FiwareParameter): The Fiware parameters
         database_params (DatabaseParameter): The database parameters
     """

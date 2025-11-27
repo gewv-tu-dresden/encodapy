@@ -12,6 +12,7 @@ from loguru import logger
 class Medium(Enum):
     """
     Enum class for the mediums
+    
     TODO: Add more mediums
     """
 
@@ -21,6 +22,10 @@ class Medium(Enum):
 class MediumParameters(BaseModel):
     """
     Base class for the medium parameters
+    
+    Attributes:
+        cp (float): Specific heat capacity [kJ/kgK]
+        rho (float): Density [kg/m³]
     """
 
     cp: float
