@@ -376,6 +376,19 @@ class MqttConnection:
             )
 
         debug_message = ""
+        #TODO: Read TimeInstant from payload if available
+            # Maybe add a config option to enable/disable this feature
+            # Maybe add a config option to choose the time format / the key name
+            # Should we handle the timezone info here?
+        if "TimeInstant" in payload:
+            try:
+                timestamp = datetime.fromisoformat(payload["TimeInstant"].replace("Z", "+00:00"))
+                debug_message += f" Extracted TimeInstant from payload: {timestamp}."
+            except ValueError as e:
+                debug_message += (
+                    f" Failed to parse TimeInstant from payload: {payload['TimeInstant']}, "
+                    f"using current timestamp. Error: {e}."
+                )
 
         for key, value in payload.items():
             # search in the message store for a subtopic that matches the key and entity
@@ -397,7 +410,6 @@ class MqttConnection:
                         f"and timestamp: {timestamp}"
                     )
                     continue
-
         if debug_message == "":
             debug_message += (
                 f" No updates made to MQTT message store for entity {entity_id}."
