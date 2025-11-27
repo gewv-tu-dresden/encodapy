@@ -3,7 +3,7 @@ Description: Configuration models for the thermal storage component
 Author: Martin Altenburger
 """
 import os
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Union
 from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel, Field

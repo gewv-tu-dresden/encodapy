@@ -631,6 +631,10 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 self.config.controller_settings.time_settings.calibration.sampling_time_unit
             )
         )
+        await self._hold_sampling_time(
+            start_time=datetime.now(),
+            hold_time=self.env.start_hold_time,
+        )
 
         while not self.shutdown_event.is_set():
             logger.debug("Start Calibration")
