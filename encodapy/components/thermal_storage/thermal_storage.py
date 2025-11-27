@@ -564,7 +564,6 @@ class ThermalStorage(BasicComponent):
 
         TODO: Maybe use other structure collections.deque or np.array --> less ram
         """
-        #TODO Implement temperature history storage
         for index, _ in enumerate(self.config_data.sensor_config.value.storage_sensors):
             try:
                 temperature = self.get_storage_temperature_sensor_value(sensor_index=index)
@@ -597,18 +596,24 @@ class ThermalStorage(BasicComponent):
 
         historical_data = self.sensor_values_stored.get(sensor_index, None)
 
-        if historical_data is None:
-            logger.warning(f"No historical data found for sensor {sensor_index}.")
-            return None
-
-        timerange = (historical_data.index.max() - historical_data.index.min()).total_seconds() / 60
         new_extrema: Optional[TemperatureExtrema] = None
-        if timerange >= self.config_data.calibration.historical_timerange_minimum:
+        timerange: Optional[pd.Timedelta] = None
+
+        if historical_data is None:
+            logger.debug(f"No historical data found for sensor {sensor_index}.")
+        else:
+            timerange = historical_data.index.max() - historical_data.index.min()
+
+        if historical_data is not None and timerange is not None \
+            and timerange >= pd.Timedelta(
+            hours=self.config_data.calibration.historical_timerange_minimum
+        ):
             new_extrema = TemperatureExtrema(
                 minimal_temperature=min(historical_data),
                 maximal_temperature=max(historical_data),
                 time=datetime.utcnow()
             )
+
         old_extrema: Optional[TemperatureExtrema] = None
         if self.calibration_data.db_path is not None:
             old_extrema = self.calibration_data.load_extrema_sqlite(sensor_index=sensor_index)
@@ -647,6 +652,13 @@ class ThermalStorage(BasicComponent):
                 sensor_index=sensor_index,
                 extrema=temperature_extrema
             )
+        # Remove old data from the historical data / Retention policy
+        if sensor_index in self.sensor_values_stored \
+            and self.sensor_values_stored[sensor_index] is not None:
+            cutoff = self.sensor_values_stored[sensor_index].index.max() - pd.Timedelta(
+                hours=self.config_data.calibration.historical_timerange_retention)
+            self.sensor_values_stored[sensor_index] = \
+                self.sensor_values_stored[sensor_index].truncate(before=cutoff)
 
         return temperature_extrema
 
@@ -655,28 +667,44 @@ class ThermalStorage(BasicComponent):
         Function to calibrate the thermal storage component based on historical data
         
         Uses historical temperature data to adjust the sensor configuration limits
+        TODO: Do we need a limit for the adjustment - the upper and lower limit for some reason?
         """
+        if self.calibration_data.db_path is not None:
+            self.config_data.sensor_config.value = (
+                self.calibration_data.load_limits_sqlite(
+                    sensor_config=self.config_data.sensor_config.value
+                ))
         for index, _ in enumerate(self.config_data.sensor_config.value.storage_sensors):
 
             sensor_config = self.config_data.sensor_config.value.storage_sensors[index]
 
             historical_data = self.handle_storage_sensor_historical_data(sensor_index=index)
 
+
             if historical_data is None:
                 logger.warning(
                     f"Could not calibrate sensor {index} due to missing historical data.")
                 continue
-            #TODO Maybe we need an offset?
-            minimal_temperature = (
-                historical_data.minimal_temperature
-                * (1-self.config_data.calibration.historical_data_margin/100)
-                + sensor_config.limits.minimal_temperature
-                ) / 2
-            maximal_temperature = (
-                historical_data.maximal_temperature
-                * (1+self.config_data.calibration.historical_data_margin/100)
-                + sensor_config.limits.maximal_temperature
-                ) / 2
+            # Calculate new limits based on historical data and configuration
+            # / do not adjust protected sensors
+            if index in self.config_data.calibration.protected_sensors_lower_limit \
+                or sensor_config.name in self.config_data.calibration.protected_sensors_lower_limit:
+                minimal_temperature = sensor_config.limits.minimal_temperature
+            else:
+                minimal_temperature = round((
+                    historical_data.minimal_temperature
+                    * (1-self.config_data.calibration.historical_data_margin/100)
+                    + sensor_config.limits.minimal_temperature
+                    ) / 2,1)
+            if index in self.config_data.calibration.protected_sensors_upper_limit \
+                or sensor_config.name in self.config_data.calibration.protected_sensors_upper_limit:
+                maximal_temperature = sensor_config.limits.maximal_temperature
+            else:
+                maximal_temperature = round((
+                    historical_data.maximal_temperature
+                    * (1+self.config_data.calibration.historical_data_margin/100)
+                    + sensor_config.limits.maximal_temperature
+                    ) / 2,1)
 
             try:
                 # Calibrate the sensor configuration based on historical data
@@ -688,10 +716,20 @@ class ThermalStorage(BasicComponent):
                 )
 
                 self.config_data.sensor_config.value.storage_sensors[index] = sensor_config
-                #TODO Store calibrated configuration somewhere?
+
             except ValueError as e:
                 logger.error(f"Error during calibration of sensor {index}: {e}")
                 continue
+
+        if self.calibration_data.db_path is not None:
+            self.calibration_data.save_limits_sqlite(
+                sensor_config=self.config_data.sensor_config.value
+            )
+        #TODO change logger to debug
+        logger.info(
+            "Calibrated sensor configuration: "
+            f"{self.config_data.sensor_config.value.storage_sensors}"
+            )
 
     def calibrate(self,
                   static_data: Optional[list[StaticDataEntityModel]] = None
@@ -699,10 +737,9 @@ class ThermalStorage(BasicComponent):
         """
         Function to calibrate the thermal storage component
         """
-        logger.debug("Calibrating thermal storage component.")
-        logger.debug(f"Calibration method: "
-                     f"{self.config_data.calculation_method.value}")
         if self.config_data.calculation_method.value \
             == ThermalStorageCalculationMethods.HISTORICAL_LIMITS:
+
             logger.debug("Calibrating thermal storage based on historical data.")
+
             self.calibrate_historical_based_sensor_configuration()

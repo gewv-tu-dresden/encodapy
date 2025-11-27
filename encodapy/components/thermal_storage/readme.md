@@ -10,12 +10,15 @@ The component uses measurement values from temperature sensors to calculate the 
 - Storage energy content in Wh: `storage__energy`
 - Additional storable energy in Wh: `storage__loading_potential_nominal`
 
-A overview is avaiable als Pydantic BaseModel `ThermalStorageOutputData` in in [thermal_storage_config.py](./thermal_storage_config.py).
+A overview is avaiable als Pydantic BaseModel `ThermalStorageOutputData` in [thermal_storage_config.py](./thermal_storage_config.py).
 
 ### Calculation Methods
 Two calculation methods are available, selected via the component configuration:
 - **Static Limits**: Defined in the sensor configuration (`static_limits`)
 - **Connection Limits**: Uses temperature sensors from the in- and outflow as limits (`connection_limits`)
+- **Historical Limits**: At startup, it uses the externally defined sensor configuration (`static_limits`). It then calibrates the limits based on historical data.
+  - Refer to the `ThermalStorageCalibrationConfig` section in the component's configuration.
+  - It stores the calibration results in an SQLite database. For the path, see the ThermalStorageCalibrationConfig for persistent data storage.
 
 The default method is **Static Limits**.
 
@@ -29,8 +32,10 @@ The service requires a specific configuration defined by a Pydantic `BaseModel`,
 - **Storage Tank Volume**: Assumes a cylindrical upright storage tank.
 - **Medium in the Storage Tank**
 - **Calculation Method** (see above)
+- **Load Level Check**: Compare the storage energy level with the temperature of the upper sensor to see if it is within the limits.
+- **Calibration**: For more information about the calibration, see the `ThermalStorageCalibrationConfig`.
 
-Configuration parameters must be set as datapoints or connections to static data in the config file. For more details, see the `ThermalStorageConfigData` `BaseModel` in [thermal_storage_config.py](./thermal_storage_config.py).
+Configuration parameters must be set as datapoints or connections to static data in the config file. For more details, see the `ThermalStorageConfigData` in [thermal_storage_config.py](./thermal_storage_config.py) or the documentation.
 
 ## Inputs
 
@@ -50,7 +55,7 @@ If you want to use load connection sensors as references for the limits, provide
 - `load_temperature_in`
 - `load_temperature_out`
 
-For detailed documentation of the inputs, see the `ThermalStorageInputData` `BaseModel` in [thermal_storage_config.py](./thermal_storage_config.py).
+For detailed documentation of the inputs, see the `ThermalStorageInputData` in [thermal_storage_config.py](./thermal_storage_config.py) or the documentation.
 
 ## Example
 A example how the component could be used is avaiable in [examples/06_thermal_storage_service](./../../../examples/06_thermal_storage_service/)

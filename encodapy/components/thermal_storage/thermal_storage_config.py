@@ -3,7 +3,7 @@ Description: Configuration models for the thermal storage component
 Author: Martin Altenburger
 """
 
-from typing import Optional
+from typing import Optional, Union
 from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel, Field
@@ -62,11 +62,16 @@ class StorageSensorConfig(BaseModel):
     """
     Configuration for the storage sensor in the thermal storage
 
-    Contains:
-        `height`: Height of the sensor in percent (0=top, 100=bottom)
-        `limits`: Temperature limits for the sensor
+    Arguments:
+        name: Optional name of the sensor
+        height: Height of the sensor in percent (0=top, 100=bottom)
+        limits (:class:`encodapy.components.thermal_storage.TemperatureLimits`): \
+            Temperature limits for the sensor
     """
 
+    name: Optional[str] = Field(
+        None, description="Optional name of the sensor"
+    )
     height: float = Field(
         ...,
         ge=0,
@@ -392,7 +397,7 @@ class ThermalStorageLoadLevelCheck(BaseModel):
     )
 class ThermalStorageCalibrationConfig(BaseModel):
     """
-    Model for the calibration configuration of the thermal storage service.
+    Configuration for the calibration of the thermal storage service.
     """
 
     historical_data_margin: float = Field(
@@ -403,9 +408,16 @@ class ThermalStorageCalibrationConfig(BaseModel):
         "for state of charge calculation (0-100)",
     )
     historical_timerange_minimum: int = Field(
-        60,
+        1,
         ge=0,
-        description="Minimum timerange in minutes for historical data to be considered "
+        description="Minimum timerange in hours for historical data to be considered "
+    )
+    historical_timerange_retention: int = Field(
+        48,
+        ge=0,
+        description="""Retention timerange in hours for historical data to be considered,
+        data older than this will be deleted,
+        higher values lead to more data being stored""",
     )
     #TODO remove
     # storage_path: Optional[str] = Field(
@@ -415,6 +427,16 @@ class ThermalStorageCalibrationConfig(BaseModel):
     db_path: Optional[str] = Field(
         "./thermal_storage_calibration_data",
         description="Path to store calibration data (optional)",
+    )
+    protected_sensors_upper_limit: list[Union[int, float, str]] = Field(
+        [],
+        description="List of sensor indices whose upper limits should not be adjusted "
+        "during calibration",
+    )
+    protected_sensors_lower_limit: list[Union[int, float, str]] = Field(
+        [0],
+        description="List of sensor indices whose lower limits should not be adjusted "
+        "during calibration",
     )
 class ThermalStorageConfigData(ConfigData):
     """
