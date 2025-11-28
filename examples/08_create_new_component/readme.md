@@ -16,7 +16,7 @@ Before running this example, ensure you have the following:
 As this example component is configured using the MQTT and file interface, the environment variables that could be required for this example can be found in [example 05](./../05_simple_service_mqtt/). The following variables are required, though some are optional:
     ```.env
     LOG_LEVEL = "DEBUG"                         # if you need more logs
-    PATH_OF_INPUT_FILE = "./input_data.csv"     # inputs via file
+    PATH_OF_INPUT_FILE = "./input_data.json"     # inputs via file
 
     MQTT_BROKER="localhost"                     # URL of the MQTT Broker / default value
     MQTT_PORT=1883                              # Port of the MQTT Broker / default value

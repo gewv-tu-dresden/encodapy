@@ -11,10 +11,10 @@ There are different kinds of datapoints, which are possible (see `encodapy.confi
 - Input-Data (see `InputModel`):
   - Data could be stored as attributes (`attributes`)
   - Type of the datapoint could be single-input data (`value`) and time series (`timeseries`)
-- Outut-Data (see `OutputModel`):
+- Output-Data (see `OutputModel`):
   - Data could be:
-    - a attribute (`AttributeModel`): Normal output, or something like a sensor value.
-    - a command (`CommandModel`): Setpoints that should be transferred via the FIWARE platform.
+    - an attribute (`AttributeModel`): Normal output, or something like a sensor value
+    - a command (`CommandModel`): Setpoints that should be transferred via the FIWARE platform
 
 ## FIWARE-API
 
