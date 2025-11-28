@@ -111,13 +111,13 @@
 
 <span class="sd">    The evironment variable `MQTT_TEMPLATE_&lt;NAME&gt;` (or variables for multiple templates) \</span>
 <span class="sd">        must be set, where `&lt;NAME&gt;` is the name of the template to load.\</span>
-<span class="sd">            It isn&#39;t loaded automatically from a `.env` file</span>
-<span class="sd">    The dictionary must contain the keys `topic` and `payload`, an could look like this:</span>
+<span class="sd">            It isn&#39;t loaded automatically from a `.env` file. </span>
+<span class="sd">    The dictionary must contain the keys `topic` and `payload`, and could look like this:</span>
 
 <span class="sd">    .. code-block:: json</span>
 
 <span class="sd">        {</span>
-<span class="sd">            &quot;topic&quot;: &quot;sensors/{{output_entity}}/{{output_attribute}}&quot;,</span>
+<span class="sd">            &quot;topic&quot;: &quot;sensors/__OUTPUT_ENTITY__/__OUTPUT_ATTRIBUTE__&quot;,</span>
 <span class="sd">            &quot;payload&quot;: {</span>
 <span class="sd">                &quot;value&quot;: &quot;__OUTPUT_VALUE__&quot;,</span>
 <span class="sd">                &quot;info_dict&quot;: {</span>

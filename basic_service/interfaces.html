@@ -465,10 +465,10 @@ They are automatically loaded from the environment or a .env file.</p>
 <li><p>Via a file path stored in an environment variable <cite>MQTT_TEMPLATE_&lt;NAME&gt;</cite>.</p></li>
 </ol>
 </div></blockquote>
-<p>The evironment variable <cite>MQTT_TEMPLATE_&lt;NAME&gt;</cite> (or variables for multiple templates)         must be set, where <cite>&lt;NAME&gt;</cite> is the name of the template to load.            It isn’t loaded automatically from a <cite>.env</cite> file
-The dictionary must contain the keys <cite>topic</cite> and <cite>payload</cite>, an could look like this:</p>
+<p>The evironment variable <cite>MQTT_TEMPLATE_&lt;NAME&gt;</cite> (or variables for multiple templates)         must be set, where <cite>&lt;NAME&gt;</cite> is the name of the template to load.            It isn’t loaded automatically from a <cite>.env</cite> file.
+The dictionary must contain the keys <cite>topic</cite> and <cite>payload</cite>, and could look like this:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;topic&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sensors/{{output_entity}}/{{output_attribute}}&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;topic&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sensors/__OUTPUT_ENTITY__/__OUTPUT_ATTRIBUTE__&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;payload&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;__OUTPUT_VALUE__&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;info_dict&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>

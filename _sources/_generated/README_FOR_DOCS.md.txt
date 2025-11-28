@@ -103,7 +103,7 @@ This project is licensed under the BSD License - see the [LICENSE](https://githu
 
 ## Copyright
 
-<a href="https://tu-dresden.de/ing/maschinenwesen/iet/gewv"> <img alt="GEWV" src="https://wwwpub.zih.tu-dresden.de/~s8407010/GEWV_Logo.svg" height="75"> </a>
+<a href="https://tu-dresden.de/ing/maschinenwesen/iet/gewv"> <img alt="TUD GEWV" src="https://raw.githubusercontent.com/gewv-tu-dresden/encodapy/main/docs/source/logos/GEWV_Logo.svg" height="75"> </a>
 
 2024-2025, TUD Dresden University of Technology, Chair of Building Energy Systems and Heat Supply
 
@@ -124,4 +124,4 @@ src="https://avatars.githubusercontent.com/u/43948851?s=200&v=4" height="150"></
 We gratefully acknowledge the financial support of the Federal Ministry for Economic Affairs and Energy.
 
 <a href="https://www.bundeswirtschaftsministerium.de/Navigation/EN/Home/home.html"> <img alt="BMWE"
-src="https://wwwpub.zih.tu-dresden.de/~s8407010/BMWE_gefoerdert_en_RGB.svg" style="height:200px; width:auto; max-width:none;"> </a>
+src="https://raw.githubusercontent.com/gewv-tu-dresden/encodapy/main/docs/source/logos/BMWE_gefoerdert_en_RGB.svg" style="height:200px; width:auto; max-width:none;"> </a>
