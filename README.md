@@ -62,7 +62,7 @@ For more details, see the [examples](./examples)
 - You could use components to run them with the [ComponentRunnerService](./encodapy/service/component_runner_service.py)
 - Frist, create a configuration, then start the service:
   - as shown in [examples/07_component_runner](./examples/07_component_runner/)
-  - by running the service with the [main.py](./service_main/main.py).
+  - by running the service with the [encodapy.service.service_main](./encodapy/service/service_main.py) function.
 - If you need additional components, please see [encodapy/components](./encodapy/components/):
   - You can use components from `encodapy/components` or create your own
   - An easy way to build your own component is shown in [examples/08_create_new_component](./examples/08_create_new_component/)
