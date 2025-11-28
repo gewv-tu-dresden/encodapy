@@ -62,7 +62,7 @@ For more details, see the [examples](https://github.com/gewv-tu-dresden/encodapy
 - You could use components to run them with the [ComponentRunnerService](https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/service/component_runner_service.py)
 - Frist, create a configuration, then start the service:
   - as shown in [examples/07_component_runner](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/07_component_runner)
-  - by running the service with the [main.py](https://github.com/gewv-tu-dresden/encodapy/blob/main/service_main/main.py).
+  - by running the service with the [encodapy.service.service_main](https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/service/service_main.py) function.
 - If you need additional components, please see [encodapy/components](https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components):
   - You can use components from `encodapy/components` or create your own
   - An easy way to build your own component is shown in [examples/08_create_new_component](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/08_create_new_component)
