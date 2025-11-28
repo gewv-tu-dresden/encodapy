@@ -40,7 +40,7 @@ class MQTTTemplateConfig(BaseModel):
     .. code-block:: json
 
         {
-            "topic": "sensors/{{output_entity}}/{{output_attribute}}",
+            "topic": "sensors/__OUTPUT_ENTITY__/__OUTPUT_ATTRIBUTE__",
             "payload": {
                 "value": "__OUTPUT_VALUE__",
                 "info_dict": {
