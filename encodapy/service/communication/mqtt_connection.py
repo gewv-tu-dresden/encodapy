@@ -486,7 +486,7 @@ class MqttConnection:
                     data = self._extract_payload_value(message_payload)
                     data_available = True
 
-                    # Try to read MQTT_timestamp_key from payload, otherwise get the timestamp from the message store
+                    # get timestamp from MQTT_timestamp_key from payload or from message store
                     if self.mqtt_params.timestamp_key in message_payload:
                         try:
                             timestamp = datetime.fromisoformat(
@@ -496,7 +496,8 @@ class MqttConnection:
                             )
                         except ValueError as e:
                             logger.warning(
-                                f"Failed to parse {self.mqtt_params.timestamp_key} from payload: {message_payload[self.mqtt_params.timestamp_key]}. "
+                                f"Failed to parse {self.mqtt_params.timestamp_key} from "
+                                f"payload: {message_payload[self.mqtt_params.timestamp_key]}. "
                                 f"Using timestamp from message store. Error: {e}."
                             )
                             timestamp = self.mqtt_message_store[topic]["timestamp"]
