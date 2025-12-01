@@ -485,6 +485,23 @@ class MqttConnection:
                 try:
                     data = self._extract_payload_value(message_payload)
                     data_available = True
+
+                    # Try to read MQTT_timestamp_key from payload, otherwise get the timestamp from the message store
+                    if self.mqtt_params.timestamp_key in message_payload:
+                        try:
+                            timestamp = datetime.fromisoformat(
+                                message_payload[self.mqtt_params.timestamp_key].replace(
+                                    "Z", "+00:00"
+                                )
+                            )
+                        except ValueError as e:
+                            logger.warning(
+                                f"Failed to parse {self.mqtt_params.timestamp_key} from payload: {message_payload[self.mqtt_params.timestamp_key]}. "
+                                f"Using timestamp from message store. Error: {e}."
+                            )
+                            timestamp = self.mqtt_message_store[topic]["timestamp"]
+                    else:
+                        timestamp = self.mqtt_message_store[topic]["timestamp"]
                 except ValueError as e:
                     logger.error(
                         f"Failed to extract payload value for topic {topic}: {e}. "
@@ -492,23 +509,7 @@ class MqttConnection:
                     )
                     data = None
                     data_available = False
-
-                # Try to read MQTT_timestamp_key from payload, otherwise get the timestamp from the message store
-                if self.mqtt_params.timestamp_key in message_payload:
-                    try:
-                        timestamp = datetime.fromisoformat(
-                            message_payload[self.mqtt_params.timestamp_key].replace(
-                                "Z", "+00:00"
-                            )
-                        )
-                    except ValueError as e:
-                        logger.warning(
-                            f"Failed to parse {self.mqtt_params.timestamp_key} from payload: {message_payload[self.mqtt_params.timestamp_key]}. "
-                            f"Using timestamp from message store. Error: {e}."
-                        )
-                        timestamp = self.mqtt_message_store[topic]["timestamp"]
-                else:
-                    timestamp = self.mqtt_message_store[topic]["timestamp"]
+                    timestamp = None
 
             attributes_values.append(
                 InputDataAttributeModel(
