@@ -4,8 +4,10 @@ Authors: Martin Altenburger, Paul Seidel, Maximilian Beyer
 more information: https://docs.pydantic.dev/latest/concepts/pydantic_settings/#usage
 """
 from typing import Optional
+
+from pydantic import AnyHttpUrl, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field, AnyHttpUrl
+
 
 class BasicEnvVariables(BaseSettings):
     """
@@ -134,6 +136,11 @@ class MQTTEnvVariables(BaseSettings):
         default="",
         description="Prefix for all MQTT topics used by the service"
     )
+    timekey: str = Field(
+        default="TimeInstant",
+        description="Key name for the time instant in MQTT messages used as timestamp"
+    )
+
 
 class FileEnvVariables(BaseSettings):
     """
