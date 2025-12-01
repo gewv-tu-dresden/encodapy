@@ -380,19 +380,6 @@ class MqttConnection:
             )
 
         debug_message = ""
-        # #TODO: Read TimeInstant from payload if available
-        #     # Maybe add a config option to enable/disable this feature
-        #     # Maybe add a config option to choose the time format / the key name
-        #     # Should we handle the timezone info here?
-        # if "TimeInstant" in payload:
-        #     try:
-        #         timestamp = datetime.fromisoformat(payload["TimeInstant"].replace("Z", "+00:00"))
-        #         debug_message += f" Extracted TimeInstant from payload: {timestamp}."
-        #     except ValueError as e:
-        #         debug_message += (
-        #             f" Failed to parse TimeInstant from payload: {payload['TimeInstant']}, "
-        #             f"using current timestamp. Error: {e}."
-        #         )
 
         for key, value in payload.items():
             # search in the message store for a subtopic that matches the key and entity
@@ -458,7 +445,6 @@ class MqttConnection:
         If the topic is not found or the payload is not in the expected format,
         it sets the data to None and marks it as unavailable.
 
-
         Args:
             method (DataQueryTypes): The method is currently not used.
             entity (InputModel): Input entity
@@ -507,17 +493,17 @@ class MqttConnection:
                     data = None
                     data_available = False
 
-                # Try to read MQTT_timekey from payload, otherwise get the timestamp from the message store
-                if self.mqtt_params.timekey in message_payload:
+                # Try to read MQTT_timestamp_key from payload, otherwise get the timestamp from the message store
+                if self.mqtt_params.timestamp_key in message_payload:
                     try:
                         timestamp = datetime.fromisoformat(
-                            message_payload[self.mqtt_params.timekey].replace(
+                            message_payload[self.mqtt_params.timestamp_key].replace(
                                 "Z", "+00:00"
                             )
                         )
                     except ValueError as e:
                         logger.warning(
-                            f"Failed to parse {self.mqtt_params.timekey} from payload: {message_payload[self.mqtt_params.timekey]}. "
+                            f"Failed to parse {self.mqtt_params.timestamp_key} from payload: {message_payload[self.mqtt_params.timestamp_key]}. "
                             f"Using timestamp from message store. Error: {e}."
                         )
                         timestamp = self.mqtt_message_store[topic]["timestamp"]
