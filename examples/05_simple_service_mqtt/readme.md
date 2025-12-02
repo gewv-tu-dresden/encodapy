@@ -1,4 +1,4 @@
-# Example for usage with a simple mqtt service
+# Example for usage with a simple MQTT service
 
 ## Overview
 
@@ -26,7 +26,7 @@ Furthermore, a running MQTT broker is required to which a connection can be esta
 
 ## Basics
 
-To create your own custom service, you have to overwrite two functions of the [ControllerBasicService](./../../encodapy/service/basic_service.py):
+To create your own custom service, you have to overwrite functions of the [ControllerBasicService](./../../encodapy/service/basic_service.py):
 
 - `prepare_start`: This is a synchronous function that prepares the start of the algorithm and specifies aspects of the service. This should not take long due to health issues in Docker containers. It only needs to be overwritten if other tasks are required after initialisation of the service.
 - `calculation`: Asynchronous function to perform the main calculation in the service
@@ -36,7 +36,7 @@ For the models of the inputs and outputs, see [02_datatransfer](./../02_datatran
 
 For the possible payloads, see [03_interfaces](./../03_interfaces/).
 
-The example uses the possibilities of the optional "Data Transfer Formats" for Outputs, see [03_interfaces - Outputs](./../03_interfaces/readme.md#outputs).
+The example uses the optional "Data Transfer Formats" for outputs, see [03_interfaces - Outputs](./../03_interfaces/readme.md#outputs).
 
 - In the config, you can switch the mqtt_format of the output attributes from "boiler-controller".
 - You can build your very own format in [custom_mqtt_template.json](./custom_mqtt_template.json).
