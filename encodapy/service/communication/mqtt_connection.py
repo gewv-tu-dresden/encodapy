@@ -598,16 +598,18 @@ class MqttConnection:
                 output_attribute.timestamp is not None
                 and output_attribute.mqtt_format is MQTTFormatTypes.FIWARE_ATTR
             ):
-                payload["TimeInstant"] = self._get_iso_timestamp(
-                    output_attribute.timestamp
-                )
+                payload["TimeInstant"] = output_attribute.timestamp.strftime('%Y-%m-%dT%H:%M:%S%z')
+
         elif isinstance(output_attribute.mqtt_format, MQTTTemplateConfig):
             payload = output_attribute.mqtt_format.payload.render(
                 output_entity=output_entity.id_interface,
                 output_attribute=output_attribute.id_interface,
                 output_value=output_attribute.value,
                 output_unit=output_attribute.unit,
-                output_time=output_attribute.timestamp,
+                output_time=(
+                    output_attribute.timestamp.strftime(output_attribute.mqtt_format.time_format)\
+                        if output_attribute.timestamp else None
+                        )
             )
             if isinstance(payload, str):
                 try:
@@ -745,11 +747,3 @@ class MqttConnection:
             timestamp_latest_output,
         )
 
-    @staticmethod
-    def _get_iso_timestamp(timestamp: datetime) -> str:
-        time_iso = (
-            str(timestamp.astimezone(timezone.utc).replace(tzinfo=None).isoformat())
-            + "Z"
-        )
-
-        return time_iso
