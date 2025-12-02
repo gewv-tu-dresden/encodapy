@@ -487,7 +487,8 @@ class MqttConnection:
                     data_available = True
 
                     # get timestamp from MQTT_timestamp_key from payload or from message store
-                    if self.mqtt_params.timestamp_key in message_payload:
+                    if isinstance(message_payload, dict) \
+                        and self.mqtt_params.timestamp_key in message_payload:
                         try:
                             timestamp = datetime.fromisoformat(
                                 message_payload[self.mqtt_params.timestamp_key].replace(

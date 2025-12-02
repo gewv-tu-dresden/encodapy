@@ -60,7 +60,7 @@ class FiwareEnvVariables(BaseSettings):
     token_url: Optional[AnyHttpUrl] = Field(
         default=None, description="Token URL for FIWARE authentication"
     )
-    baerer_token: Optional[str] = Field(
+    bearer_token: Optional[str] = Field(
         default=None, description="Bearer token for FIWARE authentication"
     )
     cb_url: Optional[AnyHttpUrl] = Field(
