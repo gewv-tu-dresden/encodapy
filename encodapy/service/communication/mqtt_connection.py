@@ -105,8 +105,9 @@ class MqttConnection:
             "topic": {
                 "entity_id": "entity_id",
                 "attribute_id": "attribute_id",
-                "payload": value,
-                "timestamp": datetime.now(),
+                "value": value from payload or payload itself if no value extractable,
+                "unit": currently always "None",
+                "timestamp": datetime.now() or value from MQTT_timestamp_key in payload,
             }
         }
         """
@@ -151,7 +152,7 @@ class MqttConnection:
                         topic=topic,
                         entity_id=entity.id,
                         attribute_id=attribute.id,
-                        payload=default_value,
+                        value=default_value,
                     )
 
     def assemble_topic_parts(self, parts: list[str | None]) -> str:
@@ -186,8 +187,9 @@ class MqttConnection:
         topic: str,
         entity_id: str,
         attribute_id: Optional[str] = None,
-        payload=None,
+        value=None,
         timestamp: Optional[datetime] = None,
+        unit: Optional[str] = None,
     ) -> None:
         """
         Function to add an item to the MQTT message store.
@@ -198,7 +200,8 @@ class MqttConnection:
             topic (str): The topic to add the item to.
             entity_id (str): The ID of the entity.
             attribute_id (Optional[str]): The ID of the attribute (if applicable).
-            payload: The default value of the message (if applicable).
+            value: The default value of the message (if applicable).
+            unit (Optional[str]): The unit of the value (if applicable).
             timestamp (Optional[datetime]): The initial timestamp of the message (if applicable).
         """
         if topic in self.mqtt_message_store:
@@ -210,7 +213,8 @@ class MqttConnection:
         self.mqtt_message_store[topic] = {
             "entity_id": entity_id,
             "attribute_id": attribute_id,
-            "payload": payload,
+            "value": value,
+            "unit": unit,
             "timestamp": timestamp,
         }
 
@@ -318,15 +322,24 @@ class MqttConnection:
             # decode the message payload
             try:
                 payload = message.payload.decode("utf-8")
+                debug_message += f" Decoded message payload successfully: \n {payload}"
             except UnicodeDecodeError as e:
                 logger.error(debug_message + f" Failed to decode message payload: {e}.")
                 return
 
-            # store payload and current time in the message store
-            self.mqtt_message_store[message.topic]["payload"] = payload
-            self.mqtt_message_store[message.topic]["timestamp"] = current_time
+            # extract value and timestamp from payload if possible
+            value, timestamp = self._extract_payload_value_and_timestamp(payload)
 
-            debug_message += f" Updated MQTT message store with value: {payload}."
+            if timestamp is None:
+                timestamp = current_time
+
+            # store payload and current time in the message store
+            self.mqtt_message_store[message.topic]["value"] = value
+            self.mqtt_message_store[message.topic]["timestamp"] = timestamp
+
+            debug_message += (
+                f" Store updated with value: {value} and timestamp: {timestamp}."
+            )
 
             # if the item in the store is from an entity, its attribute_id in the store must be None
             # and attribute values are possibly in payload
@@ -358,6 +371,77 @@ class MqttConnection:
                     return
             else:
                 logger.debug(debug_message)
+
+    def _extract_payload_value_and_timestamp(
+        self, payload
+    ) -> tuple[
+        Union[str, float, int, bool, dict, list, DataFrame, None], Optional[datetime]
+    ]:
+        """
+        Function to extract data from the payload as needed.
+        # TODO MB: How to use pd.read_json here for Dataframes?
+        # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_json.html
+        """
+        if payload is None or payload == "":
+            return None, None
+
+        # If the payload is not a string (maybe from other source), return it directly
+        if not isinstance(payload, str):
+            return payload, None
+
+        try:
+            # If the payload is a datetime string, return it as string
+            _ = datetime.fromisoformat(payload)
+            return payload, None
+        except ValueError:
+            pass
+        # Try to parse JSON (automatically handles int, float, bool, dicts, lists)
+        try:
+            parsed = json.loads(payload)
+            # If the payload is a valid dict, try to extract the value
+            if isinstance(parsed, dict):
+                # Ensure case-insensitive key check and return value of first found "value" key
+                value = next((parsed[k] for k in parsed if k.lower() == "value"), None)
+
+                #  try to extract the timestamp from MQTT_timestamp_key
+                if self.mqtt_params.timestamp_key in parsed:
+                    try:
+                        timestamp = datetime.fromisoformat(
+                            parsed[self.mqtt_params.timestamp_key].replace(
+                                "Z", "+00:00"
+                            )
+                        )
+                    except ValueError as e:
+                        logger.warning(
+                            f"Found {self.mqtt_params.timestamp_key} in Payload, but failed to "
+                            f"extract timestamp from {parsed[self.mqtt_params.timestamp_key]}. "
+                            f"Error: {e}."
+                        )
+                        timestamp = None
+                else:
+                    timestamp = None
+
+                if value is not None:
+                    return value, timestamp
+                return parsed, timestamp
+            return parsed, None
+        except json.JSONDecodeError:
+            pass
+
+        # If the payload is a string that starts with a number, try to extract it
+        # This handles cases like "22.5 °C" or "6552.0 h" where we want to extract the number
+        # and ignore the unit (if any).
+        # The regex matches an optional leading '-' for negative numbers, followed by digits,
+        # optionally with a decimal point and more digits.
+        match = re.match(r"^\s*(-?\d+(\.\d+)?)", payload)
+        if match:
+            num_str = match.group(1)
+            if "." in num_str:
+                return float(num_str), None
+            return int(num_str), None
+
+        # if nothing else worked, return the payload as is
+        return payload, None
 
     def _extract_attributes_from_payload_and_update_store(
         self,
@@ -394,11 +478,17 @@ class MqttConnection:
 
                 # if subtopic matches key in the payload from entity, update the message store
                 if subtopic == key:
-                    item["payload"] = value
+                    # extract the value and timestamp from the payload
+                    attribute_value, attribute_timestamp = (
+                        self._extract_payload_value_and_timestamp(value)
+                    )
+                    if attribute_timestamp is None:
+                        attribute_timestamp = timestamp
+                    item["value"] = attribute_value
                     item["timestamp"] = timestamp
                     debug_message += (
-                        f" Updated MQTT message store for topic {topic} with value: {value} "
-                        f"and timestamp: {timestamp}"
+                        f" Updated MQTT message store for topic {topic} with value: {item['payload']} "
+                        f"and timestamp: {item['timestamp']}."
                     )
                     continue
         if debug_message == "":
@@ -479,38 +569,11 @@ class MqttConnection:
                 data_available = False
                 timestamp = None
 
-            # if the topic is in the message store, extract the data from message payload
+            # if the topic is in the message store, get value and timestamp
             else:
-                message_payload = self.mqtt_message_store[topic]["payload"]
-                try:
-                    data = self._extract_payload_value(message_payload)
-                    data_available = True
-
-                    # get timestamp from MQTT_timestamp_key from payload or from message store
-                    if self.mqtt_params.timestamp_key in message_payload:
-                        try:
-                            timestamp = datetime.fromisoformat(
-                                message_payload[self.mqtt_params.timestamp_key].replace(
-                                    "Z", "+00:00"
-                                )
-                            )
-                        except ValueError as e:
-                            logger.warning(
-                                f"Failed to parse {self.mqtt_params.timestamp_key} from "
-                                f"payload: {message_payload[self.mqtt_params.timestamp_key]}. "
-                                f"Using timestamp from message store. Error: {e}."
-                            )
-                            timestamp = self.mqtt_message_store[topic]["timestamp"]
-                    else:
-                        timestamp = self.mqtt_message_store[topic]["timestamp"]
-                except ValueError as e:
-                    logger.error(
-                        f"Failed to extract payload value for topic {topic}: {e}. "
-                        "Setting data as None and unavailable."
-                    )
-                    data = None
-                    data_available = False
-                    timestamp = None
+                data = self.mqtt_message_store[topic]["value"]
+                timestamp = self.mqtt_message_store[topic]["timestamp"]
+                data_available = True
 
             attributes_values.append(
                 InputDataAttributeModel(
@@ -523,55 +586,6 @@ class MqttConnection:
                 )
             )
         return InputDataEntityModel(id=entity.id, attributes=attributes_values)
-
-    def _extract_payload_value(
-        self, payload
-    ) -> Union[str, float, int, bool, dict, list, DataFrame, None]:
-        """
-        Function to extract data from the payload as needed.
-        # TODO MB: How to use pd.read_json here for Dataframes?
-        # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_json.html
-        """
-        if payload is None or payload == "":
-            return None
-
-        # If the payload is not a string (maybe from other source), return it directly
-        if not isinstance(payload, str):
-            return payload
-
-        try:
-            # If the payload is a datetime string, return it as string
-            _ = datetime.fromisoformat(payload)
-            return payload
-        except ValueError:
-            pass
-        # Try to parse JSON (automatically handles int, float, bool, dicts, lists)
-        try:
-            parsed = json.loads(payload)
-            # If the payload is a valid dict, try to extract a value from it
-            if isinstance(parsed, dict):
-                # Ensure case-insensitive key check and return value of first found "value" key
-                value = next((parsed[k] for k in parsed if k.lower() == "value"), None)
-                if value is not None:
-                    return value
-            return parsed
-        except json.JSONDecodeError:
-            pass
-
-        # If the payload is a string that starts with a number, try to extract it
-        # This handles cases like "22.5 °C" or "6552.0 h" where we want to extract the number
-        # and ignore the unit (if any).
-        # The regex matches an optional leading '-' for negative numbers, followed by digits,
-        # optionally with a decimal point and more digits.
-        match = re.match(r"^\s*(-?\d+(\.\d+)?)", payload)
-        if match:
-            num_str = match.group(1)
-            if "." in num_str:
-                return float(num_str)
-            return int(num_str)
-
-        # if nothing else worked, return the payload as is
-        return payload
 
     def _prepare_mqtt_payload(
         self, output_entity: OutputModel, output_attribute: AttributeModel
@@ -597,16 +611,23 @@ class MqttConnection:
                 output_attribute.timestamp is not None
                 and output_attribute.mqtt_format is MQTTFormatTypes.FIWARE_ATTR
             ):
-                payload["TimeInstant"] = self._get_iso_timestamp(
-                    output_attribute.timestamp
+                payload["TimeInstant"] = output_attribute.timestamp.strftime(
+                    "%Y-%m-%dT%H:%M:%S%z"
                 )
+
         elif isinstance(output_attribute.mqtt_format, MQTTTemplateConfig):
             payload = output_attribute.mqtt_format.payload.render(
                 output_entity=output_entity.id_interface,
                 output_attribute=output_attribute.id_interface,
                 output_value=output_attribute.value,
                 output_unit=output_attribute.unit,
-                output_time=output_attribute.timestamp,
+                output_time=(
+                    output_attribute.timestamp.strftime(
+                        output_attribute.mqtt_format.time_format
+                    )
+                    if output_attribute.timestamp
+                    else None
+                ),
             )
             if isinstance(payload, str):
                 try:
@@ -743,12 +764,3 @@ class MqttConnection:
             OutputDataEntityModel(id=output_entity.id, attributes_status=timestamps),
             timestamp_latest_output,
         )
-
-    @staticmethod
-    def _get_iso_timestamp(timestamp: datetime) -> str:
-        time_iso = (
-            str(timestamp.astimezone(timezone.utc).replace(tzinfo=None).isoformat())
-            + "Z"
-        )
-
-        return time_iso
