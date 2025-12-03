@@ -405,11 +405,6 @@ class MqttConnection:
                     (parsed[k] for k in parsed if k.lower() == "value"), parsed
                 )
 
-                if value == parsed:
-                    logger.warning(
-                        f"Could not find 'value' key in dict {parsed}, using entire dict as value."
-                    )
-
                 #  try to extract the timestamp from MQTT_timestamp_key
                 if self.mqtt_params.timestamp_key in parsed:
                     try:
@@ -484,11 +479,11 @@ class MqttConnection:
                     )
 
                     # store payload and timestamp in the message store
-                    self.mqtt_message_store[subtopic]["value"] = attribute_value
-                    self.mqtt_message_store[subtopic]["timestamp"] = attribute_timestamp
+                    self.mqtt_message_store[topic]["value"] = attribute_value
+                    self.mqtt_message_store[topic]["timestamp"] = attribute_timestamp
 
                     debug_message += (
-                        f" Updated MQTT message store for topic {subtopic} with value: {attribute_value} "
+                        f" Updated MQTT message store for topic {topic} with value: {attribute_value} "
                         f"and timestamp: {attribute_timestamp}."
                     )
                     continue
