@@ -398,8 +398,12 @@ class MqttConnection:
         # Try to parse JSON (automatically handles int, float, bool, dicts, lists)
         try:
             parsed = json.loads(payload)
+            print(f"Parsed JSON payload: {parsed}")
+            print(f"Timestamp key: {self.mqtt_params.timestamp_key}")
             # If the payload is a valid dict, try to extract the value
             if isinstance(parsed, dict):
+                print(F"Parsed JSON is a dict")
+                print(self.mqtt_params.timestamp_key in parsed)
                 # Ensure case-insensitive key check and return value of first found "value" key
                 value = next((parsed[k] for k in parsed if k.lower() == "value"), None)
 
@@ -420,6 +424,7 @@ class MqttConnection:
                         timestamp = None
                 else:
                     timestamp = None
+                print(f"Extracted value: {value}, timestamp: {timestamp}")
 
                 if value is not None:
                     return value, timestamp
@@ -485,7 +490,7 @@ class MqttConnection:
                     if attribute_timestamp is None:
                         attribute_timestamp = timestamp
                     item["value"] = attribute_value
-                    item["timestamp"] = timestamp
+                    item["timestamp"] = attribute_timestamp
                     debug_message += (
                         f" Updated MQTT message store for topic {topic} with value: {item} "
                         f"and timestamp: {item['timestamp']}."
