@@ -321,7 +321,7 @@ class MqttConnection:
             # decode the message payload
             try:
                 payload = message.payload.decode("utf-8")
-                debug_message += f" Decoded message payload successfully: \n {payload}"
+                debug_message += f" Decoded message payload successfully: {payload}"
             except UnicodeDecodeError as e:
                 logger.error(debug_message + f" Failed to decode message payload: {e}.")
                 return
