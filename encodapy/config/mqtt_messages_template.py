@@ -5,14 +5,17 @@ Author: Martin Altenburger
 
 import json
 import os
-from typing import Any, Union, Optional
 from datetime import datetime
+from typing import Any, Optional, Union
+
 from jinja2 import Template
 from loguru import logger
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ConfigDict
 from pydantic.functional_validators import model_validator
+
 from encodapy.config.types import MQTTFormatTypes
 from encodapy.utils.error_handling import ConfigError
+
 
 class MQTTTemplateConfig(BaseModel):
     """
@@ -72,11 +75,13 @@ class MQTTTemplateConfig(BaseModel):
 
     topic: Template
     payload: Template
-    time_format: str = '%Y-%m-%dT%H:%M:%S%z'
+    time_format: str = "%Y-%m-%dT%H:%M:%S%z"
 
     @model_validator(mode="before")
     @classmethod
-    def load_mqtt_message_template(cls, mqtt_format_template_env: Union[str, dict]) -> Any:
+    def load_mqtt_message_template(
+        cls, mqtt_format_template_env: Union[str, dict]
+    ) -> Any:
         """
         Load the MQTT message template from an environment variable or dictionary.
 
@@ -112,7 +117,6 @@ class MQTTTemplateConfig(BaseModel):
 
         mqtt_format_template: Optional[dict] = None
         if mqtt_format_template_info is not None:
-
             if mqtt_format_template_info.endswith(".json"):
                 try:
                     with open(mqtt_format_template_info, "r", encoding="utf-8") as file:
@@ -131,8 +135,10 @@ class MQTTTemplateConfig(BaseModel):
                     logger.error("MQTT template string is not a valid JSON.")
                     mqtt_format_template = None
         else:
-            logger.error(f"Environment variable {env_variable} "
-                         f"for the mqtt-template '{mqtt_format_template_env}' not found.")
+            logger.error(
+                f"Environment variable {env_variable} "
+                f"for the mqtt-template '{mqtt_format_template_env}' not found."
+            )
 
         if not isinstance(mqtt_format_template, dict):
             raise ValueError(
@@ -160,11 +166,11 @@ class MQTTTemplateConfig(BaseModel):
         Returns:
             str: The validated time format string.
         """
-        time_format = mqtt_format_template.get("time_format", '%Y-%m-%dT%H:%M:%S%z')
+        time_format = mqtt_format_template.get("time_format", "%Y-%m-%dT%H:%M:%S%z")
 
         if not isinstance(time_format, str):
             raise ConfigError(
-                "Invalid time_format in mqtt template: expected a str , "
+                "Invalid time_format in mqtt template: expected a str, "
                 f"got {type(time_format).__name__} ({time_format})."
             )
         try:
@@ -206,7 +212,7 @@ class MQTTTemplateConfig(BaseModel):
             "payload": cls.load_mqtt_template(
                 template_raw=mqtt_format_data, part="payload"
             ),
-            "time_format": cls._handle_time_format(mqtt_format_data)
+            "time_format": cls._handle_time_format(mqtt_format_data),
         }
 
     @classmethod
@@ -263,6 +269,7 @@ class MQTTTemplateConfig(BaseModel):
 
         return Template(template)
 
+
 class MQTTTemplateConfigDoc(BaseModel):
     """
     Model for MQTT template configuration.
@@ -277,6 +284,7 @@ class MQTTTemplateConfigDoc(BaseModel):
         For more information,\
             see :class:`~encodapy.config.mqtt_messages_template.MQTTTemplateConfig`.
     """
+
     topic: dict
     payload: dict
-    time_format: str = '%Y-%m-%dT%H:%M:%S%z'
+    time_format: str = "%Y-%m-%dT%H:%M:%S%z"
