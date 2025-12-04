@@ -5,12 +5,17 @@ Author: Martin Altenburger
 
 import json
 import os
-from typing import Any, Union, Optional
+from datetime import datetime
+from typing import Any, Optional, Union
+
 from jinja2 import Template
 from loguru import logger
 from pydantic import BaseModel, ConfigDict
 from pydantic.functional_validators import model_validator
+
 from encodapy.config.types import MQTTFormatTypes
+from encodapy.utils.error_handling import ConfigError
+
 
 class MQTTTemplateConfig(BaseModel):
     """
@@ -49,13 +54,18 @@ class MQTTTemplateConfig(BaseModel):
                     "output_time": "__OUTPUT_TIME__"
                 }
             }
+            "time_format": "%Y-%m-%dT%H:%M%z"
         }
+
+    The key `time_format` is optional, as default '%Y-%m-%dT%H:%M:%S%z' is used.
 
     Please see the examples for this.
 
     Arguments:
         topic (Template): The Jinja2 template for the MQTT topic.
         payload (Template): The Jinja2 template for the MQTT payload.
+        time_format (str): The format string for the timestamp in the payload. \
+            Refer to Python's datetime.strptime documentation for more details.
 
     Raises:
         ValueError: If the input is invalid or templates cannot be loaded.
@@ -65,16 +75,20 @@ class MQTTTemplateConfig(BaseModel):
 
     topic: Template
     payload: Template
+    time_format: str = "%Y-%m-%dT%H:%M:%S%z"
 
     @model_validator(mode="before")
     @classmethod
-    def load_mqtt_message_template(cls, mqtt_format_template_env: Union[str, dict]) -> Any:
+    def load_mqtt_message_template(
+        cls, mqtt_format_template_env: Union[str, dict]
+    ) -> Any:
         """
         Load the MQTT message template from an environment variable or dictionary.
 
         Args:
             mqtt_format_template_env: Either a string (environment variable name) or a dictionary
-                                      containing `topic` and `payload` templates.
+                                      containing `topic` and `payload` templates and `time_format`
+                                      for the timestamp information.
 
         Returns:
             dict: A dictionary with `topic` and `payload` as `jinja2.Template` objects.
@@ -103,7 +117,6 @@ class MQTTTemplateConfig(BaseModel):
 
         mqtt_format_template: Optional[dict] = None
         if mqtt_format_template_info is not None:
-
             if mqtt_format_template_info.endswith(".json"):
                 try:
                     with open(mqtt_format_template_info, "r", encoding="utf-8") as file:
@@ -122,8 +135,10 @@ class MQTTTemplateConfig(BaseModel):
                     logger.error("MQTT template string is not a valid JSON.")
                     mqtt_format_template = None
         else:
-            logger.error(f"Environment variable {env_variable} "
-                         f"for the mqtt-template '{mqtt_format_template_env}' not found.")
+            logger.error(
+                f"Environment variable {env_variable} "
+                f"for the mqtt-template '{mqtt_format_template_env}' not found."
+            )
 
         if not isinstance(mqtt_format_template, dict):
             raise ValueError(
@@ -138,7 +153,34 @@ class MQTTTemplateConfig(BaseModel):
             "payload": cls.load_mqtt_template(
                 template_raw=mqtt_format_template, part="payload"
             ),
+            "time_format": cls._handle_time_format(mqtt_format_template),
         }
+
+    @classmethod
+    def _handle_time_format(cls, mqtt_format_template: dict) -> str:
+        """
+        Validate and process the time format.
+
+        Args:
+            mqtt_format_template (dict): Dictionary containing the time format (`time_format` key).
+        Returns:
+            str: The validated time format string.
+        """
+        time_format = mqtt_format_template.get("time_format", "%Y-%m-%dT%H:%M:%S%z")
+
+        if not isinstance(time_format, str):
+            raise ConfigError(
+                "Invalid time_format in mqtt template: expected a str, "
+                f"got {type(time_format).__name__} ({time_format})."
+            )
+        try:
+            datetime.now().strftime(time_format)
+        except (ValueError, TypeError) as e:
+            raise ConfigError(
+                f"Invalid time format string '{time_format}': {str(e)}"
+            ) from e
+
+        return time_format
 
     @classmethod
     def _handle_dict_input(cls, mqtt_format_data: dict) -> dict:
@@ -170,6 +212,7 @@ class MQTTTemplateConfig(BaseModel):
             "payload": cls.load_mqtt_template(
                 template_raw=mqtt_format_data, part="payload"
             ),
+            "time_format": cls._handle_time_format(mqtt_format_data),
         }
 
     @classmethod
@@ -226,6 +269,7 @@ class MQTTTemplateConfig(BaseModel):
 
         return Template(template)
 
+
 class MQTTTemplateConfigDoc(BaseModel):
     """
     Model for MQTT template configuration.
@@ -233,11 +277,14 @@ class MQTTTemplateConfigDoc(BaseModel):
     **Mock class for documentation purposes.**
     
     Note:
-        In the actual implementation, `topic` and `payload` are `jinja2.Template` objects.
+        In the actual implementation, `topic` and `payload` are `jinja2.Template` objects,
+        `time_format` is a `str` as time format for the timestamp in the payload.
         This mock uses `dict` to avoid import issues during documentation generation.
         
         For more information,\
             see :class:`~encodapy.config.mqtt_messages_template.MQTTTemplateConfig`.
     """
+
     topic: dict
     payload: dict
+    time_format: str = "%Y-%m-%dT%H:%M:%S%z"
