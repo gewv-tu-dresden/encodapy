@@ -7,7 +7,7 @@ import asyncio
 from dotenv import load_dotenv
 from example_service import ExampleService
 
-from encodapy.service import service_main
+from encodapy.service.service_main import service_main
 
 if __name__ == "__main__":
     load_dotenv()  # Load environment variables from .env file
