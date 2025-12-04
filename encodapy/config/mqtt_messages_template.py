@@ -177,7 +177,7 @@ class MQTTTemplateConfig(BaseModel):
             datetime.now().strftime(time_format)
         except (ValueError, TypeError) as e:
             raise ConfigError(
-                f"Invalid time format string '{time_format}': {str(e)} "
+                f"Invalid time format string '{time_format}': {str(e)}"
             ) from e
 
         return time_format

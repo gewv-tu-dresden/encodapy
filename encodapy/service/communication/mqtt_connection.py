@@ -315,7 +315,10 @@ class MqttConnection:
 
         self._last_message_received = datetime.now(timezone.utc)
 
-        debug_message = f"MQTT connection received message on {message.topic} at {self._last_message_received}."
+        debug_message = (
+            f"MQTT connection received message on {message.topic} "
+            f"{self._last_message_received}."
+        )
 
         if message.topic in self.mqtt_message_store:
             # decode the message payload
@@ -405,7 +408,7 @@ class MqttConnection:
                     (parsed[k] for k in parsed if k.lower() == "value"), parsed
                 )
 
-                #  try to extract the timestamp from MQTT_timestamp_key
+                # try to extract the timestamp from MQTT_timestamp_key
                 if self.mqtt_params.timestamp_key in parsed:
                     try:
                         timestamp = datetime.fromisoformat(
@@ -479,11 +482,12 @@ class MqttConnection:
                     )
 
                     # store payload and timestamp in the message store
-                    self.mqtt_message_store[topic]["value"] = attribute_value
-                    self.mqtt_message_store[topic]["timestamp"] = attribute_timestamp
+                    item["value"] = attribute_value
+                    item["timestamp"] = attribute_timestamp
 
                     debug_message += (
-                        f" Updated MQTT message store for topic {topic} with value: {attribute_value} "
+                        f" Updated MQTT message store for topic {topic} "
+                        f"with value: {attribute_value} "
                         f"and timestamp: {attribute_timestamp}."
                     )
                     continue
