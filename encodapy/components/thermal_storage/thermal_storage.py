@@ -737,6 +737,7 @@ class ThermalStorage(BasicComponent):
         """
         Function to calibrate the thermal storage component
         """
+        print(self.sensor_values_stored)
         if self.config_data.calculation_method.value \
             == ThermalStorageCalculationMethods.HISTORICAL_LIMITS:
 

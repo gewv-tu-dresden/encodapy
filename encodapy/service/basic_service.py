@@ -589,7 +589,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         )
 
         while not self.shutdown_event.is_set():
-            logger.debug("Start the Prozess")
+            logger.debug("Start the Process")
             start_time = datetime.now()
 
             if self.config.interfaces.fiware:

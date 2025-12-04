@@ -50,6 +50,7 @@ class MqttConnection:
         self.mqtt_client: Optional[mqtt.Client] = None
         self.mqtt_message_store: dict[str, dict] = {}
         self._mqtt_loop_running = False
+        self._last_message_received: Optional[datetime] = None
 
     def load_mqtt_params(self) -> None:
         """
@@ -106,7 +107,7 @@ class MqttConnection:
                 "entity_id": "entity_id",
                 "attribute_id": "attribute_id",
                 "value": value from payload or payload itself if no value extractable,
-                "unit": currently always "None",
+                "unit": currently always None,
                 "timestamp": datetime.now() or value from MQTT_timestamp_key in payload,
             }
         }
@@ -312,17 +313,18 @@ class MqttConnection:
                 "MQTT message store is not initialized. Call prepare_mqtt_connection() first."
             )
 
-        current_time = datetime.now(timezone.utc)
+        self._last_message_received = datetime.now(timezone.utc)
 
         debug_message = (
-            f"MQTT connection received message on {message.topic} at {current_time}."
+            f"MQTT connection received message on {message.topic} "
+            f"{self._last_message_received}."
         )
 
         if message.topic in self.mqtt_message_store:
             # decode the message payload
             try:
                 payload = message.payload.decode("utf-8")
-                debug_message += f" Decoded message payload successfully: \n {payload}"
+                debug_message += f" Decoded message payload successfully: {payload}"
             except UnicodeDecodeError as e:
                 logger.error(debug_message + f" Failed to decode message payload: {e}.")
                 return
@@ -330,10 +332,7 @@ class MqttConnection:
             # extract value and timestamp from payload if possible
             value, timestamp = self._extract_payload_value_and_timestamp(payload)
 
-            if timestamp is None:
-                timestamp = current_time
-
-            # store payload and current time in the message store
+            # store payload and timestamp in the message store
             self.mqtt_message_store[message.topic]["value"] = value
             self.mqtt_message_store[message.topic]["timestamp"] = timestamp
 
@@ -356,7 +355,9 @@ class MqttConnection:
                         # extract attributes from the payload and update the message store
                         logger.debug(debug_message)
                         self._extract_attributes_from_payload_and_update_store(
-                            entity_id=entity_id, payload=payload, timestamp=current_time
+                            entity_id=entity_id,
+                            payload=payload,
+                            timestamp=timestamp,
                         )
                     else:
                         debug_message += (
@@ -382,32 +383,33 @@ class MqttConnection:
         # TODO MB: How to use pd.read_json here for Dataframes?
         # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_json.html
         """
+        timestamp = self._last_message_received
+
         if payload is None or payload == "":
-            return None, None
+            return None, timestamp
 
         # If the payload is not a string (maybe from other source), return it directly
         if not isinstance(payload, str):
-            return payload, None
+            return payload, timestamp
 
+        # If the payload is a datetime string, return it as string
         try:
-            # If the payload is a datetime string, return it as string
             _ = datetime.fromisoformat(payload)
-            return payload, None
+            return payload, timestamp
         except ValueError:
             pass
+
         # Try to parse JSON (automatically handles int, float, bool, dicts, lists)
         try:
             parsed = json.loads(payload)
-            print(f"Parsed JSON payload: {parsed}")
-            print(f"Timestamp key: {self.mqtt_params.timestamp_key}")
             # If the payload is a valid dict, try to extract the value
             if isinstance(parsed, dict):
-                print(F"Parsed JSON is a dict")
-                print(self.mqtt_params.timestamp_key in parsed)
                 # Ensure case-insensitive key check and return value of first found "value" key
-                value = next((parsed[k] for k in parsed if k.lower() == "value"), None)
+                value = next(
+                    (parsed[k] for k in parsed if k.lower() == "value"), parsed
+                )
 
-                #  try to extract the timestamp from MQTT_timestamp_key
+                # try to extract the timestamp from MQTT_timestamp_key
                 if self.mqtt_params.timestamp_key in parsed:
                     try:
                         timestamp = datetime.fromisoformat(
@@ -421,15 +423,10 @@ class MqttConnection:
                             f"extract timestamp from {parsed[self.mqtt_params.timestamp_key]}. "
                             f"Error: {e}."
                         )
-                        timestamp = None
-                else:
-                    timestamp = None
-                print(f"Extracted value: {value}, timestamp: {timestamp}")
+                print(value, timestamp)
 
-                if value is not None:
-                    return value, timestamp
-                return parsed, timestamp
-            return parsed, None
+                return value, timestamp
+            return parsed, timestamp
         except json.JSONDecodeError:
             pass
 
@@ -442,17 +439,17 @@ class MqttConnection:
         if match:
             num_str = match.group(1)
             if "." in num_str:
-                return float(num_str), None
-            return int(num_str), None
+                return float(num_str), timestamp
+            return int(num_str), timestamp
 
         # if nothing else worked, return the payload as is
-        return payload, None
+        return payload, timestamp
 
     def _extract_attributes_from_payload_and_update_store(
         self,
         entity_id: str,
         payload: dict,
-        timestamp: datetime = datetime.now(),
+        timestamp: Optional[datetime] = None,
     ) -> None:
         """
         Function to extract attributes from the payload and update the message store.
@@ -461,7 +458,6 @@ class MqttConnection:
         Args:
             entity_id (str): The ID of the entity the message is related to.
             payload (dict): The payload received from the MQTT broker.
-            timestamp (datetime): The timestamp when the message was received.
         """
         if not hasattr(self, "mqtt_message_store"):
             raise NotSupportedError(
@@ -483,19 +479,23 @@ class MqttConnection:
 
                 # if subtopic matches key in the payload from entity, update the message store
                 if subtopic == key:
-                    # extract the value and timestamp from the payload
+                    # extract value and timestamp from payload if possible
                     attribute_value, attribute_timestamp = (
                         self._extract_payload_value_and_timestamp(value)
                     )
-                    if attribute_timestamp is None:
-                        attribute_timestamp = timestamp
+                    print(attribute_value, attribute_timestamp)
+
+                    # store payload and timestamp in the message store
                     item["value"] = attribute_value
-                    item["timestamp"] = attribute_timestamp
+                    item["timestamp"] = timestamp
+
                     debug_message += (
-                        f" Updated MQTT message store for topic {topic} with value: {item} "
+                        f" Updated MQTT message store for topic {topic} "
+                        f"with value: {attribute_value} "
                         f"and timestamp: {item['timestamp']}."
                     )
                     continue
+
         if debug_message == "":
             debug_message += (
                 f" No updates made to MQTT message store for entity {entity_id}."
