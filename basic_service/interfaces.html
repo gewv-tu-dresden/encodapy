@@ -168,7 +168,7 @@ They are automatically loaded from the environment or a .env file.</p>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Token URL for FIWARE authentication&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Token Url&quot;</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;baerer_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;bearer_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
@@ -179,7 +179,7 @@ They are automatically loaded from the environment or a .env file.</p>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bearer token for FIWARE authentication&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Baerer Token&quot;</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bearer Token&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;cb_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -274,8 +274,8 @@ They are automatically loaded from the environment or a .env file.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="encodapy.config.env_values.FiwareEnvVariables.baerer_token">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">baerer_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#encodapy.config.env_values.FiwareEnvVariables.baerer_token" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="encodapy.config.env_values.FiwareEnvVariables.bearer_token">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bearer_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#encodapy.config.env_values.FiwareEnvVariables.bearer_token" title="Link to this definition"></a></dt>
 <dd><p>Bearer token for FIWARE authentication</p>
 </dd></dl>
 
@@ -390,6 +390,12 @@ They are automatically loaded from the environment or a .env file.</p>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Prefix for all MQTT topics used by the service&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Topic Prefix&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;timestamp_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TimeInstant&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Key name in the MQTT message payload that contains the timestamp. Examples: &#39;TimeInstant&#39; (default), &#39;timestamp&#39;, &#39;time&#39;. If the key is not present in the payload, the timestamp of the MQTT message receipt will be used.&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Timestamp Key&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
@@ -432,6 +438,12 @@ They are automatically loaded from the environment or a .env file.</p>
 <dt class="sig sig-object py" id="encodapy.config.env_values.MQTTEnvVariables.topic_prefix">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">topic_prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#encodapy.config.env_values.MQTTEnvVariables.topic_prefix" title="Link to this definition"></a></dt>
 <dd><p>Prefix for all MQTT topics used by the service</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.config.env_values.MQTTEnvVariables.timestamp_key">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">timestamp_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TimeInstant'</span></em><a class="headerlink" href="#encodapy.config.env_values.MQTTEnvVariables.timestamp_key" title="Link to this definition"></a></dt>
+<dd><p>Key name in the MQTT message payload that contains the timestamp. Examples: ‘TimeInstant’ (default), ‘timestamp’, ‘time’. If the key is not present in the payload, the timestamp of the MQTT message receipt will be used.</p>
 </dd></dl>
 
 </dd></dl>
@@ -477,15 +489,18 @@ The dictionary must contain the keys <cite>topic</cite> and <cite>payload</cite>
 <span class="w">            </span><span class="nt">&quot;output_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;__OUTPUT_TIME__&quot;</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nt">&quot;time_format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;%Y-%m-%dT%H:%M%z&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
+<p>The key <cite>time_format</cite> is optional, as default ‘%Y-%m-%dT%H:%M:%S%z’ is used.</p>
 <p>Please see the examples for this.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>topic</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code>) – The Jinja2 template for the MQTT topic.</p></li>
 <li><p><strong>payload</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code>) – The Jinja2 template for the MQTT payload.</p></li>
+<li><p><strong>time_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The format string for the timestamp in the payload.             Refer to Python’s datetime.strptime documentation for more details.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -500,6 +515,11 @@ The dictionary must contain the keys <cite>topic</cite> and <cite>payload</cite>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.config.mqtt_messages_template.MQTTTemplateConfig.payload">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">payload</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.config.mqtt_messages_template.MQTTTemplateConfig.payload" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.config.mqtt_messages_template.MQTTTemplateConfig.time_format">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_format</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'%Y-%m-%dT%H:%M:%S%z'</span></em><a class="headerlink" href="#encodapy.config.mqtt_messages_template.MQTTTemplateConfig.time_format" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

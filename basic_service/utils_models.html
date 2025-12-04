@@ -291,7 +291,8 @@ Possible values:
 <p><strong>Mock class for documentation purposes.</strong></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>In the actual implementation, <cite>topic</cite> and <cite>payload</cite> are <cite>jinja2.Template</cite> objects.
+<p>In the actual implementation, <cite>topic</cite> and <cite>payload</cite> are <cite>jinja2.Template</cite> objects,
+<cite>time_format</cite> is a <cite>str</cite> as time format for the timestamp in the payload.
 This mock uses <cite>dict</cite> to avoid import issues during documentation generation.</p>
 <p>For more information,            see <a class="reference internal" href="interfaces.html#encodapy.config.mqtt_messages_template.MQTTTemplateConfig" title="encodapy.config.mqtt_messages_template.MQTTTemplateConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">MQTTTemplateConfig</span></code></a>.</p>
 </div>
@@ -303,6 +304,11 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc.payload">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">payload</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc.payload" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc.time_format">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_format</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'%Y-%m-%dT%H:%M:%S%z'</span></em><a class="headerlink" href="#encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc.time_format" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
