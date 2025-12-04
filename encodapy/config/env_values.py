@@ -115,7 +115,8 @@ class MQTTEnvVariables(BaseSettings):
         description=(
             "Key name in the MQTT message payload that contains the timestamp. "
             "Examples: 'TimeInstant' (default), 'timestamp', 'time'. "
-            "If the key is not present in the payload, the timestamp of the MQTT message receipt will be used."
+            "If the key is not present in the payload, "
+            "the timestamp of the MQTT message receipt will be used."
         ),
     )
 

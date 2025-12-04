@@ -357,7 +357,7 @@ class MqttConnection:
                         self._extract_attributes_from_payload_and_update_store(
                             entity_id=entity_id,
                             payload=payload,
-                            timestamp=timestamp,
+                            fallback_timestamp=timestamp,
                         )
                     else:
                         debug_message += (
@@ -374,7 +374,9 @@ class MqttConnection:
                 logger.debug(debug_message)
 
     def _extract_payload_value_and_timestamp(
-        self, payload
+        self,
+        payload,
+        fallback_timestamp: Optional[datetime] = None,
     ) -> tuple[
         Union[str, float, int, bool, dict, list, DataFrame, None], Optional[datetime]
     ]:
@@ -383,19 +385,21 @@ class MqttConnection:
         # TODO MB: How to use pd.read_json here for Dataframes?
         # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_json.html
         """
-        timestamp = self._last_message_received
+
+        if fallback_timestamp is None:
+            fallback_timestamp = self._last_message_received
 
         if payload is None or payload == "":
-            return None, timestamp
+            return None, fallback_timestamp
 
         # If the payload is not a string (maybe from other source), return it directly
         if not isinstance(payload, str):
-            return payload, timestamp
+            return payload, fallback_timestamp
 
         # If the payload is a datetime string, return it as string
         try:
             _ = datetime.fromisoformat(payload)
-            return payload, timestamp
+            return payload, fallback_timestamp
         except ValueError:
             pass
 
@@ -408,6 +412,8 @@ class MqttConnection:
                 value = next(
                     (parsed[k] for k in parsed if k.lower() == "value"), parsed
                 )
+
+                timestamp = fallback_timestamp
 
                 # try to extract the timestamp from MQTT_timestamp_key
                 if self.mqtt_params.timestamp_key in parsed:
@@ -426,7 +432,7 @@ class MqttConnection:
                 print(value, timestamp)
 
                 return value, timestamp
-            return parsed, timestamp
+            return parsed, fallback_timestamp
         except json.JSONDecodeError:
             pass
 
@@ -439,17 +445,17 @@ class MqttConnection:
         if match:
             num_str = match.group(1)
             if "." in num_str:
-                return float(num_str), timestamp
-            return int(num_str), timestamp
+                return float(num_str), fallback_timestamp
+            return int(num_str), fallback_timestamp
 
         # if nothing else worked, return the payload as is
-        return payload, timestamp
+        return payload, fallback_timestamp
 
     def _extract_attributes_from_payload_and_update_store(
         self,
         entity_id: str,
         payload: dict,
-        timestamp: Optional[datetime] = None,
+        fallback_timestamp: Optional[datetime] = None,
     ) -> None:
         """
         Function to extract attributes from the payload and update the message store.
@@ -458,11 +464,15 @@ class MqttConnection:
         Args:
             entity_id (str): The ID of the entity the message is related to.
             payload (dict): The payload received from the MQTT broker.
+            fallback_timestamp (Optional[datetime]): Fallback timestamp if none is found in payload.
         """
         if not hasattr(self, "mqtt_message_store"):
             raise NotSupportedError(
                 "MQTT message store is not initialized. Call prepare_mqtt_connection() first."
             )
+
+        if fallback_timestamp is None:
+            fallback_timestamp = self._last_message_received
 
         debug_message = ""
 
@@ -481,18 +491,20 @@ class MqttConnection:
                 if subtopic == key:
                     # extract value and timestamp from payload if possible
                     attribute_value, attribute_timestamp = (
-                        self._extract_payload_value_and_timestamp(value)
+                        self._extract_payload_value_and_timestamp(
+                            value, fallback_timestamp
+                        )
                     )
                     print(attribute_value, attribute_timestamp)
 
                     # store payload and timestamp in the message store
                     item["value"] = attribute_value
-                    item["timestamp"] = timestamp
+                    item["timestamp"] = attribute_timestamp
 
                     debug_message += (
                         f" Updated MQTT message store for topic {topic} "
                         f"with value: {attribute_value} "
-                        f"and timestamp: {item['timestamp']}."
+                        f"and timestamp: {attribute_timestamp}."
                     )
                     continue
 
