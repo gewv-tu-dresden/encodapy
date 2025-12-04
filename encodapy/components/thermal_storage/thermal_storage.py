@@ -76,6 +76,7 @@ class ThermalStorage(BasicComponent):
         # Set the default value for the reference state of charge to None - start of the service
         self.config_data.load_level_check.ref_state_of_charge = None
         self.calibration_data = CalibrationData(db_path=self.config_data.calibration.db_path)
+        self.component_started = False
 
     def _calculate_volume_per_sensor(self) -> dict:
         """
@@ -265,31 +266,32 @@ class ThermalStorage(BasicComponent):
 
             sensor_limits = self._get_sensor_limits(sensor_id=index)
 
-            if energy_type is ThermalStorageEnergyTypes.NOMINAL:
-                temperature_difference = (
-                    sensor_limits.maximal_temperature
-                    - sensor_limits.minimal_temperature
-                )
+            match energy_type:
+                case ThermalStorageEnergyTypes.NOMINAL:
+                    temperature_difference = (
+                        sensor_limits.maximal_temperature
+                        - sensor_limits.minimal_temperature
+                    )
 
-            elif energy_type is ThermalStorageEnergyTypes.MINIMAL:
-                temperature_difference = (
-                    sensor_limits.minimal_temperature
-                    - sensor_limits.reference_temperature
-                )
+                case ThermalStorageEnergyTypes.MINIMAL:
+                    temperature_difference = (
+                        sensor_limits.minimal_temperature
+                        - sensor_limits.reference_temperature
+                    )
 
-            elif energy_type is ThermalStorageEnergyTypes.MAXIMAL:
-                temperature_difference = (
-                    sensor_limits.maximal_temperature
-                    - sensor_limits.reference_temperature
-                )
+                case ThermalStorageEnergyTypes.MAXIMAL:
+                    temperature_difference = (
+                        sensor_limits.maximal_temperature
+                        - sensor_limits.reference_temperature
+                    )
 
-            elif energy_type is ThermalStorageEnergyTypes.CURRENT:
-                temperature_difference = (
-                    temperature.value - sensor_limits.minimal_temperature
-                )
+                case ThermalStorageEnergyTypes.CURRENT:
+                    temperature_difference = (
+                        temperature.value - sensor_limits.minimal_temperature
+                    )
 
-            else:
-                raise ValueError(f"Unknown energy type: {energy_type}")
+                case _:
+                    raise ValueError(f"Unknown energy type: {energy_type}")
 
             nominal_energy += (
                 temperature_difference
@@ -725,6 +727,7 @@ class ThermalStorage(BasicComponent):
             self.calibration_data.save_limits_sqlite(
                 sensor_config=self.config_data.sensor_config.value
             )
+        self.component_started = True
         #TODO change logger to debug
         logger.info(
             "Calibrated sensor configuration: "
@@ -737,10 +740,17 @@ class ThermalStorage(BasicComponent):
         """
         Function to calibrate the thermal storage component
         """
-        print(self.sensor_values_stored)
         if self.config_data.calculation_method.value \
             == ThermalStorageCalculationMethods.HISTORICAL_LIMITS:
 
-            logger.debug("Calibrating thermal storage based on historical data.")
+            match self.component_started:
+                case True:
+                    logger.debug("Calibrating thermal storage based on historical data.")
 
-            self.calibrate_historical_based_sensor_configuration()
+                    self.calibrate_historical_based_sensor_configuration()
+                case False:
+                    logger.debug(
+                        "Thermal storage component not started yet. "
+                        "Skipping historical based calibration."
+                    )
+                    self.component_started = True

@@ -429,7 +429,6 @@ class MqttConnection:
                             f"extract timestamp from {parsed[self.mqtt_params.timestamp_key]}. "
                             f"Error: {e}."
                         )
-                print(value, timestamp)
 
                 return value, timestamp
             return parsed, fallback_timestamp
@@ -495,7 +494,6 @@ class MqttConnection:
                             value, fallback_timestamp
                         )
                     )
-                    print(attribute_value, attribute_timestamp)
 
                     # store payload and timestamp in the message store
                     item["value"] = attribute_value
