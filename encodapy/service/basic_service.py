@@ -203,28 +203,28 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             )
 
         for output_entity in self.config.outputs:
-            if output_entity.interface == Interfaces.FIWARE:
-                entity_timestamps, output_latest_timestamp = (
-                    self._get_last_timestamp_for_fiware_output(output_entity)
-                )
+            match output_entity.interface:
+                case Interfaces.FIWARE:
+                    entity_timestamps, output_latest_timestamp = (
+                        self._get_last_timestamp_for_fiware_output(output_entity)
+                    )
+                    output_timestamps.append(entity_timestamps)
+                    output_latest_timestamps.append(output_latest_timestamp)
 
-                output_timestamps.append(entity_timestamps)
-                output_latest_timestamps.append(output_latest_timestamp)
+                case Interfaces.FILE:
+                    entity_timestamps, output_latest_timestamp = (
+                        self._get_last_timestamp_for_file_output(output_entity)
+                    )
+                    output_timestamps.append(entity_timestamps)
+                    output_latest_timestamps.append(output_latest_timestamp)
+                    logger.debug("File interface, output_latest_timestamp is not defined.")
 
-            elif output_entity.interface == Interfaces.FILE:
-                entity_timestamps, output_latest_timestamp = (
-                    self._get_last_timestamp_for_file_output(output_entity)
-                )
-                output_timestamps.append(entity_timestamps)
-                output_latest_timestamps.append(output_latest_timestamp)
-                logger.debug("File interface, output_latest_timestamp is not defined.")
-
-            elif output_entity.interface == Interfaces.MQTT:
-                entity_timestamps, output_latest_timestamp = (
-                    self._get_last_timestamp_for_mqtt_output(output_entity)
-                )
-                output_timestamps.append(entity_timestamps)
-                output_latest_timestamps.append(output_latest_timestamp)
+                case Interfaces.MQTT:
+                    entity_timestamps, output_latest_timestamp = (
+                        self._get_last_timestamp_for_mqtt_output(output_entity)
+                    )
+                    output_timestamps.append(entity_timestamps)
+                    output_latest_timestamps.append(output_latest_timestamp)
 
             await asyncio.sleep(0.01)
 
@@ -237,27 +237,28 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 output_latest_timestamp = None
 
         for input_entity in self.config.inputs:
-            if input_entity.interface == Interfaces.FIWARE:
-                fiware_input = self.get_data_from_fiware(
-                    method=method,
-                    entity=input_entity,
-                    timestamp_latest_output=output_latest_timestamp,
-                )
-                if fiware_input is not None:
-                    input_data.append(fiware_input)
-
-            elif input_entity.interface == Interfaces.FILE:
-                file_input = self.get_data_from_file(method=method, entity=input_entity)
-                if file_input is not None:
-                    input_data.append(file_input)
-
-            elif input_entity.interface == Interfaces.MQTT:
-                input_data.append(
-                    self.get_data_from_mqtt(
+            match input_entity.interface:
+                case Interfaces.FIWARE:
+                    fiware_input = self.get_data_from_fiware(
                         method=method,
                         entity=input_entity,
+                        timestamp_latest_output=output_latest_timestamp,
                     )
-                )
+                    if fiware_input is not None:
+                        input_data.append(fiware_input)
+
+                case Interfaces.FILE:
+                    file_input = self.get_data_from_file(method=method, entity=input_entity)
+                    if file_input is not None:
+                        input_data.append(file_input)
+
+                case Interfaces.MQTT:
+                    input_data.append(
+                        self.get_data_from_mqtt(
+                            method=method,
+                            entity=input_entity,
+                        )
+                    )
 
             await asyncio.sleep(0.01)
 
