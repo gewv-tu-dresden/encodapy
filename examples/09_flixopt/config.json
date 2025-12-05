@@ -1,0 +1,90 @@
+{
+    "name": "mpc_flixopt_example",
+    "interfaces": {
+        "mqtt": false,
+        "fiware": false,
+        "file": true
+    },
+    "inputs": [
+        {
+            "id": "flixopt_input_entity",
+            "interface": "file",
+            "attributes": [
+                {
+                    "id": "electricity_demand",
+                    "id_interface": "flixopt_input_entity.electricity_demand",
+                    "type": "timeseries"
+                },
+                {
+                    "id": "heat_demand",
+                    "id_interface": "flixopt_input_entity.heat_demand",
+                    "type": "timeseries"
+                },
+                {
+                    "id": "electricity_price",
+                    "id_interface": "flixopt_input_entity.electricity_price",
+                    "type": "timeseries"
+                }
+            ]
+        }
+    ],
+    "outputs": [
+    ],
+    "staticdata": [
+    ],
+    "controller_components": [
+        {
+            "id": "new_component",
+            "type": "examples.09_flixopt.flixopt_component",
+            "inputs": {
+                "electricity_demand":{
+                    "entity": "flixopt_input_entity",
+                    "attribute": "electricity_demand"
+                },
+                "heat_demand": {
+                    "entity": "flixopt_input_entity",
+                    "attribute": "heat_demand"
+                },
+                "electricity_price": {
+                    "entity": "flixopt_input_entity",
+                    "attribute": "electricity_price"
+                }
+            },
+            "outputs": {
+                "boiler_heat_output": {
+                    "entity": "output_entity",
+                    "attribute": "boiler_heat_output"
+                },
+                "chp_heat_output": {
+                    "entity": "output_entity",
+                    "attribute": "chp_heat_output"
+                },
+                "chp_electric_output": {
+                    "entity": "output_entity",
+                    "attribute": "chp_electric_output"
+                },
+                "thermal_storage_charge_state": {
+                    "entity": "output_entity",
+                    "attribute": "thermal_storage_charge_state"
+                }
+            },
+            "config": {
+                "flixopt_log_level": {
+                    "value": "debug"
+                }
+            }
+        }
+    ],
+    "controller_settings": {
+        "time_settings": {
+            "calculation": {
+                "timerange": 1,
+                "timerange_unit": "hour",
+                "sampling_time": 60,
+                "sampling_time_unit": "second",
+                "timestep": 1,
+                "timestep_unit": "hour"
+            }
+        }
+    }
+}

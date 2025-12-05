@@ -21,9 +21,11 @@ from encodapy.config import (
     OutputModel,
     StaticDataModel,
     DataFile,
-    FileEnvVariables
+    FileEnvVariables,
+    ConfigModel,
+    DataFileEntity
 )
-from encodapy.config.models import DataFileEntity
+# from encodapy.config.models import DataFileEntity
 from encodapy.utils.models import (
     InputDataAttributeModel,
     InputDataEntityModel,
@@ -32,6 +34,7 @@ from encodapy.utils.models import (
     StaticDataEntityModel,
 )
 from encodapy.utils.error_handling import NotSupportedError
+from encodapy.utils.units import TimeUnits
 
 
 class FileConnection:
@@ -42,6 +45,7 @@ class FileConnection:
 
     def __init__(self) -> None:
         self.file_params : FileEnvVariables
+        self.config: ConfigModel
 
     def load_file_params(self) -> None:
         """
@@ -137,8 +141,21 @@ class FileConnection:
             to the platform is not available
 
         """
-        # TODO: Implement method handling for file interface
-        _ = method  # Acknowledge unused parameter
+        match method:
+            case DataQueryTypes.CALCULATION:
+                timestep = self.config.controller_settings.time_settings.calculation.timestep
+                timestep_unit = \
+                    self.config.controller_settings.time_settings.calculation.timestep_unit
+            case DataQueryTypes.CALIBRATION:
+                if self.config.controller_settings.time_settings.calibration is None:
+                    logger.warning("No calibration time settings found in config.")
+                    return None
+                timestep = self.config.controller_settings.time_settings.calibration.timestep
+                timestep_unit = \
+                    self.config.controller_settings.time_settings.calibration.timestep_unit
+            case _:
+                logger.warning(f"Method {method} not supported for file interface.")
+                return None
 
         # attributes_timeseries = {}
         attributes_values = []
@@ -148,6 +165,28 @@ class FileConnection:
             # Add tz to time index, if not in iso format
             data["Time"] = [self._read_time_from_string(item) for item in data["Time"]]
             data.set_index("Time", inplace=True)
+            # Resample data to the configured timestep
+
+            match timestep_unit:
+                case TimeUnits.SECOND:
+                    resample_unit = "s"
+                case TimeUnits.MINUTE:
+                    resample_unit = "T"
+                case TimeUnits.HOUR:
+                    resample_unit = "h"
+                case TimeUnits.DAY:
+                    resample_unit = "D"
+                case _:
+                    logger.warning(
+                        f"Time unit {timestep_unit} not supported for resampling."
+                    )
+                    resample_unit = ""
+
+            if resample_unit != "":
+                data = data.resample(
+                    f"{timestep}"
+                    f"{resample_unit}").asfreq()
+
         except (FileNotFoundError, PermissionError) as e:
             logger.error(f"Could not open file ({path_of_file}): {e}")
             return None
