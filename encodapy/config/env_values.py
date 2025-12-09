@@ -144,7 +144,7 @@ class FileEnvVariables(BaseSettings):
         default="./results", description="Directory path to store the results"
     )
 
-    time_format_fie : str = Field(
+    time_format : str = Field(
         default="%Y-%m-%d %H:%M:%SZ",
         description="""Time format of the date_time column in the input file.
         It needs to be compatible with the strptime format codes
