@@ -143,9 +143,4 @@ class FileEnvVariables(BaseSettings):
     path_of_results: str = Field(
         default="./results", description="Directory path to store the results"
     )
-    start_time_file: str = Field(
-        default="2025-01-01 00:00",
-        description="""Start time for processing data from the input file.
-        It needs to be ISO compatible
-        (https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat)""",
-    )
+
