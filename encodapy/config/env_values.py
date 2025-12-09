@@ -144,15 +144,3 @@ class FileEnvVariables(BaseSettings):
         default="./results", description="Directory path to store the results"
     )
 
-    time_format : str = Field(
-        default="%Y-%m-%d %H:%M:%SZ",
-        description="""Time format of the date_time column in the input file.
-        It needs to be compatible with the strptime format codes
-        (https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes)""",
-    )
-    start_time_file: str = Field(
-        default="2025-01-01 00:00",
-        description="""Start time for processing data from the input file.
-        It needs to be ISO compatible
-        (https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat)""",
-    )
