@@ -427,7 +427,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """
         if ((datetime.now() - start_time).total_seconds()) > hold_time:
             logger.warning(
-                "The processing time is longer than the sampling time."
+                "The processing time is longer than the sampling time. "
                 "The sampling time must be increased!"
             )
         while ((datetime.now() - start_time).total_seconds()) < hold_time:

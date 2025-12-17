@@ -16,7 +16,7 @@ A overview is avaiable als Pydantic BaseModel `ThermalStorageOutputData` in [the
 Two calculation methods are available, selected via the component configuration:
 - **Static Limits**: Defined in the sensor configuration (`static_limits`)
 - **Connection Limits**: Uses temperature sensors from the in- and outflow as limits (`connection_limits`)
-- **Historical Limits**: At startup, it uses the externally defined sensor configuration (`static_limits`). It then calibrates the limits based on historical data.
+- **Historical Limits**: At startup, it uses the externally defined sensor configuration (`historical_limits`). It then calibrates the limits based on historical data.
   - Refer to the `ThermalStorageCalibrationConfig` section in the component's configuration.
   - It stores the calibration results in an SQLite database. For the path, see the ThermalStorageCalibrationConfig for persistent data storage.
 
