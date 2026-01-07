@@ -201,6 +201,25 @@
             <span class="s2">&quot;If the key is not present in the payload, &quot;</span>
             <span class="s2">&quot;the timestamp of the MQTT message receipt will be used.&quot;</span>
         <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">tls_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Enable TLS/SSL encryption for MQTT connection&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">tls_ca_cert</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Path to the CA certificate file for TLS/SSL verification. &quot;</span>
+            <span class="s2">&quot;Optional - if not provided, system default certificates are used. &quot;</span>
+            <span class="s2">&quot;Only needed for self-signed or custom CA certificates.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">tls_insecure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Set to True to disable certificate verification (insecure). &quot;</span>
+            <span class="s2">&quot;Only use for testing purposes.&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span></div>
 
 
