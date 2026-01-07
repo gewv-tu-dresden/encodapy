@@ -2,14 +2,13 @@
 Description: This file contains the class MqttConnection,
 which is used to store the connection parameters for the MQTT broker.
 Author: Maximilian Beyer, Martin Altenburger
-Author: Maximilian Beyer, Martin Altenburger
 """
 
 import json
 import re
+import threading
 from datetime import datetime, timezone
 from typing import Optional, Union
-
 import paho.mqtt.client as mqtt
 from loguru import logger
 from paho.mqtt.enums import CallbackAPIVersion
@@ -51,6 +50,8 @@ class MqttConnection:
         self.mqtt_message_store: dict[str, dict] = {}
         self._mqtt_loop_running = False
         self._last_message_received: Optional[datetime] = None
+        self._mqtt_connected = False
+        self._mqtt_connection_event = threading.Event()
 
     def load_mqtt_params(self) -> None:
         """
@@ -74,43 +75,67 @@ class MqttConnection:
             username=self.mqtt_params.username, password=self.mqtt_params.password
         )
 
+        # configure TLS/SSL if enabled
+        if self.mqtt_params.tls_enabled:
+            try:
+                self.mqtt_client.tls_set(ca_certs=self.mqtt_params.tls_ca_cert)
+
+                if self.mqtt_params.tls_insecure:
+                    self.mqtt_client.tls_insecure_set(True)
+                    logger.warning(
+                        "TLS certificate verification is disabled (insecure mode). "
+                        "This should only be used for testing."
+                    )
+
+                if self.mqtt_params.tls_ca_cert:
+                    logger.debug(
+                        f"TLS/SSL configured with CA certificate: {self.mqtt_params.tls_ca_cert}"
+                        )
+                else:
+                    logger.debug("TLS/SSL configured using system default certificates")
+            except (ValueError, OSError) as e:
+                raise ConfigError(
+                    f"Failed to configure TLS/SSL for MQTT connection: {e}"
+                ) from e
+
         # try to connect to the MQTT broker
-        try:
-            self.mqtt_client.connect(
-                host=self.mqtt_params.host, port=self.mqtt_params.port
-            )
-        except Exception as e:
+        self.mqtt_client.connect(
+            host=self.mqtt_params.host, port=self.mqtt_params.port
+        )
+        # start the MQTT client loop
+        self.start_mqtt_client()
+
+        # wait for initial connection with timeout (max 10 seconds)
+        max_wait = 10
+        if not self._mqtt_connection_event.wait(timeout=max_wait):
             raise ConfigError(
-                f"Could not connect to MQTT broker {self.mqtt_params.host}:"
-                f"{self.mqtt_params.port} with given login information - {e}"
-            ) from e
+                f"Could not establish initial MQTT connection after {max_wait} seconds."
+            )
 
         # prepare the message store
         self.prepare_mqtt_message_store()
 
-        # subscribe to all topics in the message store
-        self.subscribe_to_message_store_topics()
-
-        # start the MQTT client loop
-        self.start_mqtt_client()
 
     def prepare_mqtt_message_store(self) -> None:
         """
         Function to prepare the MQTT message store for all input entities and their attributes.
         Sets the optional default values for all attributes of the entities in the config.
         The Topic structure is defined as follows:
-        <topic_prefix>/<entity_id(_interface)>/<attribute_id(_interface)>
+
+            <topic_prefix>/<entity_id(_interface)>/<attribute_id(_interface)>
 
         Format of the message store:
-        {
-            "topic": {
-                "entity_id": "entity_id",
-                "attribute_id": "attribute_id",
-                "value": value from payload or payload itself if no value extractable,
-                "unit": currently always None,
-                "timestamp": datetime.now() or value from MQTT_timestamp_key in payload,
+
+            {
+                "topic": {
+                    "entity_id": "entity_id",
+                    "attribute_id": "attribute_id",
+                    "value": value from payload or payload itself if no value extractable,
+                    "unit": currently always None,
+                    "timestamp": datetime.now() or value from MQTT_timestamp_key in payload,
+                }
             }
-        }
+
         """
         if self.mqtt_message_store:
             logger.warning("MQTT message store is not empty and will be overwritten.")
@@ -299,6 +324,41 @@ class MqttConnection:
                 "MQTT client is not prepared. Call prepare_mqtt_connection() first."
             )
         self.mqtt_client.subscribe(topic)
+
+    def on_connect(self, _client, _userdata, _flags, rc, _properties=None):
+        """
+        Callback function called when the client connects to the broker.
+        Sets the _mqtt_connected flag to track connection status and
+        re-establishes subscriptions stored in the MQTT message store.
+        """
+        if rc == 0:
+            self._mqtt_connected = True
+            self._mqtt_connection_event.set()
+            logger.debug("MQTT connection successful to broker "
+                         f"{self.mqtt_params.host}:{self.mqtt_params.port}")
+
+            try:
+                self.subscribe_to_message_store_topics()
+            except NotSupportedError as e:
+                # Message store may be uninitialized or empty; log and continue
+                logger.debug(
+                    f"MQTT message store subscriptions not restored: {e}"
+                )
+        else:
+            self._mqtt_connected = False
+            logger.error(f"MQTT connection failed with result code {rc}")
+
+    def on_disconnect(self, _client, _userdata, _flags, rc, _properties=None):
+        """
+        Callback function called when the client disconnects from the broker.
+        """
+        self._mqtt_connected = False
+        self._mqtt_connection_event.clear()
+        if rc != 0:
+            logger.warning(f"MQTT disconnected unexpectedly with result code {rc}. "
+                           "Will attempt automatic reconnection.")
+        else:
+            logger.debug("MQTT disconnected")
 
     def on_message(self, _, __, message):
         """
@@ -515,7 +575,8 @@ class MqttConnection:
 
     def start_mqtt_client(self):
         """
-        Function to hang in on_message hook and start the MQTT client loop
+        Function to hang in on_message hook and start the MQTT client loop.
+        Sets up callbacks and enables automatic reconnection.
         """
         if not hasattr(self, "mqtt_client") or self.mqtt_client is None:
             raise NotSupportedError(
@@ -523,9 +584,15 @@ class MqttConnection:
             )
 
         if hasattr(self, "_mqtt_loop_running") and self._mqtt_loop_running:
-            raise NotSupportedError("MQTT client loop is already running.")
+            logger.debug("MQTT client loop is already running.")
+            return
+
+        # Enable automatic reconnection with exponential backoff
+        self.mqtt_client.reconnect_delay_set(min_delay=1, max_delay=120)
 
         self.mqtt_client.on_message = self.on_message
+        self.mqtt_client.on_connect = self.on_connect
+        self.mqtt_client.on_disconnect = self.on_disconnect
         self.mqtt_client.loop_start()
         self._mqtt_loop_running = True  # state variable to check if the loop is running
 
@@ -723,19 +790,24 @@ class MqttConnection:
         Function to send the output data to MQTT (publish the data to the MQTT broker).
 
         Args:
-            - output_entity: OutputModel with the output entity
-            - output_attributes: list with the output attributes
+            output_entity (OutputModel): OutputModel with the output entity
+            output_attributes (list[AttributeModel]): list with the output attributes
         """
-        if not hasattr(self, "mqtt_client"):
-            raise NotSupportedError(
-                "MQTT client is not prepared. Call prepare_mqtt_connection() first."
-            )
-
         # check if the config is set
         if self.config is None:
             raise ConfigError(
                 "ConfigModel is not set. Please set the config before using the MQTT connection."
             )
+        if self.mqtt_client is None:
+            raise NotSupportedError(
+                "MQTT client is not prepared. Call prepare_mqtt_connection() first."
+            )
+        if self._mqtt_connected is False:
+            logger.warning(
+                "MQTT client is not connected to the broker. "
+                "Skipping publish; no data will be sent until the connection is established."
+            )
+            return
 
         # publish the data to the MQTT broker
         for attribute in output_attributes:

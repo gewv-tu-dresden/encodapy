@@ -98,12 +98,23 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         self._load_config()
 
         interfaces = getattr(self.config, "interfaces", None)
-        if interfaces:
-            if getattr(interfaces, "fiware", False):
-                self.prepare_fiware_connection()
+        try:
+            if interfaces:
+                if getattr(interfaces, "fiware", False):
+                    self.prepare_fiware_connection()
 
-            if getattr(interfaces, "mqtt", False):
-                self.prepare_mqtt_connection()
+                if getattr(interfaces, "mqtt", False):
+                    self.prepare_mqtt_connection()
+        except (ConfigError, InterfaceNotActive) as e:
+            logger.error(f"Error preparing interfaces: {e}")
+            # break the service if the connections cannot be prepared
+            self.cleanup_service()
+            sys.exit(1)
+
+        except Exception as e:
+            logger.error(f"Unexpected error preparing connections: {e}")
+            self.cleanup_service()
+            raise
 
         # Load the static data from the configuration, \
         # maybe it is needed for the preparation of components
