@@ -105,12 +105,16 @@ class MqttConnection:
         # start the MQTT client loop
         self.start_mqtt_client()
 
-        # wait for initial connection with timeout
-        time.sleep(4)
+        # wait for initial connection with timeout (max 10 seconds)
+        wait_time = 0.0
+        max_wait = 10
+        while not self._mqtt_connected and wait_time < max_wait:
+            time.sleep(0.1)  # Check every 100ms
+            wait_time += 0.1
 
         if not self._mqtt_connected:
             raise ConfigError(
-                "Could not establish initial MQTT connection after multiple attempts."
+                f"Could not establish initial MQTT connection after {max_wait} seconds."
             )
 
         # prepare the message store
@@ -125,18 +129,21 @@ class MqttConnection:
         Function to prepare the MQTT message store for all input entities and their attributes.
         Sets the optional default values for all attributes of the entities in the config.
         The Topic structure is defined as follows:
-        <topic_prefix>/<entity_id(_interface)>/<attribute_id(_interface)>
+
+            <topic_prefix>/<entity_id(_interface)>/<attribute_id(_interface)>
 
         Format of the message store:
-        {
-            "topic": {
-                "entity_id": "entity_id",
-                "attribute_id": "attribute_id",
-                "value": value from payload or payload itself if no value extractable,
-                "unit": currently always None,
-                "timestamp": datetime.now() or value from MQTT_timestamp_key in payload,
+
+            {
+                "topic": {
+                    "entity_id": "entity_id",
+                    "attribute_id": "attribute_id",
+                    "value": value from payload or payload itself if no value extractable,
+                    "unit": currently always None,
+                    "timestamp": datetime.now() or value from MQTT_timestamp_key in payload,
+                }
             }
-        }
+
         """
         if self.mqtt_message_store:
             logger.warning("MQTT message store is not empty and will be overwritten.")
