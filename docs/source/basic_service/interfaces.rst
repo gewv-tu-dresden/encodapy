@@ -1,5 +1,8 @@
 Communication Interfaces
 =========================
+There are some examples of communication interfaces implemented in Encodapy. See `examples/03_interfaces <https://github.com/gewv-tu-dresden/encodapy/tree/main/examples/03_interfaces>`_ for more details.
+
+The following information is required for the configuration of each interface.
 
 Configuration of the FIWARE Interface
 -------------------------------------
@@ -20,7 +23,7 @@ You need to configure some general settings via environment variables. The follo
 
 .. autopydantic_settings:: encodapy.config.env_values.MQTTEnvVariables
 
-You could use different topics and payload templates for publishing and subscribing to MQTT messages.
+You could use different topics and payload templates for publishing and subscribing to MQTT messages. See the `example for the mqtt interface <https://github.com/gewv-tu-dresden/encodapy/tree/main/examples/03_interfaces#mqtt>`_ for more details.
 
 - For possible kinds of mqtt message formats, see :class:`~encodapy.config.types.MQTTFormatTypes`.
 - You need to configure the usage in the :class:`~encodapy.config.models.AttributeModel`.
