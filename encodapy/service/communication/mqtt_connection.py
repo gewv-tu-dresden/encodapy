@@ -6,9 +6,9 @@ Author: Maximilian Beyer, Martin Altenburger
 
 import json
 import re
+import threading
 from datetime import datetime, timezone
 from typing import Optional, Union
-import time
 import paho.mqtt.client as mqtt
 from loguru import logger
 from paho.mqtt.enums import CallbackAPIVersion
@@ -51,6 +51,7 @@ class MqttConnection:
         self._mqtt_loop_running = False
         self._last_message_received: Optional[datetime] = None
         self._mqtt_connected = False
+        self._mqtt_connection_event = threading.Event()
 
     def load_mqtt_params(self) -> None:
         """
@@ -101,27 +102,18 @@ class MqttConnection:
         self.mqtt_client.connect(
             host=self.mqtt_params.host, port=self.mqtt_params.port
         )
-
         # start the MQTT client loop
         self.start_mqtt_client()
 
         # wait for initial connection with timeout (max 10 seconds)
-        wait_time = 0.0
         max_wait = 10
-        while not self._mqtt_connected and wait_time < max_wait:
-            time.sleep(0.1)  # Check every 100ms
-            wait_time += 0.1
-
-        if not self._mqtt_connected:
+        if not self._mqtt_connection_event.wait(timeout=max_wait):
             raise ConfigError(
                 f"Could not establish initial MQTT connection after {max_wait} seconds."
             )
 
         # prepare the message store
         self.prepare_mqtt_message_store()
-
-        # subscribe to all topics in the message store
-        self.subscribe_to_message_store_topics()
 
 
     def prepare_mqtt_message_store(self) -> None:
@@ -336,12 +328,22 @@ class MqttConnection:
     def on_connect(self, _client, _userdata, _flags, rc, _properties=None):
         """
         Callback function called when the client connects to the broker.
-        Sets the _mqtt_connected flag to track connection status.
+        Sets the _mqtt_connected flag to track connection status and
+        re-establishes subscriptions stored in the MQTT message store.
         """
         if rc == 0:
             self._mqtt_connected = True
+            self._mqtt_connection_event.set()
             logger.debug("MQTT connection successful to broker "
                          f"{self.mqtt_params.host}:{self.mqtt_params.port}")
+
+            try:
+                self.subscribe_to_message_store_topics()
+            except NotSupportedError as e:
+                # Message store may be uninitialized or empty; log and continue
+                logger.debug(
+                    f"MQTT message store subscriptions not restored: {e}"
+                )
         else:
             self._mqtt_connected = False
             logger.error(f"MQTT connection failed with result code {rc}")
@@ -351,6 +353,7 @@ class MqttConnection:
         Callback function called when the client disconnects from the broker.
         """
         self._mqtt_connected = False
+        self._mqtt_connection_event.clear()
         if rc != 0:
             logger.warning(f"MQTT disconnected unexpectedly with result code {rc}. "
                            "Will attempt automatic reconnection.")
@@ -787,14 +790,9 @@ class MqttConnection:
         Function to send the output data to MQTT (publish the data to the MQTT broker).
 
         Args:
-            - output_entity: OutputModel with the output entity
-            - output_attributes: list with the output attributes
+            output_entity (OutputModel): OutputModel with the output entity
+            output_attributes (list[AttributeModel]): list with the output attributes
         """
-        if not hasattr(self, "mqtt_client"):
-            raise NotSupportedError(
-                "MQTT client is not prepared. Call prepare_mqtt_connection() first."
-            )
-
         # check if the config is set
         if self.config is None:
             raise ConfigError(
@@ -807,6 +805,7 @@ class MqttConnection:
         if self._mqtt_connected is False:
             logger.warning(
                 "MQTT client is not connected to the broker. "
+                "Skipping publish; no data will be sent until the connection is established."
             )
             return
 
