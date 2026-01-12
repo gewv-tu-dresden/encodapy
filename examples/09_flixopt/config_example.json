@@ -34,8 +34,8 @@
     ],
     "controller_components": [
         {
-            "id": "new_component",
-            "type": "examples.09_flixopt.flixopt_component",
+            "id": "flixopt_example_component",
+            "type": "examples.09_flixopt.flixopt_example_component",
             "inputs": {
                 "electricity_demand":{
                     "entity": "flixopt_input_entity",
@@ -69,9 +69,16 @@
                 }
             },
             "config": {
-                "flixopt_log_level": {
+                "log_level": {
                     "value": "debug"
-                }
+                },
+                "solver_settings": {
+                    "value": {
+                        "name": "HighsSolver",
+                        "mip_rel_gap": 0.01,
+                        "time_limit": 60
+                    }
+                }   
             }
         }
     ],
