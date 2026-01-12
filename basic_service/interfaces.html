@@ -102,6 +102,8 @@
              
   <section id="communication-interfaces">
 <h1>Communication Interfaces<a class="headerlink" href="#communication-interfaces" title="Link to this heading"></a></h1>
+<p>There are some examples of communication interfaces implemented in Encodapy. See <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/tree/main/examples/03_interfaces">examples/03_interfaces</a> for more details.</p>
+<p>The following information is required for the configuration of each interface.</p>
 <section id="configuration-of-the-fiware-interface">
 <h2>Configuration of the FIWARE Interface<a class="headerlink" href="#configuration-of-the-fiware-interface" title="Link to this heading"></a></h2>
 <p>The FIWARE Interface allows communication with FIWARE-based systems using the NGSI standard.
@@ -491,7 +493,7 @@ They are automatically loaded from the environment or a .env file.</p>
 
 </dd></dl>
 
-<p>You could use different topics and payload templates for publishing and subscribing to MQTT messages.</p>
+<p>You could use different topics and payload templates for publishing and subscribing to MQTT messages. See the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/tree/main/examples/03_interfaces#mqtt">example for the mqtt interface</a> for more details.</p>
 <ul class="simple">
 <li><p>For possible kinds of mqtt message formats, see <a class="reference internal" href="utils_models.html#encodapy.config.types.MQTTFormatTypes" title="encodapy.config.types.MQTTFormatTypes"><code class="xref py py-class docutils literal notranslate"><span class="pre">MQTTFormatTypes</span></code></a>.</p></li>
 <li><p>You need to configure the usage in the <a class="reference internal" href="config_models.html#encodapy.config.models.AttributeModel" title="encodapy.config.models.AttributeModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeModel</span></code></a>.</p></li>
