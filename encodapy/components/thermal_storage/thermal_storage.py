@@ -359,8 +359,8 @@ class ThermalStorage(BasicComponent):
                 "State of charge information is not set correctly."
             )
         storage_energy_current = self.state_of_charge_information.state_of_charge \
-            * self.state_of_charge_information.nominal_storage_energy
-            
+            / 100 * self.state_of_charge_information.nominal_storage_energy
+
         return DataPointNumber(
             value=round(storage_energy_current, 2),
             unit=DataUnits.WHR,
