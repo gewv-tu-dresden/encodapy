@@ -7,6 +7,7 @@ import math
 from datetime import datetime
 from loguru import logger
 import pandas as pd
+from pydantic import ValidationError
 from encodapy.components.basic_component import BasicComponent
 from encodapy.components.basic_component_config import (
     ComponentValidationError,
@@ -20,7 +21,8 @@ from encodapy.components.thermal_storage.thermal_storage_config import (
     ThermalStorageEnergyTypes,
     ThermalStorageInputData,
     ThermalStorageOutputData,
-    TemperatureExtrema
+    TemperatureExtrema,
+    ThermalStorageLoadLevelStorage
 )
 #TODO remove
 # from encodapy.components.thermal_storage.calibration_file import (
@@ -74,7 +76,8 @@ class ThermalStorage(BasicComponent):
             config=config, component_id=component_id, static_data=static_data
         )
         # Set the default value for the reference state of charge to None - start of the service
-        self.config_data.load_level_check.ref_state_of_charge = None
+        self.state_of_charge_information: ThermalStorageLoadLevelStorage = \
+            ThermalStorageLoadLevelStorage.model_validate({})
         self.calibration_data = CalibrationData(db_path=self.config_data.calibration.db_path)
         self.component_started = False
 
@@ -174,34 +177,25 @@ class ThermalStorage(BasicComponent):
             sensor_id
         ].limits
 
-        if (
-            self.config_data.calculation_method.value
-            == ThermalStorageCalculationMethods.STATIC_LIMITS
-        ):
-            return config_limits
+        match self.config_data.calculation_method.value:
+            case ThermalStorageCalculationMethods.STATIC_LIMITS:
+                return config_limits
 
-        if (
-            self.config_data.calculation_method.value
-            == ThermalStorageCalculationMethods.CONNECTION_LIMITS
-        ):
-            limits = self._get_connection_limits(
-                sensor_id=sensor_id, config_limits=config_limits
-            )
+            case ThermalStorageCalculationMethods.CONNECTION_LIMITS:
+                return self._get_connection_limits(
+                    sensor_id=sensor_id, config_limits=config_limits
+                    )
 
-            return limits
+            case self.config_data.calculation_method.value:
+                #TODO Add flexible limits method
+                return config_limits
+            case _ :
+                logger.warning(
+                    f"Unknown calculation method: {self.config_data.calculation_method.value}"
+                    ". Using static limits from the configuration."
+                )
 
-        if (
-            self.config_data.calculation_method.value
-            == ThermalStorageCalculationMethods.HISTORICAL_LIMITS
-        ):
-            #TODO Add flexible limits method
-            return config_limits
-
-        logger.warning(
-            f"Unknown calculation method: {self.config_data.calculation_method.value}"
-        )
-
-        return config_limits
+                return config_limits
 
     def get_storage_temperature_sensor_value(self,
                                              sensor_index:int) -> DataPointNumber:
@@ -303,73 +297,91 @@ class ThermalStorage(BasicComponent):
 
         return round(nominal_energy, 2)
 
-    def get_storage_energy_nominal(self) -> tuple[float, DataUnits]:
+    def get_storage_energy_nominal(self) -> DataPointNumber:
         """
         Function to calculate the nominal energy content of the thermal storage
 
         Returns:
-            tuple[float, DataUnits]: Nominal energy content of the thermal storage in Wh
+            DataPointNumber: Nominal energy content of the thermal storage in Wh
         """
 
-        return (
-            self.get_storage_energy_content(ThermalStorageEnergyTypes.NOMINAL),
-            DataUnits.WHR,
+        return DataPointNumber(
+            value=self.get_storage_energy_content(ThermalStorageEnergyTypes.NOMINAL),
+            unit=DataUnits.WHR,
         )
 
-    def get_storage_energy_minimum(self) -> tuple[float, DataUnits]:
+    def get_storage_energy_minimum(self) -> DataPointNumber:
         """
         Function to get the minimum energy content of the thermal storage
 
         Returns:
-            tuple[float, DataUnits]: Minimum energy content of the thermal storage in Wh
+            DataPointNumber: Minimum energy content of the thermal storage in Wh
         Raises:
             ValueError: If the thermal storage is not usable or the sensor values are not set
         """
-        return (
-            self.get_storage_energy_content(ThermalStorageEnergyTypes.MINIMAL),
-            DataUnits.WHR,
+        return DataPointNumber(
+            value=self.get_storage_energy_content(ThermalStorageEnergyTypes.MINIMAL),
+            unit=DataUnits.WHR,
         )
 
-    def get_storage_energy_maximum(self) -> tuple[float, DataUnits]:
+    def get_storage_energy_maximum(self) -> DataPointNumber:
         """
         Function to get the maximum energy content of the thermal storage
 
         Returns:
-            tuple[float, DataUnits]: Maximum energy content of the thermal storage in Wh
+            DataPointNumber: Maximum energy content of the thermal storage in Wh
         Raises:
             ValueError: If the thermal storage is not usable or the sensor values are not set
         """
-        return (
-            self.get_storage_energy_content(ThermalStorageEnergyTypes.MAXIMAL),
-            DataUnits.WHR,
+
+        return DataPointNumber(
+            value=self.get_storage_energy_content(ThermalStorageEnergyTypes.MAXIMAL),
+            unit=DataUnits.WHR,
         )
 
-    def get_storage_energy_current(self) -> tuple[float, DataUnits]:
+    def get_storage_energy_current(self) -> DataPointNumber:
         """
         Function to get the current energy content of the thermal storage
+        Uses the state of charge to calculate the current energy content
 
         Returns:
-            tuple[float, DataUnits]: Current energy content of the thermal storage in Wh
+            DataPointNumber: Current energy content of the thermal storage in Wh
         Raises:
             ValueError: If the thermal storage is not usable or the sensor values are not set
         """
-        return (
-            self.get_storage_energy_content(ThermalStorageEnergyTypes.CURRENT),
-            DataUnits.WHR,
+        if not self.state_of_charge_information.check_status:
+            _state_of_charge = self.get_state_of_charge()
+
+        # State of charge information should be set now / this is double check
+        if self.state_of_charge_information.state_of_charge is None \
+            or self.state_of_charge_information.nominal_storage_energy is None:
+            raise ValueError(
+                "State of charge information is not set correctly."
+            )
+        storage_energy_current = self.state_of_charge_information.state_of_charge \
+            * self.state_of_charge_information.nominal_storage_energy
+            
+        return DataPointNumber(
+            value=round(storage_energy_current, 2),
+            unit=DataUnits.WHR,
         )
 
-    def get_storage_loading_potential_nominal(self) -> tuple[float, DataUnits]:
+
+    def get_storage_loading_potential_nominal(self) -> DataPointNumber:
         """
         Function to get the loading potential of the thermal storage, \
             which is the difference between the nominal and current energy content.
 
         Returns:
-            tuple[float, DataUnits]: Loading potential of the thermal storage in Wh
+            DataPointNumber: Loading potential of the thermal storage in Wh
         """
-        nominal_energy = self.get_storage_energy_nominal()[0]
-        current_energy = self.get_storage_energy_current()[0]
+        nominal_energy = self.get_storage_energy_content(ThermalStorageEnergyTypes.NOMINAL)
+        current_energy = self.get_storage_energy_content(ThermalStorageEnergyTypes.CURRENT)
         loading_potential = round(nominal_energy - current_energy, 2)
-        return loading_potential, DataUnits.WHR
+        return DataPointNumber(
+            value=loading_potential,
+            unit=DataUnits.WHR,
+        )
 
     def set_input_data(self, input_data: InputDataModel) -> None:
         """
@@ -412,12 +424,12 @@ class ThermalStorage(BasicComponent):
         )
 
         if self.input_data.temperature_1.value >= ref_temperature:
-            self.config_data.load_level_check.ref_state_of_charge = None
+            self.state_of_charge_information.ref_state_of_charge = None
             return state_of_charge
         if self.input_data.temperature_1.value < temperature_limits.minimal_temperature:
             return 0
-        if self.config_data.load_level_check.ref_state_of_charge is None:
-            self.config_data.load_level_check.ref_state_of_charge = state_of_charge
+        if self.state_of_charge_information.ref_state_of_charge is None:
+            self.state_of_charge_information.ref_state_of_charge = state_of_charge
 
         denominator =  ref_temperature - temperature_limits.minimal_temperature
 
@@ -430,24 +442,35 @@ class ThermalStorage(BasicComponent):
                 self.input_data.temperature_1.value
                 - temperature_limits.minimal_temperature
             ) / denominator
-        return (
+        return round(
             current_factor
-            * self.config_data.load_level_check.ref_state_of_charge
-            )
+            * self.state_of_charge_information.ref_state_of_charge
+            , 2)
 
-    def get_state_of_charge(self) -> tuple[float, DataUnits]:
+    def get_state_of_charge(self) -> DataPointNumber:
         """
         Function to calculate the state of charge of the thermal storage
 
         If the temperature of the highest sensor is too low, there is no energy left, \
             so the state of charge is 0.
+        Only calculates a new state of charge, if the time interval is exceeded.
 
         Returns:
-            tuple[float, DataUnits]: State of charge of the thermal storage in percent (0-100)
+            DataPointNumber: State of charge of the thermal storage in percent (0-100)
         """
+        if not self.state_of_charge_information.check_status and \
+            self.state_of_charge_information.state_of_charge is not None:
+            return DataPointNumber(
+                value=self.state_of_charge_information.state_of_charge,
+                unit=DataUnits.PERCENT
+            )
+
+        self.state_of_charge_information.nominal_storage_energy = \
+            self.get_storage_energy_content(ThermalStorageEnergyTypes.NOMINAL)
+        current_energy = self.get_storage_energy_content(ThermalStorageEnergyTypes.CURRENT)
         state_of_charge = (
-            self.get_storage_energy_current()[0]
-            / self.get_storage_energy_nominal()[0]
+            current_energy
+            / self.state_of_charge_information.nominal_storage_energy
             * 100
         )
 
@@ -455,7 +478,19 @@ class ThermalStorage(BasicComponent):
             state_of_charge=state_of_charge
         )
 
-        return round(state_of_charge, 2), DataUnits.PERCENT
+        self.state_of_charge_information.last_check_time = datetime.now()
+        self.state_of_charge_information.state_of_charge = state_of_charge
+        # check the boundaries of the state of charge
+        try:
+            self.state_of_charge_information = ThermalStorageLoadLevelStorage(
+                **self.state_of_charge_information.model_dump())
+        except ValidationError as e:
+            logger.error(f"Error updating state of charge information: {e}")
+
+        return DataPointNumber(
+            value=state_of_charge,
+            unit=DataUnits.PERCENT
+        )
 
     def get_storage__mean_temperature_maximal(self) -> DataPointNumber:
         """
@@ -528,28 +563,10 @@ class ThermalStorage(BasicComponent):
         """
         Function to calculate the thermal storage values
         """
-        storage__energy = self.get_storage_energy_current()
-        storage__energy_datapoint = DataPointNumber(
-            value=storage__energy[0],
-            unit=storage__energy[1],
-        )
-
-        state_of_charge = self.get_state_of_charge()
-        state_of_charge_datapoint = DataPointNumber(
-            value=state_of_charge[0],
-            unit=state_of_charge[1],
-        )
-
-        loading_potential = self.get_storage_loading_potential_nominal()
-        loading_potential_datapoint = DataPointNumber(
-            value=loading_potential[0],
-            unit=loading_potential[1],
-        )
-
         self.output_data = ThermalStorageOutputData(
-            storage__energy=storage__energy_datapoint,
-            storage__level=state_of_charge_datapoint,
-            storage__loading_potential_nominal=loading_potential_datapoint,
+            storage__energy=self.get_storage_energy_current(),
+            storage__level=self.get_state_of_charge(),
+            storage__loading_potential_nominal=self.get_storage_loading_potential_nominal(),
         )
 
         if self.config_data.calculation_method.value \

@@ -5,7 +5,7 @@ Author: Martin Altenburger
 import os
 from typing import Optional, TYPE_CHECKING, Union
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, timedelta
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import model_validator
 from encodapy.components.basic_component_config import (
@@ -405,12 +405,6 @@ class ThermalStorageLoadLevelCheck(BaseModel):
         When the top sensor falls below this percentage of the temperature range,
         the state of charge is adjusted. (0-100)""",
     )
-    ref_state_of_charge: Optional[float] = Field(
-        None,
-        ge=0,
-        le=100,
-        description="Reference state of charge level in percent (0-100) | set by the process",
-    )
 class ThermalStorageCalibrationConfig(BaseModel):
     """
     Configuration for the calibration of the thermal storage service.
@@ -512,3 +506,47 @@ class TemperatureExtrema(BaseModel):
         ...,
         description="Timestamp of when the extrema were recorded"
     )
+
+class ThermalStorageLoadLevelStorage(BaseModel):
+    """
+    Model to store state of charge check information for the thermal storage service.
+    """
+    last_check_time: Optional[datetime] = Field(
+        None,
+        description="Timestamp of the last state of charge check",
+    )
+    check_time_interval: Optional[timedelta] = Field(
+        timedelta(seconds=0.5),
+        description="Time interval in seconds between state of charge checks",
+    )
+    state_of_charge: Optional[float] = Field(
+        None,
+        ge=0,
+        le=100,
+        description="Current state of charge level in percent (0-100)",
+    )
+    ref_state_of_charge: Optional[float] = Field(
+        None,
+        ge=0,
+        le=100,
+        description="Reference state of charge level in percent (0-100) | set by the process",
+    )
+    nominal_storage_energy: Optional[float] = Field(
+        None,
+        description="Nominal storage energy in Wh | set by the process",
+    )
+    @property
+    def check_status(self):
+        """
+        Check, if a new state of charge check is required based on the time interval.
+
+        Returns:
+            bool: True if no new check is required, False if a new check is required
+        """
+        if self.state_of_charge is None:
+            return False
+        if self.last_check_time is None:
+            return False
+        if datetime.now() - self.last_check_time >= self.check_time_interval:
+            return False
+        return True
