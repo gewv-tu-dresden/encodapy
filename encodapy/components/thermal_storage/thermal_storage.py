@@ -400,7 +400,7 @@ class ThermalStorage(BasicComponent):
         ):
             self.input_data.check_load_connection_sensors()
 
-    def _check_temperatur_of_highest_sensor(self, state_of_charge: float) -> float:
+    def _check_temperature_of_highest_sensor(self, state_of_charge: float) -> float:
         """
         Function to check if the temperature of the highest sensor is too low, \
             so there is no energy left
@@ -474,9 +474,9 @@ class ThermalStorage(BasicComponent):
             * 100
         )
 
-        state_of_charge = self._check_temperatur_of_highest_sensor(
+        state_of_charge = round(self._check_temperature_of_highest_sensor(
             state_of_charge=state_of_charge
-        )
+        ), 2)
 
         self.state_of_charge_information.last_check_time = datetime.now()
         self.state_of_charge_information.state_of_charge = state_of_charge
