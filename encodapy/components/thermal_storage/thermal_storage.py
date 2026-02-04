@@ -423,12 +423,20 @@ class ThermalStorage(BasicComponent):
             * (self.config_data.load_level_check.minimal_level / 100)
         )
 
-        if self.input_data.temperature_1.value >= ref_temperature:
-            self.state_of_charge_information.ref_state_of_charge = None
-            return state_of_charge
+        # if the temperature is below the minimal temperature, there is no energy left
         if self.input_data.temperature_1.value < temperature_limits.minimal_temperature:
-            return 0
+            return 0.0
+
+        # for temperatures above the reference temperature, no adjustment is needed
+        # store the state of charge as reference value, so that it can be used later \
+            # The reference needs to be higher than the minimal level
+        if self.input_data.temperature_1.value >= ref_temperature:
+            self.state_of_charge_information.ref_state_of_charge = state_of_charge
+            return state_of_charge
         if self.state_of_charge_information.ref_state_of_charge is None:
+            logger.warning("Reference state of charge should be set before "
+                           "checking the thermal storage level. "
+                           "Setting it now - may lead to unexpected results.")
             self.state_of_charge_information.ref_state_of_charge = state_of_charge
 
         denominator =  ref_temperature - temperature_limits.minimal_temperature
