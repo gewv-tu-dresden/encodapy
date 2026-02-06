@@ -45,7 +45,8 @@ autodoc-pydantic = "^2.2.0"
 sphinx-rtd-theme = "^3.0.2"
 sphinx-autodoc-typehints = "^3.5.2"
 myst-parser = "^4.0.1"
-flixopt = "^4.3.4"
+flixopt = "^6.0.2"
+rdflib = "^7.5.0"
 
 [build-system]
 requires = ["poetry-core"]

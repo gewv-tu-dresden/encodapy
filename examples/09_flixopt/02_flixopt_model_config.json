@@ -1,0 +1,110 @@
+{
+    "buses":
+    [
+        {
+            "label": "heat",
+            "penalty": 1e5
+        },
+        {
+            "label": "gas"
+        },
+        {
+            "label": "electricity",
+            "penalty": 1e5
+        }
+    ],
+    "effects":
+    [
+        {
+            "label": "costs",
+            "unit": "EUR",
+            "objective": true
+        }
+    ],
+    "converters":
+    [
+        {
+            "label": "boiler",
+            "converter_type": "boiler",
+            "thermal_efficiency": 0.9,
+            "input_flow": "gas",
+            "thermal_flow": "heat",
+            "thermal_nominal_power": 30,
+            "thermal_power_range": {
+                "min_thermal_power": 30,
+                "max_thermal_power": 100
+            },
+            "status_parameters": {
+                "min_up_time": 0.25,
+                "min_down_time": null,
+                "max_down_time": null,
+                "startup_cost": null,
+                "shutdown_cost": null
+            }
+        },
+        {
+            "label": "chp",
+            "converter_type": "chp",
+            "thermal_efficiency": 0.4,
+            "electrical_efficiency": 0.3,
+            "input_flow": "gas",
+            "thermal_flow": "heat",
+            "electrical_flow": "electricity",
+            "thermal_nominal_power": 20,
+            "thermal_power_range": {
+                "min_thermal_power": 30,
+                "max_thermal_power": 100
+            },
+            "status_parameters": {
+                "min_up_time": 2,
+                "min_down_time": null,
+                "max_down_time": null,
+                "startup_cost": null,
+                "shutdown_cost": null
+            }
+        }
+    ],
+    "exchangers":
+    [
+        {
+            "label": "heat_demand",
+            "direction": "sink",
+            "input_bus": "heat",
+            "input_label": "heat_demand"
+        },
+        {
+            "label": "gas_supply",
+            "direction": "source",
+            "output_bus": "gas",
+            "output_effect": {
+                "costs": 0.05
+            }
+        },
+        {
+            "label": "electricity_demand",
+            "direction": "sink",
+            "input_bus": "electricity",
+            "input_label": "electricity_demand"
+        },
+        {
+            "label": "electricity_network",
+            "direction": "bidirectional",
+            "input_bus": "electricity",
+            "input_effect": "electricity_price",
+            "output_effect":{
+                "costs": -0.08
+            },
+            "nominal_power": 50
+        }
+    ],
+    "storages":
+    [
+        {
+            "label": "thermal_storage",
+            "bus": "heat",
+            "nominal_capacity": 15,
+            "nominal_power": 10,
+            "start_soc": "storage_level"
+        }
+    ]
+}

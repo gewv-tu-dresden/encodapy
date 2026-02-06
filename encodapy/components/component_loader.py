@@ -158,7 +158,7 @@ def get_component_io_model(
         logger.error(error_msg)
         raise TypeError(error_msg)
 
-    # 1. Create the fields for the new model
+    # Create the fields for the new model
     fields: Dict[str, Tuple[Any, Any]] = {}
     for datapoint_name, datapoint_info in component_data_model.model_fields.items():
         fields[datapoint_name] = (
@@ -174,18 +174,18 @@ def get_component_io_model(
             ),
         )
 
-    # 2. Create the new model dynamically
+    # Create the new model dynamically
     component_config_model = create_model(
         f"IO_{component_data_model.__name__}",
         **cast(Dict[str, Any], fields),
         __base__=component_data_model,
     )
-    # 3. copy methods (if any)
+    # copy methods (if any)
     for attr_name, attr_value in component_data_model.__dict__.items():
         if callable(attr_value) and not attr_name.startswith("__"):
             setattr(component_config_model, attr_name, attr_value)
 
-    # 4. copy validators (if any)
+    # copy validators (if any)
     for name, validator in component_data_model.__dict__.items():
         if hasattr(validator, "__validator_function__"):
             setattr(component_config_model, name, validator)

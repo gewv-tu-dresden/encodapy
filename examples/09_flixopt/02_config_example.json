@@ -1,5 +1,5 @@
 {
-    "name": "mpc_flixopt_example",
+    "name": "mpc_flixopt_example_02",
     "interfaces": {
         "mqtt": false,
         "fiware": false,
@@ -31,42 +31,42 @@
     "outputs": [
     ],
     "staticdata": [
+        {
+            "id": "flixopt_input_test",
+            "interface": "file",
+            "attributes": [
+                {
+                    "id": "storage_level",
+                    "id_interface": "storage_level",
+                    "type": "value"
+                }
+            ]
+        }
     ],
     "controller_components": [
         {
-            "id": "flixopt_example_component",
-            "type": "examples.09_flixopt.flixopt_example_component",
+            "id": "flixopt_model_component",
+            "type": "examples.09_flixopt.flixopt_model_component",
             "inputs": {
-                "electricity_demand":{
-                    "entity": "flixopt_input_entity",
-                    "attribute": "electricity_demand"
-                },
                 "heat_demand": {
                     "entity": "flixopt_input_entity",
                     "attribute": "heat_demand"
                 },
+                "electricity_demand": {
+                    "entity": "flixopt_input_entity",
+                    "attribute": "electricity_demand"
+                },
                 "electricity_price": {
                     "entity": "flixopt_input_entity",
                     "attribute": "electricity_price"
+                },
+                "storage_level": {
+                    "entity": "flixopt_input_test",
+                    "attribute": "storage_level"
                 }
             },
             "outputs": {
-                "boiler_heat_output": {
-                    "entity": "output_entity",
-                    "attribute": "boiler_heat_output"
-                },
-                "chp_heat_output": {
-                    "entity": "output_entity",
-                    "attribute": "chp_heat_output"
-                },
-                "chp_electric_output": {
-                    "entity": "output_entity",
-                    "attribute": "chp_electric_output"
-                },
-                "thermal_storage_charge_state": {
-                    "entity": "output_entity",
-                    "attribute": "thermal_storage_charge_state"
-                }
+
             },
             "config": {
                 "log_level": {

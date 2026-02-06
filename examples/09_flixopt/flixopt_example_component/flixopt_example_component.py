@@ -145,7 +145,7 @@ class FlixoptExampleComponent(BasicComponent):
 
     def run_optimization(self,
                          df_input:pd.DataFrame
-                         ) -> fx.results.Results:
+                         ) -> Optional[fx.results.Results]:
         """
         Perform the calculations with the FlixOpt library
             The model is built up in this function based on the input data \
@@ -163,47 +163,40 @@ class FlixoptExampleComponent(BasicComponent):
              "Input time series must have a DatetimeIndex"
         except AssertionError as e:
             logger.error(f"Error in input data: {e}")
-            return
+            return None
 
         flow_system = self._prepare_flixopt_flow_system(timesteps=df_input.index)
         # --- Define Effects ---
         effects = self._prepare_flixopt_effects()
 
         # --- Define Components ---
-        components:list[fx.Component] = []
+        components: list[fx.Component] = []
         # Define Boiler Component
         # A gas boiler that converts fuel into thermal output, with investment and on-off parameters
         components.append(fx.linear_converters.Boiler(
             'boiler',
             thermal_efficiency=0.5,  # Efficiency ratio
-            on_off_parameters=fx.OnOffParameters(
-                effects_per_running_hour={effects.costs.label: 0, effects.co2.label: 1000}
+            status_parameters=fx.StatusParameters(
+                effects_per_active_hour={effects.costs.label: 0, effects.co2.label: 1000}
             ),  # CO2 emissions per hour
             thermal_flow=fx.Flow(
                 label='Q_th',  # Thermal output
                 bus='heat',  # Linked bus
-                size=fx.InvestParameters(
-                    effects_of_investment=1000,  # Fixed investment costs
-                    fixed_size=50,  # Fixed size
-                    mandatory=True,  # Forced investment
-                    effects_of_investment_per_size={
-                        effects.costs.label: 10, effects.pe.label: 2},  # Specific costs
-                ),
+                size=50,  # Nominal size (50 kW)
                 load_factor_max=1.0,  # Maximum load factor (50 kW)
                 load_factor_min=0.1,  # Minimum load factor (5 kW)
                 relative_minimum=5 / 50,  # Minimum part load
                 relative_maximum=1,  # Maximum part load
                 previous_flow_rate=50,  # Previous flow rate
                 flow_hours_max=1e6,  # Total energy flow limit
-                on_off_parameters=fx.OnOffParameters(
-                    on_hours_min=0,  # Minimum operating hours
-                    on_hours_max=1000,  # Maximum operating hours
-                    consecutive_on_hours_max=10,  # Max consecutive operating hours
-                    consecutive_on_hours_min=np.array([1]*len(df_input.index)), \
+                status_parameters=fx.StatusParameters(
+                    active_hours_min=0,  # Minimum operating hours
+                    active_hours_max=1000,  # Maximum operating hours
+                    max_uptime=10,  # Max consecutive operating hours
+                    min_uptime=np.array([1]*len(df_input.index)), \
                         # min consecutive operation hours
-                    consecutive_off_hours_max=10,  # Max consecutive off hours
-                    effects_per_switch_on=0.01,  # Cost per switch-on
-                    switch_on_max=1000,  # Max number of starts
+                    effects_per_startup=0.01,  # Cost per switch-on
+                    startup_limit=1000,  # Max number of starts
                 ),
             ),
             fuel_flow=fx.Flow(label='Q_fu', bus='gas', size=200),
@@ -212,8 +205,8 @@ class FlixoptExampleComponent(BasicComponent):
         # Define CHP with Piecewise Conversion
         # This CHP unit uses piecewise conversion for more dynamic behavior over time
         p_el = fx.Flow('P_el', bus='electricity', size=60, previous_flow_rate=20)
-        q_th = fx.Flow('Q_th', bus='heat')
-        q_fu = fx.Flow('Q_fu', bus='gas')
+        q_th = fx.Flow('Q_th', bus='heat', size=100)
+        q_fu = fx.Flow('Q_fu', bus='gas', size=200)
         piecewise_conversion = fx.PiecewiseConversion(
             {
                 p_el.label: fx.Piecewise([fx.Piece(5, 30), fx.Piece(40, 60)]),
@@ -227,29 +220,16 @@ class FlixoptExampleComponent(BasicComponent):
             inputs=[q_fu],
             outputs=[p_el, q_th],
             piecewise_conversion=piecewise_conversion,
-            on_off_parameters=fx.OnOffParameters(effects_per_switch_on=0.01),
+            status_parameters=fx.StatusParameters(effects_per_startup=0.01),
         ))
 
         # Define Storage Component
-        # Storage with variable size and piecewise investment effects
-        segmented_investment_effects = fx.PiecewiseEffects(
-            piecewise_origin=fx.Piecewise([fx.Piece(5, 25), fx.Piece(25, 100)]),
-            piecewise_shares={
-                effects.costs.label: fx.Piecewise([fx.Piece(50, 250), fx.Piece(250, 800)]),
-                effects.pe.label: fx.Piecewise([fx.Piece(5, 25), fx.Piece(25, 100)]),
-            },
-        )
         storages: list[fx.Storage] = []
         storages.append(fx.Storage(
             'thermal_storage',
             charging=fx.Flow('Q_th_load', bus='heat', size=1e4),
             discharging=fx.Flow('Q_th_unload', bus='heat', size=1e4),
-            capacity_in_flow_hours=fx.InvestParameters(
-                piecewise_effects_of_investment=segmented_investment_effects,  # Investment effects
-                mandatory=True,  # Forced investment
-                minimum_size=0,
-                maximum_size=1000,  # Optimizing between 0 and 1000 kWh
-            ),
+            capacity_in_flow_hours=1000, # Capacity in kWh
             initial_charge_state=0,  # Initial charge state
             maximal_final_charge_state=10,  # Maximum final charge state
             eta_charge=0.9,
@@ -260,9 +240,9 @@ class FlixoptExampleComponent(BasicComponent):
 
         # Define Sinks and Sources
         # Heat demand profile
-        sind_and_sources: list[Union[fx.Sink, fx.Source]] = []
+        sinks_and_sources: list[Union[fx.Sink, fx.Source]] = []
 
-        sind_and_sources.append(fx.Sink(
+        sinks_and_sources.append(fx.Sink(
             'heat_demand',
             inputs=[
                 fx.Flow(
@@ -273,7 +253,7 @@ class FlixoptExampleComponent(BasicComponent):
                 )
             ],
         ))
-        sind_and_sources.append(fx.Sink(
+        sinks_and_sources.append(fx.Sink(
             'electricity_demand',
             inputs=[
                 fx.Flow(
@@ -286,7 +266,7 @@ class FlixoptExampleComponent(BasicComponent):
         ))
 
         # Gas tariff
-        sind_and_sources.append(fx.Source(
+        sinks_and_sources.append(fx.Source(
             'gas_demand',
             outputs=[
                 fx.Flow(
@@ -299,7 +279,7 @@ class FlixoptExampleComponent(BasicComponent):
         ))
 
         # Feed-in of electricity
-        sind_and_sources.append(fx.Sink(
+        sinks_and_sources.append(fx.Sink(
             'electricity_feed_in',
             inputs=[
                 fx.Flow(
@@ -314,12 +294,8 @@ class FlixoptExampleComponent(BasicComponent):
         # --- Build FlowSystem ---
         # Select components to be included in the flow system
         flow_system.add_elements(effects.costs, effects.co2, effects.pe)
-        for component in components:
-            flow_system.add_elements(component)
-        for sink_or_source in sind_and_sources:
-            flow_system.add_elements(sink_or_source)
-        for storage in storages:
-            flow_system.add_elements(storage)
+        for element in components + sinks_and_sources + storages:
+            flow_system.add_elements(element)
 
         # --- Solve FlowSystem ---
         optimization = fx.Optimization('Example', flow_system)
@@ -400,10 +376,15 @@ class FlixoptExampleComponent(BasicComponent):
                 if f"{key_complet}|flow_rate" in all_timeseries.columns:
                     df_results[f"{key}_{key_energy}_energy"] = \
                         all_timeseries[f"{key_complet}|flow_rate"] \
-                            * all_timeseries[f"{key_complet}|on"]
+                            * all_timeseries[f"{key_complet}|status"]
 
         for key, value in result_mapping["storage"].items():
-            df_results[f"{key}_charge_state"] = all_timeseries[f"{value}|charge_state"]
+            if f"{value}|charge_state" in all_timeseries.columns:
+                df_results[f"{key}_charge_state"] = all_timeseries[f"{value}|charge_state"]
+            else:
+                logger.warning(
+                    f"Charge state for storage {key} not found in results."
+                )
 
         df_results = df_results.set_index("time")
         df_results = df_results.round(2)
@@ -443,6 +424,10 @@ class FlixoptExampleComponent(BasicComponent):
             return
         # --- Run Optimization ---
         optimization_results = self.run_optimization(df_input=df_input)
+
+        if optimization_results is None:
+            logger.error("Optimization failed.")
+            return
 
         # --- Get the results ---
         results = self.export_results(optimization_results.solution)

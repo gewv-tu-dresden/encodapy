@@ -1,0 +1,1 @@
+"""FlixOpt model component package."""

@@ -2,7 +2,7 @@
 Description: This module provides basic components for the encodapy package.
 Author: Martin Altenburger
 """
-
+import json
 from datetime import datetime, timezone
 from typing import Any, Optional, Type, Union, TypeVar, Generic, cast
 from loguru import logger
@@ -43,7 +43,6 @@ TypeInputData = TypeVar(
 TypeOutputData = TypeVar(
     "TypeOutputData", bound=OutputData
 )  # pylint: disable=invalid-name
-
 
 class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
     """
@@ -144,10 +143,11 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
         config = self.component_config
         try:
             input_config = component_input_model.model_validate(
-                config.inputs.root
+                config.inputs.model_dump()
                 if isinstance(config.inputs, IOModell)
                 else config.inputs
             )
+
         except ValidationError:
             error_msg = f"Invalid input configuration for the component {self.component_config.id}"
             logger.error(error_msg)
@@ -155,7 +155,7 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
 
         try:
             output_config = component_output_model.model_validate(
-                config.outputs.root
+                config.outputs.model_dump()
                 if isinstance(config.outputs, IOModell)
                 else config.outputs
             )
@@ -163,7 +163,6 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
             error_msg = f"Invalid output configuration for the component {self.component_config.id}"
             logger.error(error_msg)
             raise
-
         self.io_model = ComponentIOModel(input=input_config, output=output_config)
 
     def set_component_config_data(
@@ -310,7 +309,11 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
         input_data_model = get_component_input_data_model(
             component_type=self.component_config.type
         )
-        for datapoint_name, datapoint_config in self.io_model.input.__dict__.items():
+
+        input_fields = self.io_model.input.model_dump()  # pylint: disable=no-member
+
+        for datapoint_name, datapoint_config in input_fields.items():
+            logger.debug(f"Processing input configuration for {datapoint_name}: {datapoint_config}")
             if datapoint_config is None:
                 continue
             try:
@@ -326,14 +329,21 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
                 input_entities=input_datapoints, input_config=datapoint_config
             )
 
+            # Skip datapoints that are not defined in the input data model of the component \
+                # (only for variable inputs, whicht are not configured)
+            if datapoint_name not in input_data_model.model_fields:
+                match datapoint.value:
+                    case None:
+                        continue
+                    case _:
+                        pass
             # Skip optional datapoints with no value
-            if (
+            elif (
                 not input_data_model.model_fields[datapoint_name].is_required()
                 and datapoint.value is None
             ):
                 continue
             input_values[datapoint_name] = datapoint
-
         input_values_raw: dict[str, Any] = {}
         for key, value in input_values.items():
             input_values_raw[key] = value.model_dump()
