@@ -176,7 +176,7 @@ Data exchange with via local file.
 necessary ENV's with example:
 
   ```
-  PATH_OF_INPUT_FILE = "path_to_the_file/validation_data.csv"
-  PATH_OF_STATIC_DATA = "path_to_the_file/static_data.json"
-  PATH_OF_RESULTS = "./results" # The folder for storing the results is "./results" by default.
+  FILE_PATH_OF_INPUT_FILE = "path_to_the_file/validation_data.csv"
+  FILE_PATH_OF_STATIC_DATA = "path_to_the_file/static_data.json"
+  FILE_PATH_OF_RESULTS = "./results" # The folder for storing the results is "./results" by default.
   ```
