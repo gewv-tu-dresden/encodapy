@@ -50,6 +50,7 @@ class ThermalStorage(BasicComponent):
         static_data (Optional[list[StaticDataEntityModel]], optional): \
             Static data of the ThermalStorage
         component_id (str): ID of the thermal storage component
+    TODO: Maybe adjust the output to use the timestamp from input data?
     
     """
 
@@ -400,20 +401,9 @@ class ThermalStorage(BasicComponent):
         ):
             self.input_data.check_load_connection_sensors()
 
-    def _check_temperature_of_highest_sensor(self, state_of_charge: float) -> float:
-        """
-        Function to check if the temperature of the highest sensor is too low, \
-            so there is no energy left
-        Args:
-            state_of_charge (float): Current state of charge
+    def _get_temperature_check_ref_temperature(self, sensor_id: int) -> tuple[float, float]:
 
-        Returns:
-            float: Adjusted state of charge
-        """
-        if self.config_data.load_level_check.enabled is False:
-            return state_of_charge
-
-        temperature_limits = self._get_sensor_limits(sensor_id=0)
+        temperature_limits = self._get_sensor_limits(sensor_id=sensor_id)
         ref_temperature = (
             temperature_limits.minimal_temperature
             + (
@@ -422,38 +412,90 @@ class ThermalStorage(BasicComponent):
             )
             * (self.config_data.load_level_check.minimal_level / 100)
         )
+        return ref_temperature, temperature_limits.minimal_temperature
+
+    def _check_temperature_of_required_sensors(self, state_of_charge: float) -> float:
+        """
+        Function to check if the temperature of the required sensors is too low, \
+            so there is no energy left
+        The calculation determines a factor for reducing the current state of charge, \
+            which is determined by the sensors to be tested.
+        If the temperature approaches the minimum, the state of charge is reduced linearly.
+        Args:
+            state_of_charge (float): Current state of charge
+
+        Returns:
+            float: Adjusted state of charge
+
+        TODO: do we need a reference state of charge for the calculation?
+        """
+        if self.config_data.load_level_check.enabled is False:
+            return state_of_charge
+
+        ref_values: dict[int, tuple[float, float]] = {}
+        volumes: dict[int, float] = {}
+
+        for index, storage_sensor in enumerate(
+            self.config_data.sensor_config.value.storage_sensors
+        ):
+            if index == 0:
+                ref_values[index] = self._get_temperature_check_ref_temperature(sensor_id=index)
+                volumes[index] = self._get_sensor_volume(sensor=index)
+                continue
+            if storage_sensor.temperature_check:
+                ref_values[index] = self._get_temperature_check_ref_temperature(sensor_id=index)
+                volumes[index] = self._get_sensor_volume(sensor=index)
+
+        mean_current_factor = 0.0
+        for index, ref_value in ref_values.items():
+            ref_temperature, minimal_temperature = ref_value
+            temperature = self.get_storage_temperature_sensor_value(sensor_index=index)
+
+            # using historical data for the state of charge check, if available and configured
+            historical_temperature = self.sensor_values_stored.get(index, None)
+            if historical_temperature is not None and temperature.time is not None:
+                if temperature.time not in historical_temperature.index:
+                    historical_temperature.at[temperature.time] = temperature.value
+                historical_temperature = historical_temperature.truncate(
+                    before=(temperature.time
+                        - pd.Timedelta(minutes=
+                                       self.config_data.load_level_check.historical_temperature_limit)
+                    )
+                )
+                temperature = DataPointNumber(
+                    value=historical_temperature.mean(),
+                    unit=temperature.unit,
+                    time=temperature.time
+                )
+
+            denominator =  ref_temperature - minimal_temperature
+
+            if math.isclose(denominator, 0, abs_tol=1e-9):
+                logger.debug("Denominator in state of charge adjustment is too small, "
+                            "could not check the thermal storage level.")
+                current_factor = 1.0
+            else:
+                current_factor = (temperature.value - minimal_temperature) / denominator
+
+            if index == 0 and current_factor < 0:
+                # If the temperature of the upper sensor is below the minimal temperature,
+                # there is no usable energy left in the thermal storage,
+                # so the state of charge is 0.
+                return 0.0
+            if current_factor <= 1:
+                mean_current_factor += current_factor * volumes[index]
+
+        mean_current_factor = mean_current_factor / sum(volumes.values())
+        #The factors are weighted with the volume of the sensors, 
+        # so that the influence of the sensors is higher, if they have a higher volume. 
 
         # if the temperature is below the minimal temperature, there is no energy left
-        if self.input_data.temperature_1.value < temperature_limits.minimal_temperature:
+        if mean_current_factor < 0 :
             return 0.0
-
-        # for temperatures above the reference temperature, no adjustment is needed
-        # store the state of charge as reference value, so that it can be used later \
-            # The reference needs to be higher than the minimal level
-        if self.input_data.temperature_1.value >= ref_temperature:
-            self.state_of_charge_information.ref_state_of_charge = state_of_charge
+        if mean_current_factor >= 1:
             return state_of_charge
-        if self.state_of_charge_information.ref_state_of_charge is None:
-            logger.warning("Reference state of charge should be set before "
-                           "checking the thermal storage level. "
-                           "Setting it now - may lead to unexpected results.")
-            self.state_of_charge_information.ref_state_of_charge = state_of_charge
 
-        denominator =  ref_temperature - temperature_limits.minimal_temperature
-
-        if math.isclose(denominator, 0, abs_tol=1e-9):
-            logger.debug("Denominator in state of charge adjustment is too small, "
-                         "could not check the thermal storage level.")
-            current_factor = 1.0
-        else:
-            current_factor = (
-                self.input_data.temperature_1.value
-                - temperature_limits.minimal_temperature
-            ) / denominator
-        return round(
-            current_factor
-            * self.state_of_charge_information.ref_state_of_charge
-            , 2)
+        return round(mean_current_factor * state_of_charge, 2)
 
     def get_state_of_charge(self) -> DataPointNumber:
         """
@@ -481,8 +523,7 @@ class ThermalStorage(BasicComponent):
             / self.state_of_charge_information.nominal_storage_energy
             * 100
         )
-
-        state_of_charge = round(self._check_temperature_of_highest_sensor(
+        state_of_charge = round(self._check_temperature_of_required_sensors(
             state_of_charge=state_of_charge
         ), 2)
 
@@ -571,16 +612,19 @@ class ThermalStorage(BasicComponent):
         """
         Function to calculate the thermal storage values
         """
+        if (self.config_data.calculation_method.value \
+            == ThermalStorageCalculationMethods.HISTORICAL_LIMITS
+            or (self.config_data.load_level_check.enabled
+                and self.config_data.load_level_check.historical_temperature_limit > 0)):
+            logger.debug("Storing thermal storage sensor values.")
+            self.store_storage_temperature_history()
+        
         self.output_data = ThermalStorageOutputData(
             storage__energy=self.get_storage_energy_current(),
             storage__level=self.get_state_of_charge(),
             storage__loading_potential_nominal=self.get_storage_loading_potential_nominal(),
         )
 
-        if self.config_data.calculation_method.value \
-            == ThermalStorageCalculationMethods.HISTORICAL_LIMITS:
-            logger.debug("Storing thermal storage sensor values.")
-            self.store_storage_temperature_history()
 
     def store_storage_temperature_history(self)-> None:
         """
@@ -611,8 +655,8 @@ class ThermalStorage(BasicComponent):
                 continue
 
     def handle_storage_sensor_historical_data(self,
-                                               sensor_index:int
-                                               ) -> Optional[TemperatureExtrema]:
+                                              sensor_index:int
+                                              ) -> Optional[TemperatureExtrema]:
         """
         Function to handle the historical data of a storage sensor
         Args:
