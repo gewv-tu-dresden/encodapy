@@ -7,6 +7,7 @@ import math
 from datetime import datetime
 from loguru import logger
 import pandas as pd
+import numpy as np
 from pydantic import ValidationError
 from encodapy.components.basic_component import BasicComponent
 from encodapy.components.basic_component_config import (
@@ -438,15 +439,12 @@ class ThermalStorage(BasicComponent):
         for index, storage_sensor in enumerate(
             self.config_data.sensor_config.value.storage_sensors
         ):
-            if index == 0:
+            if index == 0 or storage_sensor.temperature_check:
                 ref_values[index] = self._get_temperature_check_ref_temperature(sensor_id=index)
                 volumes[index] = self._get_sensor_volume(sensor=index)
                 continue
-            if storage_sensor.temperature_check:
-                ref_values[index] = self._get_temperature_check_ref_temperature(sensor_id=index)
-                volumes[index] = self._get_sensor_volume(sensor=index)
 
-        mean_current_factor = 0.0
+        mean_current_factor = np.nan
         for index, ref_value in ref_values.items():
             ref_temperature, minimal_temperature = ref_value
             temperature = self.get_storage_temperature_sensor_value(sensor_index=index)
@@ -457,9 +455,10 @@ class ThermalStorage(BasicComponent):
                 if temperature.time not in historical_temperature.index:
                     historical_temperature.at[temperature.time] = temperature.value
                 historical_temperature = historical_temperature.truncate(
-                    before=(temperature.time
-                        - pd.Timedelta(minutes=
-                                       self.config_data.load_level_check.historical_temperature_limit)
+                    before=(
+                        temperature.time
+                        - pd.Timedelta(
+                            minutes=self.config_data.load_level_check.historical_temperature_limit)
                     )
                 )
                 temperature = DataPointNumber(
@@ -482,20 +481,28 @@ class ThermalStorage(BasicComponent):
                 # there is no usable energy left in the thermal storage,
                 # so the state of charge is 0.
                 return 0.0
+
+            #TODO: Do we need other weights?
             if current_factor <= 1:
                 mean_current_factor += current_factor * volumes[index]
 
         mean_current_factor = mean_current_factor / sum(volumes.values())
-        #The factors are weighted with the volume of the sensors, 
-        # so that the influence of the sensors is higher, if they have a higher volume. 
+        #The factors are weighted with the volume of the sensors,
+        # so that the influence of the sensors is higher, if they have a higher volume.
 
-        # if the temperature is below the minimal temperature, there is no energy left
-        if mean_current_factor < 0 :
-            return 0.0
-        if mean_current_factor >= 1:
-            return state_of_charge
+        match mean_current_factor:
+            # If the mean current factor is NaN, there is no need to adjust the state of charge.
+            case _ if math.isnan(mean_current_factor):
+                return state_of_charge
+            # if the temperature is below the minimal temperature, there is no energy left
+            case _ if mean_current_factor < 0:
+                return 0.0
+            case _ if mean_current_factor > 1:
+                # no need to adjust the state of charge
+                return state_of_charge
+            case _:
+                return round(mean_current_factor * state_of_charge, 2)
 
-        return round(mean_current_factor * state_of_charge, 2)
 
     def get_state_of_charge(self) -> DataPointNumber:
         """
