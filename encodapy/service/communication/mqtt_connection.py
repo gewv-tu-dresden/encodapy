@@ -7,8 +7,10 @@ Author: Maximilian Beyer, Martin Altenburger
 import json
 import re
 import threading
+import time
 from datetime import datetime, timezone
 from typing import Optional, Union
+
 import paho.mqtt.client as mqtt
 from loguru import logger
 from paho.mqtt.enums import CallbackAPIVersion
@@ -90,7 +92,7 @@ class MqttConnection:
                 if self.mqtt_params.tls_ca_cert:
                     logger.debug(
                         f"TLS/SSL configured with CA certificate: {self.mqtt_params.tls_ca_cert}"
-                        )
+                    )
                 else:
                     logger.debug("TLS/SSL configured using system default certificates")
             except (ValueError, OSError) as e:
@@ -99,9 +101,7 @@ class MqttConnection:
                 ) from e
 
         # try to connect to the MQTT broker
-        self.mqtt_client.connect(
-            host=self.mqtt_params.host, port=self.mqtt_params.port
-        )
+        self.mqtt_client.connect(host=self.mqtt_params.host, port=self.mqtt_params.port)
         # start the MQTT client loop
         self.start_mqtt_client()
 
@@ -114,7 +114,6 @@ class MqttConnection:
 
         # prepare the message store
         self.prepare_mqtt_message_store()
-
 
     def prepare_mqtt_message_store(self) -> None:
         """
@@ -265,6 +264,8 @@ class MqttConnection:
             )
 
         payload = self.prepare_payload_for_publish(payload)
+        if self.mqtt_params.publish_delay > 0.0:
+            time.sleep(self.mqtt_params.publish_delay)
         self.mqtt_client.publish(topic, payload)
         logger.debug(f"Published to topic {topic}: {payload}")
 
@@ -334,16 +335,16 @@ class MqttConnection:
         if rc == 0:
             self._mqtt_connected = True
             self._mqtt_connection_event.set()
-            logger.debug("MQTT connection successful to broker "
-                         f"{self.mqtt_params.host}:{self.mqtt_params.port}")
+            logger.debug(
+                "MQTT connection successful to broker "
+                f"{self.mqtt_params.host}:{self.mqtt_params.port}"
+            )
 
             try:
                 self.subscribe_to_message_store_topics()
             except NotSupportedError as e:
                 # Message store may be uninitialized or empty; log and continue
-                logger.debug(
-                    f"MQTT message store subscriptions not restored: {e}"
-                )
+                logger.debug(f"MQTT message store subscriptions not restored: {e}")
         else:
             self._mqtt_connected = False
             logger.error(f"MQTT connection failed with result code {rc}")
@@ -355,8 +356,10 @@ class MqttConnection:
         self._mqtt_connected = False
         self._mqtt_connection_event.clear()
         if rc != 0:
-            logger.warning(f"MQTT disconnected unexpectedly with result code {rc}. "
-                           "Will attempt automatic reconnection.")
+            logger.warning(
+                f"MQTT disconnected unexpectedly with result code {rc}. "
+                "Will attempt automatic reconnection."
+            )
         else:
             logger.debug("MQTT disconnected")
 

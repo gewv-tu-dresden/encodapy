@@ -138,6 +138,12 @@ class MQTTEnvVariables(BaseSettings):
             "Only use for testing purposes."
         ),
     )
+    publish_delay: float = Field(
+        default=0.0,
+        description=("Delay in seconds before publishing MQTT messages. "
+                     "Can be used to ensure correct ordering of messages or "
+                     "to give slow clients sufficient time to receive them."),
+    )
 
 
 class FileEnvVariables(BaseSettings):
@@ -162,4 +168,3 @@ class FileEnvVariables(BaseSettings):
     path_of_results: str = Field(
         default="./results", description="Directory path to store the results"
     )
-
