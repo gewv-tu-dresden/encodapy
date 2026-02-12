@@ -12,7 +12,7 @@ As an example of a simple service using Encodapy with a MQTT interface, a heatin
 To run the example, you **need to add** a `.env` file with the content for MQTT_TEMPLATE_EXAMPLE03 (if you do not add the others, the here written standard values will be used):
 
 ```env
-MQTT_TEMPLATE_EXAMPLE03 = "custom_mqtt_template.json" # the only mandatory information
+MQTT_TEMPLATE_EXAMPLE05 = "custom_mqtt_template.json" # the only mandatory information
 
 MQTT_HOST="localhost"    # URL of the MQTT Broker
 MQTT_PORT=1883           # Port of the MQTT Broker
