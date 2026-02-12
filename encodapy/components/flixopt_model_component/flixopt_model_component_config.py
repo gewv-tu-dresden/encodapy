@@ -5,17 +5,17 @@ from typing import Any
 import pandas as pd
 from pydantic import Field, model_validator, field_validator, ConfigDict
 import flixopt as fx # type: ignore[import-untyped]
-from .flixopt_models import (
-    FlixOptSolverName,
-    FlixoptSolverSettings,
-    FlixoptLogLevel
-)
 from encodapy.components.basic_component_config import (
     ConfigData,
     InputData,
     OutputData,
 )
 from encodapy.utils.datapoints import DataPointGeneral, DataPointNumber
+from encodapy.components.flixopt_model_component.flixopt_models import (
+    FlixOptSolverName,
+    FlixoptSolverSettings,
+    FlixoptLogLevel
+)
 
 class DataPointTimeSeries(DataPointGeneral):
     """
@@ -118,6 +118,15 @@ class DataPointFlixoptSolverSettings(DataPointGeneral):
         ),
         description="Solver settings for the flixopt framework",
     )
+class DataPointFlixoptModelConfig(DataPointGeneral):
+    """
+    DataPoint for Flixopt model configuration.
+    Can be a dict or a path to a json file.
+    """
+    value: dict[str, Any]|str = Field(
+        ...,
+        description="Flixopt model configuration as dict or a path to a json file",
+    )
 
 class FlixoptModelComponentConfigData(ConfigData):
     """
@@ -137,6 +146,13 @@ class FlixoptModelComponentConfigData(ConfigData):
             "value": 1e5
         }),
         description="Penalty cost for excess of limits in the flixopt model",
+    )
+    flixopt_model: DataPointFlixoptModelConfig = Field(
+        ...,
+        description="""
+        Flixopt model configuration as dict or a path to a json file as ``DataPointFlixoptModelConfig``.
+        Default to None. A valid flixopt model configuration must be provided.
+        """
     )
 
     def get_solver(self) -> fx.solvers._Solver:

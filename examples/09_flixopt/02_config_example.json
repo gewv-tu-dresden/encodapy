@@ -46,7 +46,7 @@
     "controller_components": [
         {
             "id": "flixopt_model_component",
-            "type": "examples.09_flixopt.flixopt_model_component",
+            "type": "flixopt_model_component",
             "inputs": {
                 "heat_demand": {
                     "entity": "flixopt_input_entity",

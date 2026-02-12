@@ -24,7 +24,8 @@ from .flixopt_model_component_config import (
     FlixoptModelComponentInputData,
     FlixoptModelComponentOutputData,
     FlixoptModelComponentConfigData,
-    DataPointTimeSeries
+    DataPointTimeSeries,
+    DataPointFlixoptModelConfig
 )
 
 
@@ -62,10 +63,25 @@ class FlixoptModelComponent(BasicComponent):
         # Set flixopt log level based on configuration
         FLIXOPT_CONFIG_MAP[self.config_data.log_level.value]()
 
-        #TODO This needs to be adapted for a productiv setup
-        with open("02_flixopt_model_config.json", "r", encoding="utf-8") as file:
-            model_config_json = file.read()
-        self.flixopt_model = FlixOptModel.model_validate_json(model_config_json)
+        try:
+            if not isinstance(self.config_data.flixopt_model, DataPointFlixoptModelConfig):
+                raise ValueError("flixopt_model must be of type DataPointFlixoptModelConfig.")
+            if isinstance(self.config_data.flixopt_model.value, dict):
+                self.flixopt_model = FlixOptModel.model_validate(
+                    self.config_data.flixopt_model.value
+                )
+            elif isinstance(self.config_data.flixopt_model.value, str):
+                with open(self.config_data.flixopt_model.value, "r", encoding="utf-8") as file:
+                    model_config_json = file.read()
+                self.flixopt_model = FlixOptModel.model_validate_json(model_config_json)
+            else:
+                # should not happen due to validation, but just in case
+                raise ValueError(
+                    "flixopt_model must be a dict or a path to a json file."
+                )
+        except (ValidationError, FileNotFoundError) as e:
+            logger.error(f"Error loading flixopt model configuration: {e}")
+            raise e
 
 
     def _get_input_arrays(self,
@@ -248,7 +264,7 @@ class FlixoptModelComponent(BasicComponent):
         """
 
         return fx.linear_converters.Boiler(
-            label = converter.label,
+            label=converter.label,
             thermal_efficiency=converter.thermal_efficiency,
             status_parameters=self._add_status_parameters_to_converter(converter),
             thermal_flow=self._add_output_flow_to_converter(converter),
@@ -269,7 +285,7 @@ class FlixoptModelComponent(BasicComponent):
             thermal_efficiency=converter.thermal_efficiency,
             status_parameters=self._add_status_parameters_to_converter(converter),
             thermal_flow=self._add_output_flow_to_converter(converter),
-            electrical_flow= self._add_input_flow_to_converter(converter)
+            electrical_flow=self._add_input_flow_to_converter(converter)
         )
     def _add_chp_converter(self,
                            converter:FlixOptCHPConverter
@@ -300,6 +316,25 @@ class FlixoptModelComponent(BasicComponent):
             fuel_flow=self._add_input_flow_to_converter(converter)
         )
 
+    def _add_substation_converter(self,
+                                  converter:FlixOptConverter):
+        """
+        Prepare a Substation converter based on the FlixOptConverter model
+        Args:
+            converter (FlixOptConverter): Converter model to define the Substation converter
+        TODO: Add implementation and doc / how could it be possible to add a bidirectional substation?
+        https://github.com/flixOpt/flixopt/blob/main/flixopt/components.py#L32
+        """
+        return fx.components.LinearConverter(
+            label=converter.label,
+            inputs=[self._add_input_flow_to_converter(converter)],
+            outputs=[self._add_output_flow_to_converter(converter)],
+            conversion_factors=[
+                { converter.input_flow: 1, converter.thermal_flow: converter.thermal_efficiency }
+            ],
+            status_parameters=self._add_status_parameters_to_converter(converter)
+        )
+
     def _get_converters(self) : #-> list[fx.Component]:
         """
         Prepare the FlixOpt components based on the model definition
@@ -324,6 +359,10 @@ class FlixoptModelComponent(BasicComponent):
                 case FlixOptConverterTypes.CHP:
                     converters.append(
                         self._add_chp_converter(converter)
+                    )
+                case FlixOptConverterTypes.SUBSTATION:
+                    converters.append(
+                        self._add_substation_converter(converter)
                     )
                 case _:
                     logger.warning(
@@ -373,7 +412,9 @@ class FlixoptModelComponent(BasicComponent):
                     relative_loss_per_hour=storage.relative_self_discharge / 100 \
                         if storage.relative_self_discharge is not None else None,
                     prevent_simultaneous_charge_and_discharge=True,
-                    initial_charge_state=initial_soc
+                    initial_charge_state=initial_soc,
+                    relative_minimum_charge_state=storage.minimal_soc / 100,
+                    relative_maximum_charge_state=storage.maximal_soc / 100
                 )
             )
         return storages
@@ -582,6 +623,9 @@ class FlixoptModelComponent(BasicComponent):
             periods=len(all_timeseries),
             freq=self.df_input.index.freq)
         all_timeseries.set_index("time", inplace=True)
+        # drop last row, because it is often incomplete due to the way the optimization works
+        all_timeseries.drop(index=all_timeseries.index[-1], inplace=True)
+        # all_timeseries.to_csv("./results/optimization_results.csv", sep=";", decimal=",", encoding="utf-8") #TODO remove
         return all_timeseries
 
     def prepare_output_data(self,
@@ -609,28 +653,29 @@ class FlixoptModelComponent(BasicComponent):
         all_timeseries = self.export_results_as_timeseries(results.solution)
 
         #TODO make the mapping configurable
+            # maybe add also the input power of converters
+            # also add the sink and source flows
 
         # print(all_timeseries.columns)
         # print(all_timeseries)
-        outputs: dict[str, pd.DataFrame]= {}
+        outputs: dict[str, DataPointTimeSeries]= {}
         for storage in self.flixopt_model.storages:
-            outputs[storage.label + "_soc"] = \
-                all_timeseries.filter([f"{storage.label}|charge_state"])
+            outputs[storage.label + "_soc"] = DataPointTimeSeries(
+                value = all_timeseries.filter([f"{storage.label}|charge_state"]))
 
         for converter in self.flixopt_model.converters:
 
-            outputs[converter.label + "_thermal_power"] = (
-                all_timeseries[f"{converter.label}({converter.thermal_flow})|flow_rate"]
+            outputs[converter.label + "_thermal_power"] = DataPointTimeSeries(
+                value = (all_timeseries[f"{converter.label}({converter.thermal_flow})|flow_rate"]
                 * all_timeseries[f"{converter.label}|status"]
-            ).to_frame(name=f"{converter.label}_thermal_power")
+            ).to_frame(name=f"{converter.label}_thermal_power"))
             if isinstance(converter, FlixOptCHPConverter):
-                outputs[converter.label + "_electrical_power"] = (
-                    all_timeseries[f"{converter.label}({converter.electrical_flow})|flow_rate"]
+                outputs[converter.label + "_electrical_power"] = DataPointTimeSeries(
+                    value = (all_timeseries[f"{converter.label}({converter.electrical_flow})|flow_rate"]
                     * all_timeseries[f"{converter.label}|status"]
-                ).to_frame(name=f"{converter.label}_electrical_power")
+                ).to_frame(name=f"{converter.label}_electrical_power"))
 
         self.output_data = FlixoptModelComponentOutputData.model_validate(outputs)
-        # print(self.output_data)
 
     def calculate(self) -> None:
         """

@@ -24,7 +24,8 @@ This module provides a structured way to define and manage components for use wi
   An example can be found under: [`examples/06_thermal_storage_service`](../../examples/06_thermal_storage_service/)
 - TwoPointController (`two_point_controller`): Two-Point-Controller component for the steering of the loading process of a thermal storage or other processes.  
   An example can be found under: [`examples/07_component_runner`](../../examples/07_component_runner/)
-
+- Pradictiv Control model with FlixOpt [`flixopt_model_component`]: Component for optimisation within operational management with [FlixOpt](https://github.com/flixOpt/flixopt)  
+  An example can be found under [`examples/09_flixopt`](./../../examples/09_flixopt/).
 ---
 
 ## Component Configuration

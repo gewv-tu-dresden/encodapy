@@ -13,7 +13,7 @@
 
 ## FlixOpt Model for Energy Management
 
-- [flixopt_model_component](./flixopt_model_component): Component to create a simple flixopt model for energy management
+- [flixopt_model_component](./../../encodapy/components/flixopt_model_component/): Component to create a simple flixopt model for energy management
 - [02_flixopt_model_config.json](./02_flixopt_model_config.json): Configuration for the flixopt model --> there is an adaptation necessary for a better integration in the encodapy configuration
 - [02_config_example.json](./02_config_example.json): Configuration for this example with local input file
 - [static_data_flixopt.json](./static_data_flixopt.json): Input data for test purposes

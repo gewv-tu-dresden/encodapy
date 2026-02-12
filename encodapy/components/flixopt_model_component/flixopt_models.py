@@ -104,6 +104,7 @@ class FlixOptConverterTypes(Enum):
     BOILER = "boiler"
     POWER2HEAT = "power2heat"
     CHP = "chp"
+    SUBSTATION = "substation"
 
 class PowerRange(BaseModel):
     """
@@ -153,32 +154,41 @@ class FlixOptConverter(BaseModel):
     Model to define a converter in the flixopt model, like it is used in the flixopt library
     https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Converter/
     """
-    # The model_config is set to forbid extra fields to ensure to use submodels for 
+    # The model_config is set to forbid extra fields to ensure to use submodels for
     # specific converter types (e.g. FlixOptCHPConverter).
     model_config = ConfigDict(extra="forbid")
 
-    label: str
-    converter_type: FlixOptConverterTypes
+    label: str = Field(
+        ...,
+        description="Label / Name of the converter",
+    )
+    converter_type: FlixOptConverterTypes = Field(
+        ...,
+        description="Type of the converter, from the FlixOptConverterTypes enum",
+    )
 
-    thermal_efficiency: float | int
+    thermal_efficiency: float | int = Field(
+        ...,
+        description="Thermal efficiency of the converter [0 ... 1]",
+    )
     input_flow: str = Field(
         ...,
         description="Label of the fuel flow to the converter",
     )
     thermal_flow: str = Field(
         ...,
-        description="Label of the thermal flow from the converter )",
+        description="Label of the thermal flow from the converter",
     )
     thermal_nominal_power: float | int = Field(
         ...,
         description="Nominal thermal power of the converter",
     )
     thermal_power_range: PowerRange = Field(
-        default=PowerRange(),
+        default=PowerRange.model_validate({}),
         description="Thermal power range of the boiler converter in percentages",
     )
     status_parameters: FlixOptStatusParameters = Field(
-        default = FlixOptStatusParameters(),
+        default = FlixOptStatusParameters.model_validate({}),
         description= """
         Optional status parameters for the converter which includes information 
         about startup and shutdown limitations"""
@@ -243,6 +253,16 @@ class FlixOptStorage(BaseModel):
         of a input value (e.g. `initial_soc`) which is then used to read the starting SOC 
         from the input data and is required there in Percentage of the nominal capacity as well
         """,
+    )
+    minimal_soc: float | int = Field(
+        0,
+        description="""
+        Minimal state of charge (SOC) of the storage in percentage of the nominal capacity""",
+    )
+    maximal_soc: float | int = Field(
+        100,
+        description="""
+        Maximal state of charge (SOC) of the storage in percentage of the nominal capacity""",
     )
 
 class EnergyDirection(Enum):

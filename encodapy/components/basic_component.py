@@ -435,7 +435,9 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
             )
             return components
 
-        for datapoint_name, datapoint_config in self.io_model.output.__dict__.items():
+        output_config = self.io_model.output.model_dump()  # pylint: disable=no-member
+
+        for datapoint_name, datapoint_config in output_config.items():
             if datapoint_config is None:
                 continue
             try:

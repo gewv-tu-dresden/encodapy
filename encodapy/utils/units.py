@@ -66,6 +66,7 @@ class DataUnits(Enum):
 
     # Energy / Power
     WTT = "WTT"  # "W"
+    KWT = "KWT"  # "kW"
     WHR = "WHR"  # "Wh"
     KWH = "KWH"  # "kWh"
 

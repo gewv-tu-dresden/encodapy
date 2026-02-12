@@ -5,7 +5,7 @@ Authors: Martin Altenburger
 
 from datetime import datetime
 from typing import Dict, List, Optional, Union
-from pandas import DataFrame
+from pandas import DataFrame, Series
 from pydantic import BaseModel, ConfigDict, field_validator
 from filip.models.ngsi_v2.base import NamedMetadata
 from filip.models.ngsi_v2.context import ContextEntity
@@ -152,7 +152,7 @@ class DataTransferComponentModel(ComponentModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    value: Union[str, float, int, bool, Dict, List, DataFrame, None]
+    value: Union[str, float, int, bool, Dict, List, DataFrame, Series, None]
     unit: Union[DataUnits, None] = None
     timestamp: Optional[Union[datetime, None]] = None
 
@@ -164,6 +164,15 @@ class DataTransferComponentModel(ComponentModel):
         """
         if isinstance(val, BaseModel):
             return val.model_dump(mode='json')
+        return val
+    @field_validator('value', mode='before')
+    @classmethod
+    def convert_value_to_dataframe(cls, val):
+        """
+        Convert a value to a DataFrame, if it is a Series.
+        """
+        if isinstance(val, Series):
+            return val.to_frame()
         return val
 
 
