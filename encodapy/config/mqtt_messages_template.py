@@ -257,18 +257,9 @@ class MQTTTemplateConfig(BaseModel):
             in_topic = param in topic_template
             in_payload = param in payload_template
 
-            if in_topic and in_payload:
-                continue
-
             if not in_topic and not in_payload:
                 logger.debug(
                     f"Parameter {param} not found in MQTT template for topic and payload."
-                )
-            elif not in_topic:
-                logger.debug(f"Parameter {param} not found in MQTT template for topic.")
-            else:
-                logger.debug(
-                    f"Parameter {param} not found in MQTT template for payload."
                 )
 
     @classmethod
