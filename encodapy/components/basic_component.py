@@ -2,7 +2,6 @@
 Description: This module provides basic components for the encodapy package.
 Author: Martin Altenburger
 """
-import json
 from datetime import datetime, timezone
 from typing import Any, Optional, Type, Union, TypeVar, Generic, cast
 from loguru import logger
@@ -407,8 +406,23 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
 
         try:
             self.calculate()
+        except (ImportError, ModuleNotFoundError) as e:
+            logger.error(
+                f"Missing dependency during calculation for {self.component_config.id}: {e}"
+            )
+            return components
         except (ValueError, KeyError, RuntimeError) as e:
             logger.error(f"Calculation failed for {self.component_config.id}: {e}")
+            return components
+        except (AttributeError, TypeError, IndexError, ZeroDivisionError, NameError) as e:
+            logger.error(
+                f"Data error during calculation for {self.component_config.id}: {e}"
+            )
+            return components
+        except Exception as e:  # pylint: disable=broad-except
+            logger.error(
+                f"Unexpected error during calculation for {self.component_config.id}: {e}"
+            )
             return components
 
         try:

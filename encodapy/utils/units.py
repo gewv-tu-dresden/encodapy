@@ -4,10 +4,10 @@ of different units and in the system controller.
 Author: Martin Altenburger
 """
 
-import datetime
 from enum import Enum
-from typing import Union, Optional
-
+from typing import Union, Optional, Any
+import pint
+import pandas as pd
 from loguru import logger
 
 
@@ -25,65 +25,80 @@ class TimeUnits(Enum):
     MONTH = "month"
 
 
-class TimeUnitsSeconds(Enum):
-    """Seconds for the time units"""
-
-    SECOND = datetime.timedelta(seconds=1).total_seconds()
-    MINUTE = datetime.timedelta(minutes=1).total_seconds()
-    HOUR = datetime.timedelta(hours=1).total_seconds()
-    DAY = datetime.timedelta(days=1).total_seconds()
-    MONTH = datetime.timedelta(days=30).total_seconds()
-
-
 class DataUnits(Enum):
     """
     Possible units for the data
     Units which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download
     or https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)
     or here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf
-    TODO:
-        - Is there a better way to handle the units?
-        - Add more units?
-
+    
+    The enum value is the standardized unit code (e.g., "SEC" for seconds).
+    The pint_unit attribute contains the corresponding pint unit string for conversion.
+    
+    To add a new unit, add it to the DataUnits enum: UNIT_NAME = ("CODE", "pint_string")
+    The _UNIT_MAP will be generated automatically from the pint_unit attributes.
+    
+    Usage:
+    - DataUnits.PERCENT.value -> "P1" (unit code, for serialization)
+    - DataUnits.PERCENT.pint_unit -> "percent" (for pint conversion)
+    - DataUnits("P1") -> DataUnits.PERCENT (lookup by unit code)
     """
 
+    pint_unit: str  # Type annotation for the attribute set in __new__
+
+    def __new__(cls, unit_code: str, pint_unit: str = ""):
+        # pint_unit has a default for type checking during lookup (DataUnits("CEL"))
+        # but is always required when defining enum members
+        obj = object.__new__(cls)
+        obj._value_ = unit_code  # This makes .value return the unit_code
+        obj.pint_unit = pint_unit if pint_unit else unit_code
+        return obj
+
     # Time
-    SECOND = "SEC"  # "seconds"
-    HOUR = "HUR"  # "hour"
-    MINUTE = "MIN"  # "minute"
+    SECOND = ("SEC", "second")
+    HOUR = ("HUR", "hour")
+    MINUTE = ("MIN", "minute")
+    DAY = ("DAY", "day")
+    MONTH = ("MON", "month")
+    YEAR = ("ANN", "year")
 
     # Temperature
-    DEGREECELSIUS = "CEL"  # "°C"
-    KELVIN = "KEL"  # "K"
+    DEGREECELSIUS = ("CEL", "degC")
+    KELVIN = ("KEL", "kelvin")
 
     # Volume / Volumeflow
-    LITER = "LTR"  # "l"
-    MTQ = "MTQ"  # "m³"
-    MQH = "MQH"  # "m³/h"
-    MQS = "MQS"  # "m³/s"
-    E32 = "E32"  # "l/h" (E32 is the unit code for liters per hour)
-    L2 = "L2"  # "l/m" (L2 is the unit code for liters per minute)
+    LITER = ("LTR", "liter")
+    MTQ = ("MTQ", "meter**3")
+    MQH = ("MQH", "meter**3 / hour")
+    MQS = ("MQS", "meter**3 / second")
+    E32 = ("E32", "liter / hour")
+    L2 = ("L2", "liter / minute")
 
     # Energy / Power
-    WTT = "WTT"  # "W"
-    KWT = "KWT"  # "kW"
-    WHR = "WHR"  # "Wh"
-    KWH = "KWH"  # "kWh"
+    WTT = ("WTT", "watt")
+    KWT = ("KWT", "kilowatt")
+    WHR = ("WHR", "watt_hour")
+    KWH = ("KWH", "kilowatt_hour")
 
     # Distance/ Area
-    CMT = "CMT"  # "cm"
-    MTR = "MTR"  # "m"
-    MTK = "MTK"  # "m²"
+    CMT = ("CMT", "centimeter")
+    MTR = ("MTR", "meter")
+    MTK = ("MTK", "meter**2")
 
     # speed
-    MTS = "MTS"  # "m/s"
+    MTS = ("MTS", "meter / second")
 
     # unitless
-    PERCENT = "P1"  # "%"
+    PERCENT = ("P1", "percent")
 
     # Electrical
-    OHM = "OHM"  # "Ohm"
-    VLT = "VLT"  # "V"
+    OHM = ("OHM", "ohm")
+    VLT = ("VLT", "volt")
+
+# Map the units to the unit registry of pint for conversion
+# This is automatically generated from the DataUnits enum
+_ureg: pint.UnitRegistry = pint.UnitRegistry()
+_UNIT_MAP: dict[DataUnits, str] = {unit: unit.pint_unit for unit in DataUnits}
 
 
 def get_unit_adjustment_factor(
@@ -107,39 +122,172 @@ def get_unit_adjustment_factor(
         return None
     if unit_actual == unit_target:
         return 1.0
-    # TODO: Real adjustment factors
-    logger.warning(
-        f"Adjustment factor for the conversion of {unit_actual} to {unit_target} "
-        "not implemented yet"
-    )
-    return None
+    if unit_actual in [DataUnits.KELVIN, DataUnits.DEGREECELSIUS]:
+        logger.warning(
+            "Cannot determine adjustment factor for temperature "
+            f"units {unit_actual} and {unit_target}"
+        )
+        return None
+    try:
+        actual = _UNIT_MAP[unit_actual]
+        target = _UNIT_MAP[unit_target]
+    except KeyError:
+        logger.warning(f"Unit mapping missing for {unit_actual} or {unit_target}")
+        return None
 
+    try:
+        q = (1 * _ureg.parse_expression(actual)).to(target)
+        return float(q.magnitude)
+    except pint.DimensionalityError as exc:
+        logger.warning(f"Incompatible units: {unit_actual} -> {unit_target}: {exc}")
+        return None
+
+def adjust_unit_of_value(
+    value: float | int,
+    unit_actual: DataUnits,
+    unit_target: DataUnits
+    )-> Optional[float]:
+    """Function to adjust the unit of a value
+    Args:
+        value (float| int): Value to adjust
+        unit_actual (DataUnits): Actual unit of the value
+        unit_target (DataUnits): Target unit of the value
+    Returns:
+        Optional[float]: Adjusted value, if adjustment factor could be determined
+    """
+    if unit_actual == unit_target:
+        return value
+
+    if not isinstance(value, (int, float)):
+        raise ValueError(f"Value must be a float or int for unit adjustment, got {type(value)}")
+    try:
+        actual = _UNIT_MAP[unit_actual]
+        target = _UNIT_MAP[unit_target]
+    except KeyError as exc:
+        logger.warning(f"Unit mapping missing for {unit_actual} or {unit_target}")
+        raise ValueError(f"Unit mapping missing for {unit_actual} or {unit_target}") from exc
+
+    try:
+
+        q = (value * _ureg.parse_expression(actual)).to(target)
+        return float(q.magnitude)
+
+    except pint.DimensionalityError as exc:
+        logger.warning(f"Incompatible units: {unit_actual} -> {unit_target}: {exc}")
+        raise ValueError(f"Incompatible units: {unit_actual} -> {unit_target}: {exc}") from exc
+
+def adjust_units(
+    value: Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]],
+    unit_actual: Optional[DataUnits],
+    unit_target: Optional[DataUnits],
+    column_name: Optional[str] = None
+    ) -> Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]]:
+    """
+    Function to adjust the unit of a datapoint
+
+    Args:
+        value (Optional[Union[float, int, pd.DataFrame, pd.Series, list]]): Value to adjust
+        unit_actual (Optional[DataUnits]): Actual unit of the value
+        unit_target (Optional[DataUnits]): Target unit of the value
+        column_name (Optional[str]): Name of the column to adjust, if value is a DataFrame
+
+    Returns:
+        Optional[Union[float, int, pd.DataFrame, pd.Series, list]]: Datapoint with adjusted unit, \
+            if adjustment factor could be determined, otherwise None
+    """
+    try:
+        assert unit_actual is not None, "Actual unit is None, cannot adjust unit"
+        assert unit_target is not None, "Target unit is None, cannot adjust unit"
+    except AssertionError as exc:
+        logger.warning("Cannot adjust unit: " + str(exc))
+        return None
+
+    if unit_actual == unit_target:
+        return value
+    adjusted_value: Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]]
+    try:
+        match value:
+            case None:
+                logger.warning("Datapoint has no value, cannot adjust unit")
+                adjusted_value = value
+            case _ if isinstance(value, bool):
+                logger.debug("Value is boolean, cannot adjust unit")
+                adjusted_value = value
+            case _ if isinstance(value, str):
+                logger.debug("Value is string, cannot adjust unit")
+                adjusted_value = value
+            case _ if isinstance(value, (int, float)):
+                adjusted_value = adjust_unit_of_value(
+                    value=value, unit_actual=unit_actual, unit_target=unit_target
+                )
+            case _ if isinstance(value, pd.DataFrame):
+                adjusted_value = value.copy()
+                column = column_name if column_name is not None else adjusted_value.columns[0]
+                adjusted_value[column] = adjusted_value[column].apply(
+                    lambda x: adjust_unit_of_value(x, unit_actual, unit_target)
+                )
+            case _ if isinstance(value, pd.Series):
+                adjusted_value = value.copy()
+                adjusted_value = adjusted_value.apply(
+                    lambda x: adjust_unit_of_value(x, unit_actual, unit_target)
+                )
+            case _ if isinstance(value, list):
+                adjusted_value = [
+                    adjust_unit_of_value(x, unit_actual, unit_target) for x in value
+                ]
+            case _ if isinstance(value, dict):
+                try:
+                    adjusted_value = {
+                        k: adjust_unit_of_value(v, unit_actual, unit_target)
+                        for k, v in value.items()
+                    }
+                except ValueError as exc:
+                    logger.warning(f"Value in dict cannot be adjusted: {exc}")
+                    adjusted_value = value
+            case _:
+                logger.warning(f"Value type {type(value)} not supported for unit adjustment")
+                adjusted_value = value
+
+        return adjusted_value
+    except ValueError as exc:
+        return None
 
 def get_time_unit_seconds(
     time_unit: Union[TimeUnits, str, DataUnits],
 ) -> Optional[float]:
-    """Funktion to get the seconds for a time unit
+    """Function to get the seconds for a time unit using pint
 
     Args:
         time_unit (Union[TimeUnits, str, DataUnits]): time unit / Name of the time unit \
             If you use DataUnits, only the units which are also in TimeUnits are valid
 
     Returns:
-        Union[int, None]: Number of seconds for the time unit\
+        Optional[float]: Number of seconds for the time unit\
             or None if the time unit is not available
     """
-    if isinstance(time_unit, TimeUnits):
-        return TimeUnitsSeconds[time_unit.name].value
+    try:
+        # Convert input to TimeUnits if needed
+        if isinstance(time_unit, TimeUnits):
+            unit_name = time_unit.name.lower()
+        elif isinstance(time_unit, DataUnits):
+            unit_name = time_unit.name.lower()
+        elif isinstance(time_unit, str):
+            unit_name = time_unit.lower()
+        else:
+            logger.warning(f"Time unit type {type(time_unit)} not supported")
+            return None
 
-    if time_unit in [unit.value for unit in TimeUnits]:
-        return TimeUnitsSeconds[TimeUnits(time_unit).name].value
+        # Convert to seconds using pint
+        unit_expr = _ureg.parse_expression(unit_name)
+        seconds = (1 * unit_expr).to("second").magnitude
+        return float(seconds)
 
-    if isinstance(time_unit, DataUnits):
-        return TimeUnitsSeconds[TimeUnits[time_unit.name].name].value
-
-    if time_unit in [unit.name for unit in DataUnits]:
-        if DataUnits(time_unit).name in [unit.name for unit in TimeUnits]:
-            return TimeUnitsSeconds[TimeUnits(DataUnits(time_unit).name).name].value
-
-    logger.warning(f"Time unit {time_unit} not available")
-    return None
+    except pint.UndefinedUnitError as exc:
+        logger.warning(f"Time unit '{time_unit}' is not defined in pint: {exc}")
+        return None
+    except pint.DimensionalityError as exc:
+        logger.warning(f"Time unit '{time_unit}' cannot be converted to seconds: {exc}")
+        return None
+    except AttributeError as exc:
+        logger.warning(f"Invalid time unit input '{time_unit}': {exc}")
+        return None
