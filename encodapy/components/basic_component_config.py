@@ -8,7 +8,7 @@ from typing import Dict, Optional
 from loguru import logger
 from pydantic import BaseModel, Field, RootModel, model_validator
 
-from encodapy.utils.units import DataUnits, get_unit_adjustment_factor
+from encodapy.utils.units import DataUnits, get_unit_adjustment_factor, adjust_unit_of_value
 from encodapy.utils.datapoints import DataPointGeneral
 
 
@@ -121,18 +121,18 @@ class ComponentData(BaseModel):
                             f"Could not convert, because value is None or not a number."
                         )
                         continue
-                    unit_adjustment_factor = get_unit_adjustment_factor(
-                        unit_actual=value.unit, unit_target=DataUnits(extra["unit"])
-                    )
-                    if unit_adjustment_factor is None:
+                    try:
+                        value.value = adjust_unit_of_value(
+                            value=value.value, unit_actual=value.unit, unit_target=DataUnits(extra["unit"])
+                        )
+                        value.unit = DataUnits(extra["unit"])
+                    except ValueError as exc:
                         logger.warning(
                             f"Unit of {name} is {value.unit}, but expected {extra['unit']}. "
                             f"Could not convert, because units are not compatible "
-                            "or no adjustment factor found."
+                            f"or no adjustment factor found: {exc}"
                         )
                         continue
-                    value.value = value.value * unit_adjustment_factor
-                    value.unit = DataUnits(extra["unit"])
         return self
 
 
