@@ -41,12 +41,14 @@
             "id": "heater",
             "interface": "fiware",
             "id_interface": "urn:heater:01",
-            "attributes": [],
-            "commands":[
+            "attributes": [
                 {
                     "id": "operation__setpoint", 
-                    "id_interface":"operation__setpoint"
+                    "id_interface":"operation__setpoint_test",
+                    "unit": "KWT"
                 }
+            ],
+            "commands":[
             ]
         }
     ],

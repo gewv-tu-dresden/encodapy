@@ -51,7 +51,7 @@ from encodapy.utils.models import (
 from encodapy.utils.units import (
     DataUnits,
     get_time_unit_seconds,
-    get_unit_adjustment_factor,
+    adjust_units
 )
 from encodapy.config.env_values import FiwareEnvVariables
 
@@ -764,8 +764,7 @@ class FiwareConnection:
     async def prepare_timeseries_for_fiware(
         self,
         fiware_datapoint: FiwareDatapointParameter,
-        datatype: DataType,
-        factor_unit_adjustment: float,
+        datatype: DataType
     ) -> list[NamedContextAttribute]:
         """
         Function to prepare the timeseries data for the FIWARE platform
@@ -801,7 +800,7 @@ class FiwareConnection:
 
         attr = NamedContextAttribute(
             name=fiware_datapoint.attribute.id_interface,
-            value=df[fiware_datapoint.attribute.id].iloc[-1] * factor_unit_adjustment,
+            value=df[fiware_datapoint.attribute.id].iloc[-1],
             type=datatype,
             metadata=meta_data_row,
         )
@@ -821,7 +820,7 @@ class FiwareConnection:
             attrs_timeseries.append(
                 NamedContextAttribute(
                     name=fiware_datapoint.attribute.id_interface,
-                    value=row[fiware_datapoint.attribute.id] * factor_unit_adjustment,
+                    value=row[fiware_datapoint.attribute.id],
                     type=datatype,
                     metadata=meta_data_row,
                 )
@@ -834,6 +833,44 @@ class FiwareConnection:
             )
 
         return attr
+
+    def _adjust_units_for_fiware(
+        self,
+        id_output_entity:str,
+        attribute: AttributeModel,
+        fiware_unit: Optional[DataUnits],
+        ) -> tuple[AttributeModel, list[NamedMetadata]]:
+
+        meta_data = []
+
+        if attribute.unit is not None and fiware_unit is None:
+            meta_data.append(NamedMetadata(
+                    name="unitCode", type=DataType.TEXT, value=attribute.unit.value
+                ))
+
+        elif attribute.unit is not None and fiware_unit is not None:
+
+            attribute_value_adjusted = adjust_units(
+                value=attribute.value,
+                unit_actual=attribute.unit,
+                unit_target=fiware_unit,
+            )
+            if attribute_value_adjusted is not None:
+                attribute.value = attribute_value_adjusted
+                attribute.unit = fiware_unit
+                meta_data.append(NamedMetadata(
+                        name="unitCode", type=DataType.TEXT, value=fiware_unit.value
+                    ))
+            else:
+                logger.error(
+                    f"Could not adjust unit for attribute {attribute.id} of entity "
+                    f"{id_output_entity} for FIWARE. Sending the value without unit adjustment."
+                )
+                meta_data.append(NamedMetadata(
+                        name="unitCode", type=DataType.TEXT, value=fiware_unit.value
+                    ))
+
+        return attribute, meta_data
 
     async def _send_data_to_fiware(
         self,
@@ -863,7 +900,6 @@ class FiwareConnection:
         for attribute in output_attributes:
 
             fiware_unit = None
-            factor_unit_adjustment: Optional[float] = 1.0
 
             if attribute.id_interface in entity_attributes:
                 datatype = entity_attributes[attribute.id_interface].type
@@ -879,27 +915,10 @@ class FiwareConnection:
             else:
                 datatype = attribute.datatype
 
-            meta_data = []
-
-            if attribute.unit is not None and fiware_unit is None:
-                meta_data.append(
-                    NamedMetadata(
-                        name="unitCode", type=DataType.TEXT, value=attribute.unit.value
-                    )
-                )
-                factor_unit_adjustment = 1.0
-            elif attribute.unit is None:
-                logger.debug(
-                    f"No information about the unit of the attribute {attribute.id} "
-                    f"from entity {output_entity.id} available!"
-                )
-                factor_unit_adjustment = 1.0
-
-            elif fiware_unit is not attribute.unit:
-
-                factor_unit_adjustment = get_unit_adjustment_factor(
-                    unit_actual=attribute.unit, unit_target=fiware_unit
-                )
+            attribute, meta_data = self._adjust_units_for_fiware(
+                id_output_entity = output_entity.id,
+                attribute=attribute, fiware_unit=fiware_unit
+            )
 
             if isinstance(attribute.value, pd.DataFrame):
 
@@ -912,8 +931,7 @@ class FiwareConnection:
                             attribute=attribute,
                             metadata=meta_data,
                         ),
-                        datatype=datatype,
-                        factor_unit_adjustment=factor_unit_adjustment,
+                        datatype=datatype
                     )
                 )
                 continue
@@ -921,31 +939,17 @@ class FiwareConnection:
                 NamedMetadata(
                     name="TimeInstant",
                     type=DataType.DATETIME,
-                    value=attribute.timestamp.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                    value=(
+                        attribute.timestamp.strftime("%Y-%m-%dT%H:%M:%S%z")
+                        if attribute.timestamp is not None
+                        else datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")),
                 )
             )
-
-            try:
-                if factor_unit_adjustment is not None \
-                    and isinstance(attribute.value, (int, float)):
-                    value = attribute.value * factor_unit_adjustment \
-                        if attribute.value is not None else None
-                elif factor_unit_adjustment != 1.0 and factor_unit_adjustment is not None:
-                    raise TypeError("Unsupported type for unit adjustment: "
-                                    f"{type(attribute.value)}")
-                else:
-                    value = attribute.value
-            except TypeError as e:
-                logger.error(
-                    f"Error while adjusting unit for attribute {attribute.id} of entity "
-                    f"{output_entity.id} for FIWARE: {e}"
-                )
-                value = attribute.value
             try:
                 attrs.append(
                     NamedContextAttribute(
                         name=attribute.id_interface,
-                        value=value,
+                        value=attribute.value,
                         type=datatype,
                         metadata=meta_data,
                     )
@@ -965,15 +969,6 @@ class FiwareConnection:
                     type=DataType.COMMAND,
                 )
             )
-
-        output_points = attrs + cmds
-
-        if len(output_points) == 0:
-            logger.debug(
-                "There is no output data available to send to the FIWARE platform "
-                f"for the entity {fiware_entity.id}."
-            )
-            return
 
         if len(attrs) > 0:
             i = 0
