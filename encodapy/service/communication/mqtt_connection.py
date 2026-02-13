@@ -10,12 +10,10 @@ import threading
 import time
 from datetime import datetime, timezone
 from typing import Optional, Union
-
 import paho.mqtt.client as mqtt
 from loguru import logger
 from paho.mqtt.enums import CallbackAPIVersion
 from pandas import DataFrame
-
 from encodapy.config import (
     ConfigModel,
     DataQueryTypes,

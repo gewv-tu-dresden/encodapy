@@ -146,7 +146,9 @@ class MQTTTemplateConfig(BaseModel):
                 f"got {type(mqtt_format_template).__name__} ({mqtt_format_template})."
             )
 
-        cls._log_missing_params(mqtt_format_template)
+        cls._log_missing_params(
+            mqtt_format_data=mqtt_format_template,
+            name=mqtt_format_template_env)
 
         return {
             "topic": cls.load_mqtt_template(
@@ -207,7 +209,9 @@ class MQTTTemplateConfig(BaseModel):
         if "payload" not in mqtt_format_data:
             raise ValueError("MQTT template dict must contain 'payload' key.")
 
-        cls._log_missing_params(mqtt_format_data)
+        cls._log_missing_params(
+            mqtt_format_data=mqtt_format_data,
+            name="dict_input") # there is no name
 
         return {
             "topic": cls.load_mqtt_template(
@@ -220,12 +224,16 @@ class MQTTTemplateConfig(BaseModel):
         }
 
     @classmethod
-    def _log_missing_params(cls, mqtt_format_data: dict) -> None:
+    def _log_missing_params(cls,
+                            mqtt_format_data: dict,
+                            name: Optional[str] = None
+                            ) -> None:
         """
         Log missing parameters per template part once.
 
         Args:
             mqtt_format_data: Dictionary containing `topic` and `payload` templates.
+            name: Optional name of the template for logging context.
         """
         topic_raw = mqtt_format_data.get("topic", {})
         payload_raw = mqtt_format_data.get("payload", {})
@@ -259,7 +267,7 @@ class MQTTTemplateConfig(BaseModel):
 
             if not in_topic and not in_payload:
                 logger.debug(
-                    f"Parameter {param} not found in MQTT template for topic and payload."
+                    f"Parameter {param} not found in MQTT template '{name}' for topic and payload."
                 )
 
     @classmethod
