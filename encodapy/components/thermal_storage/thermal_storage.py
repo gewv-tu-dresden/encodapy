@@ -80,7 +80,7 @@ class ThermalStorage(BasicComponent):
         # Set the default value for the reference state of charge to None - start of the service
         self.state_of_charge_information: ThermalStorageLoadLevelStorage = \
             ThermalStorageLoadLevelStorage.model_validate({})
-        self.calibration_data = CalibrationData(db_path=self.config_data.calibration.db_path)
+        self.calibration_data = CalibrationData(db_path=self.config_data.calibration.value.db_path)
         self.component_started = False
 
     def _calculate_volume_per_sensor(self) -> dict:
@@ -411,7 +411,7 @@ class ThermalStorage(BasicComponent):
                 temperature_limits.maximal_temperature
                 - temperature_limits.minimal_temperature
             )
-            * (self.config_data.load_level_check.minimal_level / 100)
+            * (self.config_data.load_level_check.value.minimal_level / 100)
         )
         return ref_temperature, temperature_limits.minimal_temperature
 
@@ -430,8 +430,9 @@ class ThermalStorage(BasicComponent):
 
         TODO: do we need a reference state of charge for the calculation?
         """
-        if self.config_data.load_level_check.enabled is False:
-            return state_of_charge
+        match self.config_data.load_level_check.value.enabled:
+            case False:
+                return state_of_charge
 
         ref_values: dict[int, tuple[float, float]] = {}
         volumes: dict[int, float] = {}
@@ -442,7 +443,6 @@ class ThermalStorage(BasicComponent):
             if index == 0 or storage_sensor.temperature_check:
                 ref_values[index] = self._get_temperature_check_ref_temperature(sensor_id=index)
                 volumes[index] = self._get_sensor_volume(sensor=index)
-                continue
 
         mean_current_factor = np.nan
         for index, ref_value in ref_values.items():
@@ -458,7 +458,8 @@ class ThermalStorage(BasicComponent):
                     before=(
                         temperature.time
                         - pd.Timedelta(
-                            minutes=self.config_data.load_level_check.historical_temperature_limit)
+                            minutes=
+                            self.config_data.load_level_check.value.historical_temperature_limit)
                     )
                 )
                 temperature = DataPointNumber(
@@ -484,6 +485,8 @@ class ThermalStorage(BasicComponent):
 
             #TODO: Do we need other weights?
             if current_factor <= 1:
+                if np.isnan(mean_current_factor):
+                    mean_current_factor = 0
                 mean_current_factor += current_factor * volumes[index]
 
         mean_current_factor = mean_current_factor / sum(volumes.values())
@@ -621,11 +624,11 @@ class ThermalStorage(BasicComponent):
         """
         if (self.config_data.calculation_method.value \
             == ThermalStorageCalculationMethods.HISTORICAL_LIMITS
-            or (self.config_data.load_level_check.enabled
-                and self.config_data.load_level_check.historical_temperature_limit > 0)):
+            or (self.config_data.load_level_check.value.enabled
+                and self.config_data.load_level_check.value.historical_temperature_limit > 0)):
             logger.debug("Storing thermal storage sensor values.")
             self.store_storage_temperature_history()
-        
+
         self.output_data = ThermalStorageOutputData(
             storage__energy=self.get_storage_energy_current(),
             storage__level=self.get_state_of_charge(),
@@ -684,7 +687,7 @@ class ThermalStorage(BasicComponent):
 
         if historical_data is not None and timerange is not None \
             and timerange >= pd.Timedelta(
-            hours=self.config_data.calibration.historical_timerange_minimum
+            hours=self.config_data.calibration.value.historical_timerange_minimum
         ):
             new_extrema = TemperatureExtrema(
                 minimal_temperature=min(historical_data),
@@ -734,7 +737,7 @@ class ThermalStorage(BasicComponent):
         if sensor_index in self.sensor_values_stored \
             and self.sensor_values_stored[sensor_index] is not None:
             cutoff = self.sensor_values_stored[sensor_index].index.max() - pd.Timedelta(
-                hours=self.config_data.calibration.historical_timerange_retention)
+                hours=self.config_data.calibration.value.historical_timerange_retention)
             self.sensor_values_stored[sensor_index] = \
                 self.sensor_values_stored[sensor_index].truncate(before=cutoff)
 
@@ -747,6 +750,7 @@ class ThermalStorage(BasicComponent):
         Uses historical temperature data to adjust the sensor configuration limits
         TODO: Do we need a limit for the adjustment - the upper and lower limit for some reason?
         """
+        calibration_config = self.config_data.calibration.value
         if self.calibration_data.db_path is not None:
             self.config_data.sensor_config.value = (
                 self.calibration_data.load_limits_sqlite(
@@ -765,22 +769,22 @@ class ThermalStorage(BasicComponent):
                 continue
             # Calculate new limits based on historical data and configuration
             # / do not adjust protected sensors
-            if index in self.config_data.calibration.protected_sensors_lower_limit \
-                or sensor_config.name in self.config_data.calibration.protected_sensors_lower_limit:
+            if index in calibration_config.protected_sensors_lower_limit \
+                or sensor_config.name in calibration_config.protected_sensors_lower_limit:
                 minimal_temperature = sensor_config.limits.minimal_temperature
             else:
                 minimal_temperature = round((
                     historical_data.minimal_temperature
-                    * (1-self.config_data.calibration.historical_data_margin/100)
+                    * (1-calibration_config.historical_data_margin/100)
                     + sensor_config.limits.minimal_temperature
                     ) / 2,1)
-            if index in self.config_data.calibration.protected_sensors_upper_limit \
-                or sensor_config.name in self.config_data.calibration.protected_sensors_upper_limit:
+            if index in calibration_config.protected_sensors_upper_limit \
+                or sensor_config.name in calibration_config.protected_sensors_upper_limit:
                 maximal_temperature = sensor_config.limits.maximal_temperature
             else:
                 maximal_temperature = round((
                     historical_data.maximal_temperature
-                    * (1+self.config_data.calibration.historical_data_margin/100)
+                    * (1+calibration_config.historical_data_margin/100)
                     + sensor_config.limits.maximal_temperature
                     ) / 2,1)
 

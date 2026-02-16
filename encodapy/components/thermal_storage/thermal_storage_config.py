@@ -460,6 +460,24 @@ class ThermalStorageCalibrationConfig(BaseModel):
         description="List of sensor indices whose lower limits should not be adjusted "
         "during calibration",
     )
+class DataPointThermalStorageLoadLevelCheck(DataPointGeneral):
+    """
+    Model for datapoints of the controller component \
+        which define the state of charge check configuration.
+    """
+    value: ThermalStorageLoadLevelCheck = Field(
+        ThermalStorageLoadLevelCheck.model_validate({}),
+        description="Value of the datapoint, which is a ThermalStorageLoadLevelCheck "
+    )
+class DataPointThermalStorageCalibrationConfig(DataPointGeneral):
+    """
+    Model for datapoints of the controller component \
+        which define the calibration configuration.
+    """
+    value: ThermalStorageCalibrationConfig = Field(
+        ThermalStorageCalibrationConfig.model_validate({}),
+        description="Value of the datapoint, which is a ThermalStorageCalibrationConfig "
+    )
 class ThermalStorageConfigData(ConfigData):
     """
     Model for the configuration data of the thermal storage service.
@@ -471,8 +489,10 @@ class ThermalStorageConfigData(ConfigData):
             Sensor configuration of the thermal storage
         calculation_method (DataPointCalculationMethod) : \
             Calculation method for the thermal storage
-        load_level_check: (ThermalStorageLoadLevelCheck) : \
+        load_level_check: (DataPointThermalStorageLoadLevelCheck) : \
             Configuration for the state of charge check
+        calibration: (DataPointThermalStorageCalibrationConfig) : \
+            Configuration for the calibration of the thermal storage
     """
 
     volume: DataPointNumber = Field(
@@ -492,12 +512,12 @@ class ThermalStorageConfigData(ConfigData):
         ),
         description="Calculation method for the thermal storage",
     )
-    load_level_check: ThermalStorageLoadLevelCheck = Field(
-        ThermalStorageLoadLevelCheck.model_validate({}),
+    load_level_check: DataPointThermalStorageLoadLevelCheck = Field(
+        DataPointThermalStorageLoadLevelCheck.model_validate({}),
         description="Configuration for the state of charge check",
     )
-    calibration: ThermalStorageCalibrationConfig = Field(
-        ThermalStorageCalibrationConfig.model_validate({}),
+    calibration: DataPointThermalStorageCalibrationConfig = Field(
+        DataPointThermalStorageCalibrationConfig.model_validate({}),
         description="Calibration configuration for the thermal storage",
     )
 
