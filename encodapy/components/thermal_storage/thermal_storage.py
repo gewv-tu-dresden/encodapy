@@ -484,10 +484,9 @@ class ThermalStorage(BasicComponent):
                 return 0.0
 
             #TODO: Do we need other weights?
-            if current_factor <= 1:
-                if np.isnan(mean_current_factor):
-                    mean_current_factor = 0
-                mean_current_factor += current_factor * volumes[index]
+            if np.isnan(mean_current_factor):
+                mean_current_factor = 0
+            mean_current_factor += current_factor * volumes[index]
 
         mean_current_factor = mean_current_factor / sum(volumes.values())
         #The factors are weighted with the volume of the sensors,

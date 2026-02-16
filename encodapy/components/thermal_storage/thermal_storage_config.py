@@ -403,7 +403,7 @@ class ThermalStorageLoadLevelCheck(BaseModel):
         description="Enable or disable the state of charge check",
     )
     minimal_level: float = Field(
-        30.0,
+        35.0,
         gt=0,
         le=100,
         description="""Threshold percentage for the upper temperature sensor.
