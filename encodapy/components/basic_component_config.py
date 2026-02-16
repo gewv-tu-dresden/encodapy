@@ -8,7 +8,7 @@ from typing import Dict, Optional
 from loguru import logger
 from pydantic import BaseModel, Field, RootModel, model_validator
 
-from encodapy.utils.units import DataUnits, get_unit_adjustment_factor, adjust_unit_of_value
+from encodapy.utils.units import DataUnits, adjust_unit_of_value
 from encodapy.utils.datapoints import DataPointGeneral
 
 
@@ -108,10 +108,10 @@ class ComponentData(BaseModel):
                 continue
 
             if isinstance(value, DataPointGeneral):
-                if "unit" in extra.keys() and value.unit is None:
+                if "unit" in extra.keys() and value.unit is None and isinstance(extra["unit"], str):
                     value.unit = DataUnits(extra["unit"])
                 elif (
-                    "unit" in extra.keys()
+                    "unit" in extra.keys() and isinstance(extra["unit"], str)
                     and value.unit is not None
                     and value.unit != DataUnits(extra["unit"])
                 ):
@@ -123,7 +123,9 @@ class ComponentData(BaseModel):
                         continue
                     try:
                         value.value = adjust_unit_of_value(
-                            value=value.value, unit_actual=value.unit, unit_target=DataUnits(extra["unit"])
+                            value=value.value,
+                            unit_actual=value.unit,
+                            unit_target=DataUnits(extra["unit"])
                         )
                         value.unit = DataUnits(extra["unit"])
                     except ValueError as exc:

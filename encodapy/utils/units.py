@@ -9,6 +9,7 @@ from typing import Union, Optional, Any
 import pint
 import pandas as pd
 from loguru import logger
+from encodapy.utils.deprecated import deprecated
 
 
 class TimeUnits(Enum):
@@ -101,10 +102,20 @@ _ureg: pint.UnitRegistry = pint.UnitRegistry()
 _UNIT_MAP: dict[DataUnits, str] = {unit: unit.pint_unit for unit in DataUnits}
 
 
+@deprecated("Use adjust_unit_of_value instead. Will be removed in future versions.")
 def get_unit_adjustment_factor(
     unit_actual: DataUnits, unit_target: DataUnits
 ) -> Optional[float]:
     """Function to get the adjustment factor for the conversion of units
+
+    It is recommended to use adjust_units instead, which directly adjusts the value \
+    and unit of a datapoint, \
+    and handles more complex cases (e.g., DataFrames, Series, lists, dicts) \
+    and also handles the case when the value is None or not a number.
+
+    This function is still available for backward compatibility, \
+        but will be removed in future versions. 
+    It is recommended to switch to adjust_units, which is more robust and handles more cases.
 
     Args:
         unit_actual (DataUnits): Actual unit
@@ -112,8 +123,10 @@ def get_unit_adjustment_factor(
 
     Returns:
         Optional[float]: Adjustment factor for the conversion of the units, if found
-    """
 
+    TODO: Remove the function
+    """
+    
     if unit_actual is None:
         logger.warning("Actual unit is None, could not determine adjustment factor")
         return None

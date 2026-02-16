@@ -35,7 +35,7 @@ from encodapy.config import (
 )
 from encodapy.utils.error_handling import NoCredentials, InterfaceNotActive
 from encodapy.utils.cratedb import CrateDBConnection
-from encodapy.utils.fiware_auth import BaererToken
+from encodapy.utils.fiware_auth import BearerToken
 from encodapy.utils.models import (
     InputDataAttributeModel,
     InputDataEntityModel,
@@ -65,7 +65,7 @@ class FiwareConnection:
     def __init__(self)-> None:
 
         self.fiware_conn_params: FiwareConnectionParameter = None
-        self.fiware_token_client: BaererToken = None
+        self.fiware_token_client: BearerToken = None
         self.fiware_header: FiwareHeaderSecure = None
         self.cb_client: ContextBrokerClient = None
         self.crate_db_client: CrateDBConnection = None
@@ -89,9 +89,9 @@ class FiwareConnection:
                     client_secret=fiware_env.client_pw,
                     token_url=str(fiware_env.token_url),
                 )
-            elif fiware_env.baerer_token is not None:
+            elif fiware_env.bearer_token is not None:
                 fiware_auth = FiwareAuth(
-                    baerer_token=fiware_env.baerer_token
+                    bearer_token=fiware_env.bearer_token
                 )
             else:
                 logger.error("No authentication credentials available")
@@ -138,10 +138,10 @@ class FiwareConnection:
 
         if fiware_auth is not None:
 
-            if fiware_auth.baerer_token is not None:
-                self.fiware_token_client = BaererToken(token=fiware_auth.baerer_token)
+            if fiware_auth.bearer_token is not None:
+                self.fiware_token_client = BearerToken(token=fiware_auth.bearer_token)
             else:
-                self.fiware_token_client = BaererToken(
+                self.fiware_token_client = BearerToken(
                     client_id=fiware_auth.client_id,
                     client_secret=fiware_auth.client_secret,
                     token_url=fiware_auth.token_url,
@@ -149,7 +149,7 @@ class FiwareConnection:
             self.fiware_header = FiwareHeaderSecure(
                 service=self.fiware_conn_params.fiware_params.service,
                 service_path=self.fiware_conn_params.fiware_params.service_path,
-                authorization=self.fiware_token_client.baerer_token,
+                authorization=self.fiware_token_client.bearer_token,
             )
         else:
             self.fiware_header = FiwareHeaderSecure(
@@ -178,7 +178,7 @@ class FiwareConnection:
             self.fiware_token_client.check_token() is False
         ):
             self.fiware_header.__dict__["authorization"] = (
-                self.fiware_token_client.baerer_token
+                self.fiware_token_client.bearer_token
             )
 
     def _get_last_timestamp_for_fiware_output(

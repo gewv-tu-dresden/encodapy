@@ -1,5 +1,5 @@
 """
-Description: This file contains the class BaererToken,\
+Description: This file contains the class BearerToken,\
     which is used to check if an OAuth2 bearer token is valid.
 Author: Martin Altenburger
 """
@@ -10,7 +10,7 @@ from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 
 
-class BaererToken:
+class BearerToken:
     """
     Checks if an OAuth2 bearer token is valid.
 
@@ -20,9 +20,9 @@ class BaererToken:
 
     def __init__(
         self,
-        client_id: str = None,
-        client_secret: str = None,
-        token_url: str = None,
+        client_id: str,
+        client_secret: str,
+        token_url: str,
         token: Union[str, None] = None,
     ) -> None:
         self.client_id = client_id
@@ -64,7 +64,7 @@ class BaererToken:
 
     def _get_new_token(self) -> None:
         """
-        Function to get new baerer-token from oauth2-provider
+        Function to get new bearer-token from oauth2-provider
         """
         client = BackendApplicationClient(client_id=self.client_id)
         oauth = OAuth2Session(client=client)
@@ -82,16 +82,16 @@ class BaererToken:
         return self.token_type
 
     @property
-    def baerer_token(self) -> str:
+    def bearer_token(self) -> str:
         """
-        Returns the baerer-token
+        Returns the bearer-token
         """
         return f"""Bearer {self.token}"""
 
-    def check_token(self) -> None:
+    def check_token(self) -> bool:
         """
-        Function to check if the actual baerer-token is valid and if not,\
-            get a new baerer-token from oauth2-provider
+        Function to check if the actual bearer-token is valid and if not,\
+            get a new bearer-token from oauth2-provider
 
         Returns:
             bool: True if old token is valid, false if new token has been received

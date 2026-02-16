@@ -215,13 +215,13 @@ class FiwareAuth(BaseModel):
         client_id (str): The client id
         client_secret (str): The client secret
         token_url (str): The token url
-        baerer_token (str): The baerer token
+        bearer_token (str): The bearer token
     """
 
     client_id: Optional[str] = None
     client_secret: Optional[str] = None
     token_url: Optional[str] = None
-    baerer_token: Optional[str] = None
+    bearer_token: Optional[str] = None
 
 
 class FiwareParameter(BaseModel):
