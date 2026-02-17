@@ -23,7 +23,6 @@ from encodapy.components.basic_component_config import (
     IOAllocationModel,
     DataPointGeneral
 )
-from encodapy.utils.units import DataUnits
 
 class ExampleService(ControllerBasicService):
     """

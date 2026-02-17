@@ -5,7 +5,7 @@ Author: Martin Altenburger
 """
 
 from enum import Enum
-from typing import Union, Optional, Any
+from typing import Union, Optional
 import pint
 import pandas as pd
 from loguru import logger
@@ -126,13 +126,14 @@ def get_unit_adjustment_factor(
 
     TODO: Remove the function
     """
-    
-    if unit_actual is None:
-        logger.warning("Actual unit is None, could not determine adjustment factor")
+
+    try:
+        assert unit_actual is not None, "Actual unit is None, cannot determine adjustment factor"
+        assert unit_target is not None, "Target unit is None, cannot determine adjustment factor"
+    except AssertionError as exc:
+        logger.warning("Cannot determine adjustment factor: " + str(exc))
         return None
-    if unit_target is None:
-        logger.warning("Target unit is None, could not determine adjustment factor")
-        return None
+
     if unit_actual == unit_target:
         return 1.0
     if unit_actual in [DataUnits.KELVIN, DataUnits.DEGREECELSIUS]:
@@ -144,8 +145,10 @@ def get_unit_adjustment_factor(
     try:
         actual = _UNIT_MAP[unit_actual]
         target = _UNIT_MAP[unit_target]
-    except KeyError:
-        logger.warning(f"Unit mapping missing for {unit_actual} or {unit_target}")
+        assert unit_actual not in [DataUnits.KELVIN, DataUnits.DEGREECELSIUS], \
+            "Temperature units are not supported for adjustment factor calculation"
+    except (KeyError, AssertionError) as exc:
+        logger.warning(f"Could not map the unit for {unit_actual} or {unit_target}: {exc}")
         return None
 
     try:
@@ -196,7 +199,15 @@ def adjust_units(
     column_name: Optional[str] = None
     ) -> Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]]:
     """
-    Function to adjust the unit of a datapoint
+    Function to adjust the unit of a datapoint. To use this function, simply pass the value, \
+        the actual unit and the target unit, like:
+        ```
+        adjusted_value = adjust_units(
+            value=10,
+            unit_actual=DataUnits.SECOND,
+            unit_target=DataUnits.MINUTE
+        )
+        ```
 
     Args:
         value (Optional[Union[float, int, pd.DataFrame, pd.Series, list]]): Value to adjust
@@ -207,10 +218,12 @@ def adjust_units(
     Returns:
         Optional[Union[float, int, pd.DataFrame, pd.Series, list]]: Datapoint with adjusted unit, \
             if adjustment factor could be determined, otherwise None
+
     """
     try:
         assert unit_actual is not None, "Actual unit is None, cannot adjust unit"
         assert unit_target is not None, "Target unit is None, cannot adjust unit"
+        assert value is not None, "Value is None, cannot adjust unit"
     except AssertionError as exc:
         logger.warning("Cannot adjust unit: " + str(exc))
         return None
@@ -219,47 +232,40 @@ def adjust_units(
         return value
     adjusted_value: Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]]
     try:
-        match value:
-            case None:
-                logger.warning("Datapoint has no value, cannot adjust unit")
+        if isinstance(value, (bool, str)):
+            logger.debug(f"Value is {type(value).__name__}, cannot adjust unit")
+            adjusted_value = value
+        elif isinstance(value, (int, float)):
+            adjusted_value = adjust_unit_of_value(
+                value=value, unit_actual=unit_actual, unit_target=unit_target
+            )
+        elif isinstance(value, pd.DataFrame):
+            adjusted_value = value.copy()
+            column = column_name if column_name is not None else adjusted_value.columns[0]
+            adjusted_value[column] = adjusted_value[column].apply(
+                lambda x: adjust_unit_of_value(x, unit_actual, unit_target)
+            )
+        elif isinstance(value, pd.Series):
+            adjusted_value = value.copy()
+            adjusted_value = adjusted_value.apply(
+                lambda x: adjust_unit_of_value(x, unit_actual, unit_target)
+            )
+        elif isinstance(value, list):
+            adjusted_value = [
+                adjust_unit_of_value(x, unit_actual, unit_target) for x in value
+            ]
+        elif isinstance(value, dict):
+            try:
+                adjusted_value = {
+                    k: adjust_unit_of_value(v, unit_actual, unit_target)
+                    for k, v in value.items()
+                }
+            except ValueError as exc:
+                logger.warning(f"Value in dict cannot be adjusted: {exc}")
                 adjusted_value = value
-            case _ if isinstance(value, bool):
-                logger.debug("Value is boolean, cannot adjust unit")
-                adjusted_value = value
-            case _ if isinstance(value, str):
-                logger.debug("Value is string, cannot adjust unit")
-                adjusted_value = value
-            case _ if isinstance(value, (int, float)):
-                adjusted_value = adjust_unit_of_value(
-                    value=value, unit_actual=unit_actual, unit_target=unit_target
-                )
-            case _ if isinstance(value, pd.DataFrame):
-                adjusted_value = value.copy()
-                column = column_name if column_name is not None else adjusted_value.columns[0]
-                adjusted_value[column] = adjusted_value[column].apply(
-                    lambda x: adjust_unit_of_value(x, unit_actual, unit_target)
-                )
-            case _ if isinstance(value, pd.Series):
-                adjusted_value = value.copy()
-                adjusted_value = adjusted_value.apply(
-                    lambda x: adjust_unit_of_value(x, unit_actual, unit_target)
-                )
-            case _ if isinstance(value, list):
-                adjusted_value = [
-                    adjust_unit_of_value(x, unit_actual, unit_target) for x in value
-                ]
-            case _ if isinstance(value, dict):
-                try:
-                    adjusted_value = {
-                        k: adjust_unit_of_value(v, unit_actual, unit_target)
-                        for k, v in value.items()
-                    }
-                except ValueError as exc:
-                    logger.warning(f"Value in dict cannot be adjusted: {exc}")
-                    adjusted_value = value
-            case _:
-                logger.warning(f"Value type {type(value)} not supported for unit adjustment")
-                adjusted_value = value
+        else:
+            logger.warning(f"Value type {type(value)} not supported for unit adjustment")
+            adjusted_value = value
 
         return adjusted_value
     except ValueError as exc:

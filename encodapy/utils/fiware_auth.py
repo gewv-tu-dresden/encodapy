@@ -4,7 +4,7 @@ Description: This file contains the class BearerToken,\
 Author: Martin Altenburger
 """
 
-from typing import Union
+from typing import Optional
 import requests
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
@@ -20,10 +20,10 @@ class BearerToken:
 
     def __init__(
         self,
-        client_id: str,
-        client_secret: str,
-        token_url: str,
-        token: Union[str, None] = None,
+        client_id: Optional[str] = None,
+        client_secret: Optional[str] = None,
+        token_url: Optional[str] = None,
+        token: Optional[str] = None,
     ) -> None:
         self.client_id = client_id
         self.client_secret = client_secret
@@ -33,6 +33,17 @@ class BearerToken:
             self.token_typ = "static"
         else:
             self.token_typ = "limited"
+        if self.token_typ == "limited":
+            try:
+                assert self.client_id is not None, \
+                    "Client ID is required for limited token type"
+                assert self.client_secret is not None, \
+                    "Client secret is required for limited token type"
+                assert self.token_url is not None, \
+                    "Token URL is required for limited token type"
+            except AssertionError as exc:
+                raise ValueError("Missing required parameters for limited token type") from exc
+            self._get_new_token()
 
     def _is_token_valid(
         self,
@@ -66,6 +77,16 @@ class BearerToken:
         """
         Function to get new bearer-token from oauth2-provider
         """
+        try:
+            assert self.client_id is not None, \
+                "Client ID is required to get a new token for limited token type"
+            assert self.token_url is not None, \
+                "Token URL is required to get a new token for limited token type"
+        except AssertionError as exc:
+            raise ValueError(
+                "Missing required parameters to get a new token for limited token type"
+                ) from exc
+
         client = BackendApplicationClient(client_id=self.client_id)
         oauth = OAuth2Session(client=client)
         self.token = oauth.fetch_token(

@@ -11,7 +11,7 @@ from encodapy.components.basic_component_config import (
     ConfigData,
 )
 from encodapy.utils.datapoints import DataPointGeneral, DataPointNumber
-from encodapy.utils.units import get_unit_adjustment_factor, adjust_unit_of_value
+from encodapy.utils.units import adjust_unit_of_value
 
 
 class TwoPointControllerInputData(InputData):
