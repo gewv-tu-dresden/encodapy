@@ -112,7 +112,7 @@ class ExampleService(ControllerBasicService):
             input_config (dict): Configuration of the input
 
         Returns:
-            Union[float, int, str, bool]: The value of the input data
+            "Union[str | float | int | dict | list | DataFrame | None]: The value of the input data
         """
         for input_data in input_entities:
 

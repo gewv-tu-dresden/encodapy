@@ -772,13 +772,19 @@ class FiwareConnection:
         Args:
             fiware_datapoint (FiwareDatapointParameter): Fiware datapoint parameter
             datatype (DataType): Datatype of the attribute
-            factor_unit_adjustment (float): Factor to adjust the unit
 
         Returns:
             list: List with the attributes (NamedContextAttribute) for the FIWARE platform
         """
+        try:
+            assert isinstance(fiware_datapoint.attribute.value, pd.DataFrame), \
+                f"Expected pandas DataFrame, got {type(fiware_datapoint.attribute.value)}"
+        except AssertionError as exc:
+            logger.error("Assertion error: %s", exc)
+            raise ValueError("Invalid data type for FiwareDatapointParameter") from exc
+
         if len(fiware_datapoint.attribute.value) == 0:
-            return
+            return []
         if (
             fiware_datapoint.attribute.id
             not in fiware_datapoint.attribute.value.columns
@@ -786,7 +792,7 @@ class FiwareConnection:
             logger.error(
                 f"Attribute {fiware_datapoint.attribute.id} not in the dataframe."
             )
-            return
+            return []
         df = fiware_datapoint.attribute.value.sort_index()
         attrs_timeseries = []
 

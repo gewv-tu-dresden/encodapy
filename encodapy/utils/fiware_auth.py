@@ -30,10 +30,10 @@ class BearerToken:
         self.token_url = token_url
         self.token = token
         if token is not None:
-            self.token_typ = "static"
+            self._token_typ = "static"
         else:
-            self.token_typ = "limited"
-        if self.token_typ == "limited":
+            self._token_typ = "limited"
+        if self._token_typ == "limited":
             try:
                 assert self.client_id is not None, \
                     "Client ID is required for limited token type"
@@ -54,7 +54,7 @@ class BearerToken:
         Returns:
             bool: True, if token is valid
         """
-        if self.token_typ == "static":
+        if self._token_typ == "static":
             return True
 
         response = requests.get(
@@ -96,11 +96,11 @@ class BearerToken:
         )["access_token"]
 
     @property
-    def token_type(self) -> str:
+    def token_typ(self) -> str:
         """
         Returns the token type
         """
-        return self.token_type
+        return self._token_typ
 
     @property
     def bearer_token(self) -> str:
