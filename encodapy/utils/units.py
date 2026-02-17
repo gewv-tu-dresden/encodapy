@@ -162,7 +162,7 @@ def adjust_unit_of_value(
     value: float | int,
     unit_actual: DataUnits,
     unit_target: DataUnits
-    )-> Optional[float]:
+    ) -> Optional[float]:
     """Function to adjust the unit of a value
     Args:
         value (float| int): Value to adjust
