@@ -842,12 +842,13 @@ class FiwareConnection:
 
     def _adjust_units_for_fiware(
         self,
-        id_output_entity:str,
+        id_output_entity: str,
         attribute: AttributeModel,
         fiware_unit: Optional[DataUnits],
         ) -> tuple[AttributeModel, list[NamedMetadata]]:
 
         meta_data = []
+        attribute = attribute.copy()
 
         if attribute.unit is not None and fiware_unit is None:
             meta_data.append(NamedMetadata(

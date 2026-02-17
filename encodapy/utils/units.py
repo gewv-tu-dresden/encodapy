@@ -210,14 +210,15 @@ def adjust_units(
         ```
 
     Args:
-        value (Optional[Union[float, int, pd.DataFrame, pd.Series, list]]): Value to adjust
+        value (Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]]): \
+            Value to adjust
         unit_actual (Optional[DataUnits]): Actual unit of the value
         unit_target (Optional[DataUnits]): Target unit of the value
         column_name (Optional[str]): Name of the column to adjust, if value is a DataFrame
 
     Returns:
-        Optional[Union[float, int, pd.DataFrame, pd.Series, list]]: Datapoint with adjusted unit, \
-            if adjustment factor could be determined, otherwise None
+        Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]]: \
+            Datapoint with adjusted unit, if adjustment factor could be determined, otherwise None
 
     """
     try:
@@ -269,6 +270,7 @@ def adjust_units(
 
         return adjusted_value
     except ValueError as exc:
+        logger.warning(f"Unit adjustment failed with ValueError: {exc}")
         return None
 
 def get_time_unit_seconds(
