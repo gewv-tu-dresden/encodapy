@@ -535,6 +535,7 @@ class ThermalStorage(BasicComponent):
         state_of_charge = round(self._check_temperature_of_required_sensors(
             state_of_charge=state_of_charge
         ), 2)
+        state_of_charge = max(state_of_charge, 0) # limit to zero
 
         self.state_of_charge_information.last_check_time = datetime.now()
         self.state_of_charge_information.state_of_charge = state_of_charge
