@@ -373,6 +373,39 @@ class FileConnection:
             return None
         return data
 
+    def _write_json_file(self,
+                         path: str,
+                         data: Union[dict, list]
+                         ) :
+
+        if not isinstance(data, (dict, list)):
+            logger.error(f"Data to write must be a dict or list, got {type(data)}")
+            return
+        if len(data) == 0:
+            logger.debug(f"No data to write to file ({path}).")
+            return
+        # Try to read existing data
+        file_data = []
+        if os.path.exists(path):
+            try:
+                with open(path, encoding="utf-8") as outputfile:
+                    file_data = json.load(outputfile)
+                logger.debug("Existing data loaded from file for appending.")
+            except (FileNotFoundError, PermissionError, json.JSONDecodeError) as e:
+                logger.error(f"Error reading existing output file: {e}")
+
+        # Append new output to existing data
+        file_data.append(data)
+
+        # Write combined data back to the file
+        try:
+            with open(path, "w", encoding="utf-8") as outputfile:
+                json.dump(file_data, outputfile, ensure_ascii=False, indent=2)
+                outputfile.write("\n")
+                logger.debug(f"Output data written to file: {path}")
+        except (FileNotFoundError, PermissionError) as e:
+            logger.error(f"Error writing output file: {e}")
+
 
     def send_data_to_json_file(
         self,
@@ -417,13 +450,11 @@ class FileConnection:
                 "attributes" : output_attr
             }
         )
-        try:
-            with open(
-                f"{path_to_results}/outputs_{str(output_entity.id)}.json", "w", encoding="utf-8"
-            ) as outputfile:
-                json.dump(outputs, outputfile)
-        except (FileNotFoundError, PermissionError) as e:
-            logger.error(f"Error writing output file: {e}")
+
+        self._write_json_file(
+            path=os.path.join(path_to_results, f"outputs_{output_entity.id}.json"),
+            data=outputs
+        )
 
         for command in output_commands:
             commands.append(
@@ -432,9 +463,8 @@ class FileConnection:
                     "value": command.value
                 }
             )
-        try:
-            with open(os.path.join(path_to_results, f"commands_{output_entity.id}.json"),
-                      "w", encoding="utf-8") as commandfile:
-                json.dump(commands, commandfile)
-        except (FileNotFoundError, PermissionError) as e:
-            logger.error(f"Error writing output file: {e}")
+
+        self._write_json_file(
+            path=os.path.join(path_to_results, f"commands_{output_entity.id}.json"),
+            data=commands
+        )
