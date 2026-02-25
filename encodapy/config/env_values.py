@@ -151,6 +151,11 @@ class FileEnvVariables(BaseSettings):
     model_config = SettingsConfigDict(
         extra="ignore", env_file=".env", env_prefix="FILE_", case_sensitive=False
     )
+    
+    file_storage_method: str = Field(
+        default="append",
+        description="Type of file storage: 'overwrite', 'append', or 'new_file'"
+    )
 
     path_of_input_file: str = Field(
         default="./input/input_file.csv", description="Path to the input CSV file"

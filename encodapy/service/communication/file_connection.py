@@ -374,9 +374,18 @@ class FileConnection:
         return data
 
     def _write_json_file(self,
-                         path: str,
+                         output_name: str,
                          data: Union[dict, list]
                          ) :
+      
+
+        file_storage_method = self.file_params.file_storage_method
+        path_to_results = self.file_params.path_of_results
+
+        if not os.path.exists(path_to_results):
+            os.makedirs(path_to_results)
+
+        path=os.path.join(path_to_results, f"{output_name}.json")
 
         if not isinstance(data, (dict, list)):
             logger.error(f"Data to write must be a dict or list, got {type(data)}")
@@ -384,18 +393,29 @@ class FileConnection:
         if len(data) == 0:
             logger.debug(f"No data to write to file ({path}).")
             return
-        # Try to read existing data
+        
         file_data = []
-        if os.path.exists(path):
-            try:
-                with open(path, encoding="utf-8") as outputfile:
-                    file_data = json.load(outputfile)
-                logger.debug("Existing data loaded from file for appending.")
-            except (FileNotFoundError, PermissionError, json.JSONDecodeError) as e:
-                logger.error(f"Error reading existing output file: {e}")
-
-        # Append new output to existing data
-        file_data.append(data)
+        if file_storage_method == "append":
+            # Try to read existing data
+            if os.path.exists(path):
+                try:
+                    with open(path, encoding="utf-8") as outputfile:
+                        file_data = json.load(outputfile)
+                    logger.debug("Existing data loaded from file for appending.")
+                except (FileNotFoundError, PermissionError, json.JSONDecodeError) as e:
+                    logger.error(f"Error reading existing output file: {e}")
+            # Append new output to existing data
+            file_data.append(data)
+        elif file_storage_method == "overwrite":
+            file_data = data
+        elif file_storage_method == "new_file":
+            file_data = data
+            timestamp = datetime.now().strftime("%Y%m%d_%H-%M-%S")
+            path = os.path.join(path_to_results, f"{output_name}_{timestamp}.json")
+        else:
+            logger.error(f"Invalid file storage method: {file_storage_method}. "
+                         f"Using 'overwrite' as method to store data in json-file.")
+            file_data = data
 
         # Write combined data back to the file
         try:
@@ -430,11 +450,6 @@ class FileConnection:
         commands = []
         logger.debug("Write outputs to json-output-files")
 
-        path_to_results = self.file_params.path_of_results
-
-        if not os.path.exists(path_to_results):
-            os.makedirs(path_to_results)
-
         for output in output_attributes:
             output_attr.append(
                 {
@@ -452,7 +467,7 @@ class FileConnection:
         )
 
         self._write_json_file(
-            path=os.path.join(path_to_results, f"outputs_{output_entity.id}.json"),
+            output_name=f"outputs_{output_entity.id}",
             data=outputs
         )
 
@@ -465,6 +480,6 @@ class FileConnection:
             )
 
         self._write_json_file(
-            path=os.path.join(path_to_results, f"commands_{output_entity.id}.json"),
+            output_name= f"commands_{output_entity.id}",
             data=commands
         )
