@@ -8,7 +8,7 @@ from typing import Optional
 
 from pydantic import AnyHttpUrl, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
+from encodapy.config.models import FileStorageMethod
 
 class BasicEnvVariables(BaseSettings):
     """
@@ -119,6 +119,25 @@ class MQTTEnvVariables(BaseSettings):
             "the timestamp of the MQTT message receipt will be used."
         ),
     )
+    tls_enabled: bool = Field(
+        default=False,
+        description="Enable TLS/SSL encryption for MQTT connection",
+    )
+    tls_ca_cert: Optional[str] = Field(
+        default=None,
+        description=(
+            "Path to the CA certificate file for TLS/SSL verification. "
+            "Optional - if not provided, system default certificates are used. "
+            "Only needed for self-signed or custom CA certificates."
+        ),
+    )
+    tls_insecure: bool = Field(
+        default=False,
+        description=(
+            "Set to True to disable certificate verification (insecure). "
+            "Only use for testing purposes."
+        ),
+    )
 
 
 class FileEnvVariables(BaseSettings):
@@ -133,6 +152,12 @@ class FileEnvVariables(BaseSettings):
         extra="ignore", env_file=".env", env_prefix="FILE_", case_sensitive=False
     )
 
+    storage_method: FileStorageMethod = Field(
+        default=FileStorageMethod.APPEND,
+        description="""Type of file storage: 'overwrite', 'append', or 'new_file',
+        see FileStorageMethod enum for details""",
+    )
+
     path_of_input_file: str = Field(
         default="./input/input_file.csv", description="Path to the input CSV file"
     )
@@ -142,10 +167,4 @@ class FileEnvVariables(BaseSettings):
     )
     path_of_results: str = Field(
         default="./results", description="Directory path to store the results"
-    )
-    start_time_file: str = Field(
-        default="2025-01-01 00:00",
-        description="""Start time for processing data from the input file.
-        It needs to be ISO compatible
-        (https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat)""",
     )
