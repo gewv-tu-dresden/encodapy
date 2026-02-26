@@ -175,8 +175,8 @@ Data exchange with via local file.
 
 necessary ENV's with example:
 
-  ```
-  FILE_STORAGE_METHODE = "overwrite" # "append" or "new_file"  ("append" is by default, results will append in the file, overwrite - the fill will be overwritten, new_file - a new file with timestamp in name will be created for each call)
+  ```.env
+  FILE_STORAGE_METHOD = "overwrite" # "append" or "new_file"  ("append" is by default, results will append in the file, overwrite - the file will be overwritten, new_file - a new file with timestamp in name will be created for each call)
   FILE_PATH_OF_INPUT_FILE = "path_to_the_file/validation_data.csv"
   FILE_PATH_OF_STATIC_DATA = "path_to_the_file/static_data.json"
   FILE_PATH_OF_RESULTS = "./results" # The folder for storing the results is "./results" by default.

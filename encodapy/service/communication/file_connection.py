@@ -23,7 +23,7 @@ from encodapy.config import (
     DataFile,
     FileEnvVariables
 )
-from encodapy.config.models import DataFileEntity
+from encodapy.config.models import DataFileEntity, FileStorageMethod
 from encodapy.utils.models import (
     InputDataAttributeModel,
     InputDataEntityModel,
@@ -375,40 +375,54 @@ class FileConnection:
 
     def _write_json_file(self,
                          output_name: str,
-                         data: Union[dict, list]
-                         ) :
-      
+                         data: list
+                         ) -> None:
+        """
+        Function to write ouput in a json file
 
-        file_storage_method = self.file_params.file_storage_method
+        Args:
+            output_name (str): Name of the output file
+            data (list): Data to add to the file
+        """
+        file_storage_method = self.file_params.storage_method
         path_to_results = self.file_params.path_of_results
 
-        if not os.path.exists(path_to_results):
-            os.makedirs(path_to_results)
+        os.makedirs(path_to_results, exist_ok=True)
 
-        path=os.path.join(path_to_results, f"{output_name}.json")
+        path = os.path.join(path_to_results, f"{output_name}.json")
 
-        if not isinstance(data, (dict, list)):
-            logger.error(f"Data to write must be a dict or list, got {type(data)}")
+        if not isinstance(data, list):
+            logger.error(f"Data to write must be a list, got {type(data)}")
             return
-        if len(data) == 0:
+        if not data:
             logger.debug(f"No data to write to file ({path}).")
             return
-        
+
         file_data = []
-        if file_storage_method == "append":
+        if file_storage_method is FileStorageMethod.APPEND:
             # Try to read existing data
             if os.path.exists(path):
                 try:
                     with open(path, encoding="utf-8") as outputfile:
                         file_data = json.load(outputfile)
+                        assert isinstance(file_data, list), \
+                            f"Existing file data must be a list, got {type(file_data)}"
                     logger.debug("Existing data loaded from file for appending.")
-                except (FileNotFoundError, PermissionError, json.JSONDecodeError) as e:
-                    logger.error(f"Error reading existing output file: {e}")
+                except (
+                    FileNotFoundError,
+                    PermissionError,
+                    json.JSONDecodeError,
+                    AssertionError,
+                ) as e:
+                    logger.error(
+                        "Overwriting the file because of an error reading existing "
+                        f"output file: {e}"
+                    )
             # Append new output to existing data
-            file_data.append(data)
-        elif file_storage_method == "overwrite":
+            file_data.extend(data)
+        elif file_storage_method is FileStorageMethod.OVERWRITE:
             file_data = data
-        elif file_storage_method == "new_file":
+        elif file_storage_method is FileStorageMethod.NEW_FILE:
             file_data = data
             timestamp = datetime.now().strftime("%Y%m%d_%H-%M-%S")
             path = os.path.join(path_to_results, f"{output_name}_{timestamp}.json")
@@ -467,7 +481,7 @@ class FileConnection:
         )
 
         self._write_json_file(
-            output_name=f"outputs_{output_entity.id}",
+            output_name = f"outputs_{output_entity.id}",
             data=outputs
         )
 
@@ -480,6 +494,6 @@ class FileConnection:
             )
 
         self._write_json_file(
-            output_name= f"commands_{output_entity.id}",
+            output_name = f"commands_{output_entity.id}",
             data=commands
         )
