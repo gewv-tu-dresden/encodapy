@@ -8,7 +8,7 @@ from typing import Optional
 
 from pydantic import AnyHttpUrl, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
+from encodapy.config.models import FileStorageMethod
 
 class BasicEnvVariables(BaseSettings):
     """
@@ -152,6 +152,12 @@ class FileEnvVariables(BaseSettings):
         extra="ignore", env_file=".env", env_prefix="FILE_", case_sensitive=False
     )
 
+    storage_method: FileStorageMethod = Field(
+        default=FileStorageMethod.APPEND,
+        description="""Type of file storage: 'overwrite', 'append', or 'new_file',
+        see FileStorageMethod enum for details""",
+    )
+
     path_of_input_file: str = Field(
         default="./input/input_file.csv", description="Path to the input CSV file"
     )
@@ -162,4 +168,3 @@ class FileEnvVariables(BaseSettings):
     path_of_results: str = Field(
         default="./results", description="Directory path to store the results"
     )
-
