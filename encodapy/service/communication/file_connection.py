@@ -379,7 +379,7 @@ class FileConnection:
                          ) :
       
 
-        file_storage_method = self.file_params.file_storage_method
+        file_storage_method = self.file_params.storage_method
         path_to_results = self.file_params.path_of_results
 
         if not os.path.exists(path_to_results):

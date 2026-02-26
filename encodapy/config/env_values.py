@@ -152,7 +152,7 @@ class FileEnvVariables(BaseSettings):
         extra="ignore", env_file=".env", env_prefix="FILE_", case_sensitive=False
     )
     
-    file_storage_method: str = Field(
+    storage_method: str = Field(
         default="append",
         description="Type of file storage: 'overwrite', 'append', or 'new_file'"
     )
