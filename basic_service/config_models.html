@@ -57,6 +57,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#encodapy.config.models.AttributeModel"><code class="docutils literal notranslate"><span class="pre">AttributeModel</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#encodapy.config.models.CommandModel"><code class="docutils literal notranslate"><span class="pre">CommandModel</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#encodapy.config.models.ControllerSettingModel"><code class="docutils literal notranslate"><span class="pre">ControllerSettingModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.config.models.FileStorageMethod"><code class="docutils literal notranslate"><span class="pre">FileStorageMethod</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#encodapy.config.models.InputModel"><code class="docutils literal notranslate"><span class="pre">InputModel</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#encodapy.config.models.InterfaceModel"><code class="docutils literal notranslate"><span class="pre">InterfaceModel</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#encodapy.config.models.OutputModel"><code class="docutils literal notranslate"><span class="pre">OutputModel</span></code></a></li>
@@ -1742,6 +1743,28 @@ If not set, it will be automatically set to the value of <cite>id</cite>.</p></l
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.config.models.ControllerSettingModel.specific_settings">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">specific_settings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#encodapy.config.models.ControllerSettingModel.specific_settings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="encodapy.config.models.FileStorageMethod">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.config.models.</span></span><span class="sig-name descname"><span class="pre">FileStorageMethod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/encodapy/config/models.html#FileStorageMethod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.config.models.FileStorageMethod" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Enum for the file storage method.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.models.FileStorageMethod.APPEND">
+<span class="sig-name descname"><span class="pre">APPEND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'append'</span></em><a class="headerlink" href="#encodapy.config.models.FileStorageMethod.APPEND" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.models.FileStorageMethod.NEW_FILE">
+<span class="sig-name descname"><span class="pre">NEW_FILE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'new_file'</span></em><a class="headerlink" href="#encodapy.config.models.FileStorageMethod.NEW_FILE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.config.models.FileStorageMethod.OVERWRITE">
+<span class="sig-name descname"><span class="pre">OVERWRITE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'overwrite'</span></em><a class="headerlink" href="#encodapy.config.models.FileStorageMethod.OVERWRITE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

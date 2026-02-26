@@ -83,7 +83,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyHttpUrl</span><span class="p">,</span> <span class="n">Field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSettings</span><span class="p">,</span> <span class="n">SettingsConfigDict</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileStorageMethod</span>
 
 <div class="viewcode-block" id="BasicEnvVariables">
 <a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.env_values.BasicEnvVariables">[docs]</a>
@@ -238,6 +238,12 @@
         <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">env_file</span><span class="o">=</span><span class="s2">&quot;.env&quot;</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">&quot;FILE_&quot;</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
 
+    <span class="n">storage_method</span><span class="p">:</span> <span class="n">FileStorageMethod</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">FileStorageMethod</span><span class="o">.</span><span class="n">APPEND</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Type of file storage: &#39;overwrite&#39;, &#39;append&#39;, or &#39;new_file&#39;,</span>
+<span class="s2">        see FileStorageMethod enum for details&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">path_of_input_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;./input/input_file.csv&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to the input CSV file&quot;</span>
     <span class="p">)</span>
@@ -248,7 +254,6 @@
     <span class="n">path_of_results</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;./results&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Directory path to store the results&quot;</span>
     <span class="p">)</span></div>
-
 
 </pre></div>
 
