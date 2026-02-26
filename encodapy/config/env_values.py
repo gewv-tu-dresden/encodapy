@@ -154,7 +154,7 @@ class FileEnvVariables(BaseSettings):
 
     storage_method: FileStorageMethod = Field(
         default=FileStorageMethod.APPEND,
-        description="""Type of file storage: 'overwrite', 'append', or 'new_file', 
+        description="""Type of file storage: 'overwrite', 'append', or 'new_file',
         see FileStorageMethod enum for details""",
     )
 

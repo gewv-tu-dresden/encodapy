@@ -500,6 +500,7 @@ class DataFile(BaseModel):
 
     data: list[DataFileEntity]
 
+
 class FileStorageMethod(Enum):
     """
     Enum for the file storage method.

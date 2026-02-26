@@ -378,7 +378,7 @@ class FileConnection:
                          data: list
                          ) -> None:
         """
-        Function to write ouput in a json file
+        Function to write output in a json file
 
         Args:
             output_name (str): Name of the output file
@@ -405,14 +405,16 @@ class FileConnection:
                 try:
                     with open(path, encoding="utf-8") as outputfile:
                         file_data = json.load(outputfile)
-                        assert isinstance(file_data, list), \
-                            f"Existing file data must be a list, got {type(file_data)}"
+                        if not isinstance(file_data, list):
+                            raise ValueError(
+                                f"Existing file data must be a list, got {type(file_data)}"
+                            )
                     logger.debug("Existing data loaded from file for appending.")
                 except (
                     FileNotFoundError,
                     PermissionError,
                     json.JSONDecodeError,
-                    AssertionError,
+                    ValueError,
                 ) as e:
                     logger.error(
                         "Overwriting the file because of an error reading existing "
@@ -481,7 +483,7 @@ class FileConnection:
         )
 
         self._write_json_file(
-            output_name = f"outputs_{output_entity.id}",
+            output_name=f"outputs_{output_entity.id}",
             data=outputs
         )
 
@@ -494,6 +496,6 @@ class FileConnection:
             )
 
         self._write_json_file(
-            output_name = f"commands_{output_entity.id}",
+            output_name=f"commands_{output_entity.id}",
             data=commands
         )
