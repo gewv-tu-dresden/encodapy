@@ -6,6 +6,7 @@ import os
 import json
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
+from enum import Enum
 from pydantic import BaseModel, ConfigDict, ValidationError, Field
 from pydantic.functional_validators import model_validator
 from loguru import logger
@@ -498,3 +499,12 @@ class DataFile(BaseModel):
     """
 
     data: list[DataFileEntity]
+
+class FileStorageMethod(Enum):
+    """
+    Enum for the file storage method.
+    """
+
+    OVERWRITE = "overwrite"
+    APPEND = "append"
+    NEW_FILE = "new_file"
