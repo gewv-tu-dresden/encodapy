@@ -414,7 +414,8 @@ class FlixoptModelComponent(BasicComponent):
                     prevent_simultaneous_charge_and_discharge=True,
                     initial_charge_state=initial_soc,
                     relative_minimum_charge_state=storage.minimal_soc / 100,
-                    relative_maximum_charge_state=storage.maximal_soc / 100
+                    relative_maximum_charge_state=storage.maximal_soc / 100,
+                    minimal_final_charge_state = initial_soc
                 )
             )
         return storages
@@ -651,6 +652,7 @@ class FlixoptModelComponent(BasicComponent):
 
         """
         all_timeseries = self.export_results_as_timeseries(results.solution)
+        all_timeseries.to_csv("all_timeseries.csv", sep=";", decimal=",", encoding="utf-8")
 
         #TODO make the mapping configurable
             # maybe add also the input power of converters
