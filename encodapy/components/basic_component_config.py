@@ -87,38 +87,40 @@ class ComponentData(BaseModel):
     """
     Basemodel for the configuration of the datapoints of a component
 
-    Base for :class:`~encodapy.components.basic_component_config.InputData`, \
-        :class:`~encodapy.components.basic_component_config.OutputData`\
-        and :class:`~encodapy.components.basic_component_config.ConfigData`
-    
-    Provides a validator to check the units of the input values \
-        and convert them if necessary.
-    Make sure to check the datatype in validators, because the ComponentData Model \
-        is also used for the configuration for the datatransfer to the components. 
-    This model looks different, so the validator needs to check the datatype before \
-        trying to validate the data to avoid unexpected errors.
-    The following example shows how to check the datatype in the validator:
-    ```python
-    @model_validator(mode="after")
-    def check_model(self) -> "InputPreparationInputData":
-        'Model validator to check the model after initialization.'
+    Base for :class:`~encodapy.components.basic_component_config.InputData`,
+    :class:`~encodapy.components.basic_component_config.OutputData` and
+    :class:`~encodapy.components.basic_component_config.ConfigData`.
 
-        if not isinstance(self.field, DataPointGeneral):
+    Provides a validator to check the units of the input values and convert
+    them if necessary.
+
+    Make sure to check the datatype in validators, because the
+    :class:`ComponentData` model is also used for the datatransfer
+    configuration to components.
+    This model looks different, so validators should check datatypes before
+    trying to validate data to avoid unexpected errors.
+    Example for datatype checks in validators::
+
+        @model_validator(mode="after")
+        def check_model(self) -> "InputPreparationInputData":
+            "Model validator to check the model after initialization."
+
+            if not isinstance(self.field, DataPointGeneral):
+                return self
+
+            # check the model with your code
             return self
 
-        # check the model with your code
-        return self
+        @field_validator("field", mode="before")
+        @classmethod
+        def check_field(cls, value: DataPointGeneral) -> DataPointGeneral:
+            "Check only a field before initialization."
 
-    @field_validator('field', mode='before')
-    @classmethod
-    def check_field(cls, value:DataPointGeneral) -> DataPointGeneral:
-        ' Check only a field befor initialization'
+            if not isinstance(value, DataPointTimeSeries):
+                return value
 
-        if not isinstance(value, DataPointTimeSeries):
+            # check the field with your code
             return value
-
-        # check the field with your code
-        return value
     """
 
     @model_validator(mode="after")
