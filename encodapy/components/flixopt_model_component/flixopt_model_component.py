@@ -10,7 +10,8 @@ import xarray
 import flixopt as fx # type: ignore[import-untyped]
 from loguru import logger
 from encodapy.components.basic_component import BasicComponent
-from .flixopt_models import (
+from encodapy.utils.datapoints import DataPointTimeSeries
+from encodapy.components.flixopt_model_component.flixopt_models import (
     FlixOptModel,
     FLIXOPT_CONFIG_MAP,
     FlixOptConverterTypes,
@@ -20,11 +21,10 @@ from .flixopt_models import (
     FlixOptSinkSource
 )
 
-from .flixopt_model_component_config import (
+from encodapy.components.flixopt_model_component.flixopt_model_component_config import (
     FlixoptModelComponentInputData,
     FlixoptModelComponentOutputData,
     FlixoptModelComponentConfigData,
-    DataPointTimeSeries,
     DataPointFlixoptModelConfig
 )
 
@@ -378,16 +378,25 @@ class FlixoptModelComponent(BasicComponent):
         Returns:
             list[fx.Component]: List of FlixOpt storage components for the optimization
 
-        TODO: should we set a final capacity
+        TODO: 
+            - should we set a final capacity? --> same like the start soc
+            - soc as percentage or absolute value? currently percentage
         """
         storages = []
 
         for storage in self.flixopt_model.storages:
+            if isinstance(storage.nominal_capacity, str):
+                nominal_capacity = self._get_input_value(storage.nominal_capacity)
+            elif isinstance(storage.nominal_capacity, (float, int)):
+                nominal_capacity = storage.nominal_capacity
+            else:
+                raise ValueError("Nominal capacity must be a float, int "
+                                 "or a string referring to an input value.")
             if isinstance(storage.start_soc, str):
                 initial_soc = self._get_input_value(storage.start_soc) / 100 \
-                    * storage.nominal_capacity
+                    * nominal_capacity
             elif isinstance(storage.start_soc, (float, int)):
-                initial_soc = storage.start_soc / 100 * storage.nominal_capacity
+                initial_soc = storage.start_soc / 100 * nominal_capacity
             # should not happen due to validation, but just in case
             else:
                 initial_soc = 0
@@ -405,7 +414,7 @@ class FlixoptModelComponent(BasicComponent):
                         bus=storage.bus,
                         size=storage.nominal_power,
                     ),
-                    capacity_in_flow_hours=storage.nominal_capacity,
+                    capacity_in_flow_hours=nominal_capacity,
                     eta_charge=storage.eta_charge / 100 if storage.eta_charge is not None else None,
                     eta_discharge=storage.eta_discharge / 100 if storage.eta_discharge is not None \
                         else None,
@@ -652,7 +661,6 @@ class FlixoptModelComponent(BasicComponent):
 
         """
         all_timeseries = self.export_results_as_timeseries(results.solution)
-        all_timeseries.to_csv("all_timeseries.csv", sep=";", decimal=",", encoding="utf-8")
 
         #TODO make the mapping configurable
             # maybe add also the input power of converters
@@ -663,19 +671,21 @@ class FlixoptModelComponent(BasicComponent):
         outputs: dict[str, DataPointTimeSeries]= {}
         for storage in self.flixopt_model.storages:
             outputs[storage.label + "_soc"] = DataPointTimeSeries(
-                value = all_timeseries.filter([f"{storage.label}|charge_state"]))
+                value = all_timeseries.loc[:, f"{storage.label}|charge_state"])
 
         for converter in self.flixopt_model.converters:
-
-            outputs[converter.label + "_thermal_power"] = DataPointTimeSeries(
+            output_name = converter.label + "_thermal_power"
+            outputs[output_name] = DataPointTimeSeries(
                 value = (all_timeseries[f"{converter.label}({converter.thermal_flow})|flow_rate"]
                 * all_timeseries[f"{converter.label}|status"]
-            ).to_frame(name=f"{converter.label}_thermal_power"))
+            ).to_frame(name=output_name).loc[:, output_name])
             if isinstance(converter, FlixOptCHPConverter):
-                outputs[converter.label + "_electrical_power"] = DataPointTimeSeries(
-                    value = (all_timeseries[f"{converter.label}({converter.electrical_flow})|flow_rate"]
+                output_name = converter.label + "_electrical_power"
+                outputs[output_name] = DataPointTimeSeries(
+                    value = (all_timeseries[
+                        f"{converter.label}({converter.electrical_flow})|flow_rate"]
                     * all_timeseries[f"{converter.label}|status"]
-                ).to_frame(name=f"{converter.label}_electrical_power"))
+                ).to_frame(name=output_name).loc[:, output_name])
 
         self.output_data = FlixoptModelComponentOutputData.model_validate(outputs)
 

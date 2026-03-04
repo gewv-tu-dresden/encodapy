@@ -10,18 +10,19 @@ from datetime import datetime, timezone
 from typing import Union, Optional
 import asyncio
 from loguru import logger
+from pandas import DataFrame
 from encodapy.service import ControllerBasicService
 from encodapy.utils.models import (
     DataTransferComponentModel,
     DataTransferModel,
     InputDataEntityModel,
-    InputDataModel,
+    InputDataModel
 )
 from encodapy.components.basic_component_config import (
     ControllerComponentModel,
     IOAllocationModel,
+    DataPointGeneral
 )
-
 
 class ExampleService(ControllerBasicService):
     """
@@ -102,7 +103,7 @@ class ExampleService(ControllerBasicService):
         self,
         input_entities: list[InputDataEntityModel],
         input_config: IOAllocationModel,
-    ) -> Union[float, int, str, bool]:
+    ) -> Union[str | float | int | dict | list | DataFrame | None]:
         """
         Function to get the values of the input data
 
@@ -111,7 +112,7 @@ class ExampleService(ControllerBasicService):
             input_config (dict): Configuration of the input
 
         Returns:
-            Union[float, int, str, bool]: The value of the input data
+            "Union[str | float | int | dict | list | DataFrame | None]: The value of the input data
         """
         for input_data in input_entities:
 
@@ -137,11 +138,43 @@ class ExampleService(ControllerBasicService):
             inputs[input_key] = self.get_input_values(
                 input_entities=data.input_entities, input_config=input_config
             )
+        config = self.heater_config.config
+        try:
+            assert config is not None, "No configuration found for the heat controller"
+        except AssertionError as exc:
+            logger.error("Assertion error: %s", exc)
+            raise ValueError("No configuration found for the heat controller") from exc
+
+        temperature_hysteresis = config.root["temperature_hysteresis"]
+        try:
+            assert temperature_hysteresis is not None, \
+                "No value found for temperature_hysteresis in the configuration"
+            assert isinstance(temperature_hysteresis, DataPointGeneral), \
+                (
+                    "Value for temperature_hysteresis is not of type DataPointGeneral "
+                    f"(got type={type(temperature_hysteresis).__name__!r}, "
+                    f"value={temperature_hysteresis!r})"
+                )
+            assert isinstance(inputs["temperature_setpoint"], (float, int)), \
+                (
+                    "Value for temperature_setpoint is not a number "
+                    f"(got type={type(inputs['temperature_setpoint']).__name__!r}, "
+                    f"value={inputs['temperature_setpoint']!r})"
+                )
+            assert isinstance(inputs["temperature_measured"], (float, int)), \
+                (
+                    "Value for temperature_measured is not a number "
+                    f"(got type={type(inputs['temperature_measured']).__name__!r}, "
+                    f"value={inputs['temperature_measured']!r})"
+                )
+        except AssertionError as exc:
+            logger.error("Assertion error: %s", exc)
+            raise ValueError("Configuration error") from exc
 
         heater_status = self.check_heater_command(
-            temperature_setpoint=inputs["temperature_setpoint"],
-            temperature_measured=inputs["temperature_measured"],
-            hysteresis=self.heater_config.config.root["temperature_hysteresis"].value,
+            temperature_setpoint=float(inputs["temperature_setpoint"]),
+            temperature_measured=float(inputs["temperature_measured"]),
+            hysteresis=temperature_hysteresis.value,
             heater_status_old=bool(inputs["heater_status"]),
         )
 

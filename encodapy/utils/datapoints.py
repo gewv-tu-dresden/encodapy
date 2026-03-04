@@ -6,7 +6,8 @@ Author: Martin Altenburger
 
 from datetime import datetime
 from typing import Any, Optional
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
+import pandas as pd
 from encodapy.utils.units import DataUnits
 from encodapy.utils.mediums import Medium
 
@@ -93,3 +94,38 @@ class DataPointMedium(DataPointGeneral):
     """
 
     value: Medium
+
+class DataPointTimeSeries(DataPointGeneral):
+    """
+    DataPoint for time series with general float values
+    """
+    value: pd.Series= Field(
+        ...,
+        description="A time series of general data points",
+    )
+    @model_validator(mode='before')
+    @classmethod
+    def convert_dataframe_to_series(cls, data):
+        """Convert DataFrame to Series before model validation"""
+        if isinstance(data, dict) and 'value' in data:
+            if isinstance(data['value'], pd.DataFrame):
+                data['value'] = data['value'].squeeze()
+        return data
+
+    @field_validator('value')
+    @classmethod
+    def validate_time_series(cls, v: pd.Series) -> pd.Series:
+        """
+        Function to check, if the input is a timeseries of floats
+
+        Raises:
+            ValueError: If the series does not have a DatetimeIndex\
+                or if the values are not floats
+
+        """
+        if not isinstance(v.index, pd.DatetimeIndex):
+            raise ValueError("Series must have a DatetimeIndex")
+
+        if not pd.api.types.is_float_dtype(v) and not pd.api.types.is_integer_dtype(v):
+            raise ValueError("Series values must be float or integer")
+        return v

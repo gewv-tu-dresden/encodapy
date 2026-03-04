@@ -206,6 +206,7 @@ class FileConnection:
                         data_type=AttributeTypes.TIMESERIES,
                         data_available=True,
                         latest_timestamp_input=data.index[0],
+                        unit=attribute.unit
                     )
                 )
             elif attribute.type == AttributeTypes.VALUE:
@@ -216,6 +217,7 @@ class FileConnection:
                         data_type=AttributeTypes.VALUE,
                         data_available=True,
                         latest_timestamp_input=data.index[0],
+                        unit=attribute.unit
                     )
                 )
             else:

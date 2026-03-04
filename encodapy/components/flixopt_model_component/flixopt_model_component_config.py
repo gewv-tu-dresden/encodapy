@@ -2,8 +2,7 @@
 Defines the configuration data models for the new component.
 """
 from typing import Any
-import pandas as pd
-from pydantic import Field, model_validator, field_validator, ConfigDict
+from pydantic import Field, model_validator, ConfigDict
 import flixopt as fx # type: ignore[import-untyped]
 from encodapy.components.basic_component_config import (
     ConfigData,
@@ -17,40 +16,7 @@ from encodapy.components.flixopt_model_component.flixopt_models import (
     FlixoptLogLevel
 )
 
-class DataPointTimeSeries(DataPointGeneral):
-    """
-    DataPoint for time series with general float values
-    """
-    value: pd.Series= Field(
-        ...,
-        description="A time series of general data points",
-    )
-    @model_validator(mode='before')
-    @classmethod
-    def convert_dataframe_to_series(cls, data):
-        """Convert DataFrame to Series before model validation"""
-        if isinstance(data, dict) and 'value' in data:
-            if isinstance(data['value'], pd.DataFrame):
-                data['value'] = data['value'].squeeze()
-        return data
 
-    @field_validator('value')
-    @classmethod
-    def validate_time_series(cls, v: pd.Series) -> pd.Series:
-        """
-        Function to check, if the input is a timeseries of floats
-
-        Raises:
-            ValueError: If the series does not have a DatetimeIndex\
-                or if the values are not floats
-
-        """
-        if not isinstance(v.index, pd.DatetimeIndex):
-            raise ValueError("Series must have a DatetimeIndex")
-
-        if not pd.api.types.is_float_dtype(v) and not pd.api.types.is_integer_dtype(v):
-            raise ValueError("Series values must be float or integer")
-        return v
 
 class FlixoptModelComponentInputData(InputData):
     """
