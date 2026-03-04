@@ -276,7 +276,33 @@ An example can be found under: <a class="reference external" href="https://githu
 </pre></div>
 </div>
 <p>See https://docs.pydantic.dev/latest/concepts/models/#basic-model-usage for information on the general usage of optional fields and default values.</p>
-<p>The value of the variable <code class="docutils literal notranslate"><span class="pre">&quot;$unit_value&quot;</span></code> must be a valid unit from the <code class="docutils literal notranslate"><span class="pre">encodapy.utils.units.DataUnits</span></code> such as <code class="docutils literal notranslate"><span class="pre">&quot;CEL&quot;</span></code> for °C. If possible, the unit will also be transformed.</p>
+<p>The value of the variable <code class="docutils literal notranslate"><span class="pre">&quot;$unit_value&quot;</span></code> must be a valid unit from the <a class="reference internal" href="../basic_service/utils_models.html#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataUnits</span></code></a> such as <code class="docutils literal notranslate"><span class="pre">&quot;CEL&quot;</span></code> for °C. If possible, the unit will also be transformed.</p>
+<p>If you like to add a validator, see the documentation for <a class="reference internal" href="components_models.html#encodapy.components.basic_component_config.ComponentData" title="encodapy.components.basic_component_config.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a>.
+this model is also used for the datatransfer to the components. This model looks different so the validator needs to check the datatype before trying to validate the data to avoid unexpected errors.</p>
+<p>The following example shows how to check the datatype in the validator:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_validator</span><span class="p">,</span> <span class="n">field_validator</span>
+<span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;InputPreparationInputData&quot;</span><span class="p">:</span>
+    <span class="s1">&#39;Model validator to check the model after initialization.&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="p">,</span> <span class="n">DataPointGeneral</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="c1"># check the model with your code</span>
+    <span class="k">return</span> <span class="bp">self</span>
+
+<span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;before&#39;</span><span class="p">)</span>
+<span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span><span class="n">DataPointGeneral</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataPointGeneral</span><span class="p">:</span>
+    <span class="s1">&#39; Check only a field befor initialization&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">DataPointTimeSeries</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="c1"># check the field with your code</span>
+    <span class="k">return</span> <span class="n">value</span>
+</pre></div>
+</div>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">NewComponentOutputData(OutputData)</span></code>: A definition of the available output datapoints / results.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">Optional</span>
@@ -302,7 +328,8 @@ An example can be found under: <a class="reference external" href="https://githu
 </pre></div>
 </div>
 <p><strong>If you only want to use some of the possible results, you need to set them to  <code class="docutils literal notranslate"><span class="pre">Optional[DataPoint</span> <span class="pre">model]</span></code></strong> Therefore, there is no need to export them all in the service. If you add them all without ‘Optional’, you will get a ‘ValidationError’ if not all outputs are configured in the service configuration.</p>
-<p>As with the <code class="docutils literal notranslate"><span class="pre">NewComponentInputData</span></code>, you could also add information about the unit. If possible, the unit will also be transformed.</p>
+<p>As with the <code class="docutils literal notranslate"><span class="pre">NewComponentInputData</span></code>, you could also add information about the unit. If possible, the unit will also be transformed.
+If you like to add a validator, see the documentation for <a class="reference internal" href="components_models.html#encodapy.components.basic_component_config.ComponentData" title="encodapy.components.basic_component_config.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a>.</p>
 <p>The data points in this base model must be set in the <code class="docutils literal notranslate"><span class="pre">calculate()</span></code> function of each component so that the base component can handle them.</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">NewComponentConfigData(ConfigData)</span></code>: A definition of the required static data to check during the initilisazion. It should look like this:</p>
@@ -325,6 +352,7 @@ An example can be found under: <a class="reference external" href="https://githu
 </div>
 <p>You do not need this definition if you don’t want to use static data.<br />
 You could add optional data that does not need to be set in the configuration. This should resemble the second field in the model.</p>
+<p>If you like to add a validator, see the documentation for <a class="reference internal" href="components_models.html#encodapy.components.basic_component_config.ComponentData" title="encodapy.components.basic_component_config.ComponentData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentData</span></code></a>.</p>
 </li>
 </ul>
 <p>All datapoints need to have the type <code class="docutils literal notranslate"><span class="pre">DataPointGeneral</span></code> (see <code class="docutils literal notranslate"><span class="pre">encodapy.utils.datapoints</span></code>) or a specialized version of it. This type defines that the datapoints can have the following attributes:</p>
@@ -392,7 +420,7 @@ This data will be used by the basic component and the basic service/component ru
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, GEWV TU Dresden.</p>
+    <p>&#169; Copyright 2026, GEWV TU Dresden.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

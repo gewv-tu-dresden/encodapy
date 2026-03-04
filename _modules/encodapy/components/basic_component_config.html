@@ -176,38 +176,40 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Basemodel for the configuration of the datapoints of a component</span>
 
-<span class="sd">    Base for :class:`~encodapy.components.basic_component_config.InputData`, \</span>
-<span class="sd">        :class:`~encodapy.components.basic_component_config.OutputData`\</span>
-<span class="sd">        and :class:`~encodapy.components.basic_component_config.ConfigData`</span>
-<span class="sd">    </span>
-<span class="sd">    Provides a validator to check the units of the input values \</span>
-<span class="sd">        and convert them if necessary.</span>
-<span class="sd">    Make sure to check the datatype in validators, because the ComponentData Model \</span>
-<span class="sd">        is also used for the configuration for the datatransfer to the components. </span>
-<span class="sd">    This model looks different, so the validator needs to check the datatype before \</span>
-<span class="sd">        trying to validate the data to avoid unexpected errors.</span>
-<span class="sd">    The following example shows how to check the datatype in the validator:</span>
-<span class="sd">    ```python</span>
-<span class="sd">    @model_validator(mode=&quot;after&quot;)</span>
-<span class="sd">    def check_model(self) -&gt; &quot;InputPreparationInputData&quot;:</span>
-<span class="sd">        &#39;Model validator to check the model after initialization.&#39;</span>
+<span class="sd">    Base for :class:`~encodapy.components.basic_component_config.InputData`,</span>
+<span class="sd">    :class:`~encodapy.components.basic_component_config.OutputData` and</span>
+<span class="sd">    :class:`~encodapy.components.basic_component_config.ConfigData`.</span>
 
-<span class="sd">        if not isinstance(self.field, DataPointGeneral):</span>
+<span class="sd">    Provides a validator to check the units of the input values and convert</span>
+<span class="sd">    them if necessary.</span>
+
+<span class="sd">    Make sure to check the datatype in validators, because the</span>
+<span class="sd">    :class:`ComponentData` model is also used for the datatransfer</span>
+<span class="sd">    configuration to components.</span>
+<span class="sd">    This model looks different, so validators should check datatypes before</span>
+<span class="sd">    trying to validate data to avoid unexpected errors.</span>
+<span class="sd">    Example for datatype checks in validators::</span>
+
+<span class="sd">        @model_validator(mode=&quot;after&quot;)</span>
+<span class="sd">        def check_model(self) -&gt; &quot;InputPreparationInputData&quot;:</span>
+<span class="sd">            &quot;Model validator to check the model after initialization.&quot;</span>
+
+<span class="sd">            if not isinstance(self.field, DataPointGeneral):</span>
+<span class="sd">                return self</span>
+
+<span class="sd">            # check the model with your code</span>
 <span class="sd">            return self</span>
 
-<span class="sd">        # check the model with your code</span>
-<span class="sd">        return self</span>
+<span class="sd">        @field_validator(&quot;field&quot;, mode=&quot;before&quot;)</span>
+<span class="sd">        @classmethod</span>
+<span class="sd">        def check_field(cls, value: DataPointGeneral) -&gt; DataPointGeneral:</span>
+<span class="sd">            &quot;Check only a field before initialization.&quot;</span>
 
-<span class="sd">    @field_validator(&#39;field&#39;, mode=&#39;before&#39;)</span>
-<span class="sd">    @classmethod</span>
-<span class="sd">    def check_field(cls, value:DataPointGeneral) -&gt; DataPointGeneral:</span>
-<span class="sd">        &#39; Check only a field befor initialization&#39;</span>
+<span class="sd">            if not isinstance(value, DataPointTimeSeries):</span>
+<span class="sd">                return value</span>
 
-<span class="sd">        if not isinstance(value, DataPointTimeSeries):</span>
+<span class="sd">            # check the field with your code</span>
 <span class="sd">            return value</span>
-
-<span class="sd">        # check the field with your code</span>
-<span class="sd">        return value</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
@@ -341,7 +343,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, GEWV TU Dresden.</p>
+    <p>&#169; Copyright 2026, GEWV TU Dresden.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

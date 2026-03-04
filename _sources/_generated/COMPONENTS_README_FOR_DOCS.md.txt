@@ -171,7 +171,36 @@ An example of how a Pydantic model can be used to validate the configuration of 
 
     See https://docs.pydantic.dev/latest/concepts/models/#basic-model-usage for information on the general usage of optional fields and default values.
 
-    The value of the variable `"$unit_value"` must be a valid unit from the `encodapy.utils.units.DataUnits` such as `"CEL"` for °C. If possible, the unit will also be transformed.
+    The value of the variable `"$unit_value"` must be a valid unit from the {py:class}`~encodapy.utils.units.DataUnits` such as `"CEL"` for °C. If possible, the unit will also be transformed.
+
+    If you like to add a validator, see the documentation for {py:class}`~encodapy.components.basic_component_config.ComponentData`.
+    this model is also used for the datatransfer to the components. This model looks different so the validator needs to check the datatype before trying to validate the data to avoid unexpected errors.
+
+    The following example shows how to check the datatype in the validator:
+  
+    ```python
+    from pydantic import model_validator, field_validator
+    @model_validator(mode="after")
+    def check_model(self) -> "InputPreparationInputData":
+        'Model validator to check the model after initialization.'
+
+        if not isinstance(self.field, DataPointGeneral):
+            return self
+
+        # check the model with your code
+        return self
+
+    @field_validator('field', mode='before')
+    @classmethod
+    def check_field(cls, value:DataPointGeneral) -> DataPointGeneral:
+        ' Check only a field befor initialization'
+
+        if not isinstance(value, DataPointTimeSeries):
+            return value
+
+        # check the field with your code
+        return value
+    ```
 
   - `NewComponentOutputData(OutputData)`: A definition of the available output datapoints / results.
 
@@ -201,6 +230,7 @@ An example of how a Pydantic model can be used to validate the configuration of 
     **If you only want to use some of the possible results, you need to set them to  `Optional[DataPoint model]`** Therefore, there is no need to export them all in the service. If you add them all without 'Optional', you will get a 'ValidationError' if not all outputs are configured in the service configuration.
 
     As with the `NewComponentInputData`, you could also add information about the unit. If possible, the unit will also be transformed.
+    If you like to add a validator, see the documentation for {py:class}`~encodapy.components.basic_component_config.ComponentData`.
 
     The data points in this base model must be set in the `calculate()` function of each component so that the base component can handle them.
   - `NewComponentConfigData(ConfigData)`: A definition of the required static data to check during the initilisazion. It should look like this:
@@ -225,6 +255,8 @@ An example of how a Pydantic model can be used to validate the configuration of 
 
     You do not need this definition if you don't want to use static data.  
     You could add optional data that does not need to be set in the configuration. This should resemble the second field in the model.
+
+    If you like to add a validator, see the documentation for {py:class}`~encodapy.components.basic_component_config.ComponentData`.
   
   All datapoints need to have the type `DataPointGeneral` (see `encodapy.utils.datapoints`) or a specialized version of it. This type defines that the datapoints can have the following attributes:
   - a `value`
