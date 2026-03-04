@@ -311,6 +311,8 @@ class ThermalStorageOutputData(OutputData):
         storage__level (Optional[DataPointNumber]): Output for storage charge in percent \
             (0-100) (optional)
         storage__energy (Optional[DataPointNumber]): Output for storage energy in Wh (optional)
+        storage__energy_nominal (Optional[DataPointNumber]): Output for nominal storage energy \
+            in Wh (optional)
         storage__loading_potential_nominal (Optional[DataPointNumber]): \
             Output for storage loading potential in Wh (optional)
     """
@@ -321,6 +323,11 @@ class ThermalStorageOutputData(OutputData):
         json_schema_extra={"unit": "P1"},
     )
     storage__energy: Optional[DataPointNumber] = Field(
+        None,
+        description="Output for storage energy in Wh",
+        json_schema_extra={"unit": "WHR"},
+    )
+    storage__energy_nominal: Optional[DataPointNumber] = Field(
         None,
         description="Output for storage energy in Wh",
         json_schema_extra={"unit": "WHR"},

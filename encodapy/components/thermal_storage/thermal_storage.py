@@ -631,6 +631,7 @@ class ThermalStorage(BasicComponent):
 
         self.output_data = ThermalStorageOutputData(
             storage__energy=self.get_storage_energy_current(),
+            storage__energy_nominal=self.get_storage_energy_nominal(),
             storage__level=self.get_state_of_charge(),
             storage__loading_potential_nominal=self.get_storage_loading_potential_nominal(),
         )
