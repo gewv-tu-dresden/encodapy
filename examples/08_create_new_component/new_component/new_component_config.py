@@ -18,6 +18,9 @@ from encodapy.utils.units import DataUnits
 class NewComponentInputData(InputData):
     """
     Input model for the new component
+    
+    If you like to add a validator, see the documentation for \
+        :class:`~encodapy.components.basic_component_config.ComponentData`
     """
 
     a_general_input: DataPointGeneral = Field(
@@ -41,6 +44,9 @@ class NewComponentInputData(InputData):
 class NewComponentOutputData(OutputData):
     """
     Output model for the new component
+    
+    If you like to add a validator, see the documentation for \
+        :class:`~encodapy.components.basic_component_config.ComponentData`
     """
 
     result: DataPointGeneral = Field(
@@ -59,6 +65,9 @@ class NewComponentOutputData(OutputData):
 class NewComponentConfigData(ConfigData):
     """
     Config data model for the new component
+    
+    If you like to add a validator, see the documentation for \
+        :class:`~encodapy.components.basic_component_config.ComponentData`
     """
 
     config_value: DataPointGeneral = Field(
