@@ -8,7 +8,7 @@ from typing import Dict, Optional
 from loguru import logger
 from pydantic import BaseModel, Field, RootModel, model_validator
 
-from encodapy.utils.units import DataUnits, get_unit_adjustment_factor
+from encodapy.utils.units import DataUnits, adjust_units
 from encodapy.utils.datapoints import DataPointGeneral
 
 
@@ -107,32 +107,28 @@ class ComponentData(BaseModel):
                 logger.warning(f"Extra for field {name} is not a dictionary: {extra}")
                 continue
 
+            unit = extra.get("unit")
+            if unit is not None and not isinstance(unit, str):
+                logger.warning(f"Unit for field {name} is not a string: {unit}")
+                continue
+
             if isinstance(value, DataPointGeneral):
-                if "unit" in extra.keys() and value.unit is None:
-                    value.unit = DataUnits(extra["unit"])
+                if unit is not None and value.unit is None:
+                    value.unit = DataUnits(unit)
                 elif (
-                    "unit" in extra.keys()
+                    unit is not None
                     and value.unit is not None
-                    and value.unit != DataUnits(extra["unit"])
+                    and value.unit != DataUnits(unit)
                 ):
-                    if value.value is None or not isinstance(value.value, (int, float)):
-                        logger.warning(
-                            f"Unit of {name} is {value.unit}, but expected {extra['unit']}. "
-                            f"Could not convert, because value is None or not a number."
+                    new_value = adjust_units(
+                            value=value.value,
+                            unit_actual=value.unit,
+                            unit_target=DataUnits(unit)
                         )
-                        continue
-                    unit_adjustment_factor = get_unit_adjustment_factor(
-                        unit_actual=value.unit, unit_target=DataUnits(extra["unit"])
-                    )
-                    if unit_adjustment_factor is None:
-                        logger.warning(
-                            f"Unit of {name} is {value.unit}, but expected {extra['unit']}. "
-                            f"Could not convert, because units are not compatible "
-                            "or no adjustment factor found."
-                        )
-                        continue
-                    value.value = value.value * unit_adjustment_factor
-                    value.unit = DataUnits(extra["unit"])
+                    if new_value is not None:
+                        value.value = new_value
+                        value.unit = DataUnits(unit)
+
         return self
 
 

@@ -11,7 +11,7 @@ from encodapy.components.basic_component_config import (
     ConfigData,
 )
 from encodapy.utils.datapoints import DataPointGeneral, DataPointNumber
-from encodapy.utils.units import get_unit_adjustment_factor
+from encodapy.utils.units import adjust_unit_of_value
 
 
 class TwoPointControllerInputData(InputData):
@@ -71,8 +71,7 @@ class TwoPointControllerConfigData(ConfigData):
         """
         Validator to check if the units of hysteresis and setpoint are the same.
         If not, it tries to convert the hysteresis to the unit of the setpoint.
-
-
+        
         """
         hysteresis = DataPointNumber.model_validate(self.hysteresis)
         setpoint = DataPointNumber.model_validate(self.setpoint)
@@ -85,18 +84,18 @@ class TwoPointControllerConfigData(ConfigData):
                 f"Units of hysteresis ({hysteresis.unit}) and setpoint ({setpoint.unit}) "
                 "are not the same. Please check your configuration."
             )
-            unit_adjustment_factor = get_unit_adjustment_factor(
-                unit_actual=hysteresis.unit, unit_target=setpoint.unit
-            )
-            if unit_adjustment_factor is None:
+            try:
+                hysteresis.value = adjust_unit_of_value(
+                    value=hysteresis.value, unit_actual=hysteresis.unit, unit_target=setpoint.unit
+                )
+                hysteresis.unit = setpoint.unit
+            except ValueError as exc:
                 logger.warning(
                     f"Unit of hysteresis is {hysteresis.unit}, but expected {setpoint.unit}. "
-                    "Could not convert, because units are not compatible "
-                    "or no adjustment factor found."
+                    f"Could not convert, because units are not compatible "
+                    f"or no adjustment factor found: {exc}"
                 )
                 return self
 
-            hysteresis.value *= unit_adjustment_factor
-            hysteresis.unit = setpoint.unit
         self.hysteresis = DataPointNumber(value=hysteresis.value, unit=hysteresis.unit)
         return self

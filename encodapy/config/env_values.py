@@ -64,7 +64,7 @@ class FiwareEnvVariables(BaseSettings):
         default=None, description="Bearer token for FIWARE authentication"
     )
     cb_url: Optional[AnyHttpUrl] = Field(
-        default=AnyHttpUrl("http://localhost:1026"),
+        default=AnyHttpUrl("http://127.0.0.1:1026"),
         description="URL of the Context Broker (e.g., Orion-LD)",
     )
     service: str = Field(..., description="FIWARE Service header for tenant isolation")
@@ -73,7 +73,7 @@ class FiwareEnvVariables(BaseSettings):
     )
 
     crate_db_url: AnyHttpUrl = Field(
-        default=AnyHttpUrl("http://localhost:4200"),
+        default=AnyHttpUrl("http://127.0.0.1:4200"),
         description="URL of the CrateDB instance",
     )
     crate_db_user: str = Field(default="crate", description="Username for CrateDB")
@@ -98,7 +98,7 @@ class MQTTEnvVariables(BaseSettings):
     )
 
     host: str = Field(
-        default="localhost", description="Hostname or IP address of the MQTT broker"
+        default="127.0.0.1", description="Hostname or IP address of the MQTT broker"
     )
     port: int = Field(default=1883, description="Port number of the MQTT broker")
     username: Optional[str] = Field(
