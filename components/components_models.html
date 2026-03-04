@@ -323,11 +323,38 @@
 <dd><p>Bases: <a class="reference external" href="https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel" title="(in Pydantic Validation v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>Basemodel for the configuration of the datapoints of a component</p>
 <p>Base for <a class="reference internal" href="#encodapy.components.basic_component_config.InputData" title="encodapy.components.basic_component_config.InputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">InputData</span></code></a>,         <a class="reference internal" href="#encodapy.components.basic_component_config.OutputData" title="encodapy.components.basic_component_config.OutputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">OutputData</span></code></a>        and <a class="reference internal" href="#encodapy.components.basic_component_config.ConfigData" title="encodapy.components.basic_component_config.ConfigData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigData</span></code></a></p>
-<p>Provides a validator to check the units of the input values         and convert them if necessary.</p>
+<p>Provides a validator to check the units of the input values         and convert them if necessary.
+Make sure to check the datatype in validators, because the ComponentData Model         is also used for the configuration for the datatransfer to the components.
+This model looks different, so the validator needs to check the datatype before         trying to validate the data to avoid unexpected errors.
+The following example shows how to check the datatype in the validator:
+<a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+&#64;model_validator(mode=”after”)
+def check_model(self) -&gt; “InputPreparationInputData”:</p>
+<blockquote>
+<div><p>‘Model validator to check the model after initialization.’</p>
+<dl class="simple">
+<dt>if not isinstance(self.field, DataPointGeneral):</dt><dd><p>return self</p>
+</dd>
+</dl>
+<p># check the model with your code
+return self</p>
+</div></blockquote>
+<p>&#64;field_validator(‘field’, mode=’before’)
+&#64;classmethod
+def check_field(cls, value:DataPointGeneral) -&gt; DataPointGeneral:</p>
+<blockquote>
+<div><p>‘ Check only a field befor initialization’</p>
+<dl class="simple">
+<dt>if not isinstance(value, DataPointTimeSeries):</dt><dd><p>return value</p>
+</dd>
+</dl>
+<p># check the field with your code
+return value</p>
+</div></blockquote>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ComponentData&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Basemodel for the configuration of the datapoints of a component\n\nBase for :class:`~encodapy.components.basic_component_config.InputData`,         :class:`~encodapy.components.basic_component_config.OutputData`        and :class:`~encodapy.components.basic_component_config.ConfigData`\n\nProvides a validator to check the units of the input values         and convert them if necessary.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Basemodel for the configuration of the datapoints of a component\n\nBase for :class:`~encodapy.components.basic_component_config.InputData`,         :class:`~encodapy.components.basic_component_config.OutputData`        and :class:`~encodapy.components.basic_component_config.ConfigData`\n\nProvides a validator to check the units of the input values         and convert them if necessary.\nMake sure to check the datatype in validators, because the ComponentData Model         is also used for the configuration for the datatransfer to the components. \nThis model looks different, so the validator needs to check the datatype before         trying to validate the data to avoid unexpected errors.\nThe following example shows how to check the datatype in the validator:\n```python\n@model_validator(mode=\&quot;after\&quot;)\ndef check_model(self) -&gt; \&quot;InputPreparationInputData\&quot;:\n    &#39;Model validator to check the model after initialization.&#39;\n\n    if not isinstance(self.field, DataPointGeneral):\n        return self\n\n    # check the model with your code\n    return self\n\n@field_validator(&#39;field&#39;, mode=&#39;before&#39;)\n@classmethod\ndef check_field(cls, value:DataPointGeneral) -&gt; DataPointGeneral:\n    &#39; Check only a field befor initialization&#39;\n\n    if not isinstance(value, DataPointTimeSeries):\n        return value\n\n    # check the field with your code\n    return value&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
 <span class="p">}</span>

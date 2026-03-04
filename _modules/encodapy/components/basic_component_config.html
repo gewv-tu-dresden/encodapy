@@ -182,6 +182,32 @@
 <span class="sd">    </span>
 <span class="sd">    Provides a validator to check the units of the input values \</span>
 <span class="sd">        and convert them if necessary.</span>
+<span class="sd">    Make sure to check the datatype in validators, because the ComponentData Model \</span>
+<span class="sd">        is also used for the configuration for the datatransfer to the components. </span>
+<span class="sd">    This model looks different, so the validator needs to check the datatype before \</span>
+<span class="sd">        trying to validate the data to avoid unexpected errors.</span>
+<span class="sd">    The following example shows how to check the datatype in the validator:</span>
+<span class="sd">    ```python</span>
+<span class="sd">    @model_validator(mode=&quot;after&quot;)</span>
+<span class="sd">    def check_model(self) -&gt; &quot;InputPreparationInputData&quot;:</span>
+<span class="sd">        &#39;Model validator to check the model after initialization.&#39;</span>
+
+<span class="sd">        if not isinstance(self.field, DataPointGeneral):</span>
+<span class="sd">            return self</span>
+
+<span class="sd">        # check the model with your code</span>
+<span class="sd">        return self</span>
+
+<span class="sd">    @field_validator(&#39;field&#39;, mode=&#39;before&#39;)</span>
+<span class="sd">    @classmethod</span>
+<span class="sd">    def check_field(cls, value:DataPointGeneral) -&gt; DataPointGeneral:</span>
+<span class="sd">        &#39; Check only a field befor initialization&#39;</span>
+
+<span class="sd">        if not isinstance(value, DataPointTimeSeries):</span>
+<span class="sd">            return value</span>
+
+<span class="sd">        # check the field with your code</span>
+<span class="sd">        return value</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
