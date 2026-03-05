@@ -475,7 +475,7 @@ class ThermalStorage(BasicComponent):
                             "could not check the thermal storage level.")
                 current_factor = 1.0
             else:
-                current_factor = (temperature.value - minimal_temperature) / denominator
+                current_factor = min((temperature.value - minimal_temperature) / denominator, 1.0)
 
             if index == 0 and current_factor < 0:
                 # If the temperature of the upper sensor is below the minimal temperature,
