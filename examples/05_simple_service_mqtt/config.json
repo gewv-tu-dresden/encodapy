@@ -49,12 +49,12 @@
                 {
                     "id": "status",
                     "id_interface": "status",
-                    "mqtt_format": "template_example03"
+                    "mqtt_format": "template_example05"
                 },
                 {
                     "id": "status",
                     "id_interface": "status",
-                    "mqtt_format": "template_example03"
+                    "mqtt_format": "template_example05"
                 }
             ],
             "commands": []

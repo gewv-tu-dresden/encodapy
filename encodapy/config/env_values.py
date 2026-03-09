@@ -138,6 +138,15 @@ class MQTTEnvVariables(BaseSettings):
             "Only use for testing purposes."
         ),
     )
+    publish_delay: float = Field(
+        default=0.0,
+        description=(
+            "Delay in seconds before publishing MQTT messages. "
+            "Can be used to give slow clients sufficient time to receive everything. "
+            "Be careful when using this option, as unexpected behaviour may occur if the "
+            "delay of all messages is longer than the sampling time."
+        ),
+    )
 
 
 class FileEnvVariables(BaseSettings):
