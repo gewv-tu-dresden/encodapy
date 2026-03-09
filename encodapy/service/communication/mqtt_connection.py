@@ -10,10 +10,12 @@ import threading
 import time
 from datetime import datetime, timezone
 from typing import Optional, Union
+
 import paho.mqtt.client as mqtt
 from loguru import logger
 from paho.mqtt.enums import CallbackAPIVersion
 from pandas import DataFrame
+
 from encodapy.config import (
     ConfigModel,
     DataQueryTypes,
@@ -98,6 +100,9 @@ class MqttConnection:
                     f"Failed to configure TLS/SSL for MQTT connection: {e}"
                 ) from e
 
+        # prepare the message store
+        self.prepare_mqtt_message_store()
+
         # try to connect to the MQTT broker
         self.mqtt_client.connect(host=self.mqtt_params.host, port=self.mqtt_params.port)
         # start the MQTT client loop
@@ -109,9 +114,6 @@ class MqttConnection:
             raise ConfigError(
                 f"Could not establish initial MQTT connection after {max_wait} seconds."
             )
-
-        # prepare the message store
-        self.prepare_mqtt_message_store()
 
     def prepare_mqtt_message_store(self) -> None:
         """
