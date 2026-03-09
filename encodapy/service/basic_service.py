@@ -51,7 +51,12 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
         self.shutdown_event = shutdown_event or asyncio.Event()
         self.env: BasicEnvVariables = BasicEnvVariables()
-        self.logger = LoggerControl(log_level=self.env.log_level)
+        self.logger = LoggerControl(
+            log_level=self.env.log_level,
+            log_path=self.env.log_path,
+            log_retention=self.env.log_retention,
+            log_rotation=self.env.log_rotation
+        )
 
         self.staticdata: Optional[list[StaticDataEntityModel]] = None
 
