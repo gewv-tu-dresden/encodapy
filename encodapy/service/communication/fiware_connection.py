@@ -5,7 +5,7 @@ Author: Martin Altenburger
 """
 from asyncio import sleep
 from datetime import datetime, timedelta, timezone
-from typing import Union, Optional
+from typing import Union, Optional, Any
 import concurrent.futures
 import multiprocessing
 from loguru import logger
@@ -256,34 +256,43 @@ class FiwareConnection:
         Returns:
             MetaDataModel: Model with the metadata (timestamp, unit) of the attribute if available
         """
-        metadata_lowercase = {
+        metadata_lowercase: dict[str, Any] = {
             k.lower(): v for k, v in fiware_attribute.metadata.items()
         }
-
         metadata_model = MetaDataModel()
 
-        if metadata_lowercase.get("timeinstant") is not None:
-            metadata_model.timestamp = datetime.strptime(
-                metadata_lowercase.get("timeinstant").value, "%Y-%m-%dT%H:%M:%S.%f%z"
-            )
+        timeinstant_value = getattr(metadata_lowercase.get("timeinstant"), "value", None)
+        if timeinstant_value is not None:
+            try:
+                metadata_model.timestamp = datetime.strptime(
+                    timeinstant_value, "%Y-%m-%dT%H:%M:%S.%f%z"
+                )
+            except (ValueError, TypeError) as err:
+                logger.error(
+                    f"Error while parsing timestamp for attribute {fiware_attribute.name}: "
+                    f"Invalid timestamp format: {timeinstant_value}, "
+                    f"{err}"
+                )
+        elif metadata_lowercase.get("timeinstant") is not None:
+            logger.debug("No timestamp available in the metadata of the attribute.")
 
+        unitcode_value = getattr(metadata_lowercase.get("unitcode"), "value", None)
+        unittext_value = getattr(metadata_lowercase.get("unittext"), "value", None)
+        unit_value = getattr(metadata_lowercase.get("unit"), "value", None)
         try:
-            if metadata_lowercase.get("unitcode") is not None:
-                metadata_model.unit = DataUnits(
-                    metadata_lowercase.get("unitcode").value
-                )
-            elif metadata_lowercase.get("unittext") is not None:
-                metadata_model.unit = DataUnits(
-                    metadata_lowercase.get("unittext").value
-                )
-            elif metadata_lowercase.get("unit") is not None:
-                metadata_model.unit = DataUnits(metadata_lowercase.get("unit").value)
-        except ValueError as err:
+            if unitcode_value is not None:
+                metadata_model.unit = DataUnits(unitcode_value)
+            elif unittext_value is not None:
+                metadata_model.unit = DataUnits(unittext_value)
+            elif unit_value is not None:
+                metadata_model.unit = DataUnits(unit_value)
+        except (ValueError, TypeError) as err:
             logger.error(
-                f"Unit code {metadata_lowercase.get('unitcode').value} not available: {err}"
+                "Error while processing unit ('unitcode', 'unittext', 'unit') "
+                f"{unitcode_value}: {err}"
             )
-
         return metadata_model
+
 
     def get_data_from_fiware(
         self,
@@ -359,6 +368,7 @@ class FiwareConnection:
                 metadata = self._get_metadata_from_fiware(
                     fiware_input_entity_attributes[attribute.id_interface]
                 )
+
                 attributes_values.append(
                     InputDataAttributeModel(
                         id=attribute.id,

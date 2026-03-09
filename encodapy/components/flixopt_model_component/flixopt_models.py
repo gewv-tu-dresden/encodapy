@@ -139,13 +139,12 @@ class FlixOptStatusParameters(BaseModel):
         None,
         description="Maximum down time of the converter in hours",
     )
-    startup_cost: Optional[float | int] = Field(
+    startup_effects: Optional[dict[str, float | int]] = Field(
         None,
-        description="Startup cost of the converter",
-    )
-    shutdown_cost: Optional[float | int] = Field(
-        None,
-        description="Shutdown cost of the converter",
+        description="""Startup effects of the converter,
+        where the key is the label of the effect 
+        and the value is the amount of the effect per startup""",
+        #TODO could we check this?
     )
 
 
@@ -192,8 +191,17 @@ class FlixOptConverter(BaseModel):
         description= """
         Optional status parameters for the converter which includes information 
         about startup and shutdown limitations"""
+    ) # TODO: add more converter types and their specific parameters / startup costs etc.
+    previous_power: Optional[float | int | str] = Field(
+        None,
+        description="""Previous power of the converter in kW
+        or as label of an input value, used to define the previous flow rate""",
     )
-    # TODO: add more converter types and their specific parameters / startup costs etc.
+    operation_time: Optional[float | int | str] = Field(
+        None,
+        description="""Operation time of the converter in hours
+        or as label of an input value, used to define the operation time for startup costs"""
+    )
 
 class FlixOptCHPConverter(FlixOptConverter):
     """
@@ -229,9 +237,10 @@ class FlixOptStorage(BaseModel):
         ...,
         description="Nominal power of the storage in kW",
     )
-    nominal_capacity: float | int = Field(
+    nominal_capacity: float | int | str = Field(
         ...,
-        description="Nominal capacity of the storage in kWh",
+        description="""Nominal capacity of the storage in kWh
+        or as label of an input value, which is then used to read the nominal capacity""",
     )
     relative_self_discharge: Optional[float | int] = Field(
         0.0,

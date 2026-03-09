@@ -248,6 +248,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 output_latest_timestamp = None
 
         for input_entity in self.config.inputs:
+            print(f"Processing input entity: {input_entity.id}")
             match input_entity.interface:
                 case Interfaces.FIWARE:
                     fiware_input = self.get_data_from_fiware(

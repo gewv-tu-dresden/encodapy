@@ -129,3 +129,32 @@ class DataPointTimeSeries(DataPointGeneral):
         if not pd.api.types.is_float_dtype(v) and not pd.api.types.is_integer_dtype(v):
             raise ValueError("Series values must be float or integer")
         return v
+
+class DataPointDatetime(DataPointGeneral):
+    """
+    Model for datapoints of the controller component which define a datetime value.
+
+    Attributes:
+        value (datetime): The value of the datapoint, which is a datetime.
+        unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.
+        time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.
+    """
+
+    value: datetime = Field(
+        ...,
+        description="A datetime value for the datapoint",
+    )
+
+    @field_validator('value')
+    @classmethod
+    def validate_datetime(cls, v: datetime) -> datetime:
+        """Validate that the value is a datetime object or a string in ISO format
+        that can be converted to datetime."""
+        if isinstance(v, datetime):
+            return v
+        if isinstance(v, str):
+            try:
+                return datetime.fromisoformat(v)
+            except ValueError as err:
+                raise ValueError("String value must be in ISO format for datetime") from err
+        raise ValueError("Value must be a datetime object or a string in ISO format")

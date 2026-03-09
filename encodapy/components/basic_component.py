@@ -308,7 +308,9 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
         input_data_model = get_component_input_data_model(
             component_type=self.component_config.type
         )
-
+        # Input model from the component, defines the expected input data structure
+        # and types for the component. Other datapoints can be provided by the config,
+        # so the funciton needs to handle them
         input_fields = self.io_model.input.model_dump()  # pylint: disable=no-member
 
         for datapoint_name, datapoint_config in input_fields.items():
@@ -324,25 +326,39 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
                 )
                 continue
 
-            datapoint = self.get_component_input(
-                input_entities=input_datapoints, input_config=datapoint_config
-            )
+            try:
+                datapoint = self.get_component_input(
+                    input_entities=input_datapoints, input_config=datapoint_config
+                )
+            except KeyError as e:
+                logger.warning(
+                    f"Error while getting input data for {datapoint_name} "
+                    f"in {self.component_config.id}: {e}"
+                )
+                datapoint = None
 
             # Skip datapoints that are not defined in the input data model of the component \
-                # (only for variable inputs, whicht are not configured)
-            if datapoint_name not in input_data_model.model_fields:
-                match datapoint.value:
-                    case None:
-                        continue
-                    case _:
-                        pass
-            # Skip optional datapoints with no value
-            elif (
-                not input_data_model.model_fields[datapoint_name].is_required()
-                and datapoint.value is None
-            ):
-                continue
+                # (only for variable inputs, which are not configured)
+            if datapoint_name in input_data_model.model_fields \
+                and datapoint is None:
+                # raise an error if the datapoint is required, otherwise skip it
+                if input_data_model.model_fields[datapoint_name].is_required():
+                    error_msg = (
+                        f"Required input {datapoint_name} is missing for {self.component_config.id}"
+                    )
+                    logger.error(error_msg)
+                    raise ValueError(error_msg)
+                # Skip optional datapoints if datapoint is not provided
+                if not input_data_model.model_fields[datapoint_name].is_required():
+                    continue
+            if datapoint is None:
+                raise ValueError(
+                    f"Input datapoint {datapoint_name} is not found in the input data "
+                    f"but it is provided in the configuration of "
+                    f"{self.component_config.id}."
+                )
             input_values[datapoint_name] = datapoint
+
         input_values_raw: dict[str, Any] = {}
         for key, value in input_values.items():
             input_values_raw[key] = value.model_dump()
