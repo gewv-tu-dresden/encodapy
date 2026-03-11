@@ -21,6 +21,9 @@ class FlixoptSolverSettings(BaseModel):
     Base model for Flixopt solver settings.
     Only non-None values override the flixopt defaults.
     """
+    model_config = ConfigDict(
+        extra="forbid"
+    )
     name: FlixOptSolverName = Field(
         ...,
         description="Name of the solver (e.g. 'HighsSolver' or 'GurobiSolver')",
@@ -60,7 +63,9 @@ class FlixOptBus(BaseModel):
     https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Bus/
 
     """
-
+    model_config = ConfigDict(
+        extra="forbid"
+    )
     label: str = Field(
         ...,
         description="Label of the flow",
@@ -76,7 +81,9 @@ class FlixOptEffect(BaseModel):
     https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Effect/
 
     """
-
+    model_config = ConfigDict(
+        extra="forbid"
+    )
     label: str = Field(
         ...,
         description="Label of the effect",
@@ -110,6 +117,9 @@ class PowerRange(BaseModel):
     """
     Model to define the power range of a converter in the flixopt model in percentages
     """
+    model_config = ConfigDict(
+        extra="forbid"
+    )
     min_power: float | int = Field(
         0,
         description="Minimum power of the converter, default is 0",
@@ -123,6 +133,9 @@ class FlixOptStatusParameters(BaseModel):
     """
     Model to define the status parameters of a converter in the flixopt model
     """
+    model_config = ConfigDict(
+        extra="forbid"
+    )
     min_up_time: Optional[float | int] = Field(
         None,
         description="Minimum up time of the converter in hours",
@@ -213,6 +226,9 @@ class FlixOptCHPConverter(FlixOptConverter):
     nominal thermal power of the CHP converter, while the nominal electrical power can be 
     calculated from the thermal efficiency and the electrical efficiency of the CHP converter.
     """
+    model_config = ConfigDict(
+        extra="forbid"
+    )
     electrical_efficiency: float | int = Field(
         ...,
         description="Electrical efficiency of the CHP converter",
@@ -228,6 +244,9 @@ class FlixOptStorage(BaseModel):
     Model to define a storage in the flixopt model, like it is used in the flixopt library
     https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Storage/
     """
+    model_config = ConfigDict(
+        extra="forbid"
+    )
     label: str
     bus: str = Field(
         ...,
@@ -287,6 +306,9 @@ class FlixOptSinkSource(BaseModel):
     Model to define a sink or source in the flixopt model, like it is used in the flixopt library
     https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Element/
     """
+    model_config = ConfigDict(
+        extra="forbid"
+    )
     label: str = Field(
         ...,
         description="Label of the sink/source",

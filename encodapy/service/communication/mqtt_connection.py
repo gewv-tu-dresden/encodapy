@@ -98,6 +98,9 @@ class MqttConnection:
                     f"Failed to configure TLS/SSL for MQTT connection: {e}"
                 ) from e
 
+        # prepare the message store
+        self.prepare_mqtt_message_store()
+
         # try to connect to the MQTT broker
         self.mqtt_client.connect(
             host=self.mqtt_params.host, port=self.mqtt_params.port
@@ -111,9 +114,6 @@ class MqttConnection:
             raise ConfigError(
                 f"Could not establish initial MQTT connection after {max_wait} seconds."
             )
-
-        # prepare the message store
-        self.prepare_mqtt_message_store()
 
 
     def prepare_mqtt_message_store(self) -> None:

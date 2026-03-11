@@ -3,6 +3,7 @@ Defines the FlixOptModelComponent class to perform optimizations using the FlixO
 """
 # pylint: disable=no-member
 from typing import Optional, Union, Any, Literal, overload
+from datetime import timezone
 from pydantic import ValidationError
 import pandas as pd
 import numpy as np
@@ -48,11 +49,10 @@ class FlixoptModelComponent(BasicComponent):
         self.input_data: FlixoptModelComponentInputData
         self.output_data: FlixoptModelComponentOutputData
 
-        self.flixopt_model: FlixOptModel
-
-        self.df_input: Optional[pd.DataFrame] = None
-
         # Component-specific initialization logic
+        self.flixopt_model: FlixOptModel
+        self.df_input: Optional[pd.DataFrame] = None
+        self.df_input_timezone: Optional[timezone] = None
 
     def prepare_component(self) -> None:
         """
@@ -203,7 +203,9 @@ class FlixoptModelComponent(BasicComponent):
         if freq is None:
             freq = pd.offsets.Hour(1)
             logger.warning("Could not infer frequency of input time series. Defaulting to 1H.")
-
+        # Save timezone information to add it back later
+        self.df_input_timezone = df_input.index.tz if isinstance(df_input.index.tz, timezone) \
+            else None
         df_input.index = pd.DatetimeIndex(df_input.index.tz_localize(None), freq=freq)
 
         self.df_input = df_input
@@ -553,6 +555,7 @@ class FlixoptModelComponent(BasicComponent):
             case _:
                 flow_effects["fixed_relative_profile"] = self._get_input_arrays(check_label)
                 flow_effects["size"] = 1
+
         return flow_effects
 
     def _get_flow_information(self,
@@ -678,10 +681,14 @@ class FlixoptModelComponent(BasicComponent):
             optimization.solve(self.config_data.get_solver(), log_main_results=False)
         except Exception as e: #TODO
             logger.error(f"Error during optimization: {e}")
-            print(type(e).__name__, e)
+            logger.info(type(e).__name__)
+            return None
         logger.debug("Optimization completed with a "
                      f"duration for modeling {optimization.durations.get("modeling", '-')} s "
-                     f"and solving {optimization.durations.get("solving", '-')} s.")
+                     f"and solving {optimization.durations.get("solving", '-')} s. "
+                     "The main objective result is "
+                     f"{optimization.results.summary.get('Main Results').get('Objective')}.")
+
         return optimization.results
 
     def export_results_as_timeseries(self,
@@ -724,15 +731,15 @@ class FlixoptModelComponent(BasicComponent):
                 if isinstance(data, pd.DataFrame):
                     data = data.reset_index(drop=False)
                 all_timeseries[var_name] = data if isinstance(data, pd.Series) else data.iloc[:, -1]
-
         all_timeseries["time"] = pd.date_range(
             start=self.df_input.index[0],
             periods=len(all_timeseries),
-            freq=self.df_input.index.freq)
+            freq=self.df_input.index.freq,
+            tz=self.df_input_timezone)
         all_timeseries.set_index("time", inplace=True)
         # drop last row, because it is often incomplete due to the way the optimization works
         all_timeseries.drop(index=all_timeseries.index[-1], inplace=True)
-        # all_timeseries.to_csv("./results/optimization_results.csv", sep=";", decimal=",", encoding="utf-8") #TODO remove
+        # all_timeseries.to_csv("./results/optimization_results_2.csv", sep=";", decimal=",", encoding="utf-8") #TODO remove
         return all_timeseries
 
     def prepare_output_data(self,
