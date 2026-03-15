@@ -454,13 +454,15 @@ class ThermalStorage(BasicComponent):
             if historical_temperature is not None and temperature.time is not None:
                 if temperature.time not in historical_temperature.index:
                     historical_temperature.at[temperature.time] = temperature.value
+                historical_temperature = historical_temperature.sort_index()
                 historical_temperature = historical_temperature.truncate(
                     before=(
                         temperature.time
                         - pd.Timedelta(
                             minutes=
                             self.config_data.load_level_check.value.historical_temperature_limit)
-                    )
+                    ),
+                    after=temperature.time
                 )
                 temperature = DataPointNumber(
                     value=historical_temperature.mean(),
