@@ -25,10 +25,6 @@ from encodapy.components.thermal_storage.thermal_storage_config import (
     TemperatureExtrema,
     ThermalStorageLoadLevelStorage
 )
-#TODO remove
-# from encodapy.components.thermal_storage.calibration_file import (
-#     save_calibration_json
-# )
 from encodapy.components.thermal_storage.calibration_data import (
     CalibrationData
 )
@@ -43,16 +39,15 @@ class ThermalStorage(BasicComponent):
     """
     Class to calculate the energy in a thermal storage.
 
-    Service needs to be prepared before use (`prepare_start_thermal_storage`).
+    The calculation is based on a vertical cylindrical tank.
+    The results are stored with the current system time.
 
     Args:
         config (Union[ControllerComponentModel, list[ControllerComponentModel]]): \
             Configuration of the thermal storage
         static_data (Optional[list[StaticDataEntityModel]], optional): \
             Static data of the ThermalStorage
-        component_id (str): ID of the thermal storage component
-    TODO: Maybe adjust the output to use the timestamp from input data?
-    
+        component_id (str): ID of the thermal storage component    
     """
 
     def __init__(
@@ -70,9 +65,6 @@ class ThermalStorage(BasicComponent):
         self.input_data: ThermalStorageInputData
         self.output_data: ThermalStorageOutputData
 
-        self.sensor_values_stored: dict[int, pd.Series] = {}
-        # TODO: maybe use other structure from collections import deque or np.array --> less ram
-
         # Prepare Basic Parts / needs to be the latest part
         super().__init__(
             config=config, component_id=component_id, static_data=static_data
@@ -80,6 +72,7 @@ class ThermalStorage(BasicComponent):
         # Set the default value for the reference state of charge to None - start of the service
         self.state_of_charge_information: ThermalStorageLoadLevelStorage = \
             ThermalStorageLoadLevelStorage.model_validate({})
+        self.sensor_values_stored: dict[int, pd.Series] = {}
         self.calibration_data = CalibrationData(db_path=self.config_data.calibration.value.db_path)
         self.component_started = False
 
@@ -188,9 +181,9 @@ class ThermalStorage(BasicComponent):
                     sensor_id=sensor_id, config_limits=config_limits
                     )
 
-            case self.config_data.calculation_method.value:
-                #TODO Add flexible limits method
+            case ThermalStorageCalculationMethods.HISTORICAL_LIMITS:
                 return config_limits
+
             case _ :
                 logger.warning(
                     f"Unknown calculation method: {self.config_data.calculation_method.value}"
@@ -485,7 +478,6 @@ class ThermalStorage(BasicComponent):
                 # so the state of charge is 0.
                 return 0.0
 
-            #TODO: Do we need other weights?
             if np.isnan(mean_current_factor):
                 mean_current_factor = 0
             mean_current_factor += current_factor * volumes[index]
@@ -646,12 +638,10 @@ class ThermalStorage(BasicComponent):
         Stores the temperature values of each sensor in a pandas Series
         in the sensor_values_stored dictionary with the sensor index as key.
 
-        TODO: Maybe use other structure collections.deque or np.array --> less ram
         """
         for index, _ in enumerate(self.config_data.sensor_config.value.storage_sensors):
             try:
                 temperature = self.get_storage_temperature_sensor_value(sensor_index=index)
-                # Store the temperature value in the history ??
                 if not isinstance(temperature.value, (int, float)):
                     raise ValueError("Temperature value is not a number.")
                 if temperature.time is None:
@@ -724,13 +714,6 @@ class ThermalStorage(BasicComponent):
             )
             return None
 
-        #TODO remove
-        # if self.config_data.calibration.storage_path is not None:
-        #     save_calibration_json(
-        #         path=self.config_data.calibration.storage_path,
-        #         data=temperature_extrema.model_dump(),
-        #     )
-
         if self.calibration_data.db_path is not None:
             self.calibration_data.save_extrema_sqlite(
                 sensor_index=sensor_index,
@@ -751,7 +734,6 @@ class ThermalStorage(BasicComponent):
         Function to calibrate the thermal storage component based on historical data
         
         Uses historical temperature data to adjust the sensor configuration limits
-        TODO: Do we need a limit for the adjustment - the upper and lower limit for some reason?
         """
         calibration_config = self.config_data.calibration.value
         if self.calibration_data.db_path is not None:
@@ -765,15 +747,13 @@ class ThermalStorage(BasicComponent):
 
             historical_data = self.handle_storage_sensor_historical_data(sensor_index=index)
 
-
             if historical_data is None:
                 logger.warning(
                     f"Could not calibrate sensor {index} due to missing historical data.")
                 continue
             # Calculate new limits based on historical data and configuration
             # / do not adjust protected sensors
-            if index in calibration_config.protected_sensors_lower_limit \
-                or sensor_config.name in calibration_config.protected_sensors_lower_limit:
+            if sensor_config.protected_lower_limit:
                 minimal_temperature = sensor_config.limits.minimal_temperature
             else:
                 minimal_temperature = round((
@@ -781,8 +761,7 @@ class ThermalStorage(BasicComponent):
                     * (1-calibration_config.historical_data_margin/100)
                     + sensor_config.limits.minimal_temperature
                     ) / 2,1)
-            if index in calibration_config.protected_sensors_upper_limit \
-                or sensor_config.name in calibration_config.protected_sensors_upper_limit:
+            if sensor_config.protected_upper_limit:
                 maximal_temperature = sensor_config.limits.maximal_temperature
             else:
                 maximal_temperature = round((
@@ -811,7 +790,7 @@ class ThermalStorage(BasicComponent):
                 sensor_config=self.config_data.sensor_config.value
             )
         self.component_started = True
-        #TODO change logger to debug
+
         logger.info(
             "Calibrated sensor configuration: "
             f"{self.config_data.sensor_config.value.storage_sensors}"
@@ -823,6 +802,7 @@ class ThermalStorage(BasicComponent):
         """
         Function to calibrate the thermal storage component
         """
+        logger.info(self.config_data.calculation_method.value)
         if self.config_data.calculation_method.value \
             == ThermalStorageCalculationMethods.HISTORICAL_LIMITS:
 

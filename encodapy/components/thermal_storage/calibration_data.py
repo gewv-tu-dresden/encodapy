@@ -129,7 +129,7 @@ class CalibrationData:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cur = conn.execute(
-                    f"""SELECT min_value,max_value,updated_at 
+                    f"""SELECT min_value,max_value,updated_at
                     FROM {table} WHERE sensor_index=?""",
                     (sensor_index,)
                     )

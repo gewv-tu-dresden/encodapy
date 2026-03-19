@@ -6,7 +6,7 @@ import os
 from typing import Optional, TYPE_CHECKING, Union
 from enum import Enum
 from datetime import datetime, timedelta
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 from pydantic.functional_validators import model_validator
 from encodapy.components.basic_component_config import (
     ComponentValidationError,
@@ -101,6 +101,25 @@ class StorageSensorConfig(BaseModel):
         description="""Whether the sensor should be used for the state of charge check
         by temperature limits""",
     )
+    protected_upper_limit: bool = Field(
+        False,
+        description="Whether the upper limit of the sensor should not be adjusted "
+        "during calibration",
+    )
+    protected_lower_limit: bool = Field(
+        False,
+        description="Whether the lower limit of the sensor should not be adjusted "
+        "during calibration",
+    )
+    @model_validator(mode="after")
+    def enforce_protected_lower_limit(self) -> "StorageSensorConfig":
+        """
+        Enforce that the lower limit of the sensor is protected
+        if the sensor is used for the state of charge check.
+        """
+        if self.temperature_check:
+            self.protected_lower_limit = True
+        return self
 
 
 class ThermalStorageTemperatureSensors(BaseModel):
@@ -404,6 +423,10 @@ class DataPointSensorConfig(DataPointGeneral):
 class ThermalStorageLoadLevelCheck(BaseModel):
     """
     Model for the state of charge check information of the thermal storage service.
+
+    This check monitors the relevant sensors and adjusts the charge level
+    if the temperature falls below the required level. It would be advisable
+    to check the sensors at the outlet of the storage tank.
     """
     enabled: bool = Field(
         True,
@@ -448,25 +471,11 @@ class ThermalStorageCalibrationConfig(BaseModel):
         data older than this will be deleted,
         higher values lead to more data being stored""",
     )
-    #TODO remove
-    # storage_path: Optional[str] = Field(
-    #     "./thermal_storage_calibration_data",
-    #     description="Path to store calibration data (optional)",
-    # )
     db_path: Optional[str] = Field(
         "./thermal_storage_calibration_data",
         description="Path to store calibration data (optional)",
     )
-    protected_sensors_upper_limit: list[Union[int, float, str]] = Field(
-        [],
-        description="List of sensor indices whose upper limits should not be adjusted "
-        "during calibration",
-    )
-    protected_sensors_lower_limit: list[Union[int, float, str]] = Field(
-        [0],
-        description="List of sensor indices whose lower limits should not be adjusted "
-        "during calibration",
-    )
+
 class DataPointThermalStorageLoadLevelCheck(DataPointGeneral):
     """
     Model for datapoints of the controller component \
