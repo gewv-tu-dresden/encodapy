@@ -14,7 +14,7 @@ The component uses measurement values from temperature sensors to calculate the 
 
 An overview is available as Pydantic BaseModel {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageOutputData` in [thermal_storage_config.py](./thermal_storage_config.py).
 
-If the Temperature Check (`load_level_check` in {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData`) is enabled, the temperature of the sensor is checked and and if the levels fall below the limits, the charge level is adjusted. See [Component Configuration](#component-configuration) for the information on adding this to temperature sensors.
+If the Temperature Check (`load_level_check` in {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData`) is enabled, the temperature of the sensor is checked and if the levels fall below the limits, the charge level is adjusted. See [Component Configuration](#component-configuration) for the information on adding this to temperature sensors.
 
 ### Calculation Methods
 
@@ -100,4 +100,4 @@ For detailed documentation of the inputs, see the {py:class}`~encodapy.component
 
 ## Example
 
-A example how the component could be used is avaiable in [examples/06_thermal_storage_service](./../../../examples/06_thermal_storage_service/)
+An example how the component could be used is available in [examples/06_thermal_storage_service](./../../../examples/06_thermal_storage_service/)

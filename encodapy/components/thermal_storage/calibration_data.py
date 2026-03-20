@@ -182,7 +182,17 @@ class CalibrationData:
                 table = "sensor_limits"
             )
             if extrema is not None:
-                sensor.limits.minimal_temperature = extrema.minimal_temperature
-                sensor.limits.maximal_temperature = extrema.maximal_temperature
+                limits_class = sensor.limits.__class__
+                extra_kwargs = {}
+                # Preserve optional reference_temperature if present on the limits object
+                if hasattr(sensor.limits, "reference_temperature"):
+                    extra_kwargs["reference_temperature"] = (
+                        sensor.limits.reference_temperature
+                    )
+                sensor.limits = limits_class(
+                    minimal_temperature=extrema.minimal_temperature,
+                    maximal_temperature=extrema.maximal_temperature,
+                    **extra_kwargs,
+                )
 
         return sensor_config

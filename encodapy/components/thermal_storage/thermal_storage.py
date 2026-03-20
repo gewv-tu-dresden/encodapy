@@ -216,7 +216,7 @@ class ThermalStorage(BasicComponent):
             )
             logger.error(error_msg)
             raise AttributeError(error_msg) from e
-        if not isinstance(temperature, DataPointNumber):
+        if not isinstance(temperature, None | DataPointNumber):
             error_msg = (
                 f"Temperature sensor '{temperature_sensor}' "
                 "is not of type DataPointNumber."
@@ -410,6 +410,34 @@ class ThermalStorage(BasicComponent):
         )
         return ref_temperature, temperature_limits.minimal_temperature
 
+    def _adjust_state_of_charge(self,
+                                state_of_charge: float,
+                                mean_current_factor: float
+                                ) -> float:
+        """
+        Function to adjust the state of charge based on the temperature of the sensors \
+            in the thermal storage
+
+        Args:
+            state_of_charge (float): Current state of charge in percent (0-100)
+            mean_current_factor (float): Factor to adjust the state of charge based \
+                on the temperature of the sensors in the thermal storage, \
+
+        Returns:
+            float: Adjusted state of charge in percent (0-100)
+        """
+
+        # If the mean current factor is NaN, there is no need to adjust the state of charge.
+        if math.isnan(mean_current_factor):
+            return state_of_charge
+        # if the temperature is below the minimal temperature, there is no energy left
+        if mean_current_factor < 0:
+            return 0.0
+        if mean_current_factor > 1:
+            # no need to adjust the state of charge
+            return state_of_charge
+        return round(mean_current_factor * state_of_charge, 2)
+
     def _check_temperature_of_required_sensors(self, state_of_charge: float) -> float:
         """
         Function to check if the temperature of the required sensors is too low, \
@@ -423,11 +451,9 @@ class ThermalStorage(BasicComponent):
         Returns:
             float: Adjusted state of charge
 
-        TODO: do we need a reference state of charge for the calculation?
         """
-        match self.config_data.load_level_check.value.enabled:
-            case False:
-                return state_of_charge
+        if not self.config_data.load_level_check.value.enabled:
+            return state_of_charge
 
         ref_values: dict[int, tuple[float, float]] = {}
         volumes: dict[int, float] = {}
@@ -447,13 +473,13 @@ class ThermalStorage(BasicComponent):
             # using historical data for the state of charge check, if available and configured
             historical_temperature = self.sensor_values_stored.get(index, None)
             if historical_temperature is not None and temperature.time is not None:
-                if temperature.time not in historical_temperature.index:
-                    historical_temperature.at[temperature.time] = temperature.value
+                ts = pd.to_datetime(temperature.time, utc=True)
+                if ts not in historical_temperature.index:
+                    historical_temperature.at[ts] = temperature.value
                 historical_temperature = historical_temperature.sort_index()
                 historical_temperature = historical_temperature.truncate(
                     before=(
-                        temperature.time
-                        - pd.Timedelta(
+                        ts - pd.Timedelta(
                             minutes=
                             self.config_data.load_level_check.value.historical_temperature_limit)
                     ),
@@ -462,7 +488,7 @@ class ThermalStorage(BasicComponent):
                 temperature = DataPointNumber(
                     value=historical_temperature.mean(),
                     unit=temperature.unit,
-                    time=temperature.time
+                    time=ts
                 )
 
             denominator =  ref_temperature - minimal_temperature
@@ -487,20 +513,9 @@ class ThermalStorage(BasicComponent):
         mean_current_factor = mean_current_factor / sum(volumes.values())
         #The factors are weighted with the volume of the sensors,
         # so that the influence of the sensors is higher, if they have a higher volume.
-
-        match mean_current_factor:
-            # If the mean current factor is NaN, there is no need to adjust the state of charge.
-            case _ if math.isnan(mean_current_factor):
-                return state_of_charge
-            # if the temperature is below the minimal temperature, there is no energy left
-            case _ if mean_current_factor < 0:
-                return 0.0
-            case _ if mean_current_factor > 1:
-                # no need to adjust the state of charge
-                return state_of_charge
-            case _:
-                return round(mean_current_factor * state_of_charge, 2)
-
+        return self._adjust_state_of_charge(
+            state_of_charge=state_of_charge,
+            mean_current_factor=mean_current_factor)
 
     def get_state_of_charge(self) -> DataPointNumber:
         """
@@ -531,7 +546,7 @@ class ThermalStorage(BasicComponent):
         state_of_charge = round(self._check_temperature_of_required_sensors(
             state_of_charge=state_of_charge
         ), 2)
-        state_of_charge = max(state_of_charge, 0) # limit to zero
+        state_of_charge = max(min(state_of_charge, 100), 0) # limit to 0-100
 
         self.state_of_charge_information.last_check_time = datetime.now()
         self.state_of_charge_information.state_of_charge = state_of_charge
@@ -653,7 +668,7 @@ class ThermalStorage(BasicComponent):
                         dtype=float,
                         index=pd.DatetimeIndex([], tz="UTC"))
 
-                self.sensor_values_stored[index].at[pd.to_datetime(temperature.time)] = \
+                self.sensor_values_stored[index].at[pd.to_datetime(temperature.time, utc=True)] = \
                     float(temperature.value)
             except (AttributeError, ValueError, TypeError) as e:
                 logger.warning(f"Could not store temperature for sensor {index}: {e}")
@@ -743,6 +758,7 @@ class ThermalStorage(BasicComponent):
                 self.calibration_data.load_limits_sqlite(
                     sensor_config=self.config_data.sensor_config.value
                 ))
+
         for index, _ in enumerate(self.config_data.sensor_config.value.storage_sensors):
 
             sensor_config = self.config_data.sensor_config.value.storage_sensors[index]
@@ -790,6 +806,10 @@ class ThermalStorage(BasicComponent):
         logger.info(
             "Calibrated sensor configuration: "
             f"{self.config_data.sensor_config.value.storage_sensors}"
+            )
+        if self.calibration_data is not None:
+            self.calibration_data.save_limits_sqlite(
+                sensor_config=self.config_data.sensor_config.value
             )
 
     def calibrate(self,

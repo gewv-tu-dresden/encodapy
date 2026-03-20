@@ -364,7 +364,7 @@ class ThermalStorageCalculationMethods(Enum):
 
     Members:
         STATIC_LIMITS: Static limits given by the configuration
-        RETURN_LIMITS: Uses the temperature sensors from the in- and outflow as limits
+        CONNECTION_LIMITS: Uses the temperature sensors from the in- and outflow as limits
         HISTORICAL_LIMITS: Uses historical data to determine the limits
     """
 
