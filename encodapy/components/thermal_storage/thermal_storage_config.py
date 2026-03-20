@@ -3,10 +3,10 @@ Description: Configuration models for the thermal storage component
 Author: Martin Altenburger
 """
 import os
-from typing import Optional, TYPE_CHECKING, Union
+from typing import Optional, TYPE_CHECKING
 from enum import Enum
 from datetime import datetime, timedelta
-from pydantic import BaseModel, Field, ValidationInfo, field_validator
+from pydantic import BaseModel, Field
 from pydantic.functional_validators import model_validator
 from encodapy.components.basic_component_config import (
     ComponentValidationError,
@@ -563,7 +563,7 @@ class ThermalStorageLoadLevelStorage(BaseModel):
         None,
         description="Timestamp of the last state of charge check",
     )
-    check_time_interval: Optional[timedelta] = Field(
+    check_time_interval: timedelta = Field(
         timedelta(seconds=0.5),
         description="Time interval in seconds between state of charge checks",
     )
@@ -589,6 +589,8 @@ class ThermalStorageLoadLevelStorage(BaseModel):
             return False
         if self.last_check_time is None:
             return False
-        if datetime.now() - self.last_check_time <= self.check_time_interval:
+        if self.nominal_storage_energy is None:
+            return False
+        if datetime.now() - self.last_check_time >= self.check_time_interval:
             return False
         return True

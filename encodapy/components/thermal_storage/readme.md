@@ -12,7 +12,7 @@ The component uses measurement values from temperature sensors to calculate the 
 - Storage energy content in Wh: `storage__energy`
 - Additional storable energy in Wh: `storage__loading_potential_nominal`
 
-A overview is avaiable als Pydantic BaseModel {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageOutputData` in [thermal_storage_config.py](./thermal_storage_config.py).
+An overview is available as Pydantic BaseModel {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageOutputData` in [thermal_storage_config.py](./thermal_storage_config.py).
 
 If the Temperature Check (`load_level_check` in {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData`) is enabled, the temperature of the sensor is checked and and if the levels fall below the limits, the charge level is adjusted. See [Component Configuration](#component-configuration) for the information on adding this to temperature sensors.
 

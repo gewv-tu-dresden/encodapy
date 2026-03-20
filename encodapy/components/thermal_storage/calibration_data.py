@@ -143,7 +143,7 @@ class CalibrationData:
                 )
                 return extrema
         except sqlite3.Error as e:
-            logger.error(f"An error occurred while saving extrema: {e}")
+            logger.error(f"An error occurred while loading extrema: {e}")
             return None
 
     def load_extrema_sqlite(self,

@@ -73,8 +73,10 @@ class ThermalStorage(BasicComponent):
         self.state_of_charge_information: ThermalStorageLoadLevelStorage = \
             ThermalStorageLoadLevelStorage.model_validate({})
         self.sensor_values_stored: dict[int, pd.Series] = {}
-        self.calibration_data = CalibrationData(db_path=self.config_data.calibration.value.db_path)
-        self.component_started = False
+        self.calibration_data: Optional[CalibrationData] = None
+        if self.config_data.calibration.value.db_path is not None:
+            self.calibration_data = CalibrationData(
+                db_path=self.config_data.calibration.value.db_path)
 
     def _calculate_volume_per_sensor(self) -> dict:
         """
@@ -345,7 +347,7 @@ class ThermalStorage(BasicComponent):
             ValueError: If the thermal storage is not usable or the sensor values are not set
         """
         if not self.state_of_charge_information.check_status:
-            _state_of_charge = self.get_state_of_charge()
+            self.get_state_of_charge()
 
         # State of charge information should be set now / this is double check
         if self.state_of_charge_information.state_of_charge is None \
@@ -371,7 +373,7 @@ class ThermalStorage(BasicComponent):
             DataPointNumber: Loading potential of the thermal storage in Wh
         """
         nominal_energy = self.get_storage_energy_content(ThermalStorageEnergyTypes.NOMINAL)
-        current_energy = self.get_storage_energy_content(ThermalStorageEnergyTypes.CURRENT)
+        current_energy = self.get_storage_energy_current().value
         loading_potential = round(nominal_energy - current_energy, 2)
         return DataPointNumber(
             value=loading_potential,
@@ -511,7 +513,7 @@ class ThermalStorage(BasicComponent):
         Returns:
             DataPointNumber: State of charge of the thermal storage in percent (0-100)
         """
-        if not self.state_of_charge_information.check_status and \
+        if self.state_of_charge_information.check_status and \
             self.state_of_charge_information.state_of_charge is not None:
             return DataPointNumber(
                 value=self.state_of_charge_information.state_of_charge,
@@ -689,7 +691,7 @@ class ThermalStorage(BasicComponent):
             )
 
         old_extrema: Optional[TemperatureExtrema] = None
-        if self.calibration_data.db_path is not None:
+        if self.calibration_data is not None:
             old_extrema = self.calibration_data.load_extrema_sqlite(sensor_index=sensor_index)
 
         if old_extrema is not None and new_extrema is not None:
@@ -709,12 +711,12 @@ class ThermalStorage(BasicComponent):
         elif old_extrema is not None:
             temperature_extrema = old_extrema
         else:
-            logger.warning(
+            logger.debug(
                 f"Could not determine extrema for sensor {sensor_index}."
             )
             return None
 
-        if self.calibration_data.db_path is not None:
+        if self.calibration_data is not None:
             self.calibration_data.save_extrema_sqlite(
                 sensor_index=sensor_index,
                 extrema=temperature_extrema
@@ -736,7 +738,7 @@ class ThermalStorage(BasicComponent):
         Uses historical temperature data to adjust the sensor configuration limits
         """
         calibration_config = self.config_data.calibration.value
-        if self.calibration_data.db_path is not None:
+        if self.calibration_data is not None:
             self.config_data.sensor_config.value = (
                 self.calibration_data.load_limits_sqlite(
                     sensor_config=self.config_data.sensor_config.value
@@ -748,7 +750,7 @@ class ThermalStorage(BasicComponent):
             historical_data = self.handle_storage_sensor_historical_data(sensor_index=index)
 
             if historical_data is None:
-                logger.warning(
+                logger.info(
                     f"Could not calibrate sensor {index} due to missing historical data.")
                 continue
             # Calculate new limits based on historical data and configuration
@@ -785,12 +787,6 @@ class ThermalStorage(BasicComponent):
                 logger.error(f"Error during calibration of sensor {index}: {e}")
                 continue
 
-        if self.calibration_data.db_path is not None:
-            self.calibration_data.save_limits_sqlite(
-                sensor_config=self.config_data.sensor_config.value
-            )
-        self.component_started = True
-
         logger.info(
             "Calibrated sensor configuration: "
             f"{self.config_data.sensor_config.value.storage_sensors}"
@@ -802,18 +798,10 @@ class ThermalStorage(BasicComponent):
         """
         Function to calibrate the thermal storage component
         """
-        logger.info(self.config_data.calculation_method.value)
+
         if self.config_data.calculation_method.value \
             == ThermalStorageCalculationMethods.HISTORICAL_LIMITS:
 
-            match self.component_started:
-                case True:
-                    logger.debug("Calibrating thermal storage based on historical data.")
+            logger.debug("Calibrating thermal storage based on historical data.")
 
-                    self.calibrate_historical_based_sensor_configuration()
-                case False:
-                    logger.debug(
-                        "Thermal storage component not started yet. "
-                        "Skipping historical based calibration."
-                    )
-                    self.component_started = True
+            self.calibrate_historical_based_sensor_configuration()
