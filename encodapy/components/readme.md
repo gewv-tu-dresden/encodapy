@@ -169,7 +169,7 @@ An example of how a Pydantic model can be used to validate the configuration of 
         )
     ```
 
-    See https://docs.pydantic.dev/latest/concepts/models/#basic-model-usage for information on the general usage of optional fields and default values.
+    See [docs.pydantic.dev/latest/concepts/models/#basic-model-usage](https://docs.pydantic.dev/latest/concepts/models/#basic-model-usage) for information on the general usage of optional fields and default values.
 
     The value of the variable `"$unit_value"` must be a valid unit from the `encodapy.utils.units.DataUnits` such as `"CEL"` for °C. If possible, the unit will also be transformed.
 
@@ -266,4 +266,5 @@ An example of how a Pydantic model can be used to validate the configuration of 
   // ...
 }
 ```
+
 - Be careful: the module path must contain at least one dot. Otherwise, the framework will not recognise the component as an individual one.
