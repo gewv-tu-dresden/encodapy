@@ -3,14 +3,26 @@ Description: This module contains models for various types \
     of datapoints used in the controller component.
 Author: Martin Altenburger
 """
-
+import os
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Optional, TYPE_CHECKING, TypeAlias
 from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
 import pandas as pd
 from encodapy.utils.units import DataUnits
 from encodapy.utils.mediums import Medium
 
+# Split between real imports and mock classes for Sphinx
+IS_BUILDING_DOCS = "BUILDING_DOCS" in os.environ
+
+if TYPE_CHECKING:
+    # Statischer Typ für IDE/mypy
+    SeriesValue: TypeAlias = pd.Series
+elif IS_BUILDING_DOCS:
+    # Nur für Sphinx-Importpfad
+    SeriesValue: TypeAlias = Any
+else:
+    # Echter Runtime-Typ
+    SeriesValue: TypeAlias = pd.Series
 
 # Models to hold the data
 class DataPointGeneral(BaseModel):
@@ -97,11 +109,12 @@ class DataPointMedium(DataPointGeneral):
 
 class DataPointTimeSeries(DataPointGeneral):
     """
-    DataPoint for time series with general float values
+    DataPoint for time series. The value is expected to be a pandas Series 
+    with a DatetimeIndex and float or integer values.
     """
-    value: pd.Series= Field(
+    value: SeriesValue = Field(
         ...,
-        description="A time series of general data points",
+        description="A time series of number data points as :class:`pd.Series`",
     )
     @model_validator(mode='before')
     @classmethod
@@ -116,7 +129,7 @@ class DataPointTimeSeries(DataPointGeneral):
     @classmethod
     def validate_time_series(cls, v: pd.Series) -> pd.Series:
         """
-        Function to check, if the input is a timeseries of floats
+        Function to check, if the input is a timeseries of floats or integers
 
         Raises:
             ValueError: If the series does not have a DatetimeIndex\

@@ -107,11 +107,13 @@ class FlixOptEffect(BaseModel):
 class FlixOptConverterTypes(Enum):
     """
     Types of FlixOpt converters, supported by encodapy FlixOpt model component
+    TODO: describe the converter types and add more types if needed
     """
     BOILER = "boiler"
     POWER2HEAT = "power2heat"
     CHP = "chp"
     SUBSTATION = "substation"
+    BIDIRECTIONAL_SUBSTATION = "bidirectional_substation"
 
 class PowerRange(BaseModel):
     """
@@ -339,11 +341,13 @@ class FlixOptSinkSource(BaseModel):
         and the value is the amount of the effect per kWh of energy flow
 
         Only used, if input_label is None and the input bus is defined.
-        
-        Example:
-            ```{
+
+        Example::
+
+            {
                 "costs": 0.15
-            }```
+            }
+
         """,
     )
     output_bus: Optional[str] = Field(
@@ -365,11 +369,13 @@ class FlixOptSinkSource(BaseModel):
         and the value is the amount of the effect per kWh of energy flow
 
         Only used, if output_label is None and the output bus is defined.
-        
-        Example:
-            ```{
+
+        Example::
+
+            {
                 "costs": 0.15
-            }```
+            }
+
         """,
     )
 
@@ -403,6 +409,14 @@ class FlixOptSinkSource(BaseModel):
 class FlixOptModel(BaseModel):
     """
     Model to hold the flixopt Model used in the component
+
+    # Specific constraints
+    To add constraints to the FlixOpt model, a Python file or module can be defined in the
+    'constraints_function' field. This needs to include a function called 
+    'add_constraints(optimization: fx.Optimization, config: FlixOptModel)' 
+    that adds additional constraints to the FlixOpt optimization model.
+    This function is then called in the component after the FlixOpt model has been built.
+    You can add more subfunctions to this function to add constraints.
     """
     model_config = ConfigDict(
         extra="allow",
@@ -442,5 +456,12 @@ class FlixOptModel(BaseModel):
         description="""
         List of storages in in the model, which are required to build the flixopt model 
         (https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Storage/)
+        """,
+    )
+    constraints_function: Optional[str] = Field(
+        None,
+        description="""
+        Path to a python file or python module which includes a function `add_constraints`
+        used to add additional constraints to the flixopt optimization model
         """,
     )

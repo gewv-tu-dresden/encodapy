@@ -3,7 +3,12 @@ Defines the FlixOptModelComponent class to perform optimizations using the FlixO
 """
 # pylint: disable=no-member
 from typing import Optional, Union, Any, Literal, overload
-from datetime import timezone
+from collections.abc import Callable
+from datetime import timezone, datetime
+import importlib.util
+import importlib
+import inspect
+from pathlib import Path
 from pydantic import ValidationError
 import pandas as pd
 import numpy as np
@@ -41,6 +46,9 @@ class FlixoptModelComponent(BasicComponent):
         component_id: str,
         static_data=None,
     ) -> None:
+        # BasicComponent.__init__ calls prepare_component(), so this must exist beforehand.
+        self.constraint_function: Optional[Callable] = None
+
         # Prepare Basic Parts / needs to be the latest part
         super().__init__(
             config=config, component_id=component_id, static_data=static_data
@@ -53,6 +61,10 @@ class FlixoptModelComponent(BasicComponent):
         self.flixopt_model: FlixOptModel
         self.df_input: Optional[pd.DataFrame] = None
         self.df_input_timezone: Optional[timezone] = None
+        self._bidirectional_substation_pairs: list[
+            tuple[fx.components.LinearConverter, fx.components.LinearConverter, float, float]
+        ] = []
+        self._bidirectional_substation_labels: dict[str, tuple[str, str]] = {}
 
     def prepare_component(self) -> None:
         """
@@ -82,7 +94,48 @@ class FlixoptModelComponent(BasicComponent):
         except (ValidationError, FileNotFoundError) as e:
             logger.error(f"Error loading flixopt model configuration: {e}")
             raise e
+        if self.flixopt_model.constraints_function is not None:
+            func = self._load_helper_functions(
+                path = self.flixopt_model.constraints_function,
+                symbol = "add_constraints")
+            self.constraint_function = func
 
+    def _load_helper_functions(self,
+                               path: str,
+                               symbol: str
+                               ) -> Optional[Callable]:
+        """
+        Load custom constraint functions from either a file path or python module reference.
+
+        """
+        module: Any
+        module_ref = path.strip()
+
+        is_file_reference = module_ref.endswith(".py") or Path(module_ref).suffix == ".py"
+        if is_file_reference:
+            constraints_path = Path(module_ref).resolve()
+            spec = importlib.util.spec_from_file_location(constraints_path.stem, constraints_path)
+            if spec is None:
+                raise ImportError(
+                    f"Could not create module spec for constraints file: {constraints_path}"
+                )
+            loader = spec.loader
+            if loader is None:
+                raise ImportError(f"No loader available for constraints file: {constraints_path}")
+            module = importlib.util.module_from_spec(spec)
+            loader.exec_module(module)
+        else:
+            module = importlib.import_module(module_ref)
+
+        if symbol:
+            function = getattr(module, symbol, None)
+            if function is None or not inspect.isfunction(function):
+                raise ImportError(
+                    f"Constraint function '{symbol}' not found in '{module_ref}'."
+                )
+            return function
+
+        return None
 
     def _get_input_arrays(self,
                           column:str) -> np.ndarray:
@@ -406,13 +459,14 @@ class FlixoptModelComponent(BasicComponent):
         )
 
     def _add_substation_converter(self,
-                                  converter:FlixOptConverter):
+                                  converter:FlixOptConverter
+                                  )-> fx.linear_converters.LinearConverter:
         """
         Prepare a Substation converter based on the FlixOptConverter model
         Args:
             converter (FlixOptConverter): Converter model to define the Substation converter
-        TODO: Add implementation and doc / how could it be possible to add a bidirectional substation?
-        https://github.com/flixOpt/flixopt/blob/main/flixopt/components.py#L32
+        Returns:
+            fx.linear_converters.LinearConverter: FlixOpt Component for the Substation converter
         """
 
         return fx.components.LinearConverter(
@@ -425,6 +479,52 @@ class FlixoptModelComponent(BasicComponent):
             status_parameters=self._add_status_parameters_to_converter(converter)
         )
 
+
+    def _add_bidirectional_substation_converter(self,
+                                                converter: FlixOptConverter
+                                                ) -> list[fx.components.LinearConverter]:
+        """
+        Build a bidirectional substation converter with one forward and one reverse component.
+        Simultaneous operation in both directions is prevented later via binary constraints.
+        """
+        efficiency = float(converter.thermal_efficiency)
+        if efficiency <= 0:
+            raise ValueError(
+                f"Converter {converter.label} has invalid thermal_efficiency {efficiency}."
+            )
+
+        forward = fx.components.LinearConverter(
+            label=f"{converter.label}_fwd",
+            inputs=[self._add_input_flow_to_converter(converter)
+            ],
+            outputs=[self._add_output_flow_to_converter(converter)],
+            conversion_factors=[
+                { converter.input_flow: 1, converter.thermal_flow: efficiency }
+            ],
+            status_parameters=self._add_status_parameters_to_converter(converter)
+        )
+
+        reverse = fx.components.LinearConverter(
+            label=f"{converter.label}_rev",
+            inputs=[self._add_output_flow_to_converter(converter)],
+            outputs=[self._add_input_flow_to_converter(converter)],
+            conversion_factors=[
+                { converter.thermal_flow: 1, converter.input_flow: efficiency }
+            ],
+            status_parameters=self._add_status_parameters_to_converter(converter)
+        )
+
+        self._bidirectional_substation_pairs.append(
+            (
+                forward,
+                reverse,
+                float(converter.thermal_nominal_power / efficiency),
+                float(converter.thermal_nominal_power),
+            )
+        )
+        self._bidirectional_substation_labels[converter.label] = (forward.label, reverse.label)
+        return [forward, reverse]
+
     def _get_converters(self) -> list[fx.components.LinearConverter]:
         """
         Prepare the FlixOpt components based on the model definition
@@ -432,6 +532,8 @@ class FlixoptModelComponent(BasicComponent):
         Returns:
             list[fx.components.LinearConverter]: List of FlixOpt converters for the optimization
         """
+        self._bidirectional_substation_pairs = []
+        self._bidirectional_substation_labels = {}
         converters: list[fx.components.LinearConverter] = []
 
         for converter in self.flixopt_model.converters:
@@ -459,6 +561,10 @@ class FlixoptModelComponent(BasicComponent):
                     converters.append(
                         self._add_substation_converter(converter)
                     )
+                case FlixOptConverterTypes.BIDIRECTIONAL_SUBSTATION:
+                    converters.extend(
+                        self._add_bidirectional_substation_converter(converter)
+                    )
                 case _:
                     logger.warning(
                         f"Converter type {converter.converter_type} not supported yet."
@@ -466,7 +572,8 @@ class FlixoptModelComponent(BasicComponent):
 
         return converters
 
-    def _get_storages(self) -> list[fx.Storage]:
+    def _get_storages(self,
+                      storage_config = None) -> list[fx.Storage]:
         """
         Prepare the FlixOpt storage components based on the model definition
 
@@ -476,10 +583,13 @@ class FlixoptModelComponent(BasicComponent):
         TODO: 
             - should we set a final capacity? --> same like the start soc
             - soc as percentage or absolute value? currently percentage
+            - do we need different bus for charging and discharging? \
+                currently the same, but with different flow labels
         """
         storages = []
+        storage_config = self.flixopt_model.storages if storage_config is None else storage_config
 
-        for storage in self.flixopt_model.storages:
+        for storage in storage_config:
             if isinstance(storage.nominal_capacity, str):
                 nominal_capacity = self._get_input_value(storage.nominal_capacity)
             elif isinstance(storage.nominal_capacity, (float, int)):
@@ -647,6 +757,34 @@ class FlixoptModelComponent(BasicComponent):
                     )
         return sinks_and_sources
 
+    def _add_bidirectional_substation_constraints(
+        self,
+        optimization: fx.Optimization,
+    ) -> None:
+        """
+        Prevent simultaneous forward and reverse operation for bidirectional substations.
+        """
+        base_coords = optimization.model.get_coords()
+        if base_coords is None:
+            raise ValueError("Optimization model coordinates are not available.")
+
+        for idx, (forward, reverse, max_forward, max_reverse) in enumerate(
+            self._bidirectional_substation_pairs
+        ):
+            z_direction = optimization.model.add_variables(
+                name=f"z_bidir_converter_{idx}",
+                coords=base_coords,
+                binary=True,
+            )
+
+            optimization.model.add_constraints(
+                forward.inputs[0].submodel.flow_rate <= z_direction * max_forward,
+                name=f"bidir_forward_gate_{idx}",
+            )
+            optimization.model.add_constraints(
+                reverse.inputs[0].submodel.flow_rate <= (1 - z_direction) * max_reverse,
+                name=f"bidir_reverse_gate_{idx}",
+            )
 
     def run_optimization(self
                          ) -> Optional[fx.results.Results]:
@@ -666,6 +804,7 @@ class FlixoptModelComponent(BasicComponent):
 
         # Define Storage Component
         storages = self._get_storages()
+        # flow_system, storages = self._define_stratified_storage_tank(flow_system)
 
         # Define Sinks and Sources
         sinks_and_sources = self._get_sinks_and_sources()
@@ -673,19 +812,28 @@ class FlixoptModelComponent(BasicComponent):
         # Select components to be included in the flow system
         for element in converters + sinks_and_sources + storages:
             flow_system.add_elements(element)
+        # TODO maybe add manually components?
+
 
         # Solve Problem
         try:
-            optimization = fx.Optimization('encodapy', flow_system) # TODO do we need a name?
+            optimization = fx.Optimization('encodapy', flow_system)
             optimization.do_modeling()
+
+            # self._add_storage_constraints(optimization, storages)
+            self._add_bidirectional_substation_constraints(optimization)
+
+            if self.constraint_function is not None:
+                self.constraint_function(optimization)
+
             optimization.solve(self.config_data.get_solver(), log_main_results=False)
         except Exception as e: #TODO
             logger.error(f"Error during optimization: {e}")
             logger.info(type(e).__name__)
             return None
         logger.debug("Optimization completed with a "
-                     f"duration for modeling {optimization.durations.get("modeling", '-')} s "
-                     f"and solving {optimization.durations.get("solving", '-')} s. "
+                     f"duration for modeling {optimization.durations.get('modeling', '-')} s "
+                     f"and solving {optimization.durations.get('solving', '-')} s. "
                      "The main objective result is "
                      f"{optimization.results.summary.get('Main Results').get('Objective')}.")
 
@@ -739,7 +887,9 @@ class FlixoptModelComponent(BasicComponent):
         all_timeseries.set_index("time", inplace=True)
         # drop last row, because it is often incomplete due to the way the optimization works
         all_timeseries.drop(index=all_timeseries.index[-1], inplace=True)
-        # all_timeseries.to_csv("./results/optimization_results_2.csv", sep=";", decimal=",", encoding="utf-8") #TODO remove
+        # all_timeseries.to_csv(
+        #     f"./results/optimization_results_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv",
+        #     sep=";", decimal=",", encoding="utf-8") #TODO remove
         return all_timeseries
 
     def prepare_output_data(self,
@@ -777,6 +927,18 @@ class FlixoptModelComponent(BasicComponent):
 
         for converter in self.flixopt_model.converters:
             output_name = converter.label + "_thermal_power"
+            if converter.label in self._bidirectional_substation_labels:
+                forward_label, reverse_label = self._bidirectional_substation_labels[converter.label]
+                forward_col = f"{forward_label}({converter.thermal_flow})|flow_rate"
+                reverse_col = f"{reverse_label}({converter.thermal_flow})|flow_rate"
+                outputs[output_name] = DataPointTimeSeries(
+                    value=(
+                        all_timeseries.get(forward_col, pd.Series(0.0, index=all_timeseries.index))
+                        - all_timeseries.get(reverse_col, pd.Series(0.0, index=all_timeseries.index))
+                    ).rename(output_name)
+                )
+                continue
+
             outputs[output_name] = DataPointTimeSeries(
                 value = (all_timeseries[f"{converter.label}({converter.thermal_flow})|flow_rate"]
                 * all_timeseries[f"{converter.label}|status"]
