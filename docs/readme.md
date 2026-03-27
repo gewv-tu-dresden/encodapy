@@ -2,7 +2,7 @@
 
 The documentation is built using Sphinx and the Poetry environment. You can use:
 
-```
+```shell
 poetry run sphinx-build -b html -a -E ./source ./build 
 ```
 

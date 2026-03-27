@@ -440,7 +440,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         if ((datetime.now() - start_time).total_seconds()) > hold_time:
             logger.warning(
                 "The processing time is longer than the sampling time."
-                "The sampling time must be increased!"
+                " The sampling time must be increased!"
             )
         while ((datetime.now() - start_time).total_seconds()) < hold_time:
             if self.shutdown_event.is_set():
@@ -642,6 +642,10 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             * get_time_unit_seconds(
                 self.config.controller_settings.time_settings.calibration.sampling_time_unit
             )
+        )
+        await self._hold_sampling_time(
+            start_time=datetime.now(),
+            hold_time=self.env.start_hold_time,
         )
 
         while not self.shutdown_event.is_set():
