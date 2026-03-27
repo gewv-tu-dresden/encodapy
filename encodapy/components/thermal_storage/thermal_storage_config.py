@@ -348,7 +348,7 @@ class ThermalStorageOutputData(OutputData):
     )
     storage__energy_nominal: Optional[DataPointNumber] = Field(
         None,
-        description="Output for storage energy in Wh",
+        description="Output for nominal storage energy in Wh",
         json_schema_extra={"unit": "WHR"},
     )
     storage__loading_potential_nominal: Optional[DataPointNumber] = Field(
