@@ -80,7 +80,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">time</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyHttpUrl</span><span class="p">,</span> <span class="n">Field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSettings</span><span class="p">,</span> <span class="n">SettingsConfigDict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileStorageMethod</span>
@@ -102,6 +102,29 @@
     <span class="p">)</span>
     <span class="n">log_level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Logging level for the service&quot;</span>
+    <span class="p">)</span>
+    <span class="n">log_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Path to the log file. If not provided, logs will be printed to the console. &quot;</span>
+            <span class="s2">&quot;Example: &#39;./logs/service.log&#39;&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">log_retention</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">timedelta</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Retention policy for log files. Can be an integer (number of files to keep), &quot;</span>
+            <span class="s2">&quot;a string (e.g., &#39;7 days&#39;), or a timedelta object. &quot;</span>
+            <span class="s2">&quot;Example: &#39;7 days&#39; or 5 (to keep the last 5 log files).&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">log_rotation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">time</span> <span class="o">|</span> <span class="n">timedelta</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Rotation policy for log files. Can be an integer (size in bytes), a string &quot;</span>
+            <span class="s2">&quot;(e.g., &#39;00:00&#39; for daily rotation at midnight), a time object, or a timedelta object. &quot;</span>
+            <span class="s2">&quot;Example: &#39;00:00&#39; for daily rotation at midnight or 10485760 (to rotate after 10 MB).&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">reload_staticdata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
