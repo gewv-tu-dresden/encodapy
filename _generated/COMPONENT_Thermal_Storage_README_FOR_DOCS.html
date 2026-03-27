@@ -86,7 +86,8 @@
 <li><p>Storage energy content in Wh: <code class="docutils literal notranslate"><span class="pre">storage__energy</span></code></p></li>
 <li><p>Additional storable energy in Wh: <code class="docutils literal notranslate"><span class="pre">storage__loading_potential_nominal</span></code></p></li>
 </ul>
-<p>A overview is avaiable als Pydantic BaseModel <code class="docutils literal notranslate"><span class="pre">ThermalStorageOutputData</span></code> in in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a>.</p>
+<p>An overview is available as Pydantic BaseModel <a class="reference internal" href="../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageOutputData" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageOutputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageOutputData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a>.</p>
+<p>If the Temperature Check (<code class="docutils literal notranslate"><span class="pre">load_level_check</span></code> in <a class="reference internal" href="../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageConfigData</span></code></a>) is enabled, the temperature of the sensor is checked and if the levels fall below the limits, the charge level is adjusted. See <a href="#component-configuration">Component Configuration</a> for the information on adding this to temperature sensors.</p>
 </section>
 <section id="calculation-methods">
 <h3>Calculation Methods<a class="headerlink" href="#calculation-methods" title="Link to this heading"></a></h3>
@@ -94,26 +95,73 @@
 <ul class="simple">
 <li><p><strong>Static Limits</strong>: Defined in the sensor configuration (<code class="docutils literal notranslate"><span class="pre">static_limits</span></code>)</p></li>
 <li><p><strong>Connection Limits</strong>: Uses temperature sensors from the in- and outflow as limits (<code class="docutils literal notranslate"><span class="pre">connection_limits</span></code>)</p></li>
+<li><p><strong>Historical Limits</strong>: At startup, it uses the externally defined sensor configuration (<code class="docutils literal notranslate"><span class="pre">historical_limits</span></code>). It then calibrates the limits based on historical data.</p>
+<ul>
+<li><p>Refer to the <a class="reference internal" href="../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageCalibrationConfig" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageCalibrationConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageCalibrationConfig</span></code></a> section in the component’s configuration.</p></li>
+<li><p>It stores the calibration results in an SQLite database. For the path, see the ThermalStorageCalibrationConfig for persistent data storage.</p></li>
+</ul>
+</li>
 </ul>
 <p>The default method is <strong>Static Limits</strong>.</p>
+</section>
+<section id="calibration-historical-limits">
+<h3>Calibration (Historical Limits)<a class="headerlink" href="#calibration-historical-limits" title="Link to this heading"></a></h3>
+<p>If <code class="docutils literal notranslate"><span class="pre">historical_limits</span></code> is used as calculation method, the component calibrates the
+sensor limits using stored historical temperatures per sensor.</p>
+<ul class="simple">
+<li><p>At startup, stored limits are loaded from the calibration database (if available).</p></li>
+<li><p>During operation, new temperature extrema are collected from historical sensor values.</p></li>
+<li><p>New limits are calculated from configured limits and historical extrema with a margin.</p></li>
+<li><p>Protected limits (<code class="docutils literal notranslate"><span class="pre">protected_lower_limit</span></code>, <code class="docutils literal notranslate"><span class="pre">protected_upper_limit</span></code>) are not changed.</p></li>
+<li><p>Updated extrema and calibrated limits are persisted in SQLite.</p></li>
+</ul>
+<p>For each non-protected sensor, the calibrated limits are calculated as:</p>
+<ul class="simple">
+<li><p>Lower limit: average of configured lower limit and historical minimum reduced by margin</p></li>
+<li><p>Upper limit: average of configured upper limit and historical maximum increased by margin</p></li>
+</ul>
 </section>
 </section>
 <section id="component-configuration">
 <h2>Component Configuration<a class="headerlink" href="#component-configuration" title="Link to this heading"></a></h2>
 <p>The service requires a specific configuration defined by a Pydantic <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>, which includes:</p>
 <ul class="simple">
-<li><p><strong>Temperature Sensors Configuration</strong> (<code class="docutils literal notranslate"><span class="pre">ThermalStorageTemperatureSensors</span></code>):</p>
+<li><p><strong>Temperature Sensors Configuration</strong> (<a class="reference internal" href="../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageTemperatureSensors" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageTemperatureSensors"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageTemperatureSensors</span></code></a>):</p>
 <ul>
 <li><p>Between three and ten sensors can be used.</p></li>
 <li><p>For each sensor, specify the name, height in the tank (as a percentage from the top down, 0–100%), and limits.</p></li>
 <li><p>Sensor 1 should be the highest.</p></li>
+<li><p>You can specify whether the limits should be checked (<code class="docutils literal notranslate"><span class="pre">temperature_check</span></code>) and whether they should not be adjusted during calibration (<code class="docutils literal notranslate"><span class="pre">protected_upper_limit</span></code> / <code class="docutils literal notranslate"><span class="pre">protected_lower_limit</span></code>)</p></li>
+<li><p>See <a class="reference internal" href="../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.StorageSensorConfig" title="encodapy.components.thermal_storage.thermal_storage_config.StorageSensorConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StorageSensorConfig</span></code></a> for more details</p></li>
 </ul>
 </li>
 <li><p><strong>Storage Tank Volume</strong>: Assumes a cylindrical upright storage tank.</p></li>
 <li><p><strong>Medium in the Storage Tank</strong></p></li>
 <li><p><strong>Calculation Method</strong> (see above)</p></li>
+<li><p><strong>Load Level Check</strong>: Compare the storage energy level with the temperature of the upper sensor to see if it is within the limits.</p></li>
+<li><p><strong>Calibration</strong> (<a class="reference internal" href="../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageCalibrationConfig" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageCalibrationConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageCalibrationConfig</span></code></a>): Required for <code class="docutils literal notranslate"><span class="pre">historical_limits</span></code>.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">historical_data_margin</span></code> (0-100%): Safety margin applied to historical extrema before calculating new limits.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">historical_timerange_minimum</span></code> (hours): Minimum historical timespan needed before new extrema are used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">historical_timerange_retention</span></code> (hours): Retention period for in-memory historical data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">db_path</span></code> (optional): This is the SQLite storage path for calibrated limits and extremes. If it is set to ‘None’, no data will be stored persistently.</p></li>
 </ul>
-<p>Configuration parameters must be set as datapoints or connections to static data in the config file. For more details, see the <code class="docutils literal notranslate"><span class="pre">ThermalStorageConfigData</span></code> <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a>.</p>
+</li>
+</ul>
+<p>To enable calibration, configure:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">calculation_method</span> <span class="pre">=</span> <span class="pre">historical_limits</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calibration</span></code> with suitable values for margin and timeranges</p></li>
+<li><p>Optional sensor protection flags in each storage sensor:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">protected_lower_limit</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">protected_upper_limit</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_check</span></code> (automatically enforces lower-limit protection)</p></li>
+</ul>
+</li>
+<li><p>Calibration must be enabled in the general configuration (sample time).</p></li>
+</ul>
+<p>Configuration parameters must be set as datapoints or connections to static data in the config file. For more details, see the <a class="reference internal" href="../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageConfigData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a> or the documentation.</p>
 </section>
 <section id="inputs">
 <h2>Inputs<a class="headerlink" href="#inputs" title="Link to this heading"></a></h2>
@@ -135,11 +183,11 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">load_temperature_in</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">load_temperature_out</span></code></p></li>
 </ul>
-<p>For detailed documentation of the inputs, see the <code class="docutils literal notranslate"><span class="pre">ThermalStorageInputData</span></code> <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a>.</p>
+<p>For detailed documentation of the inputs, see the <a class="reference internal" href="../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageInputData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a> or the documentation.</p>
 </section>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
-<p>A example how the component could be used is avaiable in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/06_thermal_storage_service">examples/06_thermal_storage_service</a></p>
+<p>An example how the component could be used is available in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/06_thermal_storage_service">examples/06_thermal_storage_service</a></p>
 </section>
 </section>
 
