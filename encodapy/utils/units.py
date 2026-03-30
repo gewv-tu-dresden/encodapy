@@ -40,9 +40,9 @@ class DataUnits(Enum):
     The _UNIT_MAP will be generated automatically from the pint_unit attributes.
     
     Usage:
-    - DataUnits.PERCENT.value -> "P1" (unit code, for serialization)
-    - DataUnits.PERCENT.pint_unit -> "percent" (for pint conversion)
-    - DataUnits("P1") -> DataUnits.PERCENT (lookup by unit code)
+        - DataUnits.PERCENT.value -> "P1" (unit code, for serialization)
+        - DataUnits.PERCENT.pint_unit -> "percent" (for pint conversion)
+        - DataUnits("P1") -> DataUnits.PERCENT (lookup by unit code)
     """
 
     pint_unit: str  # Type annotation for the attribute set in __new__
@@ -163,13 +163,15 @@ def adjust_unit_of_value(
     unit_actual: DataUnits,
     unit_target: DataUnits
     ) -> Optional[float]:
-    """Function to adjust the unit of a value
+    """Function to adjust the unit of a value.
+
     Args:
-        value (float| int): Value to adjust
+        value (float | int): Value to adjust.
         unit_actual (DataUnits): Actual unit of the value
         unit_target (DataUnits): Target unit of the value
+
     Returns:
-        Optional[float]: Adjusted value, if adjustment factor could be determined
+        Optional[float]: Adjusted value, if adjustment factor could be determined.
     """
     if unit_actual == unit_target:
         return value
@@ -199,15 +201,17 @@ def adjust_units(
     column_name: Optional[str] = None
     ) -> Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]]:
     """
-    Function to adjust the unit of a datapoint. To use this function, simply pass the value, \
-        the actual unit and the target unit, like:
-        ```
+    Function to adjust the unit of a datapoint.
+    To use this function, simply pass the value, the actual unit and the target unit, like:
+
+    .. code-block:: python
+
         adjusted_value = adjust_units(
             value=10,
             unit_actual=DataUnits.SECOND,
             unit_target=DataUnits.MINUTE
         )
-        ```
+
 
     Args:
         value (Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]]): \
