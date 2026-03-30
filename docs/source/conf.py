@@ -60,7 +60,7 @@ autodoc_typehints_format = "short"
 typehints_use_rtype = True
 typehints_document_rtype = True
 # Settings for type hints: output types in the description (clear fields)
-autodoc_typehints = "both"  # alternative: "signature", "both"
+autodoc_typehints = "signature"  # alternative: "signature", "both"
 # if you want to avoid fully qualified type names:
 typehints_fully_qualified = False
 always_document_param_types = False  # No automatic parameter documentation
@@ -140,6 +140,7 @@ def _generate_readme(app):
         "encodapy/components/readme.md": "COMPONENTS_README_FOR_DOCS.md",
         "encodapy/components/thermal_storage/readme.md": "COMPONENT_Thermal_Storage_README_FOR_DOCS.md",
         "encodapy/components/two_point_controller/readme.md": "COMPONENT_Two_Point_Controller_README_FOR_DOCS.md",
+        "encodapy/components/flixopt_model_component/readme.md": "COMPONENT_flixopt_model_README_FOR_DOCS.md",
         "examples/readme.md": "COMPONENT_Examples_README_FOR_DOCS.md"
     }
     # script is under docs/scripts relative to repo root

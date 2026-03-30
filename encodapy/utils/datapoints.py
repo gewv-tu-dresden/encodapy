@@ -36,7 +36,10 @@ class DataPointGeneral(BaseModel):
         time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.
     """
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        protected_namespaces=("field_", "validator_")
+    )
 
     value: Any
     unit: Optional[DataUnits] = None
