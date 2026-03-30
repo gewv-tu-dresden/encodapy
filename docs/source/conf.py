@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 project = 'EnCoDaPy'
-copyright = '2025, GEWV TU Dresden'
+copyright = '2026, GEWV TU Dresden'
 author = 'Martin Altenburger'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

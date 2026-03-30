@@ -51,7 +51,12 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
         self.shutdown_event = shutdown_event or asyncio.Event()
         self.env: BasicEnvVariables = BasicEnvVariables()
-        self.logger = LoggerControl(log_level=self.env.log_level)
+        self.logger = LoggerControl(
+            log_level=self.env.log_level,
+            log_path=self.env.log_path,
+            log_retention=self.env.log_retention,
+            log_rotation=self.env.log_rotation
+        )
 
         self.staticdata: Optional[list[StaticDataEntityModel]] = None
 
@@ -440,7 +445,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         if ((datetime.now() - start_time).total_seconds()) > hold_time:
             logger.warning(
                 "The processing time is longer than the sampling time."
-                "The sampling time must be increased!"
+                " The sampling time must be increased!"
             )
         while ((datetime.now() - start_time).total_seconds()) < hold_time:
             if self.shutdown_event.is_set():
@@ -642,6 +647,10 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             * get_time_unit_seconds(
                 self.config.controller_settings.time_settings.calibration.sampling_time_unit
             )
+        )
+        await self._hold_sampling_time(
+            start_time=datetime.now(),
+            hold_time=self.env.start_hold_time,
         )
 
         while not self.shutdown_event.is_set():
