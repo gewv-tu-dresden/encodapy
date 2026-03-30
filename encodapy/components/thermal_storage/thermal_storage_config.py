@@ -5,6 +5,7 @@ Author: Martin Altenburger
 import os
 from typing import Optional, TYPE_CHECKING
 from enum import Enum
+from datetime import datetime, timedelta
 from pydantic import BaseModel, Field
 from pydantic.functional_validators import model_validator
 from encodapy.components.basic_component_config import (
@@ -79,10 +80,15 @@ class StorageSensorConfig(BaseModel):
     Configuration for the storage sensor in the thermal storage
 
     Attributes:
+        name: Optional name of the sensor
         height: Height of the sensor in percent (0=top, 100=bottom)
-        limits: Temperature limits for the sensor
+        limits (:class:`encodapy.components.thermal_storage.TemperatureLimits`): \
+            Temperature limits for the sensor
     """
 
+    name: Optional[str] = Field(
+        None, description="Optional name of the sensor"
+    )
     height: float = Field(
         ...,
         ge=0,
@@ -90,6 +96,30 @@ class StorageSensorConfig(BaseModel):
         description="Height of the sensor in percent (0=top, 100=bottom)",
     )
     limits: TemperatureLimits
+    temperature_check: bool = Field(
+        False,
+        description="""Whether the sensor should be used for the state of charge check
+        by temperature limits""",
+    )
+    protected_upper_limit: bool = Field(
+        False,
+        description="Whether the upper limit of the sensor should not be adjusted "
+        "during calibration",
+    )
+    protected_lower_limit: bool = Field(
+        False,
+        description="Whether the lower limit of the sensor should not be adjusted "
+        "during calibration",
+    )
+    @model_validator(mode="after")
+    def enforce_protected_lower_limit(self) -> "StorageSensorConfig":
+        """
+        Enforce that the lower limit of the sensor is protected
+        if the sensor is used for the state of charge check.
+        """
+        if self.temperature_check:
+            self.protected_lower_limit = True
+        return self
 
 
 class ThermalStorageTemperatureSensors(BaseModel):
@@ -300,6 +330,8 @@ class ThermalStorageOutputData(OutputData):
         storage__level (Optional[DataPointNumber]): Output for storage charge in percent \
             (0-100) (optional)
         storage__energy (Optional[DataPointNumber]): Output for storage energy in Wh (optional)
+        storage__energy_nominal (Optional[DataPointNumber]): Output for nominal storage energy \
+            in Wh (optional)
         storage__loading_potential_nominal (Optional[DataPointNumber]): \
             Output for storage loading potential in Wh (optional)
     """
@@ -314,6 +346,11 @@ class ThermalStorageOutputData(OutputData):
         description="Output for storage energy in Wh",
         json_schema_extra={"unit": "WHR"},
     )
+    storage__energy_nominal: Optional[DataPointNumber] = Field(
+        None,
+        description="Output for nominal storage energy in Wh",
+        json_schema_extra={"unit": "WHR"},
+    )
     storage__loading_potential_nominal: Optional[DataPointNumber] = Field(
         None,
         description="Output for storage loading potential in Wh",
@@ -326,13 +363,14 @@ class ThermalStorageCalculationMethods(Enum):
     Enum for the calculation methods of the thermal storage service.
 
     Members:
-        STATIC_LIMITS ("static_limits"): Static limits given by the configuration
-        CONNECTION_LIMITS ("connection_limits"): Uses the temperature sensors from the \
-            in- and outflow as limits
+        STATIC_LIMITS: Static limits given by the configuration
+        CONNECTION_LIMITS: Uses the temperature sensors from the in- and outflow as limits
+        HISTORICAL_LIMITS: Uses historical data to determine the limits
     """
 
     STATIC_LIMITS = "static_limits"
     CONNECTION_LIMITS = "connection_limits"
+    HISTORICAL_LIMITS = "historical_limits"
 
 
 class ThermalStorageEnergyTypes(Enum):
@@ -385,26 +423,77 @@ class DataPointSensorConfig(DataPointGeneral):
 class ThermalStorageLoadLevelCheck(BaseModel):
     """
     Model for the state of charge check information of the thermal storage service.
+
+    This check monitors the relevant sensors and adjusts the charge level
+    if the temperature falls below the required level. It would be advisable
+    to check the sensors at the outlet of the storage tank.
     """
     enabled: bool = Field(
         True,
         description="Enable or disable the state of charge check",
     )
     minimal_level: float = Field(
-        15.0,
+        35.0,
         gt=0,
         le=100,
         description="""Threshold percentage for the upper temperature sensor.
         When the top sensor falls below this percentage of the temperature range,
         the state of charge is adjusted. (0-100)""",
     )
-    ref_state_of_charge: Optional[float] = Field(
-        None,
+    historical_temperature_limit: int = Field(
+        5,
         ge=0,
-        le=100,
-        description="Reference state of charge level in percent (0-100) | set by the process",
+        description="""
+        Minutes for historical temperature data to be considered for the state of charge check."""
     )
 
+class ThermalStorageCalibrationConfig(BaseModel):
+    """
+    Configuration for the calibration of the thermal storage service.
+    """
+
+    historical_data_margin: float = Field(
+        5.0,
+        ge=0,
+        le=100,
+        description="Margin in percent to adjust historical data temperatures "
+        "for state of charge calculation (0-100)",
+    )
+    historical_timerange_minimum: int = Field(
+        1,
+        ge=0,
+        description="Minimum timerange in hours for historical data to be considered "
+    )
+    historical_timerange_retention: int = Field(
+        48,
+        ge=0,
+        description="""Retention timerange in hours for historical data to be considered,
+        data older than this will be deleted,
+        higher values lead to more data being stored""",
+    )
+    db_path: Optional[str] = Field(
+        "./thermal_storage_calibration_data",
+        description="Path to store calibration data (optional)",
+    )
+
+class DataPointThermalStorageLoadLevelCheck(DataPointGeneral):
+    """
+    Model for datapoints of the controller component \
+        which define the state of charge check configuration.
+    """
+    value: ThermalStorageLoadLevelCheck = Field(
+        ThermalStorageLoadLevelCheck.model_validate({}),
+        description="Value of the datapoint, which is a ThermalStorageLoadLevelCheck "
+    )
+class DataPointThermalStorageCalibrationConfig(DataPointGeneral):
+    """
+    Model for datapoints of the controller component \
+        which define the calibration configuration.
+    """
+    value: ThermalStorageCalibrationConfig = Field(
+        ThermalStorageCalibrationConfig.model_validate({}),
+        description="Value of the datapoint, which is a ThermalStorageCalibrationConfig "
+    )
 class ThermalStorageConfigData(ConfigData):
     """
     Model for the configuration data of the thermal storage service.
@@ -416,8 +505,10 @@ class ThermalStorageConfigData(ConfigData):
             Sensor configuration of the thermal storage
         calculation_method (DataPointCalculationMethod) : \
             Calculation method for the thermal storage
-        load_level_check: (ThermalStorageLoadLevelCheck) : \
+        load_level_check: (DataPointThermalStorageLoadLevelCheck) : \
             Configuration for the state of charge check
+        calibration: (DataPointThermalStorageCalibrationConfig) : \
+            Configuration for the calibration of the thermal storage
     """
 
     volume: DataPointNumber = Field(
@@ -437,7 +528,69 @@ class ThermalStorageConfigData(ConfigData):
         ),
         description="Calculation method for the thermal storage",
     )
-    load_level_check: ThermalStorageLoadLevelCheck = Field(
-        ThermalStorageLoadLevelCheck.model_validate({}),
+    load_level_check: DataPointThermalStorageLoadLevelCheck = Field(
+        DataPointThermalStorageLoadLevelCheck.model_validate({}),
         description="Configuration for the state of charge check",
     )
+    calibration: DataPointThermalStorageCalibrationConfig = Field(
+        DataPointThermalStorageCalibrationConfig.model_validate({}),
+        description="Calibration configuration for the thermal storage",
+    )
+
+class TemperatureExtrema(BaseModel):
+    """
+    Model for storing temperature extrema (min and max) for a sensor.
+    """
+
+    minimal_temperature: float = Field(
+        ...,
+        description="Minimal recorded temperature for the sensor in °C"
+    )
+    maximal_temperature: float = Field(
+        ...,
+        description="Maximal recorded temperature for the sensor in °C"
+    )
+    time: datetime = Field(
+        ...,
+        description="Timestamp of when the extrema were recorded"
+    )
+
+class ThermalStorageLoadLevelStorage(BaseModel):
+    """
+    Model to store state of charge check information for the thermal storage service.
+    """
+    last_check_time: Optional[datetime] = Field(
+        None,
+        description="Timestamp of the last state of charge check",
+    )
+    check_time_interval: timedelta = Field(
+        timedelta(seconds=0.5),
+        description="Time interval in seconds between state of charge checks",
+    )
+    state_of_charge: Optional[float] = Field(
+        None,
+        ge=0,
+        le=100,
+        description="Current state of charge level in percent (0-100)",
+    )
+    nominal_storage_energy: Optional[float] = Field(
+        None,
+        description="Nominal storage energy in Wh | set by the process",
+    )
+    @property
+    def check_status(self):
+        """
+        Check, if a new state of charge check is required based on the time interval.
+
+        Returns:
+            bool: True if no new check is required, False if a new check is required
+        """
+        if self.state_of_charge is None:
+            return False
+        if self.last_check_time is None:
+            return False
+        if self.nominal_storage_energy is None:
+            return False
+        if datetime.now() - self.last_check_time >= self.check_time_interval:
+            return False
+        return True

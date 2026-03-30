@@ -97,6 +97,8 @@ class MqttConnection:
                 raise ConfigError(
                     f"Failed to configure TLS/SSL for MQTT connection: {e}"
                 ) from e
+        # prepare the message store
+        self.prepare_mqtt_message_store()
 
         # try to connect to the MQTT broker
         self.mqtt_client.connect(
@@ -111,10 +113,6 @@ class MqttConnection:
             raise ConfigError(
                 f"Could not establish initial MQTT connection after {max_wait} seconds."
             )
-
-        # prepare the message store
-        self.prepare_mqtt_message_store()
-
 
     def prepare_mqtt_message_store(self) -> None:
         """
@@ -334,7 +332,7 @@ class MqttConnection:
         if rc == 0:
             self._mqtt_connected = True
             self._mqtt_connection_event.set()
-            logger.debug("MQTT connection successful to broker "
+            logger.info("MQTT connection successful to broker "
                          f"{self.mqtt_params.host}:{self.mqtt_params.port}")
 
             try:
@@ -432,6 +430,11 @@ class MqttConnection:
                     return
             else:
                 logger.debug(debug_message)
+        else:
+            logger.debug(
+                f"MQTT received message on {message.topic}, "
+                "but topic not found in message store. Ignoring message."
+            )
 
     def _extract_payload_value_and_timestamp(
         self,

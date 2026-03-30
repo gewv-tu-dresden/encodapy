@@ -63,6 +63,16 @@ def main(argv=None):
 
     # local rewrite function that uses the CLI-supplied values
     def rewrite_links_local(text: str, src_dir: Path) -> str:
+        # Fragment-only links (e.g. [Section](#section)) can trigger MyST xref
+        # warnings in generated include files. Keep them clickable by converting
+        # to plain HTML anchors in the generated docs copy.
+        fragment_pattern = re.compile(r"\[(?P<label>[^\]]+)\]\(#(?P<frag>[^)]+)\)")
+
+        def repl_fragment(m):
+            label = m.group("label")
+            frag = m.group("frag")
+            return f'<a href="#{frag}">{label}</a>'
+
         pattern = re.compile(r"\((?P<target>(?:\.{1,2}/)[^)]+)\)")
 
         def repl(m):
@@ -90,6 +100,7 @@ def main(argv=None):
                 return f"({url})"
             return f"({target})"
 
+        text = fragment_pattern.sub(repl_fragment, text)
         text = pattern.sub(repl, text)
         text = bare_pattern.sub(repl_bare, text)
         return text
