@@ -2,7 +2,7 @@
 
 This component runs a model-based optimization with [FlixOpt](https://flixopt.github.io/flixopt/latest/) and exposes optimization results as EnCoDaPy output datapoints.
 
-It is designed for model-predictive control (MPC) and schedule generation in energy systems.
+It is designed for model-predictive control (MPC) and schedule generation in energy systems. For this reason, the key features from FlixOpt for the MPC are taken to build a simple model. You can build this model via configuration file or add some additional constraints via python function.
 
 ## Functionality
 
@@ -11,7 +11,7 @@ The component validates a FlixOpt model definition, builds a FlixOpt `FlowSystem
 Implemented workflow:
 
 1. Read and validate component configuration (`flixopt_model`, solver, log level).
-2. Load FlixOpt model definition from:
+2. Load FlixOpt model definition, like it is given in den component configuration from:
 
     - Inline dictionary, or
     - Path to a JSON file.
@@ -37,13 +37,11 @@ The FlixOpt model schema is implemented in [flixopt_models.py](./flixopt_models.
 
 Supported converter types (`converter_type`):
 
-- `boiler`
-- `power2heat`
-- `chp`
-- `substation`
-- `bidirectional_substation`
-
-For `bidirectional_substation`, the component creates forward and reverse converter representations and adds binary constraints to prevent simultaneous opposite operation.
+- `boiler`: A linear converter representing a gas boiler that transforms an input flow of gas into a thermal output flow at fixed ratios.
+- `power2heat`: A linear converter representing a power-to-heat device that transforms an input flow of electrical energy into a thermal output flow with fixed ratios.
+- `chp`: A linear converter, representing a combined heat and power unit.
+- `substation`: A linear converter representing a substation. It can be used as a transformer between one bus and another.
+- `bidirectional_substation`: A special version of a `substation`, this component creates forward and reverse converter representations and adds binary constraints to prevent simultaneous opposite operation.
 
 ### Storages
 
@@ -103,7 +101,7 @@ You can inject additional constraints into the optimization model.
 - Value can be:
   - A Python file path (`*.py`), or
   - A Python module import path.
-- The module must contain a function named `add_constraints`.
+- The module must contain a function named `add_constraints`, like it is shown in [add_constraints.py](./add_constraints.py)
 
 The function is loaded during component preparation and called before solving.
 
@@ -155,11 +153,25 @@ This component block illustrates the relevant part in a service configuration:
   "id": "flixopt_model_component",
   "type": "flixopt_model_component",
   "inputs": {
-    "heat_demand": { "entity": "input_entity", "attribute": "heat_demand" },
-    "electricity_price": { "entity": "input_entity", "attribute": "electricity_price" },
-    "storage_level": { "entity": "static_entity", "attribute": "storage_level" }
+    "heat_demand": {
+      "entity": "input_entity",
+      "attribute": "heat_demand"
+      },
+    "electricity_price": {
+      "entity": "input_entity",
+      "attribute": "electricity_price"
+      },
+    "storage_level": {
+      "entity": "input_entity",
+      "attribute": "storage_level"
+      }
   },
-  "outputs": {},
+  "outputs": {
+    "heater_thermal_power": {
+      "entity": "output_entity",
+      "attribute": "heater_power"
+      }
+  },
   "config": {
     "log_level": { "value": "debug" },
     "solver_settings": {
@@ -170,11 +182,13 @@ This component block illustrates the relevant part in a service configuration:
       }
     },
     "flixopt_model": {
-      "value": "./02_flixopt_model_config.json"
+      "value": "./flixopt_model_config.json"
     }
   }
 }
 ```
+
+The FlixOpt model must match the inputs and outputs; see the examples above.
 
 ## Example
 
