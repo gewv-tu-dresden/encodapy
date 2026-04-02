@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Any, Optional, TYPE_CHECKING, TypeAlias
 from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
 import pandas as pd
+from loguru import logger
 from encodapy.utils.units import DataUnits
 from encodapy.utils.mediums import Medium
 
@@ -143,6 +144,7 @@ class DataPointTimeSeries(DataPointGeneral):
             raise ValueError("Series must have a DatetimeIndex")
 
         if not pd.api.types.is_float_dtype(v) and not pd.api.types.is_integer_dtype(v):
+            logger.warning("""Series values are not float or integer dtype""")
             raise ValueError("Series values must be float or integer")
         return v
 

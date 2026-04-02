@@ -2,7 +2,7 @@
 Defines the FlixOptModelComponent class to perform optimizations using the FlixOpt library.
 """
 # pylint: disable=no-member
-from typing import Optional, Union, Any, Literal, overload
+from typing import Optional, Union, Any, cast
 from collections.abc import Callable
 from datetime import timezone# , datetime
 import importlib.util
@@ -59,6 +59,7 @@ class FlixoptModelComponent(BasicComponent):
     ) -> None:
         # BasicComponent.__init__ calls prepare_component(), so this must exist beforehand.
         self.constraint_function: Optional[Callable] = None
+        self.manual_elements_function: Optional[Callable] = None
 
         # Prepare Basic Parts / needs to be the latest part
         super().__init__(
@@ -111,6 +112,11 @@ class FlixoptModelComponent(BasicComponent):
                 path = self.flixopt_model.constraints_function,
                 symbol = "add_constraints")
             self.constraint_function = func
+        if self.flixopt_model.manual_elements_function is not None:
+            func = self._load_helper_functions(
+                path = self.flixopt_model.manual_elements_function,
+                symbol = "add_elements")
+            self.manual_elements_function = func
 
     @classmethod
     def _configure_linopy_logging(cls) -> None:
@@ -186,25 +192,12 @@ class FlixoptModelComponent(BasicComponent):
             raise ValueError(f"Column {column} not found in input DataFrame.")
 
         return self.df_input[column].to_numpy()
-    # Marker for typ checker
-    @overload
-    def _get_input_value(self,
-                         input_value_or_key: float | int | str,
-                         none_allowed: Literal[False] = False
-                         ) -> float | int:
-        ...
-
-    @overload
-    def _get_input_value(self,
-                         input_value_or_key: float | int | str | None,
-                         none_allowed: bool = True
-                         ) -> float | int | None:
-        ...
 
     def _get_input_value(self,
                          input_value_or_key: float | int | str | None,
-                         none_allowed: bool = False
-                         ) -> float | int | None:
+                         none_allowed: bool = False,
+                         ndarray_allowed: bool = False
+                         ) -> float | int | np.ndarray | None:
         """
         Get a single input value from the input data based on a literal value or key, \
             check if it is a valid float or int, and return it.
@@ -213,8 +206,10 @@ class FlixoptModelComponent(BasicComponent):
             input_value_or_key (float | int | str | None): Literal value or input-data key to
                 resolve; None is only valid when none_allowed=True
             none_allowed (bool): Whether None is an allowed value for the input, defaults to False
+            ndarray_allowed (bool): Whether a NumPy array is an allowed value for the input, \
+                defaults to False
         Returns:
-            float | int | None: The value of the input if found, otherwise None
+            float | int | np.ndarray | None: The value of the input if found, otherwise None
         Raises:
             ValueError: If the input data is not prepared, the key is not found, \
                 or the value is not a float or int
@@ -242,15 +237,17 @@ class FlixoptModelComponent(BasicComponent):
 
         value = input_data[input_value_or_key].get("value")
 
+        if ndarray_allowed and isinstance(value, pd.Series):
+            return self._get_input_arrays(column=input_value_or_key)
+
         if none_allowed:
             if value is None or isinstance(value, (float, int)):
                 return value
-            logger.error(
+            error_msg = (
                 f"Input value for key {input_value_or_key} is neither float/int nor None."
             )
-            raise ValueError(
-                f"Input value for key {input_value_or_key} is neither float/int nor None."
-            )
+            logger.error(error_msg)
+            raise ValueError(error_msg)
 
         if not isinstance(value, (float, int)):
             logger.error(f"Input value for key {input_value_or_key} is not a float or int.")
@@ -270,7 +267,6 @@ class FlixoptModelComponent(BasicComponent):
 
         for input_key, input_value in self.input_data:
             logger.debug(f"Processing input {input_key} with value type {type(input_value)}")
-
             try:
                 input_value_validated = DataPointTimeSeries.model_validate(input_value)
             except ValidationError:
@@ -617,13 +613,13 @@ class FlixoptModelComponent(BasicComponent):
 
         for storage in storage_config:
 
-            nominal_capacity = self._get_input_value(storage.nominal_capacity)
+            nominal_capacity = cast(float | int, self._get_input_value(storage.nominal_capacity))
 
-            initial_soc = self._get_input_value(storage.start_soc) / 100 \
+            initial_soc = cast(float | int, self._get_input_value(storage.start_soc)) / 100 \
                 * nominal_capacity
 
-            minimal_soc = self._get_input_value(storage.minimal_soc) / 100
-            maximal_soc = self._get_input_value(storage.maximal_soc) / 100
+            minimal_soc = cast(float | int, self._get_input_value(storage.minimal_soc)) / 100
+            maximal_soc = cast(float | int, self._get_input_value(storage.maximal_soc)) / 100
 
             # inital soc needs to be within the capacity of the storage
             initial_soc = max(minimal_soc * nominal_capacity,
@@ -657,6 +653,31 @@ class FlixoptModelComponent(BasicComponent):
             )
         return storages
 
+    def _get_effects_from_config(self,
+                                 effects_config: Optional[dict[str, float | int | str]] = None
+                                 )-> dict[str, float | int | np.ndarray]:
+        """
+        Get the effects for the optimization based on the model definition
+        Args:
+            effects_config (Optional[dict[str, float | int | str]]): Optional dictionary \
+                to provide the effects configuration, if not provided, \
+                    the effects from the model definition will be used
+        Returns:
+            dict[str, float | int | np.ndarray]: Dictionary containing the effects \
+                for the optimization
+        """
+        effects: dict[str, float | int | np.ndarray] = {}
+
+        if effects_config is None:
+            return effects
+
+        for effect_label, effect_value_or_key in effects_config.items():
+            effects[effect_label] = cast(
+                float | int | np.ndarray,
+                self._get_input_value(effect_value_or_key, ndarray_allowed=True)
+            )
+        return effects
+
     def _get_flow_effects(self,
                           sink_source: FlixOptSinkSource,
                           direction: EnergyDirection) -> dict:
@@ -679,8 +700,10 @@ class FlixoptModelComponent(BasicComponent):
         flow_effects: dict["str", Any] = {}
         match check_label:
             case None:
-                flow_effects["effects_per_flow_hour"] = sink_source.input_effects \
+                flow_effects["effects_per_flow_hour"] = self._get_effects_from_config(
+                    effects_config = sink_source.input_effects \
                     if direction == EnergyDirection.SINK else sink_source.output_effects
+                )
             case _:
                 flow_effects["fixed_relative_profile"] = self._get_input_arrays(check_label)
                 flow_effects["size"] = 1
@@ -828,11 +851,21 @@ class FlixoptModelComponent(BasicComponent):
         # Define Sinks and Sources
         sinks_and_sources = self._get_sinks_and_sources()
 
-        # Select components to be included in the flow system
-        for element in converters + sinks_and_sources + storages:
-            flow_system.add_elements(element)
-        # TODO maybe add manually components?
+        # Manually added components / elements (e.g. for testing)
+        if self.manual_elements_function is not None:
+            manual_elements: list[fx.elements.Element] = self.manual_elements_function(self.flixopt_model)
+            if not all(isinstance(element, fx.elements.Element) for element in manual_elements):
+                error_message = (
+                    "Manual elements function must return a list of FlixOpt components."
+                )
+                logger.error(error_message)
+                raise ValueError(error_message)
+        else:
+            manual_elements = []
 
+        # Select components to be included in the flow system
+        for element in converters + sinks_and_sources + storages + manual_elements:
+            flow_system.add_elements(element)
 
         # Build the model and add constraints
         try:
@@ -944,8 +977,6 @@ class FlixoptModelComponent(BasicComponent):
         """
         all_timeseries = self.export_results_as_timeseries(results.solution)
 
-        # print(all_timeseries.columns)
-        # print(all_timeseries)
         outputs: dict[str, DataPointTimeSeries]= {}
         for storage in self.flixopt_model.storages:
             outputs[storage.label + "_soc"] = DataPointTimeSeries(
@@ -960,8 +991,10 @@ class FlixoptModelComponent(BasicComponent):
                 reverse_col = f"{reverse.label}({converter.thermal_flow})|flow_rate"
                 outputs[output_name] = DataPointTimeSeries(
                     value=(
-                        all_timeseries.get(forward_col, pd.Series(0.0, index=all_timeseries.index))
-                        - all_timeseries.get(reverse_col, pd.Series(0.0, index=all_timeseries.index))
+                        all_timeseries.get(
+                            forward_col, pd.Series(0.0, index=all_timeseries.index))
+                        - all_timeseries.get(
+                            reverse_col, pd.Series(0.0, index=all_timeseries.index))
                     ).rename(output_name)
                 )
                 continue

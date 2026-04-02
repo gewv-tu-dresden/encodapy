@@ -31,15 +31,14 @@
             "thermal_flow": "heat",
             "thermal_nominal_power": 30,
             "thermal_power_range": {
-                "min_thermal_power": 30,
-                "max_thermal_power": 100
+                "min_power": 30,
+                "max_power": 100
             },
             "status_parameters": {
                 "min_up_time": 0.25,
                 "min_down_time": null,
                 "max_down_time": null,
-                "startup_cost": null,
-                "shutdown_cost": null
+                "startup_effects": null
             }
         },
         {
@@ -52,15 +51,14 @@
             "electrical_flow": "electricity",
             "thermal_nominal_power": 20,
             "thermal_power_range": {
-                "min_thermal_power": 30,
-                "max_thermal_power": 100
+                "min_power": 30,
+                "max_power": 100
             },
             "status_parameters": {
                 "min_up_time": 2,
                 "min_down_time": null,
                 "max_down_time": null,
-                "startup_cost": null,
-                "shutdown_cost": null
+                "startup_effects": null
             }
         }
     ],
@@ -76,7 +74,7 @@
             "label": "gas_supply",
             "direction": "source",
             "output_bus": "gas",
-            "output_effect": {
+            "output_effects": {
                 "costs": 0.05
             }
         },
@@ -90,8 +88,10 @@
             "label": "electricity_network",
             "direction": "bidirectional",
             "input_bus": "electricity",
-            "input_effect": "electricity_price",
-            "output_effect":{
+            "input_effects": {
+                "costs": "electricity_price"
+            },
+            "output_effects":{
                 "costs": -0.08
             },
             "nominal_power": 50
@@ -106,5 +106,6 @@
             "nominal_power": 10,
             "start_soc": "storage_level"
         }
-    ]
+    ],
+    "manual_elements_function": "./../../encodapy/components/flixopt_model_component/add_elements.py"
 }

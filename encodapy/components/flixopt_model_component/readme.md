@@ -2,7 +2,7 @@
 
 This component runs a model-based optimization with [FlixOpt](https://flixopt.github.io/flixopt/latest/) and exposes optimization results as EnCoDaPy output datapoints.
 
-It is designed for model-predictive control (MPC) and schedule generation in energy systems. For this reason, the key features from FlixOpt for the MPC are taken to build a simple model. You can build this model via configuration file or add some additional constraints via python function.
+It is designed for model-predictive control (MPC) and schedule generation in energy systems. For this reason, the key features from FlixOpt for the MPC are taken to build a simple model. You can build this model via configuration file or extend it with custom elements and additional constraints via python functions.
 
 ## Functionality
 
@@ -89,9 +89,22 @@ The referenced model definition (`flixopt_model`) supports:
 - `converters`
 - `exchangers`
 - `storages`
+- `manual_elements_function` (optional)
 - `constraints_function` (optional)
 
 See `FlixOptModel` in [flixopt_models.py](./flixopt_models.py) for detailed field definitions and validation rules.
+
+### Custom Elements
+
+You can inject additional FlixOpt elements into the optimization model.
+
+- Configure `manual_elements_function` in the FlixOpt model.
+- Value can be:
+  - A Python file path (`*.py`), or
+  - A Python module import path.
+- The module must contain a function named `add_elements`, like it is shown in [add_elements.py](./add_elements.py). The function needs to return list of flixopt elements (`list[fx.elements.Element]`) which should be added to the model.
+
+The function is loaded during component preparation and called before solving.
 
 ### Custom Constraints
 

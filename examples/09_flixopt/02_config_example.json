@@ -78,7 +78,10 @@
                         "mip_rel_gap": 0.01,
                         "time_limit": 60
                     }
-                }   
+                },
+                "flixopt_model": {
+                    "value": "02_flixopt_model_config.json"
+                }
             }
         }
     ],

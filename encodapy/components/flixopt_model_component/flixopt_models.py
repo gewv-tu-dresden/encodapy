@@ -337,7 +337,7 @@ class FlixOptSinkSource(BaseModel):
         Label of the input time series for the sink (heat demand ...), 
         if the sink has a time series input""",
     )
-    input_effects: Optional[dict[str, float | int]] = Field(
+    input_effects: Optional[dict[str, float | int | str]] = Field(
         None,
         description="""
         Optional dictionary to define the effect of the sink
@@ -352,6 +352,9 @@ class FlixOptSinkSource(BaseModel):
                 "costs": 0.15
             }
 
+        The value can also be defined as a label of an input value, \
+            which is then used to read the effect from the input data 
+            (for timeseries or a variable value).
         """,
     )
     output_bus: Optional[str] = Field(
@@ -365,7 +368,7 @@ class FlixOptSinkSource(BaseModel):
         description="""
         Label of the output time series for the source, if the source has a time series output""",
     )
-    output_effects: Optional[dict[str, float | int]] = Field(
+    output_effects: Optional[dict[str, float | int | str]] = Field(
         None,
         description="""
         Optional dictionary to define the effect of the source
@@ -380,6 +383,9 @@ class FlixOptSinkSource(BaseModel):
                 "costs": 0.15
             }
 
+        The value can also be defined as a label of an input value, \
+            which is then used to read the effect from the input data 
+            (for timeseries or a variable value).
         """,
     )
 
@@ -462,10 +468,28 @@ class FlixOptModel(BaseModel):
         (https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Storage/)
         """,
     )
+    manual_elements_function: Optional[str] = Field(
+        None,
+        description="""
+        Path to a python file or python module which includes a function `add_elements`
+        used to add additional elements to the flixopt optimization model.
+
+        The function needs to return a list of flixopt components which should be added to the model.
+
+        For an example for such a function, see `add_elements.py` in the same folder as this file.
+        """,
+    )
     constraints_function: Optional[str] = Field(
         None,
         description="""
         Path to a python file or python module which includes a function `add_constraints`
         used to add additional constraints to the flixopt optimization model
+    
+        The function needs to have the following signature: `add_constraints(optimization:
+        fx.Optimization, config: FlixOptModel)` and needs to add constraints to the optimization
+        model based on the configuration of the FlixOptModel.
+    
+        For an example for such a function, see `add_constraints.py`
+        in the same folder as this file.
         """,
     )
