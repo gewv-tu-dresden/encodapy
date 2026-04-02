@@ -284,15 +284,19 @@ class FlixOptStorage(BaseModel):
         from the input data and is required there in Percentage of the nominal capacity as well
         """,
     )
-    minimal_soc: float | int = Field(
+    minimal_soc: float | int | str = Field(
         0,
         description="""
-        Minimal state of charge (SOC) of the storage in percentage of the nominal capacity""",
+        Minimal state of charge (SOC) of the storage in percentage of the nominal capacity
+        Defined via number or as label of an input value,
+        which is then used to read the minimal SOC from the input data""",
     )
-    maximal_soc: float | int = Field(
+    maximal_soc: float | int | str = Field(
         100,
         description="""
-        Maximal state of charge (SOC) of the storage in percentage of the nominal capacity""",
+        Maximal state of charge (SOC) of the storage in percentage of the nominal capacity
+        Defined via number or as label of an input value,
+        which is then used to read the maximal SOC from the input data""",
     )
 
 class EnergyDirection(Enum):

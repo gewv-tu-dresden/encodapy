@@ -4,10 +4,11 @@ Defines the FlixOptModelComponent class to perform optimizations using the FlixO
 # pylint: disable=no-member
 from typing import Optional, Union, Any, Literal, overload
 from collections.abc import Callable
-from datetime import timezone, datetime
+from datetime import timezone# , datetime
 import importlib.util
 import importlib
 import inspect
+import logging
 from pathlib import Path
 from pydantic import ValidationError
 import pandas as pd
@@ -34,11 +35,21 @@ from encodapy.components.flixopt_model_component.flixopt_model_component_config 
     DataPointFlixoptModelConfig
 )
 
+class _LoguruForwardHandler(logging.Handler):
+    """Forward standard-library log records to loguru."""
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            message = self.format(record)
+            logger.opt(exception=record.exc_info).log(record.levelname, message)
+        except (TypeError, ValueError, KeyError):
+            self.handleError(record)
 
 class FlixoptModelComponent(BasicComponent):
     """
     Class for a FlixOpt component based on a model defined for the FlixOpt library.
     """
+    _linopy_logger_redirect_configured = False
 
     def __init__(
         self,
@@ -61,10 +72,10 @@ class FlixoptModelComponent(BasicComponent):
         self.flixopt_model: FlixOptModel
         self.df_input: Optional[pd.DataFrame] = None
         self.df_input_timezone: Optional[timezone] = None
-        self._bidirectional_substation_pairs: list[
-            tuple[fx.components.LinearConverter, fx.components.LinearConverter, float, float]
-        ] = []
-        self._bidirectional_substation_labels: dict[str, tuple[str, str]] = {}
+        self._bidirectional_substations: dict[
+            str,
+            tuple[fx.components.LinearConverter, fx.components.LinearConverter, float, float],
+        ] = {}
 
     def prepare_component(self) -> None:
         """
@@ -74,6 +85,7 @@ class FlixoptModelComponent(BasicComponent):
 
         # Set flixopt log level based on configuration
         FLIXOPT_CONFIG_MAP[self.config_data.log_level.value]()
+        self._configure_linopy_logging()
 
         try:
             if not isinstance(self.config_data.flixopt_model, DataPointFlixoptModelConfig):
@@ -99,6 +111,19 @@ class FlixoptModelComponent(BasicComponent):
                 path = self.flixopt_model.constraints_function,
                 symbol = "add_constraints")
             self.constraint_function = func
+
+    @classmethod
+    def _configure_linopy_logging(cls) -> None:
+        """Route linopy standard logging through loguru once per process."""
+        if cls._linopy_logger_redirect_configured:
+            return
+
+        linopy_logger = logging.getLogger("linopy")
+        linopy_logger.handlers.clear()
+        linopy_logger.addHandler(_LoguruForwardHandler())
+        linopy_logger.propagate = False
+        linopy_logger.setLevel(logging.INFO)
+        cls._linopy_logger_redirect_configured = True
 
     def _load_helper_functions(self,
                                path: str,
@@ -164,59 +189,72 @@ class FlixoptModelComponent(BasicComponent):
     # Marker for typ checker
     @overload
     def _get_input_value(self,
-                         label: str,
+                         input_value_or_key: float | int | str,
                          none_allowed: Literal[False] = False
                          ) -> float | int:
         ...
 
     @overload
     def _get_input_value(self,
-                         label: str,
-                         none_allowed: Literal[True] = True
+                         input_value_or_key: float | int | str | None,
+                         none_allowed: bool = True
                          ) -> float | int | None:
         ...
 
     def _get_input_value(self,
-                         label: str,
+                         input_value_or_key: float | int | str | None,
                          none_allowed: bool = False
                          ) -> float | int | None:
         """
-        Get a single input value from the input data based on the label
+        Get a single input value from the input data based on a literal value or key, \
+            check if it is a valid float or int, and return it.
+            If none_allowed is True, also allow None values.
         Args:
-            label (str): Label of the input value to retrieve
+            input_value_or_key (float | int | str | None): Literal value or input-data key to
+                resolve; None is only valid when none_allowed=True
             none_allowed (bool): Whether None is an allowed value for the input, defaults to False
         Returns:
             float | int | None: The value of the input if found, otherwise None
         Raises:
-            ValueError: If the input data is not prepared, the label is not found, \
+            ValueError: If the input data is not prepared, the key is not found, \
                 or the value is not a float or int
         """
         if self.input_data is None:
             logger.error("Input data is not prepared.")
             raise ValueError("Input data is not prepared.")
+        if input_value_or_key is None:
+            if none_allowed:
+                return None
+            raise ValueError("Input value or key cannot be None if none_allowed is False.")
+        if isinstance(input_value_or_key, (float, int)):
+            return input_value_or_key
 
         # Convert input data to a dictionary for easier access, because the input attributes
         # are defined dynamically based on the model definition
         # and we can not be sure about the attribute names here
         input_data = self.input_data.model_dump()
-        if label not in list(input_data.keys()):
-            error_message = f"Label {label} not found in input data of the flixopt component."
+        if input_value_or_key not in list(input_data.keys()):
+            error_message = (
+                f"Input key {input_value_or_key} not found in input data of the flixopt component."
+            )
             logger.error(error_message)
             raise ValueError(error_message)
 
-        value = input_data[label].get("value")
+        value = input_data[input_value_or_key].get("value")
 
         if none_allowed:
             if value is None or isinstance(value, (float, int)):
                 return value
-            logger.error(f"Input value for label {label} is neither float/int nor None.")
+            logger.error(
+                f"Input value for key {input_value_or_key} is neither float/int nor None."
+            )
             raise ValueError(
-                f"Input value for label {label} is neither float/int nor None."
+                f"Input value for key {input_value_or_key} is neither float/int nor None."
             )
 
         if not isinstance(value, (float, int)):
-            logger.error(f"Input value for label {label} is not a float or int.")
-            raise ValueError(f"Input value for label {label} is not a float or int.")
+            logger.error(f"Input value for key {input_value_or_key} is not a float or int.")
+            raise ValueError(f"Input value for key {input_value_or_key} is not a float or int.")
 
         return value
 
@@ -313,13 +351,11 @@ class FlixoptModelComponent(BasicComponent):
         Returns:
             fx.Flow: The output flow for the converter
         """
-        if isinstance(converter.previous_power, str):
-            previous_flow_rate = self._get_input_value(
-                label=converter.previous_power,
-                none_allowed=True
-            )
-        else:
-            previous_flow_rate = converter.previous_power
+
+        previous_flow_rate = self._get_input_value(
+            input_value_or_key=converter.previous_power,
+            none_allowed=True
+        )
 
         return fx.Flow(
             label=converter.thermal_flow,
@@ -352,15 +388,11 @@ class FlixoptModelComponent(BasicComponent):
             fx.StatusParameters: The status parameters for the converter
         """
         # Use operation_time to reduce the remaining minimum uptime at the optimization start.
-        if isinstance(converter.operation_time, str):
-            operation_time = self._get_input_value(
-                label=converter.operation_time,
-                none_allowed=True
-            )
-        elif isinstance(converter.operation_time, (float, int)):
-            operation_time = converter.operation_time
-        else:
-            operation_time = None
+
+        operation_time = self._get_input_value(
+            input_value_or_key=converter.operation_time,
+            none_allowed=True
+        )
 
         df_input = self.df_input
         min_uptime_value: float | int | np.ndarray | None
@@ -514,15 +546,12 @@ class FlixoptModelComponent(BasicComponent):
             status_parameters=self._add_status_parameters_to_converter(converter)
         )
 
-        self._bidirectional_substation_pairs.append(
-            (
-                forward,
-                reverse,
-                float(converter.thermal_nominal_power / efficiency),
-                float(converter.thermal_nominal_power),
-            )
+        self._bidirectional_substations[converter.label] = (
+            forward,
+            reverse,
+            float(converter.thermal_nominal_power / efficiency),
+            float(converter.thermal_nominal_power),
         )
-        self._bidirectional_substation_labels[converter.label] = (forward.label, reverse.label)
         return [forward, reverse]
 
     def _get_converters(self) -> list[fx.components.LinearConverter]:
@@ -532,8 +561,7 @@ class FlixoptModelComponent(BasicComponent):
         Returns:
             list[fx.components.LinearConverter]: List of FlixOpt converters for the optimization
         """
-        self._bidirectional_substation_pairs = []
-        self._bidirectional_substation_labels = {}
+        self._bidirectional_substations = {}
         converters: list[fx.components.LinearConverter] = []
 
         for converter in self.flixopt_model.converters:
@@ -581,8 +609,6 @@ class FlixoptModelComponent(BasicComponent):
             list[fx.Component]: List of FlixOpt storage components for the optimization
 
         TODO: 
-            - should we set a final capacity? --> same like the start soc
-            - soc as percentage or absolute value? currently percentage
             - do we need different bus for charging and discharging? \
                 currently the same, but with different flow labels
         """
@@ -590,25 +616,18 @@ class FlixoptModelComponent(BasicComponent):
         storage_config = self.flixopt_model.storages if storage_config is None else storage_config
 
         for storage in storage_config:
-            if isinstance(storage.nominal_capacity, str):
-                nominal_capacity = self._get_input_value(storage.nominal_capacity)
-            elif isinstance(storage.nominal_capacity, (float, int)):
-                nominal_capacity = storage.nominal_capacity
-            else:
-                raise ValueError("Nominal capacity must be a float, int "
-                                 "or a string referring to an input value.")
-            if isinstance(storage.start_soc, str):
-                initial_soc = self._get_input_value(storage.start_soc) / 100 \
-                    * nominal_capacity
-            elif isinstance(storage.start_soc, (float, int)):
-                initial_soc = storage.start_soc / 100 * nominal_capacity
-            # should not happen due to validation, but just in case
-            else:
-                initial_soc = 0
+
+            nominal_capacity = self._get_input_value(storage.nominal_capacity)
+
+            initial_soc = self._get_input_value(storage.start_soc) / 100 \
+                * nominal_capacity
+
+            minimal_soc = self._get_input_value(storage.minimal_soc) / 100
+            maximal_soc = self._get_input_value(storage.maximal_soc) / 100
 
             # inital soc needs to be within the capacity of the storage
-            initial_soc = max(storage.minimal_soc / 100 * nominal_capacity,
-                              min(initial_soc, storage.maximal_soc / 100 * nominal_capacity))
+            initial_soc = max(minimal_soc * nominal_capacity,
+                              min(initial_soc, maximal_soc * nominal_capacity))
 
             storages.append(
                 fx.Storage(
@@ -631,8 +650,8 @@ class FlixoptModelComponent(BasicComponent):
                         if storage.relative_self_discharge is not None else None,
                     prevent_simultaneous_charge_and_discharge=True,
                     initial_charge_state=initial_soc,
-                    relative_minimum_charge_state=storage.minimal_soc / 100,
-                    relative_maximum_charge_state=storage.maximal_soc / 100,
+                    relative_minimum_charge_state=minimal_soc,
+                    relative_maximum_charge_state=maximal_soc,
                     minimal_final_charge_state = initial_soc
                 )
             )
@@ -769,7 +788,7 @@ class FlixoptModelComponent(BasicComponent):
             raise ValueError("Optimization model coordinates are not available.")
 
         for idx, (forward, reverse, max_forward, max_reverse) in enumerate(
-            self._bidirectional_substation_pairs
+            self._bidirectional_substations.values()
         ):
             z_direction = optimization.model.add_variables(
                 name=f"z_bidir_converter_{idx}",
@@ -815,7 +834,7 @@ class FlixoptModelComponent(BasicComponent):
         # TODO maybe add manually components?
 
 
-        # Solve Problem
+        # Build the model and add constraints
         try:
             optimization = fx.Optimization('encodapy', flow_system)
             optimization.do_modeling()
@@ -825,12 +844,20 @@ class FlixoptModelComponent(BasicComponent):
 
             if self.constraint_function is not None:
                 self.constraint_function(optimization)
-
-            optimization.solve(self.config_data.get_solver(), log_main_results=False)
-        except Exception as e: #TODO
-            logger.error(f"Error during optimization: {e}")
-            logger.info(type(e).__name__)
+        except (ValueError, TypeError, AttributeError) as exc:
+            logger.exception(f"Model setup failed with error: {exc}")
             return None
+
+        # Solve Problem
+        try:
+            optimization.solve(self.config_data.get_solver(), log_main_results=False)
+        except FileNotFoundError:
+            logger.exception("Solver executable not found")
+            return None
+        except RuntimeError as exc:
+            logger.exception(f"Solver failed with error: {exc}")
+            return None
+
         logger.debug("Optimization completed with a "
                      f"duration for modeling {optimization.durations.get('modeling', '-')} s "
                      f"and solving {optimization.durations.get('solving', '-')} s. "
@@ -927,10 +954,10 @@ class FlixoptModelComponent(BasicComponent):
 
         for converter in self.flixopt_model.converters:
             output_name = converter.label + "_thermal_power"
-            if converter.label in self._bidirectional_substation_labels:
-                forward_label, reverse_label = self._bidirectional_substation_labels[converter.label]
-                forward_col = f"{forward_label}({converter.thermal_flow})|flow_rate"
-                reverse_col = f"{reverse_label}({converter.thermal_flow})|flow_rate"
+            if converter.label in self._bidirectional_substations:
+                forward, reverse, _, _ = self._bidirectional_substations[converter.label]
+                forward_col = f"{forward.label}({converter.thermal_flow})|flow_rate"
+                reverse_col = f"{reverse.label}({converter.thermal_flow})|flow_rate"
                 outputs[output_name] = DataPointTimeSeries(
                     value=(
                         all_timeseries.get(forward_col, pd.Series(0.0, index=all_timeseries.index))

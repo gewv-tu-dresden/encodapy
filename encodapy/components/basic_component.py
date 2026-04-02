@@ -5,7 +5,7 @@ Author: Martin Altenburger
 from datetime import datetime, timezone
 from typing import Any, Optional, Type, Union, TypeVar, Generic, cast
 from loguru import logger
-from pydantic import ValidationError
+from pydantic import ValidationError, BaseModel
 from encodapy.components.basic_component_config import (
     ComponentIOModel,
     ComponentValidationError,
@@ -481,12 +481,13 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
                     f"of {self.component_config.id}: {e}"
                 )
                 continue
-
+            # Normalize value to ensure nested BaseModels are converted to dicts
+            normalized_value = self._normalize_value_for_output(datapoint.value)
             components.append(
                 DataTransferComponentModel(
                     entity_id=datapoint_config.entity,
                     attribute_id=datapoint_config.attribute,
-                    value=datapoint.value,
+                    value=normalized_value,
                     unit=datapoint.unit,
                     timestamp=datapoint.time or datetime.now(timezone.utc),
                 )
@@ -498,6 +499,31 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
             )
 
         return components
+
+    @staticmethod
+    def _normalize_value_for_output(value: Any) -> Any:
+        """
+        Recursively normalize output values to ensure nested BaseModels are converted to dicts.
+        This ensures consistent serialization across all output types.
+
+        Args:
+            value: Value to normalize (can be dict, list, BaseModel, or any other type)
+
+        Returns:
+            Normalized value with all BaseModel instances converted to dictionaries
+        """
+        if isinstance(value, BaseModel):
+            # Convert BaseModel to dict (JSON-serializable)
+            return value.model_dump(mode="json")
+        if isinstance(value, dict):
+            # Recursively normalize all values in the dict
+            return {k: BasicComponent._normalize_value_for_output(v) for k, v in value.items()}
+        if isinstance(value, (list, tuple)):
+            # Recursively normalize all items in the list/tuple
+            return [BasicComponent._normalize_value_for_output(item) for item in value]
+
+        # Return as-is for primitive types (str, int, float, bool, None, etc.)
+        return value
 
     def calibrate(
         self,
