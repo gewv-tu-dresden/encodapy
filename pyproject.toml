@@ -36,6 +36,7 @@ types-requests = "^2.32.4"
 
 [tool.poetry.group.dev.dependencies]
 pylint = ">=3.2.6"
+pylint-pydantic = ">=0.3.4"
 build = ">=1.2.2.post1"
 ipykernel = ">=6.29.5"
 black = "^25.1.0"
