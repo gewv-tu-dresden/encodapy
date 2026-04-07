@@ -725,7 +725,8 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nominal_storage_energy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_check_time</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_time_interval</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_check_time</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_check_time</span>
+            <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_time_interval</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
