@@ -600,10 +600,11 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
         logger.info("Start the Service")
         # Hold the service for a time at the beginning,
-        await self._hold_sampling_time(
-            start_time=datetime.now(),
-            hold_time=self.env.start_hold_time,
-        )
+        if self.env.start_hold_time is not None and self.env.start_hold_time > 0:
+            await self._hold_sampling_time(
+                start_time=datetime.now(),
+                hold_time=self.env.start_hold_time,
+            )
 
         while not self.shutdown_event.is_set():
             logger.debug("Start the Process")
