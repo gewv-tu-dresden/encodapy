@@ -4,6 +4,7 @@ which is used to store the connection parameters for the MQTT broker.
 Author: Maximilian Beyer, Martin Altenburger
 """
 
+import ast
 import json
 import re
 import threading
@@ -714,16 +715,7 @@ class MqttConnection:
                     else None
                 ),
             )
-            if isinstance(payload, str):
-                try:
-                    parsed = json.loads(payload)
-                    payload = json.dumps(parsed, default=str)
-                except json.JSONDecodeError:
-                    payload = re.sub(r'(:\s*)"(None)"', r"\1null", payload)
-                    payload = payload.replace('"None"', "null")
-            else:
-                # Use json.dumps to convert None to null in JSON output
-                payload = json.dumps(payload, default=str)
+
         else:
             raise NotSupportedError(
                 f"MQTT format {output_attribute.mqtt_format} is not supported."
