@@ -31,7 +31,6 @@
 
 - Environmental variables are required to configure the basic service and the interfaces. For more information, see [encodapy/config/env_values](./encodapy/config/env_values.py) or the [documentation](https://gewv-tu-dresden.github.io/encodapy/).
 
-
 ## Usage
 
 You could install the Package via [PyPI](https://pypi.org/project/encodapy/):
@@ -88,7 +87,7 @@ The examples are intended to help you use the tool and understand how it works:
     - '"hour"'
     - '"day"'
     - '"month"' (30 days for simple use)
-- Today, there ist no adjustment for different units. Its a TODO for the future
+- Inputs and outputs can be adjusted between compatible units via the central unit conversion logic.
 
 ### Deployment
 

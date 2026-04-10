@@ -5,10 +5,12 @@ Author: Martin Altenburger
 """
 
 from enum import Enum
-from typing import Union, Optional
-import pint
+from typing import Optional, Union
+
 import pandas as pd
+import pint
 from loguru import logger
+
 from encodapy.utils.deprecated import deprecated
 
 
@@ -32,13 +34,13 @@ class DataUnits(Enum):
     Units which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download
     or https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)
     or here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf
-    
+
     The enum value is the standardized unit code (e.g., "SEC" for seconds).
     The pint_unit attribute contains the corresponding pint unit string for conversion.
-    
+
     To add a new unit, add it to the DataUnits enum: UNIT_NAME = ("CODE", "pint_string")
     The _UNIT_MAP will be generated automatically from the pint_unit attributes.
-    
+
     Usage:
         - DataUnits.PERCENT.value -> "P1" (unit code, for serialization)
         - DataUnits.PERCENT.pint_unit -> "percent" (for pint conversion)
@@ -96,6 +98,7 @@ class DataUnits(Enum):
     OHM = ("OHM", "ohm")
     VLT = ("VLT", "volt")
 
+
 # Map the units to the unit registry of pint for conversion
 # This is automatically generated from the DataUnits enum
 _ureg: pint.UnitRegistry = pint.UnitRegistry()
@@ -128,8 +131,12 @@ def get_unit_adjustment_factor(
     """
 
     try:
-        assert unit_actual is not None, "Actual unit is None, cannot determine adjustment factor"
-        assert unit_target is not None, "Target unit is None, cannot determine adjustment factor"
+        assert unit_actual is not None, (
+            "Actual unit is None, cannot determine adjustment factor"
+        )
+        assert unit_target is not None, (
+            "Target unit is None, cannot determine adjustment factor"
+        )
     except AssertionError as exc:
         logger.warning("Cannot determine adjustment factor: " + str(exc))
         return None
@@ -145,10 +152,13 @@ def get_unit_adjustment_factor(
     try:
         actual = _UNIT_MAP[unit_actual]
         target = _UNIT_MAP[unit_target]
-        assert unit_actual not in [DataUnits.KELVIN, DataUnits.DEGREECELSIUS], \
+        assert unit_actual not in [DataUnits.KELVIN, DataUnits.DEGREECELSIUS], (
             "Temperature units are not supported for adjustment factor calculation"
+        )
     except (KeyError, AssertionError) as exc:
-        logger.warning(f"Could not map the unit for {unit_actual} or {unit_target}: {exc}")
+        logger.warning(
+            f"Could not map the unit for {unit_actual} or {unit_target}: {exc}"
+        )
         return None
 
     try:
@@ -158,11 +168,10 @@ def get_unit_adjustment_factor(
         logger.warning(f"Incompatible units: {unit_actual} -> {unit_target}: {exc}")
         return None
 
+
 def adjust_unit_of_value(
-    value: float | int,
-    unit_actual: DataUnits,
-    unit_target: DataUnits
-    ) -> Optional[float]:
+    value: float | int, unit_actual: DataUnits, unit_target: DataUnits
+) -> Optional[float]:
     """Function to adjust the unit of a value.
 
     Args:
@@ -177,29 +186,35 @@ def adjust_unit_of_value(
         return value
 
     if not isinstance(value, (int, float)):
-        raise ValueError(f"Value must be a float or int for unit adjustment, got {type(value)}")
+        raise ValueError(
+            f"Value must be a float or int for unit adjustment, got {type(value)}"
+        )
     try:
         actual = _UNIT_MAP[unit_actual]
         target = _UNIT_MAP[unit_target]
     except KeyError as exc:
         logger.warning(f"Unit mapping missing for {unit_actual} or {unit_target}")
-        raise ValueError(f"Unit mapping missing for {unit_actual} or {unit_target}") from exc
+        raise ValueError(
+            f"Unit mapping missing for {unit_actual} or {unit_target}"
+        ) from exc
 
     try:
-
-        q = (value * _ureg.parse_expression(actual)).to(target)
+        q = _ureg.Quantity(value, actual).to(target)
         return float(q.magnitude)
 
     except pint.DimensionalityError as exc:
         logger.warning(f"Incompatible units: {unit_actual} -> {unit_target}: {exc}")
-        raise ValueError(f"Incompatible units: {unit_actual} -> {unit_target}: {exc}") from exc
+        raise ValueError(
+            f"Incompatible units: {unit_actual} -> {unit_target}: {exc}"
+        ) from exc
+
 
 def adjust_units(
     value: Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]],
     unit_actual: Optional[DataUnits],
     unit_target: Optional[DataUnits],
-    column_name: Optional[str] = None
-    ) -> Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]]:
+    column_name: Optional[str] = None,
+) -> Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]]:
     """
     Function to adjust the unit of a datapoint.
     To use this function, simply pass the value, the actual unit and the target unit, like:
@@ -235,18 +250,22 @@ def adjust_units(
 
     if unit_actual == unit_target:
         return value
-    adjusted_value: Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]]
+    adjusted_value: Optional[
+        Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]
+    ]
     try:
         if isinstance(value, (bool, str)):
             logger.debug(f"Value is {type(value).__name__}, cannot adjust unit")
-            adjusted_value = value
+            adjusted_value = None
         elif isinstance(value, (int, float)):
             adjusted_value = adjust_unit_of_value(
                 value=value, unit_actual=unit_actual, unit_target=unit_target
             )
         elif isinstance(value, pd.DataFrame):
             adjusted_value = value.copy()
-            column = column_name if column_name is not None else adjusted_value.columns[0]
+            column = (
+                column_name if column_name is not None else adjusted_value.columns[0]
+            )
             adjusted_value[column] = adjusted_value[column].apply(
                 lambda x: adjust_unit_of_value(x, unit_actual, unit_target)
             )
@@ -267,15 +286,18 @@ def adjust_units(
                 }
             except ValueError as exc:
                 logger.warning(f"Value in dict cannot be adjusted: {exc}")
-                adjusted_value = value
+                adjusted_value = None
         else:
-            logger.warning(f"Value type {type(value)} not supported for unit adjustment")
-            adjusted_value = value
+            logger.warning(
+                f"Value type {type(value)} not supported for unit adjustment"
+            )
+            adjusted_value = None
 
         return adjusted_value
     except ValueError as exc:
         logger.warning(f"Unit adjustment failed with ValueError: {exc}")
         return None
+
 
 def get_time_unit_seconds(
     time_unit: Union[TimeUnits, str, DataUnits],

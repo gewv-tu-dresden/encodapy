@@ -3,16 +3,18 @@ Description: This file contains the class FiwareConnections,
 which is used to store the connection parameters for the Fiware and CrateDB connections.
 Author: Martin Altenburger
 """
-from asyncio import sleep
-from datetime import datetime, timedelta, timezone
-from typing import Union, Optional
+
 import concurrent.futures
 import multiprocessing
-from loguru import logger
+from asyncio import sleep
+from datetime import datetime, timedelta, timezone
+from typing import Optional, Union
+
 import numpy as np
 import pandas as pd
 import requests
 from dateutil import tz
+from filip.clients.exceptions import BaseHttpClientException
 from filip.clients.ngsi_v2 import ContextBrokerClient
 from filip.models.base import DataType, FiwareHeaderSecure
 from filip.models.ngsi_v2.base import NamedMetadata
@@ -22,38 +24,35 @@ from filip.models.ngsi_v2.context import (
     NamedCommand,
     NamedContextAttribute,
 )
-from filip.clients.exceptions import BaseHttpClientException
+from loguru import logger
+
 from encodapy.config import (
     AttributeModel,
     AttributeTypes,
     CommandModel,
+    ConfigModel,
     DataQueryTypes,
     InputModel,
     OutputModel,
     TimerangeTypes,
-    ConfigModel,
 )
-from encodapy.utils.error_handling import NoCredentials, InterfaceNotActive
+from encodapy.config.env_values import FiwareEnvVariables
 from encodapy.utils.cratedb import CrateDBConnection
+from encodapy.utils.error_handling import InterfaceNotActive, NoCredentials
 from encodapy.utils.fiware_auth import BearerToken
 from encodapy.utils.models import (
+    DatabaseParameter,
+    FiwareAuth,
+    FiwareConnectionParameter,
+    FiwareDatapointParameter,
+    FiwareParameter,
     InputDataAttributeModel,
     InputDataEntityModel,
     MetaDataModel,
     OutputDataAttributeModel,
     OutputDataEntityModel,
-    FiwareDatapointParameter,
-    FiwareAuth,
-    FiwareParameter,
-    DatabaseParameter,
-    FiwareConnectionParameter,
 )
-from encodapy.utils.units import (
-    DataUnits,
-    get_time_unit_seconds,
-    adjust_units
-)
-from encodapy.config.env_values import FiwareEnvVariables
+from encodapy.utils.units import DataUnits, adjust_units, get_time_unit_seconds
 
 
 class FiwareConnection:
@@ -62,8 +61,7 @@ class FiwareConnection:
     Only a helper class.
     """
 
-    def __init__(self)-> None:
-
+    def __init__(self) -> None:
         self.fiware_conn_params: FiwareConnectionParameter = None
         self.fiware_token_client: BearerToken = None
         self.fiware_header: FiwareHeaderSecure = None
@@ -71,14 +69,13 @@ class FiwareConnection:
         self.crate_db_client: CrateDBConnection = None
         self.config: ConfigModel
 
-    def load_fiware_params(self)->None:
+    def load_fiware_params(self) -> None:
         """
         Load the Fiware connection parameters.
         """
         fiware_env = FiwareEnvVariables()
 
         if fiware_env.auth:
-
             if (
                 fiware_env.client_id is not None
                 and fiware_env.client_pw is not None
@@ -90,9 +87,7 @@ class FiwareConnection:
                     token_url=str(fiware_env.token_url),
                 )
             elif fiware_env.bearer_token is not None:
-                fiware_auth = FiwareAuth(
-                    bearer_token=fiware_env.bearer_token
-                )
+                fiware_auth = FiwareAuth(bearer_token=fiware_env.bearer_token)
             else:
                 logger.error("No authentication credentials available")
                 raise NoCredentials
@@ -137,7 +132,6 @@ class FiwareConnection:
         fiware_auth = self.fiware_conn_params.fiware_params.authentication
 
         if fiware_auth is not None:
-
             if fiware_auth.bearer_token is not None:
                 self.fiware_token_client = BearerToken(token=fiware_auth.bearer_token)
             else:
@@ -312,7 +306,6 @@ class FiwareConnection:
         if self.cb_client is None:
             raise InterfaceNotActive
         try:
-
             fiware_input_entity_type = self.cb_client.get_entity(
                 entity_id=entity.id_interface
             ).type
@@ -328,7 +321,6 @@ class FiwareConnection:
             return None
 
         for attribute in entity.attributes:
-
             if attribute.id_interface not in fiware_input_entity_attributes:
                 logger.error(
                     f"Attribute {attribute.id_interface} not found in entity {entity.id_interface}"
@@ -355,7 +347,6 @@ class FiwareConnection:
                 }
 
             elif attribute.type == AttributeTypes.VALUE:
-
                 metadata = self._get_metadata_from_fiware(
                     fiware_input_entity_attributes[attribute.id_interface]
                 )
@@ -382,7 +373,6 @@ class FiwareConnection:
                 raise NotImplementedError
 
         if len(attributes_timeseries) > 0:
-
             attributes_values.extend(
                 self.get_data_from_datebase(
                     entity=ContextEntity(
@@ -762,9 +752,7 @@ class FiwareConnection:
             concurrent.futures.wait(futures)
 
     async def prepare_timeseries_for_fiware(
-        self,
-        fiware_datapoint: FiwareDatapointParameter,
-        datatype: DataType
+        self, fiware_datapoint: FiwareDatapointParameter, datatype: DataType
     ) -> list[NamedContextAttribute]:
         """
         Function to prepare the timeseries data for the FIWARE platform
@@ -777,8 +765,9 @@ class FiwareConnection:
             list: List with the attributes (NamedContextAttribute) for the FIWARE platform
         """
         try:
-            assert isinstance(fiware_datapoint.attribute.value, pd.DataFrame), \
+            assert isinstance(fiware_datapoint.attribute.value, pd.DataFrame), (
                 f"Expected pandas DataFrame, got {type(fiware_datapoint.attribute.value)}"
+            )
         except AssertionError as exc:
             logger.error("Assertion error: %s", exc)
             raise ValueError("Invalid data type for FiwareDatapointParameter") from exc
@@ -845,18 +834,18 @@ class FiwareConnection:
         id_output_entity: str,
         attribute: AttributeModel,
         fiware_unit: Optional[DataUnits],
-        ) -> tuple[AttributeModel, list[NamedMetadata]]:
-
+    ) -> tuple[AttributeModel, list[NamedMetadata]]:
         meta_data = []
         attribute = attribute.copy()
 
         if attribute.unit is not None and fiware_unit is None:
-            meta_data.append(NamedMetadata(
+            meta_data.append(
+                NamedMetadata(
                     name="unitCode", type=DataType.TEXT, value=attribute.unit.value
-                ))
+                )
+            )
 
         elif attribute.unit is not None and fiware_unit is not None:
-
             attribute_value_adjusted = adjust_units(
                 value=attribute.value,
                 unit_actual=attribute.unit,
@@ -865,17 +854,21 @@ class FiwareConnection:
             if attribute_value_adjusted is not None:
                 attribute.value = attribute_value_adjusted
                 attribute.unit = fiware_unit
-                meta_data.append(NamedMetadata(
+                meta_data.append(
+                    NamedMetadata(
                         name="unitCode", type=DataType.TEXT, value=fiware_unit.value
-                    ))
+                    )
+                )
             else:
                 logger.error(
                     f"Could not adjust unit for attribute {attribute.id} of entity "
                     f"{id_output_entity} for FIWARE. Sending the value without unit adjustment."
                 )
-                meta_data.append(NamedMetadata(
-                        name="unitCode", type=DataType.TEXT, value=fiware_unit.value
-                    ))
+                meta_data.append(
+                    NamedMetadata(
+                        name="unitCode", type=DataType.TEXT, value=attribute.unit.value
+                    )
+                )
 
         return attribute, meta_data
 
@@ -905,7 +898,6 @@ class FiwareConnection:
 
         attrs = []
         for attribute in output_attributes:
-
             fiware_unit = None
 
             if attribute.id_interface in entity_attributes:
@@ -923,12 +915,12 @@ class FiwareConnection:
                 datatype = attribute.datatype
 
             attribute, meta_data = self._adjust_units_for_fiware(
-                id_output_entity = output_entity.id,
-                attribute=attribute, fiware_unit=fiware_unit
+                id_output_entity=output_entity.id,
+                attribute=attribute,
+                fiware_unit=fiware_unit,
             )
 
             if isinstance(attribute.value, pd.DataFrame):
-
                 attrs.append(
                     await self.prepare_timeseries_for_fiware(
                         fiware_datapoint=FiwareDatapointParameter(
@@ -938,7 +930,7 @@ class FiwareConnection:
                             attribute=attribute,
                             metadata=meta_data,
                         ),
-                        datatype=datatype
+                        datatype=datatype,
                     )
                 )
                 continue
@@ -949,7 +941,8 @@ class FiwareConnection:
                     value=(
                         attribute.timestamp.strftime("%Y-%m-%dT%H:%M:%S%z")
                         if attribute.timestamp is not None
-                        else datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")),
+                        else datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+                    ),
                 )
             )
             try:

@@ -9,14 +9,10 @@ license = "BSD-3-Clause"
 authors = [
     "Martin Altenburger <martin.altenburger@tu-dresden.de>",
     "Paul Seidel <paul.seidel@tu-dresden.de>",
-    "Maximilian Beyer <maximilian.beyer@tu-dresden.de>"
+    "Maximilian Beyer <maximilian.beyer@tu-dresden.de>",
 ]
-packages = [
-    { include = "encodapy" }
-]
-include = [
-    "encodapy/py.typed"
-]
+packages = [{ include = "encodapy" }]
+include = ["encodapy/py.typed"]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
@@ -40,6 +36,8 @@ pylint = ">=3.2.6"
 build = ">=1.2.2.post1"
 ipykernel = ">=6.29.5"
 black = "^25.1.0"
+pytest = "^8.4.2"
+pytest-cov = "^7.0.0"
 sphinx = "^8.2.3"
 autodoc-pydantic = "^2.2.0"
 sphinx-rtd-theme = "^3.0.2"
@@ -56,3 +54,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
 plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
