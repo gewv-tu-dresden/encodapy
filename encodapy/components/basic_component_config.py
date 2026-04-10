@@ -87,12 +87,40 @@ class ComponentData(BaseModel):
     """
     Basemodel for the configuration of the datapoints of a component
 
-    Base for :class:`~encodapy.components.basic_component_config.InputData`, \
-        :class:`~encodapy.components.basic_component_config.OutputData`\
-        and :class:`~encodapy.components.basic_component_config.ConfigData`
-    
-    Provides a validator to check the units of the input values \
-        and convert them if necessary.
+    Base for :class:`~encodapy.components.basic_component_config.InputData`,
+    :class:`~encodapy.components.basic_component_config.OutputData` and
+    :class:`~encodapy.components.basic_component_config.ConfigData`.
+
+    Provides a validator to check the units of the input values and convert
+    them if necessary.
+
+    Make sure to check the datatype in validators, because the
+    :class:`ComponentData` model is also used for the datatransfer
+    configuration to components.
+    This model looks different, so validators should check datatypes before
+    trying to validate data to avoid unexpected errors.
+    Example for datatype checks in validators::
+
+        @model_validator(mode="after")
+        def check_model(self) -> "InputPreparationInputData":
+            "Model validator to check the model after initialization."
+
+            if not isinstance(self.field, DataPointGeneral):
+                return self
+
+            # check the model with your code
+            return self
+
+        @field_validator("field", mode="before")
+        @classmethod
+        def check_field(cls, value: DataPointGeneral) -> DataPointGeneral:
+            "Check only a field before initialization."
+
+            if not isinstance(value, DataPointTimeSeries):
+                return value
+
+            # check the field with your code
+            return value
     """
 
     @model_validator(mode="after")

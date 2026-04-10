@@ -5,10 +5,10 @@ more information: https://docs.pydantic.dev/latest/concepts/pydantic_settings/#u
 """
 
 from typing import Optional
-
+from datetime import time, timedelta
 from pydantic import AnyHttpUrl, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
+from encodapy.config.models import FileStorageMethod
 
 class BasicEnvVariables(BaseSettings):
     """
@@ -26,12 +26,35 @@ class BasicEnvVariables(BaseSettings):
     log_level: str = Field(
         default="WARNING", description="Logging level for the service"
     )
+    log_path: Optional[str] = Field(
+        default=None,
+        description=(
+            "Path to the log file. If not provided, logs will be printed to the console. "
+            "Example: './logs/service.log'"
+        ),
+    )
+    log_retention: Optional[int | str | timedelta] = Field(
+        default=None,
+        description=(
+            "Retention policy for log files. Can be an integer (number of files to keep), "
+            "a string (e.g., '7 days'), or a timedelta object. "
+            "Example: '7 days' or 5 (to keep the last 5 log files)."
+        ),
+    )
+    log_rotation: Optional[int | str | time | timedelta] = Field(
+        default=None,
+        description=(
+            "Rotation policy for log files. Can be an integer (size in bytes), a string "
+            "(e.g., '00:00' for daily rotation at midnight), a time object, or a timedelta object. "
+            "Example: '00:00' for daily rotation at midnight or 10485760 (to rotate after 10 MB)."
+        ),
+    )
     reload_staticdata: bool = Field(
         default=False,
         description="If true, static data will be reloaded at each time step",
     )
     start_hold_time: Optional[float] = Field(
-        default=0.0, description="Time in seconds to hold the start of the service"
+        default=None, description="Time in seconds to hold the start of the service"
     )
 
 
@@ -159,6 +182,12 @@ class FileEnvVariables(BaseSettings):
 
     model_config = SettingsConfigDict(
         extra="ignore", env_file=".env", env_prefix="FILE_", case_sensitive=False
+    )
+
+    storage_method: FileStorageMethod = Field(
+        default=FileStorageMethod.APPEND,
+        description="""Type of file storage: 'overwrite', 'append', or 'new_file',
+        see FileStorageMethod enum for details""",
     )
 
     path_of_input_file: str = Field(

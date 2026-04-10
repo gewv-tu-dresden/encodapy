@@ -23,7 +23,7 @@ from encodapy.config import (
     DataFile,
     FileEnvVariables
 )
-from encodapy.config.models import DataFileEntity
+from encodapy.config.models import DataFileEntity, FileStorageMethod
 from encodapy.utils.models import (
     InputDataAttributeModel,
     InputDataEntityModel,
@@ -373,6 +373,75 @@ class FileConnection:
             return None
         return data
 
+    def _write_json_file(self,
+                         output_name: str,
+                         data: list
+                         ) -> None:
+        """
+        Function to write output in a json file
+
+        Args:
+            output_name (str): Name of the output file
+            data (list): Data to add to the file
+        """
+        file_storage_method = self.file_params.storage_method
+        path_to_results = self.file_params.path_of_results
+
+        os.makedirs(path_to_results, exist_ok=True)
+
+        path = os.path.join(path_to_results, f"{output_name}.json")
+
+        if not isinstance(data, list):
+            logger.error(f"Data to write must be a list, got {type(data)}")
+            return
+        if not data:
+            logger.debug(f"No data to write to file ({path}).")
+            return
+
+        file_data = []
+        if file_storage_method is FileStorageMethod.APPEND:
+            # Try to read existing data
+            if os.path.exists(path):
+                try:
+                    with open(path, encoding="utf-8") as outputfile:
+                        file_data = json.load(outputfile)
+                        if not isinstance(file_data, list):
+                            raise ValueError(
+                                f"Existing file data must be a list, got {type(file_data)}"
+                            )
+                    logger.debug("Existing data loaded from file for appending.")
+                except (
+                    FileNotFoundError,
+                    PermissionError,
+                    json.JSONDecodeError,
+                    ValueError,
+                ) as e:
+                    logger.error(
+                        "Overwriting the file because of an error reading existing "
+                        f"output file: {e}"
+                    )
+            # Append new output to existing data
+            file_data.extend(data)
+        elif file_storage_method is FileStorageMethod.OVERWRITE:
+            file_data = data
+        elif file_storage_method is FileStorageMethod.NEW_FILE:
+            file_data = data
+            timestamp = datetime.now().strftime("%Y%m%d_%H-%M-%S")
+            path = os.path.join(path_to_results, f"{output_name}_{timestamp}.json")
+        else:
+            logger.error(f"Invalid file storage method: {file_storage_method}. "
+                         f"Using 'overwrite' as method to store data in json-file.")
+            file_data = data
+
+        # Write combined data back to the file
+        try:
+            with open(path, "w", encoding="utf-8") as outputfile:
+                json.dump(file_data, outputfile, ensure_ascii=False, indent=2)
+                outputfile.write("\n")
+                logger.debug(f"Output data written to file: {path}")
+        except (FileNotFoundError, PermissionError) as e:
+            logger.error(f"Error writing output file: {e}")
+
 
     def send_data_to_json_file(
         self,
@@ -397,11 +466,6 @@ class FileConnection:
         commands = []
         logger.debug("Write outputs to json-output-files")
 
-        path_to_results = self.file_params.path_of_results
-
-        if not os.path.exists(path_to_results):
-            os.makedirs(path_to_results)
-
         for output in output_attributes:
             output_attr.append(
                 {
@@ -417,13 +481,11 @@ class FileConnection:
                 "attributes" : output_attr
             }
         )
-        try:
-            with open(
-                f"{path_to_results}/outputs_{str(output_entity.id)}.json", "w", encoding="utf-8"
-            ) as outputfile:
-                json.dump(outputs, outputfile)
-        except (FileNotFoundError, PermissionError) as e:
-            logger.error(f"Error writing output file: {e}")
+
+        self._write_json_file(
+            output_name=f"outputs_{output_entity.id}",
+            data=outputs
+        )
 
         for command in output_commands:
             commands.append(
@@ -432,9 +494,8 @@ class FileConnection:
                     "value": command.value
                 }
             )
-        try:
-            with open(os.path.join(path_to_results, f"commands_{output_entity.id}.json"),
-                      "w", encoding="utf-8") as commandfile:
-                json.dump(commands, commandfile)
-        except (FileNotFoundError, PermissionError) as e:
-            logger.error(f"Error writing output file: {e}")
+
+        self._write_json_file(
+            output_name=f"commands_{output_entity.id}",
+            data=commands
+        )

@@ -335,7 +335,7 @@ class MqttConnection:
         if rc == 0:
             self._mqtt_connected = True
             self._mqtt_connection_event.set()
-            logger.debug(
+            logger.info(
                 "MQTT connection successful to broker "
                 f"{self.mqtt_params.host}:{self.mqtt_params.port}"
             )
@@ -435,6 +435,11 @@ class MqttConnection:
                     return
             else:
                 logger.debug(debug_message)
+        else:
+            logger.debug(
+                f"MQTT received message on {message.topic}, "
+                "but topic not found in message store. Ignoring message."
+            )
 
     def _extract_payload_value_and_timestamp(
         self,
@@ -714,16 +719,7 @@ class MqttConnection:
                     else None
                 ),
             )
-            if isinstance(payload, str):
-                try:
-                    parsed = json.loads(payload)
-                    payload = json.dumps(parsed, default=str)
-                except json.JSONDecodeError:
-                    payload = re.sub(r'(:\s*)"(None)"', r"\1null", payload)
-                    payload = payload.replace('"None"', "null")
-            else:
-                # Use json.dumps to convert None to null in JSON output
-                payload = json.dumps(payload, default=str)
+
         else:
             raise NotSupportedError(
                 f"MQTT format {output_attribute.mqtt_format} is not supported."

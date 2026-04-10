@@ -146,10 +146,6 @@ class MQTTTemplateConfig(BaseModel):
                 f"got {type(mqtt_format_template).__name__} ({mqtt_format_template})."
             )
 
-        cls._log_missing_params(
-            mqtt_format_data=mqtt_format_template,
-            name=mqtt_format_template_env)
-
         return {
             "topic": cls.load_mqtt_template(
                 template_raw=mqtt_format_template, part="topic"
@@ -209,10 +205,6 @@ class MQTTTemplateConfig(BaseModel):
         if "payload" not in mqtt_format_data:
             raise ValueError("MQTT template dict must contain 'payload' key.")
 
-        cls._log_missing_params(
-            mqtt_format_data=mqtt_format_data,
-            name="dict_input") # there is no name
-
         return {
             "topic": cls.load_mqtt_template(
                 template_raw=mqtt_format_data, part="topic"
@@ -222,53 +214,6 @@ class MQTTTemplateConfig(BaseModel):
             ),
             "time_format": cls._handle_time_format(mqtt_format_data),
         }
-
-    @classmethod
-    def _log_missing_params(cls,
-                            mqtt_format_data: dict,
-                            name: Optional[str] = None
-                            ) -> None:
-        """
-        Log missing parameters per template part once.
-
-        Args:
-            mqtt_format_data: Dictionary containing `topic` and `payload` templates.
-            name: Optional name of the template for logging context.
-        """
-        topic_raw = mqtt_format_data.get("topic", {})
-        payload_raw = mqtt_format_data.get("payload", {})
-
-        if isinstance(topic_raw, dict):
-            topic_template = json.dumps(topic_raw)
-        elif isinstance(topic_raw, str):
-            topic_template = topic_raw
-        else:
-            topic_template = ""
-
-        if isinstance(payload_raw, dict):
-            payload_template = json.dumps(payload_raw)
-        elif isinstance(payload_raw, str):
-            payload_template = payload_raw
-        else:
-            payload_template = ""
-
-        parameters = [
-            "__OUTPUT_ENTITY__",
-            "__OUTPUT_ATTRIBUTE__",
-            "__OUTPUT_VALUE__",
-            "__OUTPUT_UNIT__",
-            "__OUTPUT_TIME__",
-            "__MQTT_TOPIC_PREFIX__",
-        ]
-
-        for param in parameters:
-            in_topic = param in topic_template
-            in_payload = param in payload_template
-
-            if not in_topic and not in_payload:
-                logger.debug(
-                    f"Parameter {param} not found in MQTT template '{name}' for topic and payload."
-                )
 
     @classmethod
     def load_mqtt_template(cls, template_raw: dict, part: str) -> Template:
@@ -286,38 +231,51 @@ class MQTTTemplateConfig(BaseModel):
             ValueError: If the template format is invalid.
         """
         template_raw = template_raw.get(part, {})
-        if isinstance(template_raw, dict):
-            template = json.dumps(template_raw)
-        elif isinstance(template_raw, str):
-            template = template_raw
-        else:
-            raise ValueError("Invalid template format. Must be dict or str.")
-
-        parameters = [
-            "__OUTPUT_ENTITY__",
-            "__OUTPUT_ATTRIBUTE__",
-            "__OUTPUT_VALUE__",
-            "__OUTPUT_UNIT__",
-            "__OUTPUT_TIME__",
-            "__MQTT_TOPIC_PREFIX__",
-        ]
-        for param in parameters:
-            if param in template:
-                if param == "__MQTT_TOPIC_PREFIX__":
-                    prefix = os.getenv("MQTT_TOPIC_PREFIX", "")
-                    if prefix == "":
-                        prefix_with_slash = ""
-                    elif not prefix.endswith("/"):
-                        prefix_with_slash = prefix + "/"
-                    else:
-                        prefix_with_slash = prefix
-                    template = template.replace(param + "/", prefix_with_slash)
-                    template = template.replace(param, prefix)
-                else:
-                    clean_name = param.strip("_").lower()
-                    template = template.replace(param, f"{{{{{clean_name}}}}}")
+        template = cls._serialize_template_value(template_raw, part)
 
         return Template(template)
+
+    @classmethod
+    def _serialize_template_value(cls, value: Any, part: str) -> str:
+        """
+        Serialize a template structure to a JSON-like string while preserving native values.
+
+        Exact placeholder strings are emitted as bare Jinja expressions so that numbers,
+        booleans, lists and dicts remain native after rendering.
+        """
+        placeholder_map = {
+            "__OUTPUT_ENTITY__": "output_entity",
+            "__OUTPUT_ATTRIBUTE__": "output_attribute",
+            "__OUTPUT_VALUE__": "output_value",
+            "__OUTPUT_UNIT__": "output_unit",
+            "__OUTPUT_TIME__": "output_time",
+            "__MQTT_TOPIC_PREFIX__": "mqtt_topic_prefix",
+        }
+
+        if isinstance(value, dict):
+            items = [
+                f"{json.dumps(key)}: {cls._serialize_template_value(item, part)}"
+                for key, item in value.items()
+            ]
+            return "{" + ", ".join(items) + "}"
+
+        if isinstance(value, list):
+            items = [cls._serialize_template_value(item, part) for item in value]
+            return "[" + ", ".join(items) + "]"
+
+        if isinstance(value, str):
+            if value in placeholder_map:
+                clean_name = placeholder_map[value]
+                if part == "payload":
+                    return f"{{{{{clean_name} | tojson}}}}"
+                return f"{{{{{clean_name}}}}}"
+            if part == "payload":
+                return json.dumps(value)
+            return value
+
+        if part == "payload":
+            return json.dumps(value, default=str)
+        return str(value)
 
 
 class MQTTTemplateConfigDoc(BaseModel):

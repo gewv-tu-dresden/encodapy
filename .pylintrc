@@ -1,5 +1,7 @@
 [MASTER]
 fail-under = 9.5
 ignore=docs
+load-plugins=
+    pylint_pydantic
 disable=
     fixme
