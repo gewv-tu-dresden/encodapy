@@ -4,7 +4,7 @@ Author: Martin Altenburger, Paul Seidel
 """
 from typing import Optional, Union
 import math
-from datetime import datetime
+from datetime import datetime, timezone
 from loguru import logger
 import pandas as pd
 import numpy as np
@@ -473,23 +473,27 @@ class ThermalStorage(BasicComponent):
             # using historical data for the state of charge check, if available and configured
             historical_temperature = self.sensor_values_stored.get(index, None)
             if historical_temperature is not None and temperature.time is not None:
-                ts = pd.to_datetime(temperature.time, utc=True)
-                if ts not in historical_temperature.index:
-                    historical_temperature.at[ts] = temperature.value
-                historical_temperature = historical_temperature.sort_index()
-                historical_temperature = historical_temperature.truncate(
-                    before=(
-                        ts - pd.Timedelta(
-                            minutes=
-                            self.config_data.load_level_check.value.historical_temperature_limit)
-                    ),
-                    after=temperature.time
-                )
-                temperature = DataPointNumber(
-                    value=historical_temperature.mean(),
-                    unit=temperature.unit,
-                    time=ts
-                )
+                try:
+                    ts = pd.to_datetime(temperature.time, utc=True)
+                    if ts not in historical_temperature.index:
+                        historical_temperature.at[ts] = temperature.value
+                    historical_temperature = historical_temperature.sort_index()
+                    historical_temperature = historical_temperature.truncate(
+                        before=(
+                            ts - pd.Timedelta(
+                                minutes=
+                                self.config_data.load_level_check.value.historical_temperature_limit
+                                )
+                        ),
+                        after=ts
+                    )
+                    temperature = DataPointNumber(
+                        value=historical_temperature.mean(),
+                        unit=temperature.unit,
+                        time=ts
+                    )
+                except (ValueError, TypeError) as e:
+                    logger.error(e)
 
             denominator =  ref_temperature - minimal_temperature
 
@@ -537,6 +541,7 @@ class ThermalStorage(BasicComponent):
 
         self.state_of_charge_information.nominal_storage_energy = \
             self.get_storage_energy_content(ThermalStorageEnergyTypes.NOMINAL)
+
         current_energy = self.get_storage_energy_content(ThermalStorageEnergyTypes.CURRENT)
         state_of_charge = (
             current_energy
@@ -548,7 +553,7 @@ class ThermalStorage(BasicComponent):
         ), 2)
         state_of_charge = max(min(state_of_charge, 100), 0) # limit to 0-100
 
-        self.state_of_charge_information.last_check_time = datetime.now()
+        self.state_of_charge_information.last_check_time = datetime.now(timezone.utc)
         self.state_of_charge_information.state_of_charge = state_of_charge
         # check the boundaries of the state of charge
         try:
@@ -702,7 +707,7 @@ class ThermalStorage(BasicComponent):
             new_extrema = TemperatureExtrema(
                 minimal_temperature=min(historical_data),
                 maximal_temperature=max(historical_data),
-                time=datetime.utcnow()
+                time=datetime.now(timezone.utc)
             )
 
         old_extrema: Optional[TemperatureExtrema] = None
@@ -719,7 +724,7 @@ class ThermalStorage(BasicComponent):
                     new_extrema.maximal_temperature,
                     old_extrema.maximal_temperature
                 ),
-                time=datetime.utcnow()
+                time=datetime.now(timezone.utc)
             )
         elif new_extrema is not None:
             temperature_extrema = new_extrema

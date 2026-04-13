@@ -2,21 +2,23 @@
 Module for the basic service class for the data processing and transfer via different interfaces.
 Author: Martin Altenburger
 """
+
+import asyncio
 import sys
 from datetime import datetime
 from typing import Optional, Union
-import asyncio
+
 from loguru import logger
 from pydantic import ValidationError
 
 from encodapy.config import (
     AttributeModel,
+    BasicEnvVariables,
     CommandModel,
     ConfigModel,
     DataQueryTypes,
     Interfaces,
     OutputModel,
-    BasicEnvVariables
 )
 from encodapy.service.communication import (
     FileConnection,
@@ -91,7 +93,6 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             self.load_mqtt_params()
 
         logger.debug("Config succesfully loaded.")
-
 
     def prepare_basic_start(self):
         """
@@ -233,7 +234,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                     )
                     output_timestamps.append(entity_timestamps)
                     output_latest_timestamps.append(output_latest_timestamp)
-                    logger.debug("File interface, output_latest_timestamp is not defined.")
+                    logger.debug(
+                        "File interface, output_latest_timestamp is not defined."
+                    )
 
                 case Interfaces.MQTT:
                     entity_timestamps, output_latest_timestamp = (
@@ -264,7 +267,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                         input_data.append(fiware_input)
 
                 case Interfaces.FILE:
-                    file_input = self.get_data_from_file(method=method, entity=input_entity)
+                    file_input = self.get_data_from_file(
+                        method=method, entity=input_entity
+                    )
                     if file_input is not None:
                         input_data.append(file_input)
 
@@ -423,7 +428,8 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 )
 
             elif output_entity.interface is Interfaces.MQTT:
-                self.send_data_to_mqtt(
+                await asyncio.to_thread(
+                    self.send_data_to_mqtt,
                     output_entity=output_entity,
                     output_attributes=output_attributes,
                 )
@@ -600,10 +606,11 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
         logger.info("Start the Service")
         # Hold the service for a time at the beginning,
-        await self._hold_sampling_time(
-            start_time=datetime.now(),
-            hold_time=self.env.start_hold_time,
-        )
+        if self.env.start_hold_time is not None and self.env.start_hold_time > 0:
+            await self._hold_sampling_time(
+                start_time=datetime.now(),
+                hold_time=self.env.start_hold_time,
+            )
 
         while not self.shutdown_event.is_set():
             logger.debug("Start the Process")

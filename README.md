@@ -31,7 +31,6 @@
 
 - Environmental variables are required to configure the basic service and the interfaces. For more information, see [encodapy/config/env_values](./encodapy/config/env_values.py) or the [documentation](https://gewv-tu-dresden.github.io/encodapy/).
 
-
 ## Usage
 
 You could install the Package via [PyPI](https://pypi.org/project/encodapy/):
@@ -88,7 +87,7 @@ The examples are intended to help you use the tool and understand how it works:
     - '"hour"'
     - '"day"'
     - '"month"' (30 days for simple use)
-- Today, there ist no adjustment for different units. Its a TODO for the future
+- Inputs and outputs can be adjusted between compatible units via the central unit conversion logic.
 
 ### Deployment
 
@@ -105,7 +104,7 @@ This project is licensed under the BSD License - see the [LICENSE](./LICENSE) fi
 
 <a href="https://tu-dresden.de/ing/maschinenwesen/iet/gewv"> <img alt="TUD GEWV" src="https://raw.githubusercontent.com/gewv-tu-dresden/encodapy/main/docs/source/logos/GEWV_Logo.svg" height="75"> </a>
 
-2024-2025, TUD Dresden University of Technology, Chair of Building Energy Systems and Heat Supply
+2024-2026, TUD Dresden University of Technology, Chair of Building Energy Systems and Heat Supply
 
 ## Related projects
 

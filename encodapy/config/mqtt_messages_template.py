@@ -231,43 +231,51 @@ class MQTTTemplateConfig(BaseModel):
             ValueError: If the template format is invalid.
         """
         template_raw = template_raw.get(part, {})
-        if isinstance(template_raw, dict):
-            template = json.dumps(template_raw)
-        elif isinstance(template_raw, str):
-            template = template_raw
-        else:
-            raise ValueError("Invalid template format. Must be dict or str.")
-
-        parameters = [
-            "__OUTPUT_ENTITY__",
-            "__OUTPUT_ATTRIBUTE__",
-            "__OUTPUT_VALUE__",
-            "__OUTPUT_UNIT__",
-            "__OUTPUT_TIME__",
-            "__MQTT_TOPIC_PREFIX__",
-        ]
-        for param in parameters:
-            if param in template:
-                if param == "__MQTT_TOPIC_PREFIX__":
-                    prefix = os.getenv("MQTT_TOPIC_PREFIX", "")
-                    if prefix == "":
-                        prefix_with_slash = ""
-                    elif not prefix.endswith("/"):
-                        prefix_with_slash = prefix + "/"
-                    else:
-                        prefix_with_slash = prefix
-                    template = template.replace(param + "/", prefix_with_slash)
-                    template = template.replace(param, prefix)
-                else:
-                    clean_name = param.strip("_").lower()
-                    template = template.replace(param, f"{{{{{clean_name}}}}}")
-
-            else:
-                logger.debug(
-                    f"Parameter {param} not found in payload template for {part}."
-                )
+        template = cls._serialize_template_value(template_raw, part)
 
         return Template(template)
+
+    @classmethod
+    def _serialize_template_value(cls, value: Any, part: str) -> str:
+        """
+        Serialize a template structure to a JSON-like string while preserving native values.
+
+        Exact placeholder strings are emitted as bare Jinja expressions so that numbers,
+        booleans, lists and dicts remain native after rendering.
+        """
+        placeholder_map = {
+            "__OUTPUT_ENTITY__": "output_entity",
+            "__OUTPUT_ATTRIBUTE__": "output_attribute",
+            "__OUTPUT_VALUE__": "output_value",
+            "__OUTPUT_UNIT__": "output_unit",
+            "__OUTPUT_TIME__": "output_time",
+            "__MQTT_TOPIC_PREFIX__": "mqtt_topic_prefix",
+        }
+
+        if isinstance(value, dict):
+            items = [
+                f"{json.dumps(key)}: {cls._serialize_template_value(item, part)}"
+                for key, item in value.items()
+            ]
+            return "{" + ", ".join(items) + "}"
+
+        if isinstance(value, list):
+            items = [cls._serialize_template_value(item, part) for item in value]
+            return "[" + ", ".join(items) + "]"
+
+        if isinstance(value, str):
+            if value in placeholder_map:
+                clean_name = placeholder_map[value]
+                if part == "payload":
+                    return f"{{{{{clean_name} | tojson}}}}"
+                return f"{{{{{clean_name}}}}}"
+            if part == "payload":
+                return json.dumps(value)
+            return value
+
+        if part == "payload":
+            return json.dumps(value, default=str)
+        return str(value)
 
 
 class MQTTTemplateConfigDoc(BaseModel):

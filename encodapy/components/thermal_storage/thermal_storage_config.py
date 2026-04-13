@@ -593,6 +593,7 @@ class ThermalStorageLoadLevelStorage(BaseModel):
             return False
         if self.nominal_storage_energy is None:
             return False
-        if datetime.now() - self.last_check_time >= self.check_time_interval:
+        if (datetime.now(self.last_check_time.tzinfo) - self.last_check_time
+            >= self.check_time_interval):
             return False
         return True
