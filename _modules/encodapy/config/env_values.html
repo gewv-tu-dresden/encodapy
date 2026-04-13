@@ -243,6 +243,15 @@
             <span class="s2">&quot;Set to True to disable certificate verification (insecure). &quot;</span>
             <span class="s2">&quot;Only use for testing purposes.&quot;</span>
         <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">publish_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Delay in seconds before publishing MQTT messages. &quot;</span>
+            <span class="s2">&quot;Can be used to give slow clients sufficient time to receive everything. &quot;</span>
+            <span class="s2">&quot;Be careful when using this option, as unexpected behaviour may occur if the &quot;</span>
+            <span class="s2">&quot;delay of all messages is longer than the sampling time.&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span></div>
 
 
