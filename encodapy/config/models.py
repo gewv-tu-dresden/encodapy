@@ -55,7 +55,7 @@ class AttributeModel(BaseModel):
         id_interface (str): The interface-specific identifier. Defaults to `None`.
             If not set, it will be automatically set to the value of `id`.
         type (AttributeTypes): The type of the attribute. Defaults to `AttributeTypes.VALUE`.
-        value (Union[str, float, int, bool, Dict, List, pd.DataFrame, None]): \
+        value (Union[str, float, int, bool, Dict, List, pd.DataFrame, pd.Series, None]): \
             The value of the attribute. Defaults to `None`.
         unit (Optional[DataUnits]): The unit of measurement for the value. Defaults to `None`.
         datatype (DataType): The data type of the attribute. Defaults to `DataType("Number")`.
@@ -70,7 +70,7 @@ class AttributeModel(BaseModel):
     id: str
     id_interface: str = Field(default="")
     type: AttributeTypes = AttributeTypes.VALUE
-    value: Union[str, float, int, bool, Dict, List, pd.DataFrame, None] = None
+    value: Union[str, float, int, bool, Dict, List, pd.DataFrame, pd.Series, None] = None
     unit: Optional[DataUnits] = None
     datatype: DataType = DataType("Number")
     timestamp: Optional[datetime] = None

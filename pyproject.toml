@@ -9,14 +9,10 @@ license = "BSD-3-Clause"
 authors = [
     "Martin Altenburger <martin.altenburger@tu-dresden.de>",
     "Paul Seidel <paul.seidel@tu-dresden.de>",
-    "Maximilian Beyer <maximilian.beyer@tu-dresden.de>"
+    "Maximilian Beyer <maximilian.beyer@tu-dresden.de>",
 ]
-packages = [
-    { include = "encodapy" }
-]
-include = [
-    "encodapy/py.typed"
-]
+packages = [{ include = "encodapy" }]
+include = ["encodapy/py.typed"]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
@@ -33,6 +29,7 @@ pydantic = ">=2.5.2,<2.7.0"
 python-dotenv = ">=1.0.1"
 pydantic-settings = "^2.2.1"
 types-requests = "^2.32.4"
+pint = "^0.25.2"
 
 [tool.poetry.group.dev.dependencies]
 pylint = ">=3.2.6"
@@ -40,11 +37,16 @@ pylint-pydantic = ">=0.3.4"
 build = ">=1.2.2.post1"
 ipykernel = ">=6.29.5"
 black = "^25.1.0"
+pytest = "^8.4.2"
+pytest-cov = "^7.0.0"
 sphinx = "^8.2.3"
 autodoc-pydantic = "^2.2.0"
 sphinx-rtd-theme = "^3.0.2"
 sphinx-autodoc-typehints = "^3.5.2"
 myst-parser = "^4.0.1"
+types-python-dateutil = "^2.9.0.20260124"
+types-oauthlib = "^3.3.0.20250822"
+types-requests-oauthlib = "^2.0.0.20250809"
 pandas-stubs = "^2.3"
 
 [build-system]
@@ -53,3 +55,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
 plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
