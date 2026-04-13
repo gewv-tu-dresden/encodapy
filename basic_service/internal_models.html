@@ -241,11 +241,14 @@
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -255,6 +258,7 @@
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -391,11 +395,14 @@
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -405,6 +412,7 @@
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -524,11 +532,14 @@
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -538,6 +549,7 @@
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -635,11 +647,14 @@
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -649,6 +664,7 @@
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -800,7 +816,7 @@
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;AttributeModel&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration class for representing attributes with metadata, value,         and optional interface-specific identifier.\n\nThis class models attributes with a unique ID, type, value, unit, and timestamp.\nIf `id_interface` is not set, it defaults to the value of `id`.\n\nAttributes:\n    id (str): The unique identifier of the attribute.\n    id_interface (str): The interface-specific identifier. Defaults to `None`.\n        If not set, it will be automatically set to the value of `id`.\n    type (AttributeTypes): The type of the attribute. Defaults to `AttributeTypes.VALUE`.\n    value (Union[str, float, int, bool, Dict, List, pd.DataFrame, None]):             The value of the attribute. Defaults to `None`.\n    unit (Optional[DataUnits]): The unit of measurement for the value. Defaults to `None`.\n    datatype (DataType): The data type of the attribute. Defaults to `DataType(\&quot;Number\&quot;)`.\n    timestamp (Optional[datetime]): The timestamp of the attribute. Defaults to `None`.\n    mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]):             The format of the attribute for MQTT (if not set, the default format is used)                 - only for mqtt interface needed&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration class for representing attributes with metadata, value,         and optional interface-specific identifier.\n\nThis class models attributes with a unique ID, type, value, unit, and timestamp.\nIf `id_interface` is not set, it defaults to the value of `id`.\n\nAttributes:\n    id (str): The unique identifier of the attribute.\n    id_interface (str): The interface-specific identifier. Defaults to `None`.\n        If not set, it will be automatically set to the value of `id`.\n    type (AttributeTypes): The type of the attribute. Defaults to `AttributeTypes.VALUE`.\n    value (Union[str, float, int, bool, Dict, List, pd.DataFrame, pd.Series, None]):             The value of the attribute. Defaults to `None`.\n    unit (Optional[DataUnits]): The unit of measurement for the value. Defaults to `None`.\n    datatype (DataType): The data type of the attribute. Defaults to `DataType(\&quot;Number\&quot;)`.\n    timestamp (Optional[datetime]): The timestamp of the attribute. Defaults to `None`.\n    mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]):             The format of the attribute for MQTT (if not set, the default format is used)                 - only for mqtt interface needed&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span>
@@ -975,11 +991,14 @@
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -989,6 +1008,7 @@
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -1394,7 +1414,7 @@
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;AttributeModel&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration class for representing attributes with metadata, value,         and optional interface-specific identifier.\n\nThis class models attributes with a unique ID, type, value, unit, and timestamp.\nIf `id_interface` is not set, it defaults to the value of `id`.\n\nAttributes:\n    id (str): The unique identifier of the attribute.\n    id_interface (str): The interface-specific identifier. Defaults to `None`.\n        If not set, it will be automatically set to the value of `id`.\n    type (AttributeTypes): The type of the attribute. Defaults to `AttributeTypes.VALUE`.\n    value (Union[str, float, int, bool, Dict, List, pd.DataFrame, None]):             The value of the attribute. Defaults to `None`.\n    unit (Optional[DataUnits]): The unit of measurement for the value. Defaults to `None`.\n    datatype (DataType): The data type of the attribute. Defaults to `DataType(\&quot;Number\&quot;)`.\n    timestamp (Optional[datetime]): The timestamp of the attribute. Defaults to `None`.\n    mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]):             The format of the attribute for MQTT (if not set, the default format is used)                 - only for mqtt interface needed&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration class for representing attributes with metadata, value,         and optional interface-specific identifier.\n\nThis class models attributes with a unique ID, type, value, unit, and timestamp.\nIf `id_interface` is not set, it defaults to the value of `id`.\n\nAttributes:\n    id (str): The unique identifier of the attribute.\n    id_interface (str): The interface-specific identifier. Defaults to `None`.\n        If not set, it will be automatically set to the value of `id`.\n    type (AttributeTypes): The type of the attribute. Defaults to `AttributeTypes.VALUE`.\n    value (Union[str, float, int, bool, Dict, List, pd.DataFrame, pd.Series, None]):             The value of the attribute. Defaults to `None`.\n    unit (Optional[DataUnits]): The unit of measurement for the value. Defaults to `None`.\n    datatype (DataType): The data type of the attribute. Defaults to `DataType(\&quot;Number\&quot;)`.\n    timestamp (Optional[datetime]): The timestamp of the attribute. Defaults to `None`.\n    mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]):             The format of the attribute for MQTT (if not set, the default format is used)                 - only for mqtt interface needed&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span>
@@ -1569,11 +1589,14 @@
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -1583,6 +1606,7 @@
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -1712,7 +1736,7 @@
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;AttributeModel&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration class for representing attributes with metadata, value,         and optional interface-specific identifier.\n\nThis class models attributes with a unique ID, type, value, unit, and timestamp.\nIf `id_interface` is not set, it defaults to the value of `id`.\n\nAttributes:\n    id (str): The unique identifier of the attribute.\n    id_interface (str): The interface-specific identifier. Defaults to `None`.\n        If not set, it will be automatically set to the value of `id`.\n    type (AttributeTypes): The type of the attribute. Defaults to `AttributeTypes.VALUE`.\n    value (Union[str, float, int, bool, Dict, List, pd.DataFrame, None]):             The value of the attribute. Defaults to `None`.\n    unit (Optional[DataUnits]): The unit of measurement for the value. Defaults to `None`.\n    datatype (DataType): The data type of the attribute. Defaults to `DataType(\&quot;Number\&quot;)`.\n    timestamp (Optional[datetime]): The timestamp of the attribute. Defaults to `None`.\n    mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]):             The format of the attribute for MQTT (if not set, the default format is used)                 - only for mqtt interface needed&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration class for representing attributes with metadata, value,         and optional interface-specific identifier.\n\nThis class models attributes with a unique ID, type, value, unit, and timestamp.\nIf `id_interface` is not set, it defaults to the value of `id`.\n\nAttributes:\n    id (str): The unique identifier of the attribute.\n    id_interface (str): The interface-specific identifier. Defaults to `None`.\n        If not set, it will be automatically set to the value of `id`.\n    type (AttributeTypes): The type of the attribute. Defaults to `AttributeTypes.VALUE`.\n    value (Union[str, float, int, bool, Dict, List, pd.DataFrame, pd.Series, None]):             The value of the attribute. Defaults to `None`.\n    unit (Optional[DataUnits]): The unit of measurement for the value. Defaults to `None`.\n    datatype (DataType): The data type of the attribute. Defaults to `DataType(\&quot;Number\&quot;)`.\n    timestamp (Optional[datetime]): The timestamp of the attribute. Defaults to `None`.\n    mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]):             The format of the attribute for MQTT (if not set, the default format is used)                 - only for mqtt interface needed&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span>
@@ -1887,11 +1911,14 @@
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -1901,6 +1928,7 @@
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -2090,11 +2118,14 @@
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -2104,6 +2135,7 @@
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -2251,11 +2283,14 @@
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -2265,6 +2300,7 @@
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -2329,7 +2365,7 @@
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;AttributeModel&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration class for representing attributes with metadata, value,         and optional interface-specific identifier.\n\nThis class models attributes with a unique ID, type, value, unit, and timestamp.\nIf `id_interface` is not set, it defaults to the value of `id`.\n\nAttributes:\n    id (str): The unique identifier of the attribute.\n    id_interface (str): The interface-specific identifier. Defaults to `None`.\n        If not set, it will be automatically set to the value of `id`.\n    type (AttributeTypes): The type of the attribute. Defaults to `AttributeTypes.VALUE`.\n    value (Union[str, float, int, bool, Dict, List, pd.DataFrame, None]):             The value of the attribute. Defaults to `None`.\n    unit (Optional[DataUnits]): The unit of measurement for the value. Defaults to `None`.\n    datatype (DataType): The data type of the attribute. Defaults to `DataType(\&quot;Number\&quot;)`.\n    timestamp (Optional[datetime]): The timestamp of the attribute. Defaults to `None`.\n    mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]):             The format of the attribute for MQTT (if not set, the default format is used)                 - only for mqtt interface needed&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration class for representing attributes with metadata, value,         and optional interface-specific identifier.\n\nThis class models attributes with a unique ID, type, value, unit, and timestamp.\nIf `id_interface` is not set, it defaults to the value of `id`.\n\nAttributes:\n    id (str): The unique identifier of the attribute.\n    id_interface (str): The interface-specific identifier. Defaults to `None`.\n        If not set, it will be automatically set to the value of `id`.\n    type (AttributeTypes): The type of the attribute. Defaults to `AttributeTypes.VALUE`.\n    value (Union[str, float, int, bool, Dict, List, pd.DataFrame, pd.Series, None]):             The value of the attribute. Defaults to `None`.\n    unit (Optional[DataUnits]): The unit of measurement for the value. Defaults to `None`.\n    datatype (DataType): The data type of the attribute. Defaults to `DataType(\&quot;Number\&quot;)`.\n    timestamp (Optional[datetime]): The timestamp of the attribute. Defaults to `None`.\n    mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]):             The format of the attribute for MQTT (if not set, the default format is used)                 - only for mqtt interface needed&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span>
@@ -2496,11 +2532,14 @@
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -2510,6 +2549,7 @@
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -2644,14 +2684,14 @@
 <li><p><strong>client_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The client id</p></li>
 <li><p><strong>client_secret</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The client secret</p></li>
 <li><p><strong>token_url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The token url</p></li>
-<li><p><strong>baerer_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The baerer token</p></li>
+<li><p><strong>bearer_token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – The bearer token</p></li>
 </ul>
 </dd>
 </dl>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FiwareAuth&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base model for the Fiware authentication.\n\nAttributes:\n    client_id (str): The client id\n    client_secret (str): The client secret\n    token_url (str): The token url\n    baerer_token (str): The baerer token&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base model for the Fiware authentication.\n\nAttributes:\n    client_id (str): The client id\n    client_secret (str): The client secret\n    token_url (str): The token url\n    bearer_token (str): The bearer token&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;client_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2690,7 +2730,7 @@
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Token Url&quot;</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;baerer_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;bearer_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
@@ -2700,7 +2740,7 @@
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Baerer Token&quot;</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bearer Token&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
@@ -2722,8 +2762,8 @@
 <dd></dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="encodapy.utils.models.FiwareAuth.baerer_token">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">baerer_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#encodapy.utils.models.FiwareAuth.baerer_token" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="encodapy.utils.models.FiwareAuth.bearer_token">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bearer_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#encodapy.utils.models.FiwareAuth.bearer_token" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2774,7 +2814,7 @@
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;FiwareAuth&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base model for the Fiware authentication.\n\nAttributes:\n    client_id (str): The client id\n    client_secret (str): The client secret\n    token_url (str): The token url\n    baerer_token (str): The baerer token&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base model for the Fiware authentication.\n\nAttributes:\n    client_id (str): The client id\n    client_secret (str): The client secret\n    token_url (str): The token url\n    bearer_token (str): The bearer token&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;client_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -2812,7 +2852,7 @@
 <span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Token Url&quot;</span>
 <span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;baerer_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;bearer_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">                  </span><span class="p">{</span>
 <span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
@@ -2822,7 +2862,7 @@
 <span class="w">                  </span><span class="p">}</span>
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Baerer Token&quot;</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bearer Token&quot;</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FiwareAuth&quot;</span><span class="p">,</span>
@@ -3025,7 +3065,7 @@
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;FiwareAuth&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base model for the Fiware authentication.\n\nAttributes:\n    client_id (str): The client id\n    client_secret (str): The client secret\n    token_url (str): The token url\n    baerer_token (str): The baerer token&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base model for the Fiware authentication.\n\nAttributes:\n    client_id (str): The client id\n    client_secret (str): The client secret\n    token_url (str): The token url\n    bearer_token (str): The bearer token&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;client_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -3063,7 +3103,7 @@
 <span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Token Url&quot;</span>
 <span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;baerer_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;bearer_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">                  </span><span class="p">{</span>
 <span class="w">                     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
@@ -3073,7 +3113,7 @@
 <span class="w">                  </span><span class="p">}</span>
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Baerer Token&quot;</span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bearer Token&quot;</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FiwareAuth&quot;</span><span class="p">,</span>

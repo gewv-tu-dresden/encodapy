@@ -83,7 +83,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">RootModel</span><span class="p">,</span> <span class="n">model_validator</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataUnits</span><span class="p">,</span> <span class="n">get_unit_adjustment_factor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataUnits</span><span class="p">,</span> <span class="n">adjust_units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataPointGeneral</span>
 
 
@@ -224,32 +224,28 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extra for field </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not a dictionary: </span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
+            <span class="n">unit</span> <span class="o">=</span> <span class="n">extra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">unit</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unit for field </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not a string: </span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">DataPointGeneral</span><span class="p">):</span>
-                <span class="k">if</span> <span class="s2">&quot;unit&quot;</span> <span class="ow">in</span> <span class="n">extra</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">DataUnits</span><span class="p">(</span><span class="n">extra</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">DataUnits</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="p">(</span>
-                    <span class="s2">&quot;unit&quot;</span> <span class="ow">in</span> <span class="n">extra</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                    <span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                     <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                    <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">!=</span> <span class="n">DataUnits</span><span class="p">(</span><span class="n">extra</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">])</span>
+                    <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">!=</span> <span class="n">DataUnits</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
                 <span class="p">):</span>
-                    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Unit of </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">, but expected </span><span class="si">{</span><span class="n">extra</span><span class="p">[</span><span class="s1">&#39;unit&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">. &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;Could not convert, because value is None or not a number.&quot;</span>
+                    <span class="n">new_value</span> <span class="o">=</span> <span class="n">adjust_units</span><span class="p">(</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                            <span class="n">unit_actual</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+                            <span class="n">unit_target</span><span class="o">=</span><span class="n">DataUnits</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
                         <span class="p">)</span>
-                        <span class="k">continue</span>
-                    <span class="n">unit_adjustment_factor</span> <span class="o">=</span> <span class="n">get_unit_adjustment_factor</span><span class="p">(</span>
-                        <span class="n">unit_actual</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">unit_target</span><span class="o">=</span><span class="n">DataUnits</span><span class="p">(</span><span class="n">extra</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">])</span>
-                    <span class="p">)</span>
-                    <span class="k">if</span> <span class="n">unit_adjustment_factor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Unit of </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">, but expected </span><span class="si">{</span><span class="n">extra</span><span class="p">[</span><span class="s1">&#39;unit&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">. &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;Could not convert, because units are not compatible &quot;</span>
-                            <span class="s2">&quot;or no adjustment factor found.&quot;</span>
-                        <span class="p">)</span>
-                        <span class="k">continue</span>
-                    <span class="n">value</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">unit_adjustment_factor</span>
-                    <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">DataUnits</span><span class="p">(</span><span class="n">extra</span><span class="p">[</span><span class="s2">&quot;unit&quot;</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">new_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">value</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">new_value</span>
+                        <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">DataUnits</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="bp">self</span></div>
 
 

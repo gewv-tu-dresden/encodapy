@@ -135,7 +135,7 @@
 <span class="sd">        id_interface (str): The interface-specific identifier. Defaults to `None`.</span>
 <span class="sd">            If not set, it will be automatically set to the value of `id`.</span>
 <span class="sd">        type (AttributeTypes): The type of the attribute. Defaults to `AttributeTypes.VALUE`.</span>
-<span class="sd">        value (Union[str, float, int, bool, Dict, List, pd.DataFrame, None]): \</span>
+<span class="sd">        value (Union[str, float, int, bool, Dict, List, pd.DataFrame, pd.Series, None]): \</span>
 <span class="sd">            The value of the attribute. Defaults to `None`.</span>
 <span class="sd">        unit (Optional[DataUnits]): The unit of measurement for the value. Defaults to `None`.</span>
 <span class="sd">        datatype (DataType): The data type of the attribute. Defaults to `DataType(&quot;Number&quot;)`.</span>
@@ -150,7 +150,7 @@
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">id_interface</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="nb">type</span><span class="p">:</span> <span class="n">AttributeTypes</span> <span class="o">=</span> <span class="n">AttributeTypes</span><span class="o">.</span><span class="n">VALUE</span>
-    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataUnits</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">datatype</span><span class="p">:</span> <span class="n">DataType</span> <span class="o">=</span> <span class="n">DataType</span><span class="p">(</span><span class="s2">&quot;Number&quot;</span><span class="p">)</span>
     <span class="n">timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>

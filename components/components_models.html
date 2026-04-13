@@ -216,11 +216,14 @@
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -230,6 +233,7 @@
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -510,11 +514,14 @@ which will validate and convert units when possible.</p>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -524,6 +531,7 @@ which will validate and convert units when possible.</p>
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>

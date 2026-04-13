@@ -194,7 +194,7 @@ They are automatically loaded from the environment or a .env file.</p>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">],</span>
-<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:1026/&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://127.0.0.1:1026/&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;URL of the Context Broker (e.g., Orion-LD)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cb Url&quot;</span>
 <span class="w">      </span><span class="p">},</span>
@@ -210,7 +210,7 @@ They are automatically loaded from the environment or a .env file.</p>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;crate_db_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:4200/&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://127.0.0.1:4200/&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;URL of the CrateDB instance&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uri&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;minLength&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
@@ -283,7 +283,7 @@ They are automatically loaded from the environment or a .env file.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.config.env_values.FiwareEnvVariables.cb_url">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cb_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code><span class="pre">[</span><a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic-core/pydantic_core/#pydantic_core.Url" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Url</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Url('http://localhost:1026/')</span></em><a class="headerlink" href="#encodapy.config.env_values.FiwareEnvVariables.cb_url" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cb_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code><span class="pre">[</span><a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic-core/pydantic_core/#pydantic_core.Url" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Url</span></code></a><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Url('http://127.0.0.1:1026/')</span></em><a class="headerlink" href="#encodapy.config.env_values.FiwareEnvVariables.cb_url" title="Link to this definition"></a></dt>
 <dd><p>URL of the Context Broker (e.g., Orion-LD)</p>
 </dd></dl>
 
@@ -301,7 +301,7 @@ They are automatically loaded from the environment or a .env file.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.config.env_values.FiwareEnvVariables.crate_db_url">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">crate_db_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code><span class="pre">[</span><a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic-core/pydantic_core/#pydantic_core.Url" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Url</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Url('http://localhost:4200/')</span></em><a class="headerlink" href="#encodapy.config.env_values.FiwareEnvVariables.crate_db_url" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">crate_db_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code><span class="pre">[</span><a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic-core/pydantic_core/#pydantic_core.Url" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Url</span></code></a><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Url('http://127.0.0.1:4200/')</span></em><a class="headerlink" href="#encodapy.config.env_values.FiwareEnvVariables.crate_db_url" title="Link to this definition"></a></dt>
 <dd><p>URL of the CrateDB instance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Constraints<span class="colon">:</span></dt>
@@ -350,7 +350,7 @@ They are automatically loaded from the environment or a .env file.</p>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;host&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Hostname or IP address of the MQTT broker&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Host&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
@@ -445,7 +445,7 @@ They are automatically loaded from the environment or a .env file.</p>
 </dl>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.config.env_values.MQTTEnvVariables.host">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'localhost'</span></em><a class="headerlink" href="#encodapy.config.env_values.MQTTEnvVariables.host" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'127.0.0.1'</span></em><a class="headerlink" href="#encodapy.config.env_values.MQTTEnvVariables.host" title="Link to this definition"></a></dt>
 <dd><p>Hostname or IP address of the MQTT broker</p>
 </dd></dl>
 
@@ -819,11 +819,14 @@ see FileStorageMethod enum for details</p>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -833,6 +836,7 @@ see FileStorageMethod enum for details</p>
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -957,11 +961,14 @@ see FileStorageMethod enum for details</p>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -971,6 +978,7 @@ see FileStorageMethod enum for details</p>
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
@@ -1081,11 +1089,14 @@ see FileStorageMethod enum for details</p>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\nTODO:\n    - Is there a better way to handle the units?\n    - Add more units?&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
@@ -1095,6 +1106,7 @@ see FileStorageMethod enum for details</p>
 <span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>

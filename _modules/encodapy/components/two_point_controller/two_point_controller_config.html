@@ -86,7 +86,7 @@
     <span class="n">ConfigData</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataPointGeneral</span><span class="p">,</span> <span class="n">DataPointNumber</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_unit_adjustment_factor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">adjust_unit_of_value</span>
 
 
 <div class="viewcode-block" id="TwoPointControllerInputData">
@@ -154,8 +154,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validator to check if the units of hysteresis and setpoint are the same.</span>
 <span class="sd">        If not, it tries to convert the hysteresis to the unit of the setpoint.</span>
-
-
+<span class="sd">        </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">hysteresis</span> <span class="o">=</span> <span class="n">DataPointNumber</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hysteresis</span><span class="p">)</span>
         <span class="n">setpoint</span> <span class="o">=</span> <span class="n">DataPointNumber</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoint</span><span class="p">)</span>
@@ -168,19 +167,19 @@
                 <span class="sa">f</span><span class="s2">&quot;Units of hysteresis (</span><span class="si">{</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">) and setpoint (</span><span class="si">{</span><span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">) &quot;</span>
                 <span class="s2">&quot;are not the same. Please check your configuration.&quot;</span>
             <span class="p">)</span>
-            <span class="n">unit_adjustment_factor</span> <span class="o">=</span> <span class="n">get_unit_adjustment_factor</span><span class="p">(</span>
-                <span class="n">unit_actual</span><span class="o">=</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">unit_target</span><span class="o">=</span><span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">unit_adjustment_factor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">hysteresis</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">adjust_unit_of_value</span><span class="p">(</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">unit_actual</span><span class="o">=</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">unit_target</span><span class="o">=</span><span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span>
+                <span class="p">)</span>
+                <span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Unit of hysteresis is </span><span class="si">{</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">, but expected </span><span class="si">{</span><span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">. &quot;</span>
-                    <span class="s2">&quot;Could not convert, because units are not compatible &quot;</span>
-                    <span class="s2">&quot;or no adjustment factor found.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Could not convert, because units are not compatible &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;or no adjustment factor found: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="bp">self</span>
 
-            <span class="n">hysteresis</span><span class="o">.</span><span class="n">value</span> <span class="o">*=</span> <span class="n">unit_adjustment_factor</span>
-            <span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hysteresis</span> <span class="o">=</span> <span class="n">DataPointNumber</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
