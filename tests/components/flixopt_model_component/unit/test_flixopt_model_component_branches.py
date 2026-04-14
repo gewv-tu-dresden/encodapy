@@ -12,11 +12,14 @@ import pytest
 import xarray as xr
 
 from encodapy.components.flixopt_model_component import flixopt_model_component as flix_module
+from encodapy.components.flixopt_model_component import flixopt_model_component_config as config_module
+from encodapy.components.flixopt_model_component.add_constraints import add_constraints
 from encodapy.components.flixopt_model_component.flixopt_model_component import (
     FlixoptModelComponent,
 )
 from encodapy.components.flixopt_model_component.flixopt_model_component_config import (
     DataPointFlixoptModelConfig,
+    FlixoptModelComponentConfigData,
 )
 from encodapy.components.flixopt_model_component.flixopt_models import (
     EnergyDirection,
@@ -24,7 +27,9 @@ from encodapy.components.flixopt_model_component.flixopt_models import (
     FlixOptConverter,
     FlixOptConverterTypes,
     FlixOptModel,
+    FlixOptSinkSource,
     FlixoptLogLevel,
+    FlixoptSolverSettings,
 )
 from encodapy.components.basic_component import BasicComponent
 from encodapy.utils.datapoints import DataPointTimeSeries
@@ -677,3 +682,148 @@ def test_prepare_output_data_maps_chp_and_exchanger_io() -> None:
     assert getattr(out, "chp_1_electrical_power").value.tolist() == [2.0, 3.0, 0.0]
     assert getattr(out, "ex_sink_input").value.tolist() == [1.0, 1.1, 1.2]
     assert getattr(out, "ex_src_output").value.tolist() == [2.0, 2.1, 2.2]
+
+
+def test_get_solver_forwards_time_limit_seconds(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Forward explicit solver settings, including the time limit."""
+
+    class _FakeHighsSolver:
+        def __init__(self, **kwargs: Any) -> None:
+            self.kwargs = kwargs
+
+    monkeypatch.setattr(
+        config_module.fx,
+        "solvers",
+        SimpleNamespace(HighsSolver=_FakeHighsSolver),
+    )
+
+    config_data = FlixoptModelComponentConfigData.model_validate(
+        {
+            "solver_settings": {
+                "value": {
+                    "name": "HighsSolver",
+                    "mip_rel_gap": 0.05,
+                    "time_limit": 10,
+                }
+            },
+            "flixopt_model": {"value": _model_dict()},
+        }
+    )
+
+    solver = config_data.get_solver()
+
+    assert isinstance(solver, _FakeHighsSolver)
+    assert solver.kwargs == {"mip_gap": 0.05, "time_limit_seconds": 10}
+
+
+def test_get_solver_raises_for_unsupported_solver_name() -> None:
+    """Raise when the configured solver class cannot be resolved."""
+    config_data = FlixoptModelComponentConfigData.model_validate(
+        {
+            "solver_settings": {
+                "value": {
+                    "name": "HighsSolver",
+                }
+            },
+            "flixopt_model": {"value": _model_dict()},
+        }
+    )
+    config_data.solver_settings.value = FlixoptSolverSettings.model_construct(
+        name=SimpleNamespace(value="UnknownSolver"),
+        mip_rel_gap=None,
+        time_limit=None,
+    )
+
+    with pytest.raises(ValueError, match="Unsupported solver name: UnknownSolver"):
+        config_data.get_solver()
+
+
+def test_flixopt_sink_source_sink_requires_input_bus() -> None:
+    """Reject sink exchangers without an input bus."""
+    with pytest.raises(Exception, match="For a sink, input_bus must be defined"):
+        FlixOptSinkSource.model_validate(
+            {
+                "label": "sink_without_input",
+                "direction": EnergyDirection.SINK,
+            }
+        )
+
+
+def test_flixopt_sink_source_source_requires_output_bus() -> None:
+    """Reject source exchangers without an output bus."""
+    with pytest.raises(Exception, match="For a source, output_bus must be defined"):
+        FlixOptSinkSource.model_validate(
+            {
+                "label": "source_without_output",
+                "direction": EnergyDirection.SOURCE,
+            }
+        )
+
+
+def test_flixopt_sink_source_bidirectional_requires_any_bus() -> None:
+    """Reject bidirectional exchangers when both buses are missing."""
+    with pytest.raises(Exception, match=r"input_bus and output_bus \(optional\) must be defined"):
+        FlixOptSinkSource.model_validate(
+            {
+                "label": "bidir_without_buses",
+                "direction": EnergyDirection.BIDIRECTIONAL,
+                "nominal_power": 1,
+            }
+        )
+
+
+def test_flixopt_sink_source_bidirectional_requires_nominal_power() -> None:
+    """Reject bidirectional exchangers when nominal power is missing."""
+    with pytest.raises(Exception, match="nominal_power must be defined"):
+        FlixOptSinkSource.model_validate(
+            {
+                "label": "bidir_without_nominal_power",
+                "direction": EnergyDirection.BIDIRECTIONAL,
+                "input_bus": "heat_bus",
+            }
+        )
+
+
+def test_flixopt_sink_source_bidirectional_sets_output_bus_from_input() -> None:
+    """Copy input bus to output bus for bidirectional exchangers when omitted."""
+    exchanger = FlixOptSinkSource.model_validate(
+        {
+            "label": "bidir_with_single_bus",
+            "direction": EnergyDirection.BIDIRECTIONAL,
+            "input_bus": "heat_bus",
+            "nominal_power": 5,
+        }
+    )
+
+    assert exchanger.output_bus == "heat_bus"
+
+
+def test_add_constraints_raises_when_coords_missing() -> None:
+    """Raise when the optimization model coordinates are unavailable."""
+    optimization = SimpleNamespace(model=SimpleNamespace(get_coords=lambda: None))
+
+    with pytest.raises(ValueError, match="coordinates are not available"):
+        add_constraints(optimization)
+
+
+def test_add_constraints_adds_example_binary_gate() -> None:
+    """Add the example variables and gate constraint from the template."""
+    add_variable_calls: list[dict[str, Any]] = []
+    added_constraint_names: list[str] = []
+
+    def _add_variables(**kwargs: Any) -> int:
+        add_variable_calls.append(kwargs)
+        return len(add_variable_calls)
+
+    model = SimpleNamespace(
+        get_coords=lambda: {"time": [0, 1]},
+        add_variables=_add_variables,
+        add_constraints=lambda _expr, name: added_constraint_names.append(name),
+    )
+    optimization = SimpleNamespace(model=model)
+
+    add_constraints(optimization)
+
+    assert len(add_variable_calls) == 2
+    assert all(call["binary"] is True for call in add_variable_calls)
+    assert added_constraint_names == ["example"]

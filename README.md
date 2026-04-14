@@ -96,6 +96,11 @@ The recommended way to run the service is:
 - Create a Python environment using Poetry (see [pyproject.toml](./pyproject.toml)).
 - Use a Docker container for production deployments (create a custom image using the [dockerfile](./dockerfile)).
 
+### Testing Notes
+
+- Solver-based Flixopt integration tests depend on optional runtime packages (for example highspy).
+- If those optional packages are unavailable, solver-based tests are skipped.
+
 ## License
 
 This project is licensed under the BSD License - see the [LICENSE](./LICENSE) file for details.
