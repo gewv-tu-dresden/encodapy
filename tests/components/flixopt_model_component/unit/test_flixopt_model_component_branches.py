@@ -520,7 +520,19 @@ def test_loguru_forward_handler_success_path(monkeypatch: pytest.MonkeyPatch) ->
 def test_run_optimization_calls_constraint_function(monkeypatch: pytest.MonkeyPatch) -> None:
     """Invoke the optional constraint function during optimization."""
     component = _component()
-    setattr(component, "_prepare_flixopt_flow_system", lambda: SimpleNamespace(add_elements=lambda e: None))
+    del monkeypatch
+    setattr(
+        component,
+        "_prepare_flixopt_flow_system",
+        lambda: SimpleNamespace(
+            add_elements=lambda e: None,
+            build_model=lambda: None,
+            solve=lambda _solver, **_kwargs: None,
+            solution=SimpleNamespace(summary={"Main Results": {"Objective": 0}}),
+            durations={"modeling": 0.1, "solving": 0.2},
+            model=SimpleNamespace(get_coords=lambda: []),
+        ),
+    )
     setattr(component, "_get_converters", lambda: [])
     setattr(component, "_get_storages", lambda: [])
     setattr(component, "_get_sinks_and_sources", lambda: [])
@@ -529,20 +541,6 @@ def test_run_optimization_calls_constraint_function(monkeypatch: pytest.MonkeyPa
     setattr(component, "flixopt_model", SimpleNamespace())
     called = {"constraint": False}
     setattr(component, "constraint_function", lambda optimization: called.update({"constraint": True}))
-
-    class FakeOptimization:
-        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
-            self.results = SimpleNamespace(summary={"Main Results": {"Objective": 0}})
-            self.durations = {"modeling": 0.1, "solving": 0.2}
-
-        def do_modeling(self) -> None:
-            return None
-
-        def solve(self, _solver: str, log_main_results: bool = False) -> None:
-            del log_main_results
-            return None
-
-    monkeypatch.setattr(flix_module.fx, "Optimization", FakeOptimization)
 
     result = getattr(component, "run_optimization")()
 
@@ -567,27 +565,25 @@ def test_run_optimization_manual_elements_invalid_type_raises() -> None:
 def test_run_optimization_returns_none_on_file_not_found(monkeypatch: pytest.MonkeyPatch) -> None:
     """Return None when the solver executable cannot be found."""
     component = _component()
-    setattr(component, "_prepare_flixopt_flow_system", lambda: SimpleNamespace(add_elements=lambda e: None))
+    del monkeypatch
+    setattr(
+        component,
+        "_prepare_flixopt_flow_system",
+        lambda: SimpleNamespace(
+            add_elements=lambda e: None,
+            build_model=lambda: None,
+            solve=lambda _solver, **_kwargs: (_ for _ in ()).throw(FileNotFoundError("solver not found")),
+            solution=SimpleNamespace(summary={"Main Results": {"Objective": 0}}),
+            durations={"modeling": 0.1, "solving": 0.2},
+            model=SimpleNamespace(get_coords=lambda: []),
+        ),
+    )
     setattr(component, "_get_converters", lambda: [])
     setattr(component, "_get_storages", lambda: [])
     setattr(component, "_get_sinks_and_sources", lambda: [])
     setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
     setattr(component, "flixopt_model", SimpleNamespace())
-
-    class FakeOptimization:
-        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
-            self.results = SimpleNamespace(summary={"Main Results": {"Objective": 0}})
-            self.durations = {"modeling": 0.1, "solving": 0.2}
-
-        def do_modeling(self) -> None:
-            return None
-
-        def solve(self, _solver: str, log_main_results: bool = False) -> None:
-            del log_main_results
-            raise FileNotFoundError("solver not found")
-
-    monkeypatch.setattr(flix_module.fx, "Optimization", FakeOptimization)
 
     assert getattr(component, "run_optimization")() is None
 

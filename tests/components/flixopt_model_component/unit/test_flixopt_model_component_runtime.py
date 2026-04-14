@@ -103,10 +103,29 @@ def test_add_bidirectional_constraints_raises_when_coords_missing() -> None:
         getattr(component, "_add_bidirectional_substation_constraints")(optimization)
 
 
+def test_add_bidirectional_constraints_raises_when_model_missing() -> None:
+    """Raise when bidirectional constraints cannot access model object."""
+    component = _create_component()
+    forward = SimpleNamespace(inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1))])
+    reverse = SimpleNamespace(inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1))])
+    setattr(component, "_bidirectional_substations", {"sub_a": (forward, reverse, 1.0, 1.0)})
+
+    with pytest.raises(ValueError, match="coordinates are not available"):
+        getattr(component, "_add_bidirectional_substation_constraints")(SimpleNamespace())
+
+
 def test_run_optimization_returns_none_on_modeling_error(monkeypatch: pytest.MonkeyPatch) -> None:
     """Return None when the modeling step fails."""
     component = _create_component()
-    flow_system = SimpleNamespace(add_elements=lambda element: None)
+    del monkeypatch
+    flow_system = SimpleNamespace(
+        add_elements=lambda element: None,
+        build_model=lambda: (_ for _ in ()).throw(ValueError("broken model")),
+        solve=lambda _solver, **_kwargs: None,
+        solution=SimpleNamespace(summary={"Main Results": {"Objective": 0}}),
+        durations={"modeling": 0.1, "solving": 0.2},
+        model=SimpleNamespace(get_coords=lambda: []),
+    )
 
     setattr(component, "_prepare_flixopt_flow_system", lambda: flow_system)
     setattr(component, "_get_converters", lambda: [])
@@ -116,18 +135,29 @@ def test_run_optimization_returns_none_on_modeling_error(monkeypatch: pytest.Mon
     setattr(component, "flixopt_model", SimpleNamespace())
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
 
-    class FakeOptimization:
-        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
-            self.results = SimpleNamespace(summary={"Main Results": {"Objective": 0}})
-            self.durations = {"modeling": 0.1, "solving": 0.2}
+    result = getattr(component, "run_optimization")()
 
-        def do_modeling(self) -> None:
-            raise ValueError("broken model")
+    assert result is None
 
-    monkeypatch.setattr(
-        "encodapy.components.flixopt_model_component.flixopt_model_component.fx.Optimization",
-        FakeOptimization,
+
+def test_run_optimization_returns_none_when_model_missing_after_build() -> None:
+    """Return None when build_model succeeds but no model object is attached."""
+    component = _create_component()
+    flow_system = SimpleNamespace(
+        add_elements=lambda element: None,
+        build_model=lambda: None,
+        solve=lambda _solver, **_kwargs: None,
+        solution=SimpleNamespace(summary={"Main Results": {"Objective": 0}}),
+        model=None,
     )
+
+    setattr(component, "_prepare_flixopt_flow_system", lambda: flow_system)
+    setattr(component, "_get_converters", lambda: [])
+    setattr(component, "_get_storages", lambda: [])
+    setattr(component, "_get_sinks_and_sources", lambda: [])
+    setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
+    setattr(component, "flixopt_model", SimpleNamespace())
+    setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
 
     result = getattr(component, "run_optimization")()
 
@@ -139,7 +169,15 @@ def test_run_optimization_returns_none_on_solver_runtime_error(
 ) -> None:
     """Return None when the solver raises a runtime error."""
     component = _create_component()
-    flow_system = SimpleNamespace(add_elements=lambda element: None)
+    del monkeypatch
+    flow_system = SimpleNamespace(
+        add_elements=lambda element: None,
+        build_model=lambda: None,
+        solve=lambda _solver, **_kwargs: (_ for _ in ()).throw(RuntimeError("solver failed")),
+        solution=SimpleNamespace(summary={"Main Results": {"Objective": 0}}),
+        durations={"modeling": 0.1, "solving": 0.2},
+        model=SimpleNamespace(get_coords=lambda: []),
+    )
 
     setattr(component, "_prepare_flixopt_flow_system", lambda: flow_system)
     setattr(component, "_get_converters", lambda: [])
@@ -148,23 +186,6 @@ def test_run_optimization_returns_none_on_solver_runtime_error(
     setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
     setattr(component, "flixopt_model", SimpleNamespace())
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
-
-    class FakeOptimization:
-        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
-            self.results = SimpleNamespace(summary={"Main Results": {"Objective": 0}})
-            self.durations = {"modeling": 0.1, "solving": 0.2}
-
-        def do_modeling(self) -> None:
-            return None
-
-        def solve(self, _solver: str, log_main_results: bool = False) -> None:
-            del log_main_results
-            raise RuntimeError("solver failed")
-
-    monkeypatch.setattr(
-        "encodapy.components.flixopt_model_component.flixopt_model_component.fx.Optimization",
-        FakeOptimization,
-    )
 
     result = getattr(component, "run_optimization")()
 
@@ -174,7 +195,16 @@ def test_run_optimization_returns_none_on_solver_runtime_error(
 def test_run_optimization_returns_results_on_success(monkeypatch: pytest.MonkeyPatch) -> None:
     """Return the results object after a successful optimization run."""
     component = _create_component()
-    flow_system = SimpleNamespace(add_elements=lambda element: None)
+    del monkeypatch
+    fake_results = SimpleNamespace(summary={"Main Results": {"Objective": 7.0}})
+    flow_system = SimpleNamespace(
+        add_elements=lambda element: None,
+        build_model=lambda: None,
+        solve=lambda _solver, **_kwargs: None,
+        solution=fake_results,
+        durations={"modeling": 0.1, "solving": 0.2},
+        model=SimpleNamespace(get_coords=lambda: []),
+    )
 
     setattr(component, "_prepare_flixopt_flow_system", lambda: flow_system)
     setattr(component, "_get_converters", lambda: [])
@@ -184,24 +214,54 @@ def test_run_optimization_returns_results_on_success(monkeypatch: pytest.MonkeyP
     setattr(component, "flixopt_model", SimpleNamespace())
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
 
-    fake_results = SimpleNamespace(summary={"Main Results": {"Objective": 7.0}})
+    result = getattr(component, "run_optimization")()
 
-    class FakeOptimization:
-        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
-            self.results = fake_results
-            self.durations = {"modeling": 0.1, "solving": 0.2}
+    assert result is fake_results
 
-        def do_modeling(self) -> None:
-            return None
 
-        def solve(self, _solver: str, log_main_results: bool = False) -> None:
-            del log_main_results
-            return None
-
-    monkeypatch.setattr(
-        "encodapy.components.flixopt_model_component.flixopt_model_component.fx.Optimization",
-        FakeOptimization,
+def test_run_optimization_returns_none_when_solution_missing() -> None:
+    """Return None when solve finishes but no solution is available."""
+    component = _create_component()
+    flow_system = SimpleNamespace(
+        add_elements=lambda element: None,
+        build_model=lambda: None,
+        solve=lambda _solver, **_kwargs: None,
+        solution=None,
+        model=SimpleNamespace(get_coords=lambda: []),
     )
+
+    setattr(component, "_prepare_flixopt_flow_system", lambda: flow_system)
+    setattr(component, "_get_converters", lambda: [])
+    setattr(component, "_get_storages", lambda: [])
+    setattr(component, "_get_sinks_and_sources", lambda: [])
+    setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
+    setattr(component, "flixopt_model", SimpleNamespace())
+    setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
+
+    result = getattr(component, "run_optimization")()
+
+    assert result is None
+
+
+def test_run_optimization_reads_objective_from_solution_attrs() -> None:
+    """Use objective from solution attrs when model objective is unavailable."""
+    component = _create_component()
+    fake_results = SimpleNamespace(attrs={"objective": 12.5})
+    flow_system = SimpleNamespace(
+        add_elements=lambda element: None,
+        build_model=lambda: None,
+        solve=lambda _solver, **_kwargs: None,
+        solution=fake_results,
+        model=SimpleNamespace(get_coords=lambda: [], objective=None),
+    )
+
+    setattr(component, "_prepare_flixopt_flow_system", lambda: flow_system)
+    setattr(component, "_get_converters", lambda: [])
+    setattr(component, "_get_storages", lambda: [])
+    setattr(component, "_get_sinks_and_sources", lambda: [])
+    setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
+    setattr(component, "flixopt_model", SimpleNamespace())
+    setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
 
     result = getattr(component, "run_optimization")()
 

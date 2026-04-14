@@ -231,5 +231,6 @@ Relevant files:
 - Core implementation: [flixopt_model_component.py](./flixopt_model_component.py)
 - Config and runtime models: [flixopt_model_component_config.py](./flixopt_model_component_config.py)
 - FlixOpt schema models: [flixopt_models.py](./flixopt_models.py)
+- You need to install FlixOpt in your environment.
 
 The component inherits from `BasicComponent` and follows the same service integration lifecycle (`prepare_component()`, `calculate()`, output mapping) as other EnCoDaPy components.

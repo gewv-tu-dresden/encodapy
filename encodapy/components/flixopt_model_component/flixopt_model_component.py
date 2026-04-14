@@ -5,6 +5,7 @@ Defines the FlixOptModelComponent class to perform optimizations using the FlixO
 from typing import Optional, Union, Any, cast
 from collections.abc import Callable
 from datetime import timezone# , datetime
+from time import perf_counter
 import importlib.util
 import importlib
 import inspect
@@ -319,7 +320,7 @@ class FlixoptModelComponent(BasicComponent):
             flow_system.add_elements(
                 fx.Bus(
                     bus.label,
-                    excess_penalty_per_flow_hour=bus.penalty
+                    imbalance_penalty_per_flow_hour=bus.penalty
                 )
             )
         for effect in self.flixopt_model.effects:
@@ -801,42 +802,46 @@ class FlixoptModelComponent(BasicComponent):
 
     def _add_bidirectional_substation_constraints(
         self,
-        optimization: fx.Optimization,
+        model_owner: Any,
     ) -> None:
         """
         Prevent simultaneous forward and reverse operation for bidirectional substations.
         """
-        base_coords = optimization.model.get_coords()
+        model = getattr(model_owner, "model", None)
+        if model is None:
+            raise ValueError("Optimization model coordinates are not available.")
+
+        base_coords = model.get_coords()
         if base_coords is None:
             raise ValueError("Optimization model coordinates are not available.")
 
         for idx, (forward, reverse, max_forward, max_reverse) in enumerate(
             self._bidirectional_substations.values()
         ):
-            z_direction = optimization.model.add_variables(
+            z_direction = model.add_variables(
                 name=f"z_bidir_converter_{idx}",
                 coords=base_coords,
                 binary=True,
             )
 
-            optimization.model.add_constraints(
+            model.add_constraints(
                 forward.inputs[0].submodel.flow_rate <= z_direction * max_forward,
                 name=f"bidir_forward_gate_{idx}",
             )
-            optimization.model.add_constraints(
+            model.add_constraints(
                 reverse.inputs[0].submodel.flow_rate <= (1 - z_direction) * max_reverse,
                 name=f"bidir_reverse_gate_{idx}",
             )
 
     def run_optimization(self
-                         ) -> Optional[fx.results.Results]:
+                         ) -> Optional[xarray.core.dataset.Dataset]:
         """
         Perform the calculations with the FlixOpt library
             The model is built up in this function based on the input data \
                 and the model structure defined here.
 
         Returns:
-            fx.results.Results: Results from FlixOpt optimization        
+            Any: Solution object from FlixOpt (typically an xarray.Dataset)
         """
         # Define Flow System and Effects
         flow_system = self._prepare_flixopt_flow_system()
@@ -853,7 +858,8 @@ class FlixoptModelComponent(BasicComponent):
 
         # Manually added components / elements (e.g. for testing)
         if self.manual_elements_function is not None:
-            manual_elements: list[fx.elements.Element] = self.manual_elements_function(self.flixopt_model)
+            manual_elements: list[fx.elements.Element] = \
+                self.manual_elements_function(self.flixopt_model)
             if not all(isinstance(element, fx.elements.Element) for element in manual_elements):
                 error_message = (
                     "Manual elements function must return a list of FlixOpt components."
@@ -869,21 +875,29 @@ class FlixoptModelComponent(BasicComponent):
 
         # Build the model and add constraints
         try:
-            optimization = fx.Optimization('encodapy', flow_system)
-            optimization.do_modeling()
+            modeling_start = perf_counter()
+            flow_system.build_model()
+            modeling_duration = perf_counter() - modeling_start
+            if getattr(flow_system, "model", None) is None:
+                raise AttributeError("Flow system model was not created by build_model().")
 
             # self._add_storage_constraints(optimization, storages)
-            self._add_bidirectional_substation_constraints(optimization)
+            self._add_bidirectional_substation_constraints(flow_system)
 
             if self.constraint_function is not None:
-                self.constraint_function(optimization)
+                self.constraint_function(flow_system)
         except (ValueError, TypeError, AttributeError) as exc:
             logger.exception(f"Model setup failed with error: {exc}")
             return None
 
         # Solve Problem
         try:
-            optimization.solve(self.config_data.get_solver(), log_main_results=False)
+            solving_start = perf_counter()
+            flow_system.solve(self.config_data.get_solver())
+            solving_duration = perf_counter() - solving_start
+
+            results = getattr(flow_system, "solution", None)
+
         except FileNotFoundError:
             logger.exception("Solver executable not found")
             return None
@@ -891,13 +905,22 @@ class FlixoptModelComponent(BasicComponent):
             logger.exception(f"Solver failed with error: {exc}")
             return None
 
-        logger.debug("Optimization completed with a "
-                     f"duration for modeling {optimization.durations.get('modeling', '-')} s "
-                     f"and solving {optimization.durations.get('solving', '-')} s. "
-                     "The main objective result is "
-                     f"{optimization.results.summary.get('Main Results').get('Objective')}.")
+        if results is None:
+            logger.error("Optimization finished without a solution object.")
+            return None
 
-        return optimization.results
+        objective = getattr(getattr(
+            getattr(flow_system, "model", None), "objective", None),"value", None)
+        if objective is None and hasattr(results, "attrs"):
+            objective = results.attrs.get("objective")
+
+        logger.debug("Optimization completed with a "
+                     f"duration for modeling {modeling_duration} s "
+                     f"and solving {solving_duration} s. "
+                     "The main objective result is "
+                     f"{objective}.")
+
+        return results
 
     def export_results_as_timeseries(self,
                                      results:xarray.core.dataset.Dataset
@@ -953,7 +976,7 @@ class FlixoptModelComponent(BasicComponent):
         return all_timeseries
 
     def prepare_output_data(self,
-                            results:fx.results.Results) -> None:
+                            results: xarray.core.dataset.Dataset) -> None:
         """
         Prepare the output data for the FlixOpt component, mapping results to output model
 
@@ -975,7 +998,7 @@ class FlixoptModelComponent(BasicComponent):
             - Do we need a configuration?
 
         """
-        all_timeseries = self.export_results_as_timeseries(results.solution)
+        all_timeseries = self.export_results_as_timeseries(results)
 
         outputs: dict[str, DataPointTimeSeries]= {}
         for storage in self.flixopt_model.storages:
