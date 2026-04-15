@@ -541,17 +541,22 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """Helper function to process attributes."""
         for attribute in output.attributes:
             if attribute.id == component.attribute_id:
+                # When the calculation returns None, skip this attribute
+                # to avoid sending stale/retained values from previous cycles
+                if component.value is None:
+                    logger.warning(
+                        f"Output attribute {attribute.id} for entity {output.id} "
+                        f"has None value, skipping to avoid sending stale data."
+                    )
+                    break
+
                 if output.id not in output_attrs:
                     output_attrs[output.id] = []
-
-                attribute.value = (
-                    component.value if component.value is not None else attribute.value
-                )
 
                 output_attrs[output.id].append(
                     AttributeModel(
                         id=attribute.id,
-                        value=attribute.value,
+                        value=component.value,
                         unit=component.unit,
                         timestamp=component.timestamp,
                     )
@@ -568,16 +573,19 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """Helper function to process commands."""
         for command in output.commands:
             if command.id == component.attribute_id:
+                # When the calculation returns None, skip this command
+                if component.value is None:
+                    logger.warning(
+                        f"Output command {command.id} for entity {output.id} "
+                        f"has None value, skipping."
+                    )
+                    break
+
                 if output.id not in output_cmds:
                     output_cmds[output.id] = []
 
-                # TODO: type checking necessary? Dataframes and bools not allowed for commands
-                command.value = (
-                    component.value if component.value is not None else command.value
-                )
-
                 output_cmds[output.id].append(
-                    CommandModel(id=command.id, value=command.value)
+                    CommandModel(id=command.id, value=component.value)
                 )
                 break
         return output_cmds
