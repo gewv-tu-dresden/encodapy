@@ -252,6 +252,14 @@
             <span class="s2">&quot;Be careful when using this option, as unexpected behaviour may occur if the &quot;</span>
             <span class="s2">&quot;delay of all messages is longer than the sampling time.&quot;</span>
         <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">skip_none_values</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;If True, attributes with None values will not be published to MQTT. &quot;</span>
+            <span class="s2">&quot;This can help reduce message size and avoid sending irrelevant data. &quot;</span>
+            <span class="s2">&quot;Default is True, meaning None values will not be published.&quot;</span>
+        <span class="p">)</span>
     <span class="p">)</span></div>
 
 
