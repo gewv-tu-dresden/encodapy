@@ -544,14 +544,10 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 if output.id not in output_attrs:
                     output_attrs[output.id] = []
 
-                attribute.value = (
-                    component.value if component.value is not None else attribute.value
-                )
-
                 output_attrs[output.id].append(
                     AttributeModel(
                         id=attribute.id,
-                        value=attribute.value,
+                        value=component.value,
                         unit=component.unit,
                         timestamp=component.timestamp,
                     )
@@ -571,13 +567,8 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 if output.id not in output_cmds:
                     output_cmds[output.id] = []
 
-                # TODO: type checking necessary? Dataframes and bools not allowed for commands
-                command.value = (
-                    component.value if component.value is not None else command.value
-                )
-
                 output_cmds[output.id].append(
-                    CommandModel(id=command.id, value=command.value)
+                    CommandModel(id=command.id, value=component.value)
                 )
                 break
         return output_cmds
