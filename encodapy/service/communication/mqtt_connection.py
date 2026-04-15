@@ -810,6 +810,12 @@ class MqttConnection:
 
         # publish the data to the MQTT broker
         for attribute in output_attributes:
+            if attribute.value is None and self.mqtt_params.skip_none_values:
+                logger.debug(
+                    f"Skip MQTT publish for attribute {attribute.id} of entity {output_entity.id}: "
+                    "value is None."
+                )
+                continue
             try:
                 self.publish(
                     topic=self._prepare_mqtt_topic(
