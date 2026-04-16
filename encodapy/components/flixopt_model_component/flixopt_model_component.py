@@ -970,10 +970,12 @@ class FlixoptModelComponent(BasicComponent):
         all_timeseries.set_index("time", inplace=True)
         # drop last row, because it is often incomplete due to the way the optimization works
         all_timeseries.drop(index=all_timeseries.index[-1], inplace=True)
-        # all_timeseries.to_csv(
-        #     f"./results/optimization_results_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv",
-        #     sep=";", decimal=",", encoding="utf-8") #TODO remove
         return all_timeseries
+
+    def _reset_output_data(self) -> None:
+        """Remove stale output data from a previous run."""
+        if hasattr(self, "output_data"):
+            delattr(self, "output_data")
 
     def prepare_output_data(self,
                             results: xarray.core.dataset.Dataset) -> None:
@@ -1052,6 +1054,8 @@ class FlixoptModelComponent(BasicComponent):
         """
         Perform the calculations for the new component
         """
+
+        self._reset_output_data()
 
         # Prepare Input Data
         self.prepare_input_data()

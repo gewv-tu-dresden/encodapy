@@ -25,7 +25,7 @@ from encodapy.service.communication import (
     FiwareConnection,
     MqttConnection,
 )
-from encodapy.utils.error_handling import ConfigError, InterfaceNotActive
+from encodapy.utils.error_handling import ConfigError, InterfaceNotActive, NotSupportedError
 from encodapy.utils.health import update_health_file
 from encodapy.utils.logging import LoggerControl
 from encodapy.utils.models import (
@@ -413,26 +413,67 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 output_command.value = command.value
                 output_commands.append(output_command)
 
-            if output_entity.interface is Interfaces.FIWARE:
-                await self._send_data_to_fiware(
-                    output_entity=output_entity,
-                    output_attributes=output_attributes,
-                    output_commands=output_commands,
+            if not output_attributes and not output_commands:
+                logger.debug(
+                    f"Skip sending for output entity {output.id}: "
+                    "no attributes or commands mapped in this cycle."
                 )
+                continue
+
+            if output_entity.interface is Interfaces.FIWARE:
+                try:
+                    await self._send_data_to_fiware(
+                        output_entity=output_entity,
+                        output_attributes=output_attributes,
+                        output_commands=output_commands,
+                    )
+                except (
+                    ConfigError,
+                    InterfaceNotActive,
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    asyncio.TimeoutError,
+                ) as exc:
+                    logger.error(
+                        "Error while sending FIWARE output entity "
+                        f"{output.id}: {exc}"
+                    )
 
             elif output_entity.interface is Interfaces.FILE:
-                self.send_data_to_json_file(
-                    output_entity=output_entity,
-                    output_attributes=output_attributes,
-                    output_commands=output_commands,
-                )
+                try:
+                    self.send_data_to_json_file(
+                        output_entity=output_entity,
+                        output_attributes=output_attributes,
+                        output_commands=output_commands,
+                    )
+                except (OSError, ValueError, TypeError) as exc:
+                    logger.error(
+                        "Error while writing FILE output entity "
+                        f"{output.id}: {exc}"
+                    )
 
             elif output_entity.interface is Interfaces.MQTT:
-                await asyncio.to_thread(
-                    self.send_data_to_mqtt,
-                    output_entity=output_entity,
-                    output_attributes=output_attributes,
-                )
+                try:
+                    await asyncio.to_thread(
+                        self.send_data_to_mqtt,
+                        output_entity=output_entity,
+                        output_attributes=output_attributes,
+                    )
+                except (
+                    ConfigError,
+                    NotSupportedError,
+                    ValueError,
+                    TypeError,
+                    OSError,
+                ) as exc:
+                    logger.error(
+                        "Error while sending MQTT output entity "
+                        f"{output.id}: {exc}"
+                    )
 
             await asyncio.sleep(0.01)
 
