@@ -232,5 +232,6 @@ Relevant files:
 - Config and runtime models: [flixopt_model_component_config.py](./flixopt_model_component_config.py)
 - FlixOpt schema models: [flixopt_models.py](./flixopt_models.py)
 - You need to install FlixOpt in your environment.
+- To use the GurobiSolver, you need to add a licence. With a licence file, you can add the path to the environment with `GRB_LICENSE_FILE`.
 
 The component inherits from `BasicComponent` and follows the same service integration lifecycle (`prepare_component()`, `calculate()`, output mapping) as other EnCoDaPy components.
