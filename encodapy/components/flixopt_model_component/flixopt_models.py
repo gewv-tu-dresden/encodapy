@@ -298,6 +298,12 @@ class FlixOptStorage(BaseModel):
         Defined via number or as label of an input value,
         which is then used to read the maximal SOC from the input data""",
     )
+    final_soc_percentage: float | int = Field(
+        50.0,
+        description="""Percentage of the start_soc which should be reached at the end
+        of the optimization period, used to define the required final SOC at the end
+        of the optimization period (final_soc = start_soc * final_soc_percentage / 100)""",
+    )
 
 class EnergyDirection(Enum):
     """

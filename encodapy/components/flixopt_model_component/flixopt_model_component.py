@@ -618,6 +618,7 @@ class FlixoptModelComponent(BasicComponent):
 
             initial_soc = cast(float | int, self._get_input_value(storage.start_soc)) / 100 \
                 * nominal_capacity
+            final_soc = storage.final_soc_percentage / 100 * initial_soc
 
             minimal_soc = cast(float | int, self._get_input_value(storage.minimal_soc)) / 100
             maximal_soc = cast(float | int, self._get_input_value(storage.maximal_soc)) / 100
@@ -625,6 +626,8 @@ class FlixoptModelComponent(BasicComponent):
             # inital soc needs to be within the capacity of the storage
             initial_soc = max(minimal_soc * nominal_capacity,
                               min(initial_soc, maximal_soc * nominal_capacity))
+            final_soc = max(minimal_soc * nominal_capacity,
+                            min(final_soc, maximal_soc * nominal_capacity))
 
             storages.append(
                 fx.Storage(
@@ -649,7 +652,7 @@ class FlixoptModelComponent(BasicComponent):
                     initial_charge_state=initial_soc,
                     relative_minimum_charge_state=minimal_soc,
                     relative_maximum_charge_state=maximal_soc,
-                    minimal_final_charge_state = initial_soc
+                    minimal_final_charge_state=final_soc
                 )
             )
         return storages
