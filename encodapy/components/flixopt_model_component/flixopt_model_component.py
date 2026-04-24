@@ -4,7 +4,7 @@ Defines the FlixOptModelComponent class to perform optimizations using the FlixO
 # pylint: disable=no-member
 from typing import Optional, Union, Any, cast
 from collections.abc import Callable
-from datetime import timezone# , datetime
+from datetime import timezone , datetime
 from time import perf_counter
 import importlib.util
 import importlib
@@ -973,6 +973,7 @@ class FlixoptModelComponent(BasicComponent):
         all_timeseries.set_index("time", inplace=True)
         # drop last row, because it is often incomplete due to the way the optimization works
         all_timeseries.drop(index=all_timeseries.index[-1], inplace=True)
+        # all_timeseries.to_csv(f"./results/optimization_results_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv", decimal=",", sep=";", encoding="utf-8")
         return all_timeseries
 
     def _reset_output_data(self) -> None:

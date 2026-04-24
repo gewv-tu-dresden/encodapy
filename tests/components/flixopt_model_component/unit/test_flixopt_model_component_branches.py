@@ -712,6 +712,100 @@ def test_get_solver_forwards_time_limit_seconds(monkeypatch: pytest.MonkeyPatch)
     assert solver.kwargs == {"mip_gap": 0.05, "time_limit_seconds": 10}
 
 
+def test_get_solver_forwards_advanced_settings_via_extra_options(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Forward advanced tuning settings via flixopt's extra_options argument."""
+
+    class _FakeGurobiSolver:
+        def __init__(self, **kwargs: Any) -> None:
+            self.kwargs = kwargs
+
+    monkeypatch.setattr(
+        config_module.fx,
+        "solvers",
+        SimpleNamespace(GurobiSolver=_FakeGurobiSolver),
+    )
+
+    config_data = FlixoptModelComponentConfigData.model_validate(
+        {
+            "solver_settings": {
+                "value": {
+                    "name": "GurobiSolver",
+                    "mip_rel_gap": 0.05,
+                    "time_limit": 10,
+                    "threads": 7,
+                    "mip_focus": 1,
+                    "presolve": 2,
+                    "cuts": 1,
+                    "additional_options": {"NodefileStart": 0.5},
+                }
+            },
+            "flixopt_model": {"value": _model_dict()},
+        }
+    )
+
+    solver = config_data.get_solver()
+
+    assert isinstance(solver, _FakeGurobiSolver)
+    assert solver.kwargs == {
+        "mip_gap": 0.05,
+        "time_limit_seconds": 10,
+        "extra_options": {
+            "Threads": 7,
+            "MIPFocus": 1,
+            "Presolve": 2,
+            "Cuts": 1,
+            "NodefileStart": 0.5,
+        },
+    }
+
+
+def test_get_solver_forwards_highs_advanced_settings_via_extra_options(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Forward Highs tuning settings with lowercase option keys."""
+
+    class _FakeHighsSolver:
+        def __init__(self, **kwargs: Any) -> None:
+            self.kwargs = kwargs
+
+    monkeypatch.setattr(
+        config_module.fx,
+        "solvers",
+        SimpleNamespace(HighsSolver=_FakeHighsSolver),
+    )
+
+    config_data = FlixoptModelComponentConfigData.model_validate(
+        {
+            "solver_settings": {
+                "value": {
+                    "name": "HighsSolver",
+                    "mip_rel_gap": 0.05,
+                    "time_limit": 10,
+                    "threads": 4,
+                    "presolve": 1,
+                    "additional_options": {"solver": "simplex"},
+                }
+            },
+            "flixopt_model": {"value": _model_dict()},
+        }
+    )
+
+    solver = config_data.get_solver()
+
+    assert isinstance(solver, _FakeHighsSolver)
+    assert solver.kwargs == {
+        "mip_gap": 0.05,
+        "time_limit_seconds": 10,
+        "extra_options": {
+            "threads": 4,
+            "presolve": 1,
+            "solver": "simplex",
+        },
+    }
+
+
 def test_get_solver_raises_for_unsupported_solver_name() -> None:
     """Raise when the configured solver class cannot be resolved."""
     config_data = FlixoptModelComponentConfigData.model_validate(

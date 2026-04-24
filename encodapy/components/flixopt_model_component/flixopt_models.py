@@ -36,6 +36,33 @@ class FlixoptSolverSettings(BaseModel):
         default=None,
         description="Optional time limit in seconds",
     )
+    threads: Optional[int] = Field(
+        default=None,
+        description="Optional solver thread limit",
+    )
+    mip_focus: Optional[int] = Field(
+        default=None,
+        description="Optional MIP search focus (solver-specific)",
+    )
+    heuristics: Optional[float] = Field(
+        default=None,
+        description="Optional heuristic intensity (solver-specific)",
+    )
+    presolve: Optional[int] = Field(
+        default=None,
+        description="Optional presolve level (solver-specific)",
+    )
+    cuts: Optional[int] = Field(
+        default=None,
+        description="Optional cut generation level (solver-specific)",
+    )
+    additional_options: Optional[dict[str, int | float | str | bool]] = Field(
+        default=None,
+        description=(
+            "Optional additional solver options forwarded directly to the "
+            "selected flixopt solver constructor."
+        ),
+    )
 
 class FlixoptLogLevel(Enum):
     """

@@ -1,7 +1,7 @@
 """
 Defines the configuration data models for the new component.
 """
-from typing import Any
+from typing import Any, cast
 from pydantic import Field, model_validator, ConfigDict
 import flixopt as fx # type: ignore[import-untyped]
 from encodapy.components.basic_component_config import (
@@ -81,6 +81,12 @@ class DataPointFlixoptSolverSettings(DataPointGeneral):
             name=FlixOptSolverName.HIGHS,
             mip_rel_gap=None,
             time_limit=None,
+            threads=None,
+            mip_focus=None,
+            heuristics=None,
+            presolve=None,
+            cuts=None,
+            additional_options=None,
         ),
         description="Solver settings for the flixopt framework",
     )
@@ -134,10 +140,54 @@ class FlixoptModelComponentConfigData(ConfigData):
             raise ValueError(f"Unsupported solver name: {solver_name}")
         # pylint: disable=no-member
         cfg = self.solver_settings.value
-        kwargs = {}
+        kwargs: dict[str, Any] = {}
         if cfg.mip_rel_gap is not None:
             kwargs["mip_gap"] = cfg.mip_rel_gap
         if cfg.time_limit is not None:
             kwargs["time_limit_seconds"] = cfg.time_limit
+
+        # flixopt solver wrappers accept advanced tuning parameters via `extra_options`.
+        # Use explicit mappings per solver family for predictable behavior.
+        is_gurobi = solver_name == FlixOptSolverName.GUROBI.value
+        is_highs = solver_name == FlixOptSolverName.HIGHS.value
+        if is_gurobi:
+            option_key_map = {
+                "threads": "Threads",
+                "mip_focus": "MIPFocus",
+                "heuristics": "Heuristics",
+                "presolve": "Presolve",
+                "cuts": "Cuts",
+            }
+        elif is_highs:
+            option_key_map = {
+                "threads": "threads",
+                "mip_focus": "mip_focus",
+                "heuristics": "heuristics",
+                "presolve": "presolve",
+                "cuts": "cuts",
+            }
+        else:
+            option_key_map = {
+                "threads": "threads",
+                "mip_focus": "mip_focus",
+                "heuristics": "heuristics",
+                "presolve": "presolve",
+                "cuts": "cuts",
+            }
+        extra_options: dict[str, Any] = {}
+        if cfg.threads is not None:
+            extra_options[option_key_map["threads"]] = cfg.threads
+        if cfg.mip_focus is not None:
+            extra_options[option_key_map["mip_focus"]] = cfg.mip_focus
+        if cfg.heuristics is not None:
+            extra_options[option_key_map["heuristics"]] = cfg.heuristics
+        if cfg.presolve is not None:
+            extra_options[option_key_map["presolve"]] = cfg.presolve
+        if cfg.cuts is not None:
+            extra_options[option_key_map["cuts"]] = cfg.cuts
+        if cfg.additional_options is not None:
+            extra_options.update(cast(dict[str, Any], cfg.additional_options))
+        if extra_options:
+            kwargs["extra_options"] = extra_options
 
         return solver_cls(**kwargs)
