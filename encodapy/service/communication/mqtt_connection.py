@@ -9,8 +9,7 @@ import re
 import threading
 import time
 from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
 import paho.mqtt.client as mqtt
 from loguru import logger
@@ -707,24 +706,18 @@ class MqttConnection:
                 )
 
         elif isinstance(output_attribute.mqtt_format, MQTTTemplateConfig):
-            payload_context = {
-                "output_entity": output_entity.id_interface,
-                "output_attribute": output_attribute.id_interface,
-                "output_value": output_attribute.value,
-                "output_unit": output_attribute.unit,
-                "output_time": (
+            payload = output_attribute.mqtt_format.payload.render(
+                output_entity=output_entity.id_interface,
+                output_attribute=output_attribute.id_interface,
+                output_value=output_attribute.value,
+                output_unit=output_attribute.unit.value if output_attribute.unit else None,
+                output_time=(
                     output_attribute.timestamp.strftime(
                         output_attribute.mqtt_format.time_format
                     )
                     if output_attribute.timestamp
                     else None
                 ),
-            }
-            payload = output_attribute.mqtt_format.payload.render(
-                **{
-                    key: self._normalize_template_context_value(value)
-                    for key, value in payload_context.items()
-                }
             )
 
         else:
@@ -732,25 +725,6 @@ class MqttConnection:
                 f"MQTT format {output_attribute.mqtt_format} is not supported."
             )
         return payload
-
-    def _normalize_template_context_value(self, value: Any) -> Any:
-        """
-        Normalize render-context values so Jinja `tojson` can serialize them reliably.
-
-        Enums are converted to their primitive value recursively for nested structures.
-        """
-        if isinstance(value, Enum):
-            return value.value
-        if isinstance(value, dict):
-            return {
-                key: self._normalize_template_context_value(item)
-                for key, item in value.items()
-            }
-        if isinstance(value, list):
-            return [self._normalize_template_context_value(item) for item in value]
-        if isinstance(value, tuple):
-            return tuple(self._normalize_template_context_value(item) for item in value)
-        return value
 
     def _prepare_mqtt_topic(
         self,

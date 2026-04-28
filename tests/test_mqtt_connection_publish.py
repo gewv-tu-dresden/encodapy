@@ -10,6 +10,7 @@ from encodapy.config import (
 )
 from encodapy.config.mqtt_messages_template import MQTTTemplateConfig
 from encodapy.service.communication.mqtt_connection import MqttConnection
+from encodapy.utils.units import DataUnits
 
 
 def test_send_data_to_mqtt_renders_template_and_calls_publish() -> None:
@@ -40,7 +41,7 @@ def test_send_data_to_mqtt_renders_template_and_calls_publish() -> None:
         id="temp",
         id_interface="temperature",
         value=21.5,
-        unit="CEL",
+        unit=DataUnits.DEGREECELSIUS,
         timestamp=datetime(2026, 4, 28, 12, 0, 0, tzinfo=timezone.utc),
         mqtt_format=template,
     )
