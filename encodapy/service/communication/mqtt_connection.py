@@ -761,20 +761,10 @@ class MqttConnection:
                     else None
                 ),
             }
-            placeholder_names = {
-                "output_entity": "__OUTPUT_ENTITY__",
-                "output_attribute": "__OUTPUT_ATTRIBUTE__",
-                "output_value": "__OUTPUT_VALUE__",
-                "output_unit": "__OUTPUT_UNIT__",
-                "output_time": "__OUTPUT_TIME__",
-                "mqtt_topic_prefix": "__MQTT_TOPIC_PREFIX__",
-            }
-            for (
-                placeholder_name
-            ) in output_attribute.mqtt_format.payload_embedded_placeholders:
+            for placeholder_name in output_attribute.mqtt_format.payload_embedded_placeholders:
                 render_values[placeholder_name] = self._sanitize_embedded_payload_value(
                     render_values.get(placeholder_name),
-                    placeholder_names[placeholder_name],
+                    f"__{placeholder_name.upper()}__",
                 )
 
             payload = output_attribute.mqtt_format.payload.render(**render_values)
