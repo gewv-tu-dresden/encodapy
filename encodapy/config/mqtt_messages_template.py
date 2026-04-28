@@ -269,6 +269,8 @@ class MQTTTemplateConfig(BaseModel):
                 if part == "payload":
                     return f"{{{{{clean_name} | tojson}}}}"
                 return f"{{{{{clean_name}}}}}"
+            for placeholder, clean_name in placeholder_map.items():
+                value = value.replace(placeholder, f"{{{{{clean_name}}}}}")
             if part == "payload":
                 return json.dumps(value)
             return value
