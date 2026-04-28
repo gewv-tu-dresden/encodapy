@@ -55,6 +55,46 @@ class MqttConnection:
         self._mqtt_connected = False
         self._mqtt_connection_event = threading.Event()
 
+    @staticmethod
+    def _sanitize_embedded_payload_value(value: object, placeholder: str) -> str:
+        """
+        Convert embedded payload placeholder values to safe plain strings.
+
+        Values that would require JSON escaping are logged and omitted.
+        """
+        if value is None:
+            logger.warning(
+                f"MQTT payload placeholder {placeholder} has value None and will be omitted."
+            )
+            return ""
+
+        if isinstance(value, (dict, list, set, tuple)):
+            logger.warning(
+                f"MQTT payload placeholder {placeholder} received unsupported type "
+                f"{type(value).__name__} and will be omitted."
+            )
+            return ""
+
+        try:
+            string_value = str(value)
+        except (TypeError, ValueError) as exc:
+            logger.warning(
+                f"MQTT payload placeholder {placeholder} could not be rendered "
+                f"and will be omitted: {exc}"
+            )
+            return ""
+
+        if any(
+            char in string_value for char in ('"', "\\", "\b", "\f", "\n", "\r", "\t")
+        ):
+            logger.warning(
+                f"MQTT payload placeholder {placeholder} contains characters "
+                "that would require JSON escaping and will be omitted."
+            )
+            return ""
+
+        return string_value
+
     def load_mqtt_params(self) -> None:
         """
         Function to load the MQTT parameters from the environment variables
@@ -706,19 +746,38 @@ class MqttConnection:
                 )
 
         elif isinstance(output_attribute.mqtt_format, MQTTTemplateConfig):
-            payload = output_attribute.mqtt_format.payload.render(
-                output_entity=output_entity.id_interface,
-                output_attribute=output_attribute.id_interface,
-                output_value=output_attribute.value,
-                output_unit=output_attribute.unit.value if output_attribute.unit else None,
-                output_time=(
+            render_values = {
+                "output_entity": output_entity.id_interface,
+                "output_attribute": output_attribute.id_interface,
+                "output_value": output_attribute.value,
+                "output_unit": output_attribute.unit.value
+                if output_attribute.unit
+                else None,
+                "output_time": (
                     output_attribute.timestamp.strftime(
                         output_attribute.mqtt_format.time_format
                     )
                     if output_attribute.timestamp
                     else None
                 ),
-            )
+            }
+            placeholder_names = {
+                "output_entity": "__OUTPUT_ENTITY__",
+                "output_attribute": "__OUTPUT_ATTRIBUTE__",
+                "output_value": "__OUTPUT_VALUE__",
+                "output_unit": "__OUTPUT_UNIT__",
+                "output_time": "__OUTPUT_TIME__",
+                "mqtt_topic_prefix": "__MQTT_TOPIC_PREFIX__",
+            }
+            for (
+                placeholder_name
+            ) in output_attribute.mqtt_format.payload_embedded_placeholders:
+                render_values[placeholder_name] = self._sanitize_embedded_payload_value(
+                    render_values.get(placeholder_name),
+                    placeholder_names[placeholder_name],
+                )
+
+            payload = output_attribute.mqtt_format.payload.render(**render_values)
 
         else:
             raise NotSupportedError(
