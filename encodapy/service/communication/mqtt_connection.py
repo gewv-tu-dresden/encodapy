@@ -14,7 +14,7 @@ from typing import Optional, Union
 import paho.mqtt.client as mqtt
 from loguru import logger
 from paho.mqtt.enums import CallbackAPIVersion
-from pandas import DataFrame
+from pandas import DataFrame, Series
 
 from encodapy.config import (
     ConfigModel,
@@ -286,7 +286,7 @@ class MqttConnection:
     def publish(
         self,
         topic: str,
-        payload: Union[str, float, int, bool, dict, list, DataFrame, None],
+        payload: Union[str, float, int, bool, dict, list, DataFrame, Series, None],
     ) -> None:
         """
         Function to publish a message (payload) to a topic.
@@ -296,7 +296,7 @@ class MqttConnection:
 
         Args:
             topic (str): The topic to publish the message to
-            payload (Union[str, float, int, bool, dict, list, DataFrame, None]): payload to publish
+            payload (Union[str, float, int, bool, dict, list, DataFrame, Series, None]): payload to publish
         """
         if not self.mqtt_client:
             raise NotSupportedError(
@@ -310,19 +310,19 @@ class MqttConnection:
         logger.debug(f"Published to topic {topic}: {payload}")
 
     def prepare_payload_for_publish(
-        self, payload: Union[str, float, int, bool, dict, list, DataFrame, None]
+        self, payload: Union[str, float, int, bool, dict, list, DataFrame, Series, None]
     ) -> Union[str, None]:
         """
         Function to prepare the payload for publishing.
 
-        Converts the payload to a JSON string if it is a dict, list or DataFrame.
+        Converts the payload to a JSON string if it is a dict, list, DataFrame or Series.
         If the payload is a string, float, int or bool, it is converted to a string.
         If the payload is None or an unsupported type, it is set to None.
         """
         try:
             if isinstance(payload, (dict, list)):
                 payload = json.dumps(payload)
-            elif isinstance(payload, DataFrame):
+            elif isinstance(payload, (DataFrame, Series)):
                 payload = payload.to_json()
             elif isinstance(payload, (str, float, int, bool)):
                 payload = str(payload)
@@ -719,16 +719,18 @@ class MqttConnection:
 
     def _prepare_mqtt_payload(
         self, output_entity: OutputModel, output_attribute: AttributeModel
-    ) -> Union[str, float, int, bool, dict, list, DataFrame, None]:
+    ) -> Union[str, float, int, bool, dict, list, DataFrame, Series, None]:
         """
         Function to prepare the MQTT payload based on the output attribute's mqtt_format.
         Args:
             output_entity (OutputModel): The output entity.
             output_attribute (AttributeModel): The output attribute.
         Returns:
-            Union[str, float, int, bool, dict, list, DataFrame, None]: The prepared payload.
+            Union[str, float, int, bool, dict, list, DataFrame, Series, None]: The prepared payload.
         """
-        payload: Union[str, float, int, bool, dict, list, DataFrame, None] = None
+        payload: Union[str, float, int, bool, dict, list, DataFrame, Series, None] = (
+            None
+        )
         if output_attribute.mqtt_format is MQTTFormatTypes.PLAIN:
             payload = output_attribute.value
         elif (
