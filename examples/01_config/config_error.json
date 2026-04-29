@@ -1,8 +1,8 @@
 {
     "name": "example",
     "interfaces": {
-        "mqtt": false,
-        "fiware": true,
+        "mqtt": true,
+        "fiware": false,
         "file": false
     },
     "inputs": [

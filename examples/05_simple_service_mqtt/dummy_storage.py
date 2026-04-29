@@ -37,7 +37,7 @@ if __name__ == "__main__":
     # 3. Send {"t_sen_bot": 22.5, "t_sen_set": "50"} as JSON to thermal_storage,
     # even different value types are possible (Number as string will be converted automatically)
     TOPIC3 = f"{MQTT_TOPIC_PREFIX}thermal_storage"
-    PAYLOAD3 = json.dumps({"t_sen_bot": 22.5, "t_sen_set": "50 °C"}, ensure_ascii=False)
+    PAYLOAD3 = json.dumps({"t_sen_bot": 52.5, "t_sen_set": "50 °C"}, ensure_ascii=False)
     client.publish(TOPIC3, PAYLOAD3)
     print(f"Published to {TOPIC3}: {PAYLOAD3}")
 
