@@ -4,6 +4,7 @@ Author: Martin Altenburger
 """
 
 import yaml
+
 from encodapy.config.models import ConfigModel
 
 # Schema als JSON abrufen

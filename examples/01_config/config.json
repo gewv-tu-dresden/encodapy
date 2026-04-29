@@ -1,6 +1,6 @@
 {
     "name": "example",
-    "interfaces":{
+    "interfaces": {
         "mqtt": false,
         "fiware": true,
         "file": false
@@ -12,13 +12,13 @@
             "id_interface": "urn:input_fiware:01",
             "attributes": [
                 {
-                    "id": "temperature_1", 
-                    "id_interface":"temperature:01",
+                    "id": "temperature_1",
+                    "id_interface": "temperature:01",
                     "type": "timeseries"
                 },
                 {
-                    "id": "temperature_2", 
-                    "id_interface":"temperature:02",
+                    "id": "temperature_2",
+                    "id_interface": "temperature:02",
                     "type": "timeseries"
                 }
             ]
@@ -31,15 +31,15 @@
             "id_interface": "urn:storage_calculation:01",
             "attributes": [
                 {
-                    "id": "state_of_charge", 
-                    "id_interface":"state_of_charge",
+                    "id": "state_of_charge",
+                    "id_interface": "state_of_charge",
                     "type": "value"
                 }
             ],
-            "commands":[
+            "commands": [
                 {
-                    "id": "charge_cmd", 
-                    "id_interface":"cmd:charge"
+                    "id": "charge_cmd",
+                    "id_interface": "cmd:charge"
                 }
             ]
         }
@@ -51,8 +51,8 @@
             "id_interface": "thermal_storage",
             "attributes": [
                 {
-                    "id": "storage_volume", 
-                    "id_interface":"volume",
+                    "id": "storage_volume",
+                    "id_interface": "volume",
                     "type": "value"
                 }
             ]
@@ -64,25 +64,25 @@
             "type": "storage_controller",
             "inputs": {
                 "temperature_01": {
-                    "entity" : "input_fiware_01",
+                    "entity": "input_fiware_01",
                     "attribute": "temperature_1"
-                }, 
+                },
                 "temperature_02": {
-                    "entity" : "input_fiware_01",
+                    "entity": "input_fiware_01",
                     "attribute": "temperature_2"
                 },
                 "storage_volume": {
-                    "entity" : "input_fiware_01",
+                    "entity": "input_fiware_01",
                     "attribute": "storage_volume"
                 }
             },
-            "outputs":{
+            "outputs": {
                 "state_of_charge": {
-                    "entity" : "storage_calculation",
+                    "entity": "storage_calculation",
                     "attribute": "state_of_charge"
                 },
                 "charge_cmd": {
-                    "entity" : "storage_calculation",
+                    "entity": "storage_calculation",
                     "attribute": "charge_cmd"
                 }
             },
@@ -90,12 +90,10 @@
         }
     ],
     "controller_settings": {
-        "time_settings":
-        {
-            "calculation":
-            {
-                "timerange":24,
-                "timerange_unit":"hour"
+        "time_settings": {
+            "calculation": {
+                "timerange": 24,
+                "timerange_unit": "hour"
             }
         }
     }
