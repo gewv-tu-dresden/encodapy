@@ -16,7 +16,7 @@ def test_topic_template_replaces_embedded_placeholders() -> None:
     topic = template.topic.render(
         output_entity="building_1",
         output_attribute="temperature",
-        mqtt_topic_prefix="encoda",
+        mqtt_topic_prefix="encodapy",
     )
 
     assert topic == "encodapy/develop/building_1/temperature"
