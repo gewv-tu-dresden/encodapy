@@ -296,7 +296,8 @@ class MqttConnection:
 
         Args:
             topic (str): The topic to publish the message to
-            payload (Union[str, float, int, bool, dict, list, DataFrame, Series, None]): payload to publish
+            payload (Union[str, float, int, bool, dict, list, DataFrame, Series, None]): \
+                payload to publish
         """
         if not self.mqtt_client:
             raise NotSupportedError(

@@ -1,3 +1,7 @@
+"""Tests for FIWARE unit adjustment behavior."""
+
+# pylint: disable=protected-access
+
 import pytest
 
 from encodapy.config.models import AttributeModel
@@ -6,6 +10,8 @@ from encodapy.utils.units import DataUnits
 
 
 def test_adjust_units_for_fiware_converts_value_and_metadata() -> None:
+    """Convertible values are transformed and metadata reflects the FIWARE unit."""
+
     connection = FiwareConnection()
     attribute = AttributeModel(id="power", value=1000.0, unit=DataUnits.WTT)
 
@@ -24,6 +30,8 @@ def test_adjust_units_for_fiware_converts_value_and_metadata() -> None:
 
 
 def test_adjust_units_for_fiware_preserves_actual_unit_metadata_on_failure() -> None:
+    """On failed conversion, value and metadata keep the original physical unit."""
+
     connection = FiwareConnection()
     attribute = AttributeModel(id="power", value=1000.0, unit=DataUnits.WTT)
 

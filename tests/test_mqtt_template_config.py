@@ -1,9 +1,13 @@
+"""Tests for MQTT topic and payload template rendering."""
+
 import json
 
 from encodapy.config.mqtt_messages_template import MQTTTemplateConfig
 
 
 def test_topic_template_replaces_embedded_placeholders() -> None:
+    """Topic templates replace all embedded placeholders with runtime values."""
+
     template = MQTTTemplateConfig(
         topic="__MQTT_TOPIC_PREFIX__/develop/__OUTPUT_ENTITY__/__OUTPUT_ATTRIBUTE__",
         payload={"value": "__OUTPUT_VALUE__"},
@@ -15,10 +19,12 @@ def test_topic_template_replaces_embedded_placeholders() -> None:
         mqtt_topic_prefix="encoda",
     )
 
-    assert topic == "encoda/develop/building_1/temperature"
+    assert topic == "encodapy/develop/building_1/temperature"
 
 
 def test_payload_template_keeps_native_type_for_exact_placeholder() -> None:
+    """Exact payload placeholders preserve native JSON scalar types."""
+
     template = MQTTTemplateConfig(
         topic="out",
         payload={

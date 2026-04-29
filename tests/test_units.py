@@ -1,3 +1,5 @@
+"""Tests for unit conversion helpers and time-unit normalization."""
+
 import pandas as pd
 import pytest
 
@@ -11,6 +13,8 @@ from encodapy.utils.units import (
 
 
 def test_adjust_unit_of_value_converts_seconds_to_minutes() -> None:
+    """Second-to-minute conversion returns the expected numeric factor."""
+
     adjusted_value = adjust_unit_of_value(
         value=120,
         unit_actual=DataUnits.SECOND,
@@ -21,6 +25,8 @@ def test_adjust_unit_of_value_converts_seconds_to_minutes() -> None:
 
 
 def test_adjust_unit_of_value_handles_temperature_offset() -> None:
+    """Temperature conversion applies additive offsets correctly."""
+
     adjusted_value = adjust_unit_of_value(
         value=0,
         unit_actual=DataUnits.DEGREECELSIUS,
@@ -31,6 +37,8 @@ def test_adjust_unit_of_value_handles_temperature_offset() -> None:
 
 
 def test_adjust_unit_of_value_raises_for_incompatible_units() -> None:
+    """Incompatible dimensions raise a ValueError."""
+
     with pytest.raises(ValueError, match="Incompatible units"):
         adjust_unit_of_value(
             value=1,
@@ -40,6 +48,8 @@ def test_adjust_unit_of_value_raises_for_incompatible_units() -> None:
 
 
 def test_adjust_units_returns_none_for_non_convertible_string() -> None:
+    """Non-numeric scalar input returns None instead of raising."""
+
     adjusted_value = adjust_units(
         value="not-a-number",
         unit_actual=DataUnits.WTT,
@@ -50,6 +60,8 @@ def test_adjust_units_returns_none_for_non_convertible_string() -> None:
 
 
 def test_adjust_units_converts_series_and_dataframe_values() -> None:
+    """Vectorized conversions work for both Series and DataFrame inputs."""
+
     values = pd.Series([60.0, 120.0])
     adjusted_series = adjust_units(
         value=values,
@@ -82,6 +94,8 @@ def test_adjust_units_converts_series_and_dataframe_values() -> None:
 def test_get_time_unit_seconds(
     time_unit: TimeUnits | DataUnits | str, expected_seconds: float
 ) -> None:
+    """Known time units resolve to their corresponding number of seconds."""
+
     seconds = get_time_unit_seconds(time_unit)
 
     assert seconds == pytest.approx(expected_seconds)

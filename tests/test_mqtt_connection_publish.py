@@ -1,3 +1,7 @@
+"""Tests for MQTT publish rendering and dispatch behavior."""
+
+# pylint: disable=protected-access
+
 import json
 from datetime import datetime, timezone
 
@@ -16,6 +20,8 @@ from encodapy.utils.units import DataUnits
 
 
 def test_send_data_to_mqtt_renders_template_and_calls_publish() -> None:
+    """Template placeholders are rendered and a single publish call is emitted."""
+
     connection = MqttConnection()
     connection.mqtt_params = MQTTEnvVariables(topic_prefix="encoda")
     connection.config = object()  # type: ignore[assignment]
@@ -73,6 +79,8 @@ def test_send_data_to_mqtt_renders_template_and_calls_publish() -> None:
 
 
 def test_send_data_to_mqtt_skips_none_values_if_enabled() -> None:
+    """Attributes with None values are skipped when skip_none_values is enabled."""
+
     connection = MqttConnection()
     connection.mqtt_params = MQTTEnvVariables(
         topic_prefix="encoda",
@@ -107,10 +115,12 @@ def test_send_data_to_mqtt_skips_none_values_if_enabled() -> None:
         output_attributes=[output_attribute],
     )
 
-    assert published == []
+    assert not published
 
 
 def test_send_data_to_mqtt_without_template_uses_plain_topic_and_payload() -> None:
+    """Plain MQTT format publishes raw payload to the default topic structure."""
+
     connection = MqttConnection()
     connection.mqtt_params = MQTTEnvVariables(topic_prefix="encoda")
     connection.config = object()  # type: ignore[assignment]
@@ -151,6 +161,8 @@ def test_send_data_to_mqtt_without_template_uses_plain_topic_and_payload() -> No
 def test_send_data_to_mqtt_omits_problematic_embedded_payload_placeholder_and_logs() -> (
     None
 ):
+    """Unsafe embedded placeholder content is removed and a warning is logged."""
+
     connection = MqttConnection()
     connection.mqtt_params = MQTTEnvVariables(topic_prefix="encoda")
     connection.config = object()  # type: ignore[assignment]
