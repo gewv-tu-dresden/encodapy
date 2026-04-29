@@ -6,11 +6,11 @@ Author: Martin Altenburger
 import json
 import os
 from datetime import datetime
-from typing import Any, Optional, Union
+from typing import Any, ClassVar, Optional, Union
 
 from jinja2 import Template
 from loguru import logger
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic.functional_validators import model_validator
 
 from encodapy.config.types import MQTTFormatTypes
@@ -71,11 +71,22 @@ class MQTTTemplateConfig(BaseModel):
         ValueError: If the input is invalid or templates cannot be loaded.
     """
 
+    # Mapping from placeholder token to variable name for MQTT template rendering
+    PLACEHOLDER_TO_VARIABLE: ClassVar[dict[str, str]] = {
+        "__OUTPUT_ENTITY__": "output_entity",
+        "__OUTPUT_ATTRIBUTE__": "output_attribute",
+        "__OUTPUT_VALUE__": "output_value",
+        "__OUTPUT_UNIT__": "output_unit",
+        "__OUTPUT_TIME__": "output_time",
+        "__MQTT_TOPIC_PREFIX__": "mqtt_topic_prefix",
+    }
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     topic: Template
     payload: Template
     time_format: str = "%Y-%m-%dT%H:%M:%S%z"
+    payload_embedded_placeholders: set[str] = Field(default_factory=set)
 
     @model_validator(mode="before")
     @classmethod
@@ -154,6 +165,9 @@ class MQTTTemplateConfig(BaseModel):
                 template_raw=mqtt_format_template, part="payload"
             ),
             "time_format": cls._handle_time_format(mqtt_format_template),
+            "payload_embedded_placeholders": cls._collect_embedded_payload_placeholders(
+                mqtt_format_template.get("payload", {})
+            ),
         }
 
     @classmethod
@@ -213,7 +227,40 @@ class MQTTTemplateConfig(BaseModel):
                 template_raw=mqtt_format_data, part="payload"
             ),
             "time_format": cls._handle_time_format(mqtt_format_data),
+            "payload_embedded_placeholders": cls._collect_embedded_payload_placeholders(
+                mqtt_format_data.get("payload", {})
+            ),
         }
+
+    @classmethod
+    def _collect_embedded_payload_placeholders(cls, value: Any) -> set[str]:
+        """
+        Collect placeholder variable names used inside longer payload strings.
+        """
+        if isinstance(value, dict):
+            embedded_placeholder_names_from_dict: set[str] = set()
+            for item in value.values():
+                embedded_placeholder_names_from_dict.update(
+                    cls._collect_embedded_payload_placeholders(item)
+                )
+            return embedded_placeholder_names_from_dict
+
+        if isinstance(value, list):
+            embedded_placeholder_names_from_list: set[str] = set()
+            for item in value:
+                embedded_placeholder_names_from_list.update(
+                    cls._collect_embedded_payload_placeholders(item)
+                )
+            return embedded_placeholder_names_from_list
+
+        if isinstance(value, str) and value not in cls.PLACEHOLDER_TO_VARIABLE:
+            return {
+                clean_name
+                for placeholder, clean_name in cls.PLACEHOLDER_TO_VARIABLE.items()
+                if placeholder in value
+            }
+
+        return set()
 
     @classmethod
     def load_mqtt_template(cls, template_raw: dict, part: str) -> Template:
@@ -243,15 +290,6 @@ class MQTTTemplateConfig(BaseModel):
         Exact placeholder strings are emitted as bare Jinja expressions so that numbers,
         booleans, lists and dicts remain native after rendering.
         """
-        placeholder_map = {
-            "__OUTPUT_ENTITY__": "output_entity",
-            "__OUTPUT_ATTRIBUTE__": "output_attribute",
-            "__OUTPUT_VALUE__": "output_value",
-            "__OUTPUT_UNIT__": "output_unit",
-            "__OUTPUT_TIME__": "output_time",
-            "__MQTT_TOPIC_PREFIX__": "mqtt_topic_prefix",
-        }
-
         if isinstance(value, dict):
             items = [
                 f"{json.dumps(key)}: {cls._serialize_template_value(item, part)}"
@@ -264,11 +302,13 @@ class MQTTTemplateConfig(BaseModel):
             return "[" + ", ".join(items) + "]"
 
         if isinstance(value, str):
-            if value in placeholder_map:
-                clean_name = placeholder_map[value]
+            if value in cls.PLACEHOLDER_TO_VARIABLE:
+                clean_name = cls.PLACEHOLDER_TO_VARIABLE[value]
                 if part == "payload":
                     return f"{{{{{clean_name} | tojson}}}}"
                 return f"{{{{{clean_name}}}}}"
+            for placeholder, clean_name in cls.PLACEHOLDER_TO_VARIABLE.items():
+                value = value.replace(placeholder, f"{{{{{clean_name}}}}}")
             if part == "payload":
                 return json.dumps(value)
             return value
