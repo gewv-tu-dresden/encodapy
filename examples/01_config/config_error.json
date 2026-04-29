@@ -1,8 +1,8 @@
 {
     "name": "example",
     "interfaces":{
-        "mqtt": false,
-        "fiware": true,
+        "mqtt": true,
+        "fiware": false,
         "file": false
     },
     "inputs": [
@@ -11,15 +11,13 @@
             "interface": "fiware",
             "id_interface": "urn:input_fiware:01",
             "attributes": [
-                {
-                    "id": "temperature_1", 
-                    "id_interface":"temperature:01",
-                    "type": "timeseries"
+                {"id": "temperature_1", 
+                "id_interface":"temperature:01",
+                "type": "timeseries"
                 },
-                {
-                    "id": "temperature_2", 
-                    "id_interface":"temperature:02",
-                    "type": "timeseries"
+                {"id": "temperature_2", 
+                "id_interface":"temperature:02",
+                "type": "timeseries"
                 }
             ]
         }
@@ -30,16 +28,14 @@
             "interface": "fiware",
             "id_interface": "urn:storage_calculation:01",
             "attributes": [
-                {
-                    "id": "state_of_charge", 
-                    "id_interface":"state_of_charge",
-                    "type": "value"
+                {"id": "state_of_charge", 
+                "id_interface":"state_of_charge",
+                "type": "value"
                 }
             ],
             "commands":[
-                {
-                    "id": "charge_cmd", 
-                    "id_interface":"cmd:charge"
+                {"id": "charge_cmd", 
+                "id_interface":"cmd:charge"
                 }
             ]
         }
@@ -50,10 +46,9 @@
             "interface": "fiware",
             "id_interface": "thermal_storage",
             "attributes": [
-                {
-                    "id": "storage_volume", 
-                    "id_interface":"volume",
-                    "type": "value"
+                {"id": "storage_volume", 
+                "id_interface":"volume",
+                "type": "value"
                 }
             ]
         }
