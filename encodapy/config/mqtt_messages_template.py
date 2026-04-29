@@ -290,15 +290,6 @@ class MQTTTemplateConfig(BaseModel):
         Exact placeholder strings are emitted as bare Jinja expressions so that numbers,
         booleans, lists and dicts remain native after rendering.
         """
-        placeholder_map = {
-            "__OUTPUT_ENTITY__": "output_entity",
-            "__OUTPUT_ATTRIBUTE__": "output_attribute",
-            "__OUTPUT_VALUE__": "output_value",
-            "__OUTPUT_UNIT__": "output_unit",
-            "__OUTPUT_TIME__": "output_time",
-            "__MQTT_TOPIC_PREFIX__": "mqtt_topic_prefix",
-        }
-
         if isinstance(value, dict):
             items = [
                 f"{json.dumps(key)}: {cls._serialize_template_value(item, part)}"

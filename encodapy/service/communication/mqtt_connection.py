@@ -760,8 +760,11 @@ class MqttConnection:
                     if output_attribute.timestamp
                     else None
                 ),
+                "mqtt_topic_prefix": self.mqtt_params.topic_prefix,
             }
-            for placeholder_name in output_attribute.mqtt_format.payload_embedded_placeholders:
+            for (
+                placeholder_name
+            ) in output_attribute.mqtt_format.payload_embedded_placeholders:
                 render_values[placeholder_name] = self._sanitize_embedded_payload_value(
                     render_values.get(placeholder_name),
                     f"__{placeholder_name.upper()}__",
