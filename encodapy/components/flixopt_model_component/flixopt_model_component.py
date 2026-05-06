@@ -744,16 +744,16 @@ class FlixoptModelComponent(BasicComponent):
         return flow_information
 
 
-    def _get_sinks_and_sources(self) -> list[Union[fx.Sink, fx.Source]]:
+    def _get_sinks_and_sources(self) -> list[Union[fx.Sink, fx.Source, fx.SourceAndSink]]:
         """
         Prepare the FlixOpt sink and source components based on the model definition
 
         Returns:
-            list[Union[fx.Sink, fx.Source]]: List of FlixOpt sink and source components \
-                for the optimization
+            list[Union[fx.Sink, fx.Source, fx.SourceAndSink]]: List of FlixOpt sink and source \
+                components for the optimization
         """
 
-        sinks_and_sources: list[Union[fx.Sink, fx.Source]] = []
+        sinks_and_sources: list[Union[fx.Sink, fx.Source, fx.SourceAndSink]] = []
 
         for sink_source in self.flixopt_model.exchangers:
 
