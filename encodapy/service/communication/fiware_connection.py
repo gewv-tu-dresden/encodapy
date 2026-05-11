@@ -957,7 +957,8 @@ class FiwareConnection:
             except (ValueError, TypeError, AttributeError) as e:
                 logger.error(
                     f"Error while preparing attribute {attribute.id} of entity "
-                    f"{output_entity.id} for FIWARE: {e}"
+                    f"{output_entity.id} for FIWARE: {e} "
+                    f"Attribute will be skipped. Please check the configuration."
                 )
 
         cmds = []

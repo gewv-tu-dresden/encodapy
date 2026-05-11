@@ -594,9 +594,15 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 if output.id not in output_cmds:
                     output_cmds[output.id] = []
 
-                if isinstance(component.value, (int, float, str, bool)):
+                if isinstance(component.value, (int, float, str, bool, dict, list)):
                     output_cmds[output.id].append(
                         CommandModel(id=command.id, value=component.value)
+                    )
+                else:
+                    logger.warning(
+                        f"Unsupported command value type for component {component.attribute_id} "
+                        f"in output {output.id}: {type(component.value)}. "
+                        "Command will be skipped."
                     )
                 break
         return output_cmds

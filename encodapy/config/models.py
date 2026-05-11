@@ -104,7 +104,7 @@ class CommandModel(BaseModel):
 
     id: str
     id_interface: str = Field(default="")
-    value: Union[str, int, float, List, Dict, None] = None
+    value: Union[str, int, float, List, Dict, bool, None] = None
 
     @model_validator(mode="after")
     def set_id_interface(self) -> "CommandModel":
