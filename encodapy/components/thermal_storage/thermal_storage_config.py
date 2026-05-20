@@ -587,11 +587,14 @@ class ThermalStorageLoadLevelStorage(BaseModel):
         """
         if self.state_of_charge is None:
             return False
-        if self.last_check_time is None:
+        last_check_time = self.__dict__.get("last_check_time")
+        if not isinstance(last_check_time, datetime):
             return False
         if self.nominal_storage_energy is None:
             return False
-        if (datetime.now(self.last_check_time.tzinfo) - self.last_check_time
-            >= self.check_time_interval):
+        if (
+            datetime.now(last_check_time.tzinfo) - last_check_time
+            >= self.check_time_interval
+        ):
             return False
         return True
