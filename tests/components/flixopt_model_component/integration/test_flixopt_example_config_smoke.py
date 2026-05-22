@@ -30,7 +30,7 @@ def _highs_solver_available() -> bool:
 
 def _example_dir() -> Path:
     """Return the absolute path to the flixopt example directory."""
-    return Path(__file__).resolve().parents[4] / "examples" / "09_flixopt"
+    return Path(__file__).resolve().parents[4] / "examples" / "09_mpc_flixopt"
 
 
 def _load_component_config(example_dir: Path) -> ControllerComponentModel:
