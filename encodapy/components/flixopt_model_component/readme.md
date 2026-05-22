@@ -207,13 +207,13 @@ The FlixOpt model must match the inputs and outputs; see the examples above.
 
 A full working example is available in:
 
-- [examples/09_flixopt](../../../examples/09_flixopt)
+- [examples/09_mpc_flixopt](../../../examples/09_mpc_flixopt)
 
 Relevant files:
 
-- Example service configuration: [examples/09_flixopt/02_config_example.json](../../../examples/09_flixopt/02_config_example.json)
-- Example FlixOpt model: [examples/09_flixopt/02_flixopt_model_config.json](../../../examples/09_flixopt/02_flixopt_model_config.json)
-- Notebook to run the example: [examples/09_flixopt/run_example_optimisation.ipynb](../../../examples/09_flixopt/run_example_optimisation.ipynb)
+- Example service configuration: [examples/09_mpc_flixopt/02_config_example.json](../../../examples/09_mpc_flixopt/02_config_example.json)
+- Example FlixOpt model: [examples/09_mpc_flixopt/02_flixopt_model_config.json](../../../examples/09_mpc_flixopt/02_flixopt_model_config.json)
+- Notebook to run the example: [examples/09_mpc_flixopt/run_example_optimisation.ipynb](../../../examples/09_mpc_flixopt/run_example_optimisation.ipynb)
 
 ## Troubleshooting
 

@@ -1,4 +1,4 @@
-# Build files for the documentation.
+# Build files for the documentation
 
 The documentation is built using Sphinx and the Poetry environment. You can use:
 
