@@ -1,3 +1,5 @@
+"""Tests for unit harmonization in component configuration models."""
+
 import pytest
 from pydantic import Field
 
@@ -10,11 +12,15 @@ from encodapy.utils.units import DataUnits
 
 
 class DemoInputData(InputData):
+    """Minimal input model for testing unit conversion on component fields."""
+
     temperature: DataPointNumber = Field(..., json_schema_extra={"unit": "KEL"})
     status_text: DataPointString = Field(..., json_schema_extra={"unit": "KWT"})
 
 
 def test_component_data_converts_numeric_values_to_field_unit() -> None:
+    """Numeric datapoints are converted to the unit declared on the target field."""
+
     model = DemoInputData(
         temperature=DataPointNumber(value=0.0, unit=DataUnits.DEGREECELSIUS),
         status_text=DataPointString(value="on", unit=DataUnits.WTT),
@@ -25,6 +31,8 @@ def test_component_data_converts_numeric_values_to_field_unit() -> None:
 
 
 def test_component_data_does_not_relabel_non_convertible_values() -> None:
+    """Non-convertible values keep their original value and unit metadata."""
+
     model = DemoInputData(
         temperature=DataPointNumber(value=273.15, unit=DataUnits.KELVIN),
         status_text=DataPointString(value="on", unit=DataUnits.WTT),
@@ -35,6 +43,8 @@ def test_component_data_does_not_relabel_non_convertible_values() -> None:
 
 
 def test_two_point_controller_harmonizes_hysteresis_unit_to_setpoint() -> None:
+    """Hysteresis is converted to the same unit as the configured setpoint."""
+
     model = TwoPointControllerConfigData(
         hysteresis=DataPointNumber(value=500.0, unit=DataUnits.WTT),
         setpoint=DataPointNumber(value=1.0, unit=DataUnits.KWT),

@@ -170,6 +170,14 @@ class MQTTEnvVariables(BaseSettings):
             "delay of all messages is longer than the sampling time."
         ),
     )
+    skip_none_values: bool = Field(
+        default=True,
+        description=(
+            "If True, attributes with None values will not be published to MQTT. "
+            "This can help reduce message size and avoid sending irrelevant data. "
+            "Default is True, meaning None values will not be published."
+        )
+    )
 
 
 class FileEnvVariables(BaseSettings):

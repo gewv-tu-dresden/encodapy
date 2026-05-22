@@ -14,7 +14,7 @@ from typing import Optional, Union
 import paho.mqtt.client as mqtt
 from loguru import logger
 from paho.mqtt.enums import CallbackAPIVersion
-from pandas import DataFrame
+from pandas import DataFrame, Series
 
 from encodapy.config import (
     ConfigModel,
@@ -54,6 +54,46 @@ class MqttConnection:
         self._last_message_received: Optional[datetime] = None
         self._mqtt_connected = False
         self._mqtt_connection_event = threading.Event()
+
+    @staticmethod
+    def _sanitize_embedded_payload_value(value: object, placeholder: str) -> str:
+        """
+        Convert embedded payload placeholder values to safe plain strings.
+
+        Values that would require JSON escaping are logged and omitted.
+        """
+        if value is None:
+            logger.warning(
+                f"MQTT payload placeholder {placeholder} has value None and will be omitted."
+            )
+            return ""
+
+        if isinstance(value, (dict, list, set, tuple)):
+            logger.warning(
+                f"MQTT payload placeholder {placeholder} received unsupported type "
+                f"{type(value).__name__} and will be omitted."
+            )
+            return ""
+
+        try:
+            string_value = str(value)
+        except (TypeError, ValueError) as exc:
+            logger.warning(
+                f"MQTT payload placeholder {placeholder} could not be rendered "
+                f"and will be omitted: {exc}"
+            )
+            return ""
+
+        if any(
+            char in string_value for char in ('"', "\\", "\b", "\f", "\n", "\r", "\t")
+        ):
+            logger.warning(
+                f"MQTT payload placeholder {placeholder} contains characters "
+                "that would require JSON escaping and will be omitted."
+            )
+            return ""
+
+        return string_value
 
     def load_mqtt_params(self) -> None:
         """
@@ -247,7 +287,7 @@ class MqttConnection:
     def publish(
         self,
         topic: str,
-        payload: Union[str, float, int, bool, dict, list, DataFrame, None],
+        payload: Union[str, float, int, bool, dict, list, DataFrame, Series, None],
     ) -> None:
         """
         Function to publish a message (payload) to a topic.
@@ -257,7 +297,8 @@ class MqttConnection:
 
         Args:
             topic (str): The topic to publish the message to
-            payload (Union[str, float, int, bool, dict, list, DataFrame, None]): payload to publish
+            payload (Union[str, float, int, bool, dict, list, DataFrame, Series, None]): \
+                payload to publish
         """
         if not self.mqtt_client:
             raise NotSupportedError(
@@ -271,19 +312,19 @@ class MqttConnection:
         logger.debug(f"Published to topic {topic}: {payload}")
 
     def prepare_payload_for_publish(
-        self, payload: Union[str, float, int, bool, dict, list, DataFrame, None]
+        self, payload: Union[str, float, int, bool, dict, list, DataFrame, Series, None]
     ) -> Union[str, None]:
         """
         Function to prepare the payload for publishing.
 
-        Converts the payload to a JSON string if it is a dict, list or DataFrame.
+        Converts the payload to a JSON string if it is a dict, list, DataFrame or Series.
         If the payload is a string, float, int or bool, it is converted to a string.
         If the payload is None or an unsupported type, it is set to None.
         """
         try:
             if isinstance(payload, (dict, list)):
                 payload = json.dumps(payload)
-            elif isinstance(payload, DataFrame):
+            elif isinstance(payload, (DataFrame, Series)):
                 payload = payload.to_json()
             elif isinstance(payload, (str, float, int, bool)):
                 payload = str(payload)
@@ -680,16 +721,18 @@ class MqttConnection:
 
     def _prepare_mqtt_payload(
         self, output_entity: OutputModel, output_attribute: AttributeModel
-    ) -> Union[str, float, int, bool, dict, list, DataFrame, None]:
+    ) -> Union[str, float, int, bool, dict, list, DataFrame, Series, None]:
         """
         Function to prepare the MQTT payload based on the output attribute's mqtt_format.
         Args:
             output_entity (OutputModel): The output entity.
             output_attribute (AttributeModel): The output attribute.
         Returns:
-            Union[str, float, int, bool, dict, list, DataFrame, None]: The prepared payload.
+            Union[str, float, int, bool, dict, list, DataFrame, Series, None]: The prepared payload.
         """
-        payload: Union[str, float, int, bool, dict, list, DataFrame, None] = None
+        payload: Union[str, float, int, bool, dict, list, DataFrame, Series, None] = (
+            None
+        )
         if output_attribute.mqtt_format is MQTTFormatTypes.PLAIN:
             payload = output_attribute.value
         elif (
@@ -707,19 +750,31 @@ class MqttConnection:
                 )
 
         elif isinstance(output_attribute.mqtt_format, MQTTTemplateConfig):
-            payload = output_attribute.mqtt_format.payload.render(
-                output_entity=output_entity.id_interface,
-                output_attribute=output_attribute.id_interface,
-                output_value=output_attribute.value,
-                output_unit=output_attribute.unit,
-                output_time=(
+            render_values = {
+                "output_entity": output_entity.id_interface,
+                "output_attribute": output_attribute.id_interface,
+                "output_value": output_attribute.value,
+                "output_unit": output_attribute.unit.value
+                if output_attribute.unit
+                else None,
+                "output_time": (
                     output_attribute.timestamp.strftime(
                         output_attribute.mqtt_format.time_format
                     )
                     if output_attribute.timestamp
                     else None
                 ),
-            )
+                "mqtt_topic_prefix": self.mqtt_params.topic_prefix,
+            }
+            for (
+                placeholder_name
+            ) in output_attribute.mqtt_format.payload_embedded_placeholders:
+                render_values[placeholder_name] = self._sanitize_embedded_payload_value(
+                    render_values.get(placeholder_name),
+                    f"__{placeholder_name.upper()}__",
+                )
+
+            payload = output_attribute.mqtt_format.payload.render(**render_values)
 
         else:
             raise NotSupportedError(
@@ -811,6 +866,12 @@ class MqttConnection:
 
         # publish the data to the MQTT broker
         for attribute in output_attributes:
+            if attribute.value is None and self.mqtt_params.skip_none_values:
+                logger.debug(
+                    f"Skip MQTT publish for attribute {attribute.id} of entity {output_entity.id}: "
+                    "value is None."
+                )
+                continue
             try:
                 self.publish(
                     topic=self._prepare_mqtt_topic(

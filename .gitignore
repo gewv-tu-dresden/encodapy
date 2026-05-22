@@ -7,4 +7,4 @@ health
 /dist/*
 .vscode/
 .coverage
-/results/*
+*.log*
