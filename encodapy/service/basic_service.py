@@ -170,24 +170,21 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
         for static_entity in self.config.staticdata:
             if static_entity.interface == Interfaces.FIWARE:
-                staticdata.append(
-                    StaticDataEntityModel(
-                        **self.get_data_from_fiware(
-                            method=method,
-                            entity=static_entity,
-                            timestamp_latest_output=None,
-                        ).model_dump()
-                    )
+                fiware_data = self.get_data_from_fiware(
+                    method=method,
+                    entity=static_entity,
+                    timestamp_latest_output=None,
                 )
+                if fiware_data is not None:
+                    static_data_entity = StaticDataEntityModel(**fiware_data.model_dump())
+                    staticdata.append(static_data_entity.model_dump())
 
             if static_entity.interface == Interfaces.FILE:
                 staticdata.append(
-                    StaticDataEntityModel(
-                        **self.get_staticdata_from_file(
-                            entity=static_entity,
-                        ).model_dump()
+                    self.get_staticdata_from_file(
+                        entity=static_entity,
+                        )
                     )
-                )
 
             if static_entity.interface == Interfaces.MQTT:
                 logger.warning("interface MQTT for staticdata not supported")
@@ -247,13 +244,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
             await asyncio.sleep(0.01)
 
-        if None in output_latest_timestamps:
-            output_latest_timestamp = None
-        else:
-            if len(output_latest_timestamps) > 0:
-                output_latest_timestamp = min(output_latest_timestamps)
-            else:
-                output_latest_timestamp = None
+        # Filter out None values and get minimum timestamp if any valid timestamps exist
+        valid_timestamps = [ts for ts in output_latest_timestamps if ts is not None]
+        output_latest_timestamp = min(valid_timestamps) if valid_timestamps else None
 
         for input_entity in self.config.inputs:
             match input_entity.interface:
@@ -367,7 +360,6 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         Args:
             - data_output: OutputDataModel with the output data
 
-        TODO: - Implement a way to use different interfaces (MQTT)
         """
 
         if data_output is None:
@@ -383,56 +375,91 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 logger.debug(f"Output entity {output.id} not found in configuration.")
                 continue
 
-            for attribute in output.attributes:
-                output_attribute = self._get_output_attribute_config(
-                    output_entity_id=output.id, output_attribute_id=attribute.id
-                )
-
-                if output_attribute is None:
-                    logger.debug(
-                        f"Output attribute {attribute.id} not found in configuration."
+            if output.attributes is not None and len(output.attributes) > 0:
+                for attribute in output.attributes:
+                    output_attribute = self._get_output_attribute_config(
+                        output_entity_id=output.id, output_attribute_id=attribute.id
                     )
-                    continue
 
-                output_attribute.value = attribute.value
-                output_attribute.unit = attribute.unit
-                output_attribute.timestamp = attribute.timestamp
-                output_attributes.append(output_attribute)
+                    if output_attribute is None:
+                        logger.debug(
+                            f"Output attribute {attribute.id} not found in configuration."
+                        )
+                        continue
 
-            for command in output.commands:
-                output_command = self._get_output_command_config(
-                    output_entity_id=output.id, output_command_id=command.id
-                )
+                    output_attribute.value = attribute.value
+                    output_attribute.unit = attribute.unit
+                    output_attribute.timestamp = attribute.timestamp
+                    output_attributes.append(output_attribute)
 
-                if output_command is None:
-                    logger.debug(
-                        f"Output attribute {command.id} not found in configuration."
+            if output.commands is not None and len(output.commands) > 0:
+                for command in output.commands:
+                    output_command = self._get_output_command_config(
+                        output_entity_id=output.id, output_command_id=command.id
                     )
-                    continue
 
-                output_command.value = command.value
-                output_commands.append(output_command)
+                    if output_command is None:
+                        logger.debug(
+                            f"Output command {command.id} not found in configuration."
+                        )
+                        continue
+
+                    output_command.value = command.value
+                    output_commands.append(output_command)
 
             if output_entity.interface is Interfaces.FIWARE:
-                await self._send_data_to_fiware(
-                    output_entity=output_entity,
-                    output_attributes=output_attributes,
-                    output_commands=output_commands,
-                )
+                try:
+                    await self._send_data_to_fiware(
+                        output_entity=output_entity,
+                        output_attributes=output_attributes,
+                        output_commands=output_commands,
+                    )
+                except (
+                    ConfigError,
+                    InterfaceNotActive,
+                    ValueError,
+                    TypeError,
+                    KeyError,
+                    AttributeError,
+                    OSError,
+                    RuntimeError,
+                    asyncio.TimeoutError,
+                ) as exc:
+                    logger.error(
+                        "Error while sending FIWARE output entity "
+                        f"{output.id}: {exc}"
+                    )
 
             elif output_entity.interface is Interfaces.FILE:
-                self.send_data_to_json_file(
-                    output_entity=output_entity,
-                    output_attributes=output_attributes,
-                    output_commands=output_commands,
-                )
+                try:
+                    self.send_data_to_json_file(
+                        output_entity=output_entity,
+                        output_attributes=output_attributes,
+                        output_commands=output_commands,
+                    )
+                except (OSError, ValueError, TypeError) as exc:
+                    logger.error(
+                        "Error while writing FILE output entity "
+                        f"{output.id}: {exc}"
+                    )
 
             elif output_entity.interface is Interfaces.MQTT:
-                await asyncio.to_thread(
-                    self.send_data_to_mqtt,
-                    output_entity=output_entity,
-                    output_attributes=output_attributes,
-                )
+                try:
+                    await asyncio.to_thread(
+                        self.send_data_to_mqtt,
+                        output_entity=output_entity,
+                        output_attributes=output_attributes,
+                    )
+                except (
+                    ConfigError,
+                    ValueError,
+                    TypeError,
+                    OSError,
+                ) as exc:
+                    logger.error(
+                        "Error while sending MQTT output entity "
+                        f"{output.id}: {exc}"
+                    )
 
             await asyncio.sleep(0.01)
 
@@ -567,9 +594,16 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 if output.id not in output_cmds:
                     output_cmds[output.id] = []
 
-                output_cmds[output.id].append(
-                    CommandModel(id=command.id, value=component.value)
-                )
+                if isinstance(component.value, (int, float, str, bool, dict, list)):
+                    output_cmds[output.id].append(
+                        CommandModel(id=command.id, value=component.value)
+                    )
+                else:
+                    logger.warning(
+                        f"Unsupported command value type for component {component.attribute_id} "
+                        f"in output {output.id}: {type(component.value)}. "
+                        "Command will be skipped."
+                    )
                 break
         return output_cmds
 
@@ -606,24 +640,30 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         while not self.shutdown_event.is_set():
             logger.debug("Start the Process")
             start_time = datetime.now()
+            try:
+                if self.config.interfaces.fiware:
+                    self.update_authentication()
 
-            if self.config.interfaces.fiware:
-                self.update_authentication()
+                data_input = await self.get_data(method=DataQueryTypes.CALCULATION)
 
-            data_input = await self.get_data(method=DataQueryTypes.CALCULATION)
+                if data_input is None:
+                    logger.debug("No input data received, skipping calculation cycle.")
+                else:
+                    data_output = await self.calculation(data=data_input)
 
-            if data_input is not None:
-                data_output = await self.calculation(data=data_input)
+                    data_output = self.prepare_output(data_output=data_output)
 
-                data_output = self.prepare_output(data_output=data_output)
+                    await self.send_outputs(data_output=data_output)
 
-                await self.send_outputs(data_output=data_output)
+            except Exception: # pylint: disable=broad-exception-caught
+                logger.exception("Unexpected error in service loop, continuing with next cycle.")
 
-            await self._set_health_timestamp()
+            finally:
+                await self._set_health_timestamp()
 
-            await self._hold_sampling_time(
-                start_time=start_time, hold_time=sampling_time
-            )
+                await self._hold_sampling_time(
+                    start_time=start_time, hold_time=sampling_time
+                )
 
         logger.debug("Service will be stopped, running cleanup")
         self.cleanup_service()
