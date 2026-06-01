@@ -7,7 +7,8 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1 \
     PYSETUP_PATH="/opt/pysetup" \
-    VENV_PATH="/opt/pysetup/.venv"
+    VENV_PATH="/opt/pysetup/.venv" \
+    APP_DIR="/app"
 
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
@@ -21,11 +22,11 @@ WORKDIR $PYSETUP_PATH
 COPY pyproject.toml poetry.lock* ./
 RUN poetry install --only main --no-root
 
-WORKDIR /app
-COPY . /app
+WORKDIR ${APP_DIR}
+COPY . ${APP_DIR}
 
-ENV FILE_PATH_OF_STATIC_DATA=/app/static_data.json
+ENV FILE_PATH_OF_STATIC_DATA=${APP_DIR}/static_data.json
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=120s --retries=3 CMD test -f /app/health && [ $(( $(date +%s) - $(date -r /app/health +%s) )) -lt 180 ] || exit 1
+HEALTHCHECK --interval=30s --timeout=30s --start-period=120s --retries=3 CMD test -f ${APP_DIR}/health && [ $(( $(date +%s) - $(date -r ${APP_DIR}/health +%s) )) -lt 180 ] || exit 1
 
 CMD ["python", "main.py"]
