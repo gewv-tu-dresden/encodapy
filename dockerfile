@@ -29,4 +29,4 @@ ENV FILE_PATH_OF_STATIC_DATA=${APP_DIR}/static_data.json
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=120s --retries=3 CMD test -f ${APP_DIR}/health && [ $(( $(date +%s) - $(date -r ${APP_DIR}/health +%s) )) -lt 180 ] || exit 1
 
-CMD ["python", "main.py"]
+CMD ["python", "-m", "encodapy.service.service_main"]
