@@ -28,16 +28,14 @@
             ]
         }
     ],
-    "outputs": [
-    ],
-    "staticdata": [
-    ],
+    "outputs": [],
+    "staticdata": [],
     "controller_components": [
         {
             "id": "flixopt_example_component",
-            "type": "examples.09_flixopt.flixopt_example_component",
+            "type": "examples.09_mpc_flixopt.flixopt_example_component",
             "inputs": {
-                "electricity_demand":{
+                "electricity_demand": {
                     "entity": "flixopt_input_entity",
                     "attribute": "electricity_demand"
                 },
@@ -78,7 +76,7 @@
                         "mip_rel_gap": 0.01,
                         "time_limit": 60
                     }
-                }   
+                }
             }
         }
     ],

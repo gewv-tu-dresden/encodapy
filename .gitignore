@@ -8,3 +8,4 @@ health
 .vscode/
 .coverage
 *.log*
+.venv/
