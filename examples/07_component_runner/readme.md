@@ -10,6 +10,7 @@ The example uses a connection to a FIWARE platform, which is needed (see [n5geh.
 - [config.json](./config.json): Configuration for the service - see [01_config](./../01_config/)
 - [run_components.ipynb](./run_components.ipynb): Notebook to run the service (you can also run [encodapy.service.service_main](./../../encodapy/service/service_main.py) with the necessary envs)
 - [main.py](./main.py): Main function to run the service
+- [compose.yml](./compose.yml): This is an example Docker Compose file for deploying the service via Docker. Take care to use the correct URL for the context broker so that the service can access it from inside the container.
 
 ## Usage
 
@@ -17,7 +18,7 @@ To run the example, you need to add a [.env](.env):
 
 ```
 FIWARE_IOTA= ["http://localhost:4041"]      # URL of the IoT Agent
-FIWARE_CB= ["http://localhost:1026"]        # URL of the Context Broker
+FIWARE_CB_URL= ["http://localhost:1026"]    # URL of the Context Broker / for local docker tests: http://host.docker.internal:1026"
 FIWARE_SERVICE= ["thermal_storage_service"] # Name of the FIWARE Service
 FIWARE_SERVICE_PATH= ["/"]                  # FIWARE Service Path, usually "/"
 LOG_LEVEL=["WARNING"]                       # Level for Logging Messages ("DEBUG" to get more information)

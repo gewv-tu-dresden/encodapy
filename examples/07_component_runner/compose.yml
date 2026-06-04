@@ -1,0 +1,11 @@
+
+services:
+  test_encodapy:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    volumes:
+      - ./config.json:/app/config.json:ro
+    env_file:
+      - .env
+      

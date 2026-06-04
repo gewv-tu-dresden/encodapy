@@ -177,7 +177,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                 )
                 if fiware_data is not None:
                     static_data_entity = StaticDataEntityModel(**fiware_data.model_dump())
-                    staticdata.append(static_data_entity.model_dump())
+                    staticdata.append(static_data_entity)
 
             if static_entity.interface == Interfaces.FILE:
                 staticdata.append(
