@@ -218,6 +218,7 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
                 static_config_data[datapoint_name] = datapoint
 
             if isinstance(datapoint, IOAllocationModel):
+
                 if static_data is None:
                     error_msg = (
                         f"Config entry '{datapoint_name}' needs static data but its not provided "
@@ -268,6 +269,7 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
         Returns:
             DataPointGeneral: The value of the input data and its unit and timestamp
         """
+
         for input_data in input_entities:
             if input_data.id == input_config.entity:
                 for attribute in input_data.attributes:
