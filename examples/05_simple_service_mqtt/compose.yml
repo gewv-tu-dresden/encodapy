@@ -8,14 +8,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-    environment:
-      LOG_LEVEL: DEBUG
-      MQTT_TEMPLATE_EXAMPLE05: custom_mqtt_template.json
-      MQTT_PUBLISH_DELAY: 2
-      CONFIG_PATH: ./config.json
-      LOG_PATH: ./logs/example05_simple_service_mqtt.log
-      MQTT_HOST: host.docker.internal
-      MQTT_PORT: "1883"
+    env_file:
+      - .env
 
     volumes:
       - ./config.json:/app/config.json
