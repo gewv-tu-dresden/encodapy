@@ -94,7 +94,17 @@ The examples are intended to help you use the tool and understand how it works:
 The recommended way to run the service is:
 
 - Create a Python environment using Poetry (see [pyproject.toml](https://github.com/gewv-tu-dresden/encodapy/blob/main/pyproject.toml)).
-- Use a Docker container for production deployments (create a custom image using the [dockerfile](https://github.com/gewv-tu-dresden/encodapy/blob/main/dockerfile)).
+- For production deployments, use the [Dockerfile](https://github.com/gewv-tu-dresden/encodapy/blob/main/Dockerfile) or the official Docker image.
+- Use [dockerfile.dev](https://github.com/gewv-tu-dresden/encodapy/blob/main/dockerfile.dev) for local development in Docker.
+
+Example commands:
+
+```bash
+docker buildx build --platform linux/amd64 --target production -t encodapy:prod --load .
+docker buildx build --platform linux/amd64 -t encodapy:dev --load -f Dockerfile.dev .
+```
+
+There are examples of how to use the image in [examples/07_component_runner](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/07_component_runner) and [examples/05_simple_service_mqtt](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/05_simple_service_mqtt). The working directory in the production image is `/app`, so you need to either mount the necessary files or change the environmental variables. See the documentation.
 
 ## License
 

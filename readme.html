@@ -211,8 +211,15 @@ For more information and code, see: <a class="reference external" href="https://
 <p>The recommended way to run the service is:</p>
 <ul class="simple">
 <li><p>Create a Python environment using Poetry (see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/pyproject.toml">pyproject.toml</a>).</p></li>
-<li><p>Use a Docker container for production deployments (create a custom image using the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/dockerfile">dockerfile</a>).</p></li>
+<li><p>For production deployments, use the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/Dockerfile">Dockerfile</a> or the official Docker image.</p></li>
+<li><p>Use <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/dockerfile.dev">dockerfile.dev</a> for local development in Docker.</p></li>
 </ul>
+<p>Example commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/amd64<span class="w"> </span>--target<span class="w"> </span>production<span class="w"> </span>-t<span class="w"> </span>encodapy:prod<span class="w"> </span>--load<span class="w"> </span>.
+docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/amd64<span class="w"> </span>-t<span class="w"> </span>encodapy:dev<span class="w"> </span>--load<span class="w"> </span>-f<span class="w"> </span>Dockerfile.dev<span class="w"> </span>.
+</pre></div>
+</div>
+<p>There are examples of how to use the image in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/07_component_runner">examples/07_component_runner</a> and <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/05_simple_service_mqtt">examples/05_simple_service_mqtt</a>. The working directory in the production image is <code class="docutils literal notranslate"><span class="pre">/app</span></code>, so you need to either mount the necessary files or change the environmental variables. See the documentation.</p>
 </section>
 </section>
 <section id="license">
