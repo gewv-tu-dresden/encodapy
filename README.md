@@ -101,7 +101,7 @@ Example commands:
 
 ```bash
 docker buildx build --platform linux/amd64 --target production -t encodapy:prod --load .
-docker buildx build --platform linux/amd64 -t encodapy:dev --load -f dockerfile.dev .
+docker buildx build --platform linux/amd64 -t encodapy:dev --load -f Dockerfile.dev .
 ```
 
 There is an example of how to use the image in the [examples/07_component_runner](./examples/07_component_runner/). The working directory in the production image is `/app`, so you need to either mount the necessary files or change the environmental variables. See the documentation.
