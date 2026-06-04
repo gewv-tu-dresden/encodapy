@@ -7,7 +7,8 @@ As an example of a simple service using Encodapy with a MQTT interface, a heatin
 - [config.json](./config.json): Configuration for the service - see [01_config](./../01_config/)
 - [mqtt_controller.py](./mqtt_controller.py): Code of the service example
 - [main.py](./main.py): Script to start the service
-- [storage_dummy.py](./storage_dummy.py): Script to send different types of mqtt messages from a dummy storage to the service
+- [dummy_storage.py](./dummy_storage.py): Script to send different types of mqtt messages from a dummy storage to the service
+- [docker-compose.yml](./docker-compose.yml): Example Docker Compose file to run the service in a container (starts directly via [main.py](./main.py))
 
 To run the example, you **need to add** a `.env` file with the content for MQTT_TEMPLATE_EXAMPLE05 (if you do not add the others, the here written standard values will be used):
 
@@ -45,5 +46,6 @@ The example uses the optional "Data Transfer Formats" for outputs, see [03_inter
 
 - To use it, the `.env` file must be created and an MQTT broker with the data in the `.env` file must be available so that a connection can be established.
 - The service is started by executing [`main.py`](./main.py) from the current path.
-- New data can be sent by running the script [`storage_dummy.py`](./storage_dummy.py).
+- For Docker usage, this example is configured for a Windows machine and may require adjustments on Linux. Start the service with `docker compose up --build` from this folder.
+- New data can be sent by running the script [`dummy_storage.py`](./dummy_storage.py).
 - Look at the DEBUG messages or use [MQTT Explorer](https://mqtt-explorer.com) to see the different kinds of possible mqtt messages.

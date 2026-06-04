@@ -94,7 +94,7 @@ The examples are intended to help you use the tool and understand how it works:
 The recommended way to run the service is:
 
 - Create a Python environment using Poetry (see [pyproject.toml](./pyproject.toml)).
-- For production deployments, use the Dockerfile [Dockerfile](./Dockerfile) or the official Docker image.
+- For production deployments, use the [Dockerfile](./Dockerfile) or the official Docker image.
 - Use [dockerfile.dev](./dockerfile.dev) for local development in Docker.
 
 Example commands:
@@ -104,7 +104,7 @@ docker buildx build --platform linux/amd64 --target production -t encodapy:prod 
 docker buildx build --platform linux/amd64 -t encodapy:dev --load -f Dockerfile.dev .
 ```
 
-There is an example of how to use the image in the [examples/07_component_runner](./examples/07_component_runner/). The working directory in the production image is `/app`, so you need to either mount the necessary files or change the environmental variables. See the documentation.
+There are examples of how to use the image in [examples/07_component_runner](./examples/07_component_runner/) and [examples/05_simple_service_mqtt](./examples/05_simple_service_mqtt/). The working directory in the production image is `/app`, so you need to either mount the necessary files or change the environmental variables. See the documentation.
 
 ## License
 
