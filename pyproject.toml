@@ -33,7 +33,7 @@ pint = "^0.25.3"
 [tool.poetry.group.dev.dependencies]
 pylint = ">=3.2.6"
 build = ">=1.2.2.post1"
-ipykernel = ">=6.29.5"
+ipykernel = ">=7.2.0"
 pytest = "^9.0.3"
 pytest-cov = "^7.1.0"
 sphinx = "^8.2.3"
