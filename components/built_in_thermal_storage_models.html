@@ -57,6 +57,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="built_in_components.html#two-point-controller">Two Point Controller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="built_in_components.html#mpc-with-flixopt">MPC with FlixOpt</a></li>
 </ul>
 </li>
 </ul>
@@ -184,6 +185,7 @@
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;StorageSensorConfig&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration for the storage sensor in the thermal storage\n\nAttributes:\n    name: Optional name of the sensor\n    height: Height of the sensor in percent (0=top, 100=bottom)\n    limits (:class:`encodapy.components.thermal_storage.TemperatureLimits`):             Temperature limits for the sensor&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -532,6 +534,7 @@
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="s2">&quot;height&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="s2">&quot;limits&quot;</span>
@@ -1120,6 +1123,7 @@ higher values lead to more data being stored</p>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Medium&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;StorageSensorConfig&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration for the storage sensor in the thermal storage\n\nAttributes:\n    name: Optional name of the sensor\n    height: Height of the sensor in percent (0=top, 100=bottom)\n    limits (:class:`encodapy.components.thermal_storage.TemperatureLimits`):             Temperature limits for the sensor&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2143,6 +2147,7 @@ must be between 0 and 100 percent and in ascending order.</p>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;StorageSensorConfig&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Configuration for the storage sensor in the thermal storage\n\nAttributes:\n    name: Optional name of the sensor\n    height: Height of the sensor in percent (0=top, 100=bottom)\n    limits (:class:`encodapy.components.thermal_storage.TemperatureLimits`):             Temperature limits for the sensor&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>

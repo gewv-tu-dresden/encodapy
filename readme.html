@@ -54,6 +54,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#units">Units</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#deployment">Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing-notes">Testing Notes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
@@ -220,6 +221,13 @@ docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"
 </pre></div>
 </div>
 <p>There are examples of how to use the image in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/07_component_runner">examples/07_component_runner</a> and <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/05_simple_service_mqtt">examples/05_simple_service_mqtt</a>. The working directory in the production image is <code class="docutils literal notranslate"><span class="pre">/app</span></code>, so you need to either mount the necessary files or change the environmental variables. See the documentation.</p>
+</section>
+<section id="testing-notes">
+<h3>Testing Notes<a class="headerlink" href="#testing-notes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Solver-based Flixopt integration tests depend on optional runtime packages (for example highspy).</p></li>
+<li><p>If those optional packages are unavailable, solver-based tests are skipped.</p></li>
+</ul>
 </section>
 </section>
 <section id="license">

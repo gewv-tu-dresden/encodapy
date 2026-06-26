@@ -10,3 +10,4 @@ This folder contains a number of examples to provide a documentation of the use 
 - [06_thermal_storage_service](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/06_thermal_storage_service): This is an example of a service that calculates the thermal energy in a thermal storage tank using a component of the framework.
 - [07_component_runner](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/07_component_runner): An example of how to run the service using only the configuration. **This is the suggested way to use the framework.**
 - [08_create_new_component](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/08_create_new_component): Example of how to create your own component and use it with the Component Runner.
+- [09_mpc_flixopt](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/09_mpc_flixopt): Examples of how to use [FlixOpt](https://github.com/flixopt/flixopt) as a basis for Model Predictive Control.

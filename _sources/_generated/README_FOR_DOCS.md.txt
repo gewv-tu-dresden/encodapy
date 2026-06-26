@@ -106,6 +106,11 @@ docker buildx build --platform linux/amd64 -t encodapy:dev --load -f Dockerfile.
 
 There are examples of how to use the image in [examples/07_component_runner](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/07_component_runner) and [examples/05_simple_service_mqtt](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/05_simple_service_mqtt). The working directory in the production image is `/app`, so you need to either mount the necessary files or change the environmental variables. See the documentation.
 
+### Testing Notes
+
+- Solver-based Flixopt integration tests depend on optional runtime packages (for example highspy).
+- If those optional packages are unavailable, solver-based tests are skipped.
+
 ## License
 
 This project is licensed under the BSD License - see the [LICENSE](https://github.com/gewv-tu-dresden/encodapy/blob/main/LICENSE) file for details.

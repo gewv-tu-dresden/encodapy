@@ -1,0 +1,419 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlixOpt Model Component &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=da2a414a" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FlixOpt Configuration" href="built_in_mpc_flixopt_models.html" />
+    <link rel="prev" title="Two Point Controller Configuration" href="built_in_two_point_controller_models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">“EnCoDaPy” – Energy Control and Data Preparation in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_service.html">EnCoDaPy Basic Service</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../components.html">EnCoDaPy Components</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="components.html">Component Architecture of EnCoDaPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="components_models.html">Component Configuration Models</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="built_in_components.html">Built-in Components</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="built_in_components.html#thermal-storage">Thermal Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="built_in_components.html#two-point-controller">Two Point Controller</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="built_in_components.html#mpc-with-flixopt">MPC with FlixOpt</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">FlixOpt Model Component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="built_in_mpc_flixopt_models.html">FlixOpt Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../components.html">EnCoDaPy Components</a></li>
+          <li class="breadcrumb-item"><a href="built_in_components.html">Built-in Components</a></li>
+      <li class="breadcrumb-item active">FlixOpt Model Component</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/main/docs/source/components/built_in_mpc_flixopt.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="flixopt-model-component">
+<h1>FlixOpt Model Component<a class="headerlink" href="#flixopt-model-component" title="Link to this heading"></a></h1>
+<p>This component runs a model-based optimization with <a class="reference external" href="https://flixopt.github.io/flixopt/latest/">FlixOpt</a> and exposes optimization results as EnCoDaPy output datapoints.</p>
+<p>It is designed for model-predictive control (MPC) and schedule generation in energy systems. For this reason, the key features from FlixOpt for the MPC are taken to build a simple model. You can build this model via configuration file or extend it with custom elements and additional constraints via python functions.</p>
+<section id="functionality">
+<h2>Functionality<a class="headerlink" href="#functionality" title="Link to this heading"></a></h2>
+<p>The component validates a FlixOpt model definition, builds a FlixOpt <code class="docutils literal notranslate"><span class="pre">FlowSystem</span></code>, solves it with the configured solver, and maps selected result series to output datapoints.</p>
+<p>Implemented workflow:</p>
+<ol class="arabic simple">
+<li><p>Read and validate component configuration (<code class="docutils literal notranslate"><span class="pre">flixopt_model</span></code>, solver, log level).</p></li>
+<li><p>Load FlixOpt model definition, like it is given in den component configuration from:</p>
+<ul class="simple">
+<li><p>Inline dictionary, or</p></li>
+<li><p>Path to a JSON file.</p></li>
+</ul>
+</li>
+<li><p>Collect time-series inputs from component inputs and merge them into one internal DataFrame.</p></li>
+<li><p>Build FlixOpt model elements:</p>
+<ul class="simple">
+<li><p>Buses</p></li>
+<li><p>Effects</p></li>
+<li><p>Converters</p></li>
+<li><p>Storages</p></li>
+<li><p>Sinks / Sources / Bidirectional exchangers</p></li>
+</ul>
+</li>
+<li><p>Optionally load and execute a custom constraint function.</p></li>
+<li><p>Run optimization.</p></li>
+<li><p>Convert optimization results to EnCoDaPy output datapoints.</p></li>
+</ol>
+</section>
+<section id="supported-model-elements">
+<h2>Supported Model Elements<a class="headerlink" href="#supported-model-elements" title="Link to this heading"></a></h2>
+<p>The FlixOpt model schema is implemented in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/flixopt_model_component/flixopt_models.py">flixopt_models.py</a>.</p>
+<section id="converters">
+<h3>Converters<a class="headerlink" href="#converters" title="Link to this heading"></a></h3>
+<p>Supported converter types (<code class="docutils literal notranslate"><span class="pre">converter_type</span></code>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">boiler</span></code>: A linear converter representing a gas boiler that transforms an input flow of gas into a thermal output flow at fixed ratios.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">power2heat</span></code>: A linear converter representing a power-to-heat device that transforms an input flow of electrical energy into a thermal output flow with fixed ratios.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chp</span></code>: A linear converter, representing a combined heat and power unit.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">substation</span></code>: A linear converter representing a substation. It can be used as a transformer between one bus and another.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bidirectional_substation</span></code>: A special version of a <code class="docutils literal notranslate"><span class="pre">substation</span></code>, this component creates forward and reverse converter representations and adds binary constraints to prevent simultaneous opposite operation.</p></li>
+</ul>
+</section>
+<section id="storages">
+<h3>Storages<a class="headerlink" href="#storages" title="Link to this heading"></a></h3>
+<p>Storages are mapped to FlixOpt storage elements with:</p>
+<ul class="simple">
+<li><p>Charge and discharge flows</p></li>
+<li><p>Min/max SOC bounds</p></li>
+<li><p>Initial SOC handling</p></li>
+<li><p>Efficiency and self-discharge handling</p></li>
+</ul>
+</section>
+<section id="exchangers">
+<h3>Exchangers<a class="headerlink" href="#exchangers" title="Link to this heading"></a></h3>
+<p>Supported energy directions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sink</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bidirectional</span></code></p></li>
+</ul>
+<p>For <code class="docutils literal notranslate"><span class="pre">bidirectional</span></code> exchangers, the component uses <code class="docutils literal notranslate"><span class="pre">SourceAndSink</span></code> with prevention of simultaneous in/out flow.</p>
+</section>
+</section>
+<section id="component-configuration">
+<h2>Component Configuration<a class="headerlink" href="#component-configuration" title="Link to this heading"></a></h2>
+<p>Main configuration model: <code class="docutils literal notranslate"><span class="pre">FlixoptModelComponentConfigData</span></code> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/flixopt_model_component/flixopt_model_component_config.py">flixopt_model_component_config.py</a>.</p>
+<p>Required and optional fields:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">flixopt_model</span></code> (required):</p>
+<ul>
+<li><p>Datapoint whose <code class="docutils literal notranslate"><span class="pre">value</span></code> is either:</p>
+<ul>
+<li><p>A model dictionary, or</p></li>
+<li><p>A path to a model JSON file.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solver_settings</span></code> (optional):</p>
+<ul>
+<li><p>Solver name (<code class="docutils literal notranslate"><span class="pre">HighsSolver</span></code> or <code class="docutils literal notranslate"><span class="pre">GurobiSolver</span></code>)</p></li>
+<li><p>Optional: <code class="docutils literal notranslate"><span class="pre">mip_rel_gap</span></code>, <code class="docutils literal notranslate"><span class="pre">time_limit</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">log_level</span></code> (optional):</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">exploring</span></code>, <code class="docutils literal notranslate"><span class="pre">debug</span></code>, <code class="docutils literal notranslate"><span class="pre">production</span></code>, <code class="docutils literal notranslate"><span class="pre">silent</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">excess_penalty</span></code> (optional):</p>
+<ul>
+<li><p>Penalty datapoint (can be used in model design)</p></li>
+</ul>
+</li>
+</ul>
+<section id="flixopt-model-schema">
+<h3>FlixOpt Model Schema<a class="headerlink" href="#flixopt-model-schema" title="Link to this heading"></a></h3>
+<p>The referenced model definition (<code class="docutils literal notranslate"><span class="pre">flixopt_model</span></code>) supports:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">buses</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">effects</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">converters</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exchangers</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">storages</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">manual_elements_function</span></code> (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">constraints_function</span></code> (optional)</p></li>
+</ul>
+<p>See <code class="docutils literal notranslate"><span class="pre">FlixOptModel</span></code> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/flixopt_model_component/flixopt_models.py">flixopt_models.py</a> for detailed field definitions and validation rules.</p>
+</section>
+<section id="custom-elements">
+<h3>Custom Elements<a class="headerlink" href="#custom-elements" title="Link to this heading"></a></h3>
+<p>You can inject additional FlixOpt elements into the optimization model.</p>
+<ul class="simple">
+<li><p>Configure <code class="docutils literal notranslate"><span class="pre">manual_elements_function</span></code> in the FlixOpt model.</p></li>
+<li><p>Value can be:</p>
+<ul>
+<li><p>A Python file path (<code class="docutils literal notranslate"><span class="pre">*.py</span></code>), or</p></li>
+<li><p>A Python module import path.</p></li>
+</ul>
+</li>
+<li><p>The module must contain a function named <code class="docutils literal notranslate"><span class="pre">add_elements</span></code>, like it is shown in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/flixopt_model_component/add_elements.py">add_elements.py</a>. The function needs to return list of flixopt elements (<code class="docutils literal notranslate"><span class="pre">list[fx.elements.Element]</span></code>) which should be added to the model.</p></li>
+</ul>
+<p>The function is loaded during component preparation and called before solving.</p>
+</section>
+<section id="custom-constraints">
+<h3>Custom Constraints<a class="headerlink" href="#custom-constraints" title="Link to this heading"></a></h3>
+<p>You can inject additional constraints into the optimization model.</p>
+<ul class="simple">
+<li><p>Configure <code class="docutils literal notranslate"><span class="pre">constraints_function</span></code> in the FlixOpt model.</p></li>
+<li><p>Value can be:</p>
+<ul>
+<li><p>A Python file path (<code class="docutils literal notranslate"><span class="pre">*.py</span></code>), or</p></li>
+<li><p>A Python module import path.</p></li>
+</ul>
+</li>
+<li><p>The module must contain a function named <code class="docutils literal notranslate"><span class="pre">add_constraints</span></code>, like it is shown in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/flixopt_model_component/add_constraints.py">add_constraints.py</a></p></li>
+</ul>
+<p>The function is loaded during component preparation and called before solving.</p>
+</section>
+</section>
+<section id="inputs">
+<h2>Inputs<a class="headerlink" href="#inputs" title="Link to this heading"></a></h2>
+<p>Input model: <code class="docutils literal notranslate"><span class="pre">FlixoptModelComponentInputData</span></code> (dynamic, <code class="docutils literal notranslate"><span class="pre">extra=&quot;allow&quot;</span></code>).</p>
+<p>That means input names are not hardcoded in the component config model. Required inputs are defined indirectly by your <code class="docutils literal notranslate"><span class="pre">flixopt_model</span></code>.</p>
+<p>Typical input categories:</p>
+<ul class="simple">
+<li><p>Time-series inputs used in exchangers:</p>
+<ul>
+<li><p>Example: heat demand, electricity demand, dynamic prices</p></li>
+</ul>
+</li>
+<li><p>Scalar inputs for state/initialization:</p>
+<ul>
+<li><p>Example: previous converter power, operation time, storage start SOC, storage capacity</p></li>
+</ul>
+</li>
+</ul>
+<p>Important requirements:</p>
+<ul class="simple">
+<li><p>All time series used by the optimization horizon must provide a valid <code class="docutils literal notranslate"><span class="pre">DatetimeIndex</span></code>.</p></li>
+<li><p>Input labels referenced in the model (for example in <code class="docutils literal notranslate"><span class="pre">input_label</span></code>, <code class="docutils literal notranslate"><span class="pre">previous_power</span></code>, <code class="docutils literal notranslate"><span class="pre">start_soc</span></code>) must exist in component inputs.</p></li>
+</ul>
+</section>
+<section id="outputs">
+<h2>Outputs<a class="headerlink" href="#outputs" title="Link to this heading"></a></h2>
+<p>Output model: <code class="docutils literal notranslate"><span class="pre">FlixoptModelComponentOutputData</span></code> (dynamic, <code class="docutils literal notranslate"><span class="pre">extra=&quot;allow&quot;</span></code>).</p>
+<p>Generated outputs are mapped from optimization results:</p>
+<ul class="simple">
+<li><p>Storage state of charge:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">{storage_label}_soc</span></code></p></li>
+</ul>
+</li>
+<li><p>Converter thermal power:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">{converter_label}_thermal_power</span></code></p></li>
+</ul>
+</li>
+<li><p>CHP electrical power:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">{converter_label}_electrical_power</span></code></p></li>
+</ul>
+</li>
+<li><p>Exchanger flows:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">{exchanger_label}_input</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{exchanger_label}_output</span></code></p></li>
+</ul>
+</li>
+</ul>
+<p>Notes:</p>
+<ul class="simple">
+<li><p>For bidirectional substations, thermal output is exported as net value: forward flow minus reverse flow.</p></li>
+<li><p>The last optimization timestamp is dropped in exported time-series output to avoid incomplete end-step values.</p></li>
+</ul>
+</section>
+<section id="minimal-configuration-example">
+<h2>Minimal Configuration Example<a class="headerlink" href="#minimal-configuration-example" title="Link to this heading"></a></h2>
+<p>This component block illustrates the relevant part in a service configuration:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;flixopt_model_component&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;flixopt_model_component&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;heat_demand&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;input_entity&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;attribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;heat_demand&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;electricity_price&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;input_entity&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;attribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;electricity_price&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;storage_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;input_entity&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;attribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;storage_level&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;heater_thermal_power&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;output_entity&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;attribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;heater_power&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;log_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;debug&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;solver_settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HighsSolver&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;mip_rel_gap&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.01</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;time_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;flixopt_model&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./flixopt_model_config.json&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The FlixOpt model must match the inputs and outputs; see the examples above.</p>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
+<p>A full working example is available in:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/09_mpc_flixopt">examples/09_mpc_flixopt</a></p></li>
+</ul>
+<p>Relevant files:</p>
+<ul class="simple">
+<li><p>Example service configuration: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/09_mpc_flixopt/02_config_example.json">examples/09_mpc_flixopt/02_config_example.json</a></p></li>
+<li><p>Example FlixOpt model: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/09_mpc_flixopt/02_flixopt_model_config.json">examples/09_mpc_flixopt/02_flixopt_model_config.json</a></p></li>
+<li><p>Notebook to run the example: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/09_mpc_flixopt/run_example_optimisation.ipynb">examples/09_mpc_flixopt/run_example_optimisation.ipynb</a></p></li>
+</ul>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">Column</span> <span class="pre">...</span> <span class="pre">not</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">input</span> <span class="pre">DataFrame</span></code>:</p>
+<ul>
+<li><p>A model input label references an input that is not present in provided timeseries.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Input</span> <span class="pre">time</span> <span class="pre">series</span> <span class="pre">must</span> <span class="pre">have</span> <span class="pre">a</span> <span class="pre">DatetimeIndex</span></code>:</p>
+<ul>
+<li><p>Ensure all used timeseries are indexed by datetime.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">function</span> <span class="pre">'add_constraints'</span> <span class="pre">not</span> <span class="pre">found</span></code>:</p>
+<ul>
+<li><p>Ensure the configured Python file/module exports a function named <code class="docutils literal notranslate"><span class="pre">add_constraints</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Solver errors:</p>
+<ul>
+<li><p>Verify solver availability in your environment and the configured solver name.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="developer-notes">
+<h2>Developer Notes<a class="headerlink" href="#developer-notes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Core implementation: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/flixopt_model_component/flixopt_model_component.py">flixopt_model_component.py</a></p></li>
+<li><p>Config and runtime models: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/flixopt_model_component/flixopt_model_component_config.py">flixopt_model_component_config.py</a></p></li>
+<li><p>FlixOpt schema models: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/flixopt_model_component/flixopt_models.py">flixopt_models.py</a></p></li>
+<li><p>You need to install FlixOpt in your environment.</p></li>
+<li><p>To use the GurobiSolver, you need to add a licence. With a licence file, you can add the path to the environment with <code class="docutils literal notranslate"><span class="pre">GRB_LICENSE_FILE</span></code>.</p></li>
+</ul>
+<p>The component inherits from <code class="docutils literal notranslate"><span class="pre">BasicComponent</span></code> and follows the same service integration lifecycle (<code class="docutils literal notranslate"><span class="pre">prepare_component()</span></code>, <code class="docutils literal notranslate"><span class="pre">calculate()</span></code>, output mapping) as other EnCoDaPy components.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="built_in_two_point_controller_models.html" class="btn btn-neutral float-left" title="Two Point Controller Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="built_in_mpc_flixopt_models.html" class="btn btn-neutral float-right" title="FlixOpt Configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

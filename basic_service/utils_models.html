@@ -66,6 +66,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointDict"><code class="docutils literal notranslate"><span class="pre">DataPointDict</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointBool"><code class="docutils literal notranslate"><span class="pre">DataPointBool</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointMedium"><code class="docutils literal notranslate"><span class="pre">DataPointMedium</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointTimeSeries"><code class="docutils literal notranslate"><span class="pre">DataPointTimeSeries</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointDatetime"><code class="docutils literal notranslate"><span class="pre">DataPointDatetime</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-encodapy.utils.units">Units</a><ul>
@@ -913,6 +915,194 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 
 </dd></dl>
 
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointTimeSeries">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointTimeSeries</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointTimeSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointTimeSeries" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
+<p>DataPoint for time series. The value is expected to be a pandas Series
+with a DatetimeIndex and float or integer values.</p>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataPointTimeSeries&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataPoint for time series. The value is expected to be a pandas Series \nwith a DatetimeIndex and float or integer values.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A time series of number data points as :class:`pd.Series`&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DataUnits&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date-time&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTQ&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;P1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;OHM&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;VLT&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataUnits&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;value&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointTimeSeries.value">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.utils.datapoints.DataPointTimeSeries.value" title="Link to this definition"></a></dt>
+<dd><p>A time series of number data points as <code class="xref py py-class docutils literal notranslate"><span class="pre">pd.Series</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointDatetime">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointDatetime</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointDatetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointDatetime" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
+<p>Model for datapoints of the controller component which define a datetime value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code>) – The value of the datapoint, which is a datetime.</p></li>
+<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[DataUnits]</span></code>) – Optional unit of the datapoint, if applicable.</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[datetime]</span></code>) – Optional timestamp of the datapoint, if applicable.</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataPointDatetime&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Model for datapoints of the controller component which define a datetime value.\n\nAttributes:\n    value (datetime): The value of the datapoint, which is a datetime.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A datetime value for the datapoint&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date-time&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Value&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/DataUnits&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date-time&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Time&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;DataUnits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \&quot;SEC\&quot; for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\&quot;CODE\&quot;, \&quot;pint_string\&quot;)\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \&quot;P1\&quot; (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \&quot;percent\&quot; (for pint conversion)\n    - DataUnits(\&quot;P1\&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MON&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTQ&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MQS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;E32&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;L2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTK&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;MTS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;P1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;OHM&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;VLT&quot;</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DataUnits&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;value&quot;</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointDatetime.value">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#encodapy.utils.datapoints.DataPointDatetime.value" title="Link to this definition"></a></dt>
+<dd><p>A datetime value for the datapoint</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-encodapy.utils.units">
 <span id="units"></span><h2>Units<a class="headerlink" href="#module-encodapy.utils.units" title="Link to this heading"></a></h2>
@@ -1119,13 +1309,6 @@ The _UNIT_MAP will be generated automatically from the pint_unit attributes.</p>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Optional[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
 </dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
-<li><p><strong>unit_actual</strong> (<a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><em>DataUnits</em></a>)</p></li>
-<li><p><strong>unit_target</strong> (<a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><em>DataUnits</em></a>)</p></li>
-</ul>
-</dd>
 </dl>
 </dd></dl>
 
@@ -1156,14 +1339,6 @@ To use this function, simply pass the value, the actual unit and the target unit
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Optional[Union[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>, pd.DataFrame, pd.Series, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a>]]</p>
 </dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>DataFrame</em><em> | </em><em>Series</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>unit_actual</strong> (<a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><em>DataUnits</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>unit_target</strong> (<a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><em>DataUnits</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>column_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
-</ul>
-</dd>
 </dl>
 </dd></dl>
 
@@ -1180,9 +1355,6 @@ To use this function, simply pass the value, the actual unit and the target unit
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Optional[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>time_unit</strong> (<a class="reference internal" href="#encodapy.utils.units.TimeUnits" title="encodapy.utils.units.TimeUnits"><em>TimeUnits</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><em>DataUnits</em></a>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1206,12 +1378,6 @@ It is recommended to switch to adjust_units, which is more robust and handles mo
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Optional[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]</p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>unit_actual</strong> (<a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><em>DataUnits</em></a>)</p></li>
-<li><p><strong>unit_target</strong> (<a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><em>DataUnits</em></a>)</p></li>
-</ul>
 </dd>
 </dl>
 <p>TODO: Remove the function</p>
@@ -1309,12 +1475,6 @@ It is recommended to switch to adjust_units, which is more robust and handles mo
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#encodapy.utils.mediums.MediumParameters" title="encodapy.utils.mediums.MediumParameters">MediumParameters</a></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>medium</strong> (<a class="reference internal" href="#encodapy.utils.mediums.Medium" title="encodapy.utils.mediums.Medium"><em>Medium</em></a>)</p></li>
-<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em> | </em><em>None</em>)</p></li>
-</ul>
 </dd>
 </dl>
 </dd></dl>

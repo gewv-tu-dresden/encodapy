@@ -24,6 +24,8 @@ This module provides a structured way to define and manage components for use wi
   An example can be found under: [`examples/06_thermal_storage_service`](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/06_thermal_storage_service)
 - TwoPointController (`two_point_controller`): Two-Point-Controller component for the steering of the loading process of a thermal storage or other processes.  
   An example can be found under: [`examples/07_component_runner`](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/07_component_runner)
+- Pradictiv Control model with FlixOpt [`flixopt_model_component`]: Component for optimisation within operational management with [FlixOpt](https://github.com/flixOpt/flixopt)  
+  An example can be found under [`examples/09_flixopt`](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/09_flixopt).
 
 ---
 
