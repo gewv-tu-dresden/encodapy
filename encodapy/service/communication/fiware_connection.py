@@ -3,12 +3,12 @@ Description: This file contains the class FiwareConnections,
 which is used to store the connection parameters for the Fiware and CrateDB connections.
 Author: Martin Altenburger
 """
-
-import concurrent.futures
-import multiprocessing
+import asyncio
 from asyncio import sleep
 from datetime import datetime, timedelta, timezone
-from typing import Optional, Union
+from typing import Any, Optional, Union
+import concurrent.futures
+import multiprocessing
 
 import numpy as np
 import pandas as pd
@@ -68,6 +68,14 @@ class FiwareConnection:
         self.cb_client: ContextBrokerClient = None
         self.crate_db_client: CrateDBConnection = None
         self.config: ConfigModel
+        self._fiware_call_timeout_seconds = 15.0
+
+    async def _run_cb_call_with_timeout(self, callback: Any) -> Any:
+        """Run a potentially blocking Context Broker call with timeout protection."""
+        return await asyncio.wait_for(
+            asyncio.to_thread(callback),
+            timeout=self._fiware_call_timeout_seconds,
+        )
 
     def load_fiware_params(self) -> None:
         """
@@ -250,34 +258,43 @@ class FiwareConnection:
         Returns:
             MetaDataModel: Model with the metadata (timestamp, unit) of the attribute if available
         """
-        metadata_lowercase = {
+        metadata_lowercase: dict[str, Any] = {
             k.lower(): v for k, v in fiware_attribute.metadata.items()
         }
-
         metadata_model = MetaDataModel()
 
-        if metadata_lowercase.get("timeinstant") is not None:
-            metadata_model.timestamp = datetime.strptime(
-                metadata_lowercase.get("timeinstant").value, "%Y-%m-%dT%H:%M:%S.%f%z"
-            )
+        timeinstant_value = getattr(metadata_lowercase.get("timeinstant"), "value", None)
+        if timeinstant_value is not None:
+            try:
+                metadata_model.timestamp = datetime.strptime(
+                    timeinstant_value, "%Y-%m-%dT%H:%M:%S.%f%z"
+                )
+            except (ValueError, TypeError) as err:
+                logger.error(
+                    f"Error while parsing timestamp for attribute {fiware_attribute.name}: "
+                    f"Invalid timestamp format: {timeinstant_value}, "
+                    f"{err}"
+                )
+        elif metadata_lowercase.get("timeinstant") is not None:
+            logger.debug("No timestamp available in the metadata of the attribute.")
 
+        unitcode_value = getattr(metadata_lowercase.get("unitcode"), "value", None)
+        unittext_value = getattr(metadata_lowercase.get("unittext"), "value", None)
+        unit_value = getattr(metadata_lowercase.get("unit"), "value", None)
         try:
-            if metadata_lowercase.get("unitcode") is not None:
-                metadata_model.unit = DataUnits(
-                    metadata_lowercase.get("unitcode").value
-                )
-            elif metadata_lowercase.get("unittext") is not None:
-                metadata_model.unit = DataUnits(
-                    metadata_lowercase.get("unittext").value
-                )
-            elif metadata_lowercase.get("unit") is not None:
-                metadata_model.unit = DataUnits(metadata_lowercase.get("unit").value)
-        except ValueError as err:
+            if unitcode_value is not None:
+                metadata_model.unit = DataUnits(unitcode_value)
+            elif unittext_value is not None:
+                metadata_model.unit = DataUnits(unittext_value)
+            elif unit_value is not None:
+                metadata_model.unit = DataUnits(unit_value)
+        except (ValueError, TypeError) as err:
             logger.error(
-                f"Unit code {metadata_lowercase.get('unitcode').value} not available: {err}"
+                "Error while processing unit ('unitcode', 'unittext', 'unit') "
+                f"{unitcode_value}: {err}"
             )
-
         return metadata_model
+
 
     def get_data_from_fiware(
         self,
@@ -350,6 +367,7 @@ class FiwareConnection:
                 metadata = self._get_metadata_from_fiware(
                     fiware_input_entity_attributes[attribute.id_interface]
                 )
+
                 attributes_values.append(
                     InputDataAttributeModel(
                         id=attribute.id,
@@ -890,11 +908,35 @@ class FiwareConnection:
             - Is there a better way to send the data from dataframes to the FIWARE platform?
         """
 
-        fiware_entity = self.cb_client.get_entity(output_entity.id_interface)
+        if not output_attributes and not output_commands:
+            logger.debug(
+                f"Skip FIWARE send for {output_entity.id}: no payload for this cycle."
+            )
+            return
 
-        entity_attributes = self.cb_client.get_entity_attributes(
-            entity_id=fiware_entity.id, entity_type=fiware_entity.type
-        )
+        try:
+            fiware_entity = await self._run_cb_call_with_timeout(
+                lambda: self.cb_client.get_entity(output_entity.id_interface)
+            )
+
+            entity_attributes = await self._run_cb_call_with_timeout(
+                lambda: self.cb_client.get_entity_attributes(
+                    entity_id=fiware_entity.id,
+                    entity_type=fiware_entity.type,
+                )
+            )
+        except asyncio.TimeoutError:
+            logger.error(
+                f"Timeout while reading FIWARE entity metadata for {output_entity.id}. "
+                "Skipping output for this cycle."
+            )
+            return
+        except (requests.exceptions.RequestException, BaseHttpClientException) as err:
+            logger.error(
+                "Could not read FIWARE entity metadata for "
+                f"{output_entity.id}: {err}. Skipping output for this cycle."
+            )
+            return
 
         attrs = []
         for attribute in output_attributes:
@@ -975,10 +1017,12 @@ class FiwareConnection:
             i = 0
             while i < 3:
                 try:
-                    self.cb_client.update_or_append_entity_attributes(
-                        entity_id=fiware_entity.id,
-                        entity_type=fiware_entity.type,
-                        attrs=attrs,
+                    await self._run_cb_call_with_timeout(
+                        lambda: self.cb_client.update_or_append_entity_attributes(
+                            entity_id=fiware_entity.id,
+                            entity_type=fiware_entity.type,
+                            attrs=attrs,
+                        )
                     )
                     break
                 except requests.exceptions.HTTPError as err:
@@ -988,6 +1032,21 @@ class FiwareConnection:
                         logger.error(
                             f"HTTPError while sending attributes to FIWARE platform: {err}"
                         )
+                except asyncio.TimeoutError:
+                    if i < 2:
+                        await sleep(0.1)
+                    else:
+                        logger.error(
+                            "Timeout while sending attributes to FIWARE platform."
+                        )
+                except (requests.exceptions.RequestException, BaseHttpClientException) as err:
+                    if i < 2:
+                        await sleep(0.1)
+                    else:
+                        logger.error(
+                            "Error while sending attributes to FIWARE platform: "
+                            f"{err}"
+                        )
 
                 i += 1
 
@@ -995,10 +1054,12 @@ class FiwareConnection:
             i = 0
             while i < 3:
                 try:
-                    self.cb_client.update_existing_entity_attributes(
-                        entity_id=fiware_entity.id,
-                        entity_type=fiware_entity.type,
-                        attrs=cmds,
+                    await self._run_cb_call_with_timeout(
+                        lambda: self.cb_client.update_existing_entity_attributes(
+                            entity_id=fiware_entity.id,
+                            entity_type=fiware_entity.type,
+                            attrs=cmds,
+                        )
                     )
                     break
                 except requests.exceptions.HTTPError as err:
@@ -1007,6 +1068,21 @@ class FiwareConnection:
                     else:
                         logger.error(
                             f"HTTPError while sending commands to FIWARE platform: {err}"
+                        )
+                except asyncio.TimeoutError:
+                    if i < 2:
+                        await sleep(0.1)
+                    else:
+                        logger.error(
+                            "Timeout while sending commands to FIWARE platform."
+                        )
+                except (requests.exceptions.RequestException, BaseHttpClientException) as err:
+                    if i < 2:
+                        await sleep(0.1)
+                    else:
+                        logger.error(
+                            "Error while sending commands to FIWARE platform: "
+                            f"{err}"
                         )
 
                 i += 1

@@ -155,6 +155,7 @@ class MqttConnection:
                 f"Could not establish initial MQTT connection after {max_wait} seconds."
             )
 
+
     def prepare_mqtt_message_store(self) -> None:
         """
         Function to prepare the MQTT message store for all input entities and their attributes.

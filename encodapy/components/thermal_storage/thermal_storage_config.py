@@ -6,7 +6,7 @@ import os
 from typing import Optional, TYPE_CHECKING
 from enum import Enum
 from datetime import datetime, timedelta
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from pydantic.functional_validators import model_validator
 from encodapy.components.basic_component_config import (
     ComponentValidationError,
@@ -85,7 +85,9 @@ class StorageSensorConfig(BaseModel):
         limits (:class:`encodapy.components.thermal_storage.TemperatureLimits`): \
             Temperature limits for the sensor
     """
-
+    model_config = ConfigDict(
+        extra="forbid"
+    )
     name: Optional[str] = Field(
         None, description="Optional name of the sensor"
     )

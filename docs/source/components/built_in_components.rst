@@ -17,3 +17,11 @@ Two Point Controller
 
   built_in_two_point_controller
   built_in_two_point_controller_models
+
+MPC with FlixOpt
+------------------------
+.. toctree::
+  :maxdepth: 2
+
+  built_in_mpc_flixopt
+  built_in_mpc_flixopt_models

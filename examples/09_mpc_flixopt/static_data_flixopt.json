@@ -1,0 +1,19 @@
+{
+"staticdata": 
+[
+  {
+    "id": "flixopt_input_test",
+    "attributes":
+    [
+        {
+          "id": "storage_level",
+          "value": 50,
+          "metadata": 
+          {
+            "unitCode":"P1"
+          }
+        }
+    ]
+  }
+]
+}
