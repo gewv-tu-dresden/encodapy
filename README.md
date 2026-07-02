@@ -1,5 +1,13 @@
 # "EnCoDaPy" – Energy Control and Data Preparation in Python
 
+[![Documentation](https://img.shields.io/badge/docs-latest-brightgreen.svg)](https://gewv-tu-dresden.github.io/encodapy/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/encodapy.svg)](https://pypi.org/project/encodapy/)
+[![PyPI version](https://img.shields.io/pypi/v/encodapy)](https://img.shields.io/pypi/v/encodapy)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21130217.svg)](https://zenodo.org/badge/DOI/10.5281/zenodo.21130217.svg)
+[![Pylint](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/pylint.yml/badge.svg?branch=main)](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/pylint.yml)
+[![Tests](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/tests.yml)
+
 ## Overview
 
 - The Basic Service provides a system to
@@ -110,6 +118,10 @@ There are examples of how to use the image in [examples/07_component_runner](./e
 
 - Solver-based Flixopt integration tests depend on optional runtime packages (for example highspy).
 - If those optional packages are unavailable, solver-based tests are skipped.
+
+## References
+
+If you use EnCoDaPy in your research or project, please cite [https://doi.org/10.5281/zenodo.21130217](https://doi.org/10.5281/zenodo.21130217) or the version of the software currently in use.
 
 ## License
 

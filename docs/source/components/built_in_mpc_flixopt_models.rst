@@ -7,6 +7,8 @@ FlixOpt Configuration
    :undoc-members:
    :exclude-members: model_fields, model_config, model_computed_fields, model_extra, DataPointTest
 
+FlixOpt MPC Models
+----------------------------------
 .. automodule:: encodapy.components.flixopt_model_component.flixopt_models
    :members:
    :show-inheritance:
