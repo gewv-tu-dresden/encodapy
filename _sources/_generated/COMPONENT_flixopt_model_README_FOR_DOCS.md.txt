@@ -31,7 +31,7 @@ Implemented workflow:
 
 ## Supported Model Elements
 
-The FlixOpt model schema is implemented in [flixopt_models.py](https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/flixopt_model_component/flixopt_models.py).
+The FlixOpt model schema is implemented in [flixopt_models.py](https://github.com/gewv-tu-dresden/encodapy/blob/main/encodapy/components/flixopt_model_component/flixopt_models.py). You need to create a {py:class}`~encodapy.components.flixopt_model_component.flixopt_models.FlixOptModel` and add it to the component configuration  {py:class}`~encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData` as `flixopt_mode`.
 
 ### Converters
 
