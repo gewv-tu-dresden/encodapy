@@ -1,8 +1,8 @@
 # "EnCoDaPy" – Energy Control and Data Preparation in Python
 
 [![Documentation](https://img.shields.io/badge/docs-latest-brightgreen.svg)](https://gewv-tu-dresden.github.io/encodapy/)
-[![Python Versions](https://img.shields.io/pypi/pyversions/encodapy.svg)](https://pypi.org/project/encodapy/)
-[![PyPI version](https://img.shields.io/pypi/v/encodapy)](https://pypi.org/project/encodapy/)
+[![Python versions](https://img.shields.io/pypi/pyversions/encodapy.svg)](https://pypi.org/project/encodapy/)
+[![PyPI version](https://img.shields.io/pypi/v/encodapy.svg)](https://pypi.org/project/encodapy/)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![DOI](https://zenodo.org/badge/841496556.svg)](https://doi.org/10.5281/zenodo.21130839)
 [![Pylint](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/pylint.yml/badge.svg?branch=main)](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/pylint.yml)
@@ -23,7 +23,7 @@
 - The framework provides components that can be used within a service. This is the recommended solution for running a functional service.
   For more information and code, see: [encodapy/components/readme.md](./encodapy/components/readme.md)
 
-- Further documentation can be found [here](https://gewv-tu-dresden.github.io/encodapy/).
+- Further documentation can be found on our [website](https://gewv-tu-dresden.github.io/encodapy/).
 - Examples and documentation for each part of the project are available under: [examples](./examples/)
 
 ## Configuration
@@ -43,7 +43,7 @@
 
 You could install the Package via [PyPI](https://pypi.org/project/encodapy/):
 
-```
+```bash
 pip install encodapy
 ```
 

@@ -11,23 +11,16 @@ url: https://gewv-tu-dresden.github.io/encodapy/
 license: BSD-3-Clause
 abstract: >-
   EnCoDaPy (Energy Control and Data Preparation in Python) is a modular Python
-  framework designed for the real-time management and optimisation of
-  decentralised energy systems. Its modular and extensible architecture offers
-  flexibility, facilitating the development, validation and operation of
-  control strategies for energy systems.
+  framework for the real-time management and optimisation of decentralised
+  energy systems. Its modular and extensible architecture supports the development,
+  validation and operation of control strategies for energy systems. The
+  framework provides structured configuration management, supports interfaces
+  such as MQTT, FIWARE and file-based systems, and uses Pydantic-based models
+  for robust data validation. The core of the framework is the module for analyzing
+  and managing energy systems. EnCoDaPy is open source and is designed for
+  researchers, engineers and practitioners in energy system modelling and
+  optimisation.
 
-  Key features:
-
-  - Configuration management: Structured models for system and component
-    configurations.
-  - Data integration: Support for various interfaces, including MQTT, FIWARE
-    and file-based systems.
-  - Component control: Modular architecture for managing energy system
-    components.
-  - Data validation: Robust data processing using Pydantic-based models.
-
-  EnCoDaPy is open source and is designed for researchers, engineers and
-  practitioners specialising in energy system modelling and optimisation.
 keywords:
   - energy systems
   - sector coupling
