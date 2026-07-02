@@ -4,7 +4,7 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/encodapy.svg)](https://pypi.org/project/encodapy/)
 [![PyPI version](https://img.shields.io/pypi/v/encodapy)](https://img.shields.io/pypi/v/encodapy)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21130217.svg)](https://zenodo.org/badge/DOI/10.5281/zenodo.21130217.svg)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21130217.svg)](https://doi.org/10.5281/zenodo.21130217)
 [![Pylint](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/pylint.yml/badge.svg?branch=main)](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/pylint.yml)
 [![Tests](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/tests.yml)
 
