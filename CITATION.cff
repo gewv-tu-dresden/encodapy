@@ -1,0 +1,58 @@
+cff-version: 1.2.0
+message: >-
+  If you use EnCoDaPy in your work, please cite the Zenodo release and this
+  software package.
+title: 'EnCoDaPy - Energy Control and Data Preparation in Python'
+type: software
+version: 0.9.2
+date-released: '2026-07-02'
+repository-code: https://github.com/gewv-tu-dresden/encodapy
+url: https://gewv-tu-dresden.github.io/encodapy/
+license: BSD-3-Clause
+abstract: >-
+  EnCoDaPy (Energy Control and Data Preparation in Python) is a modular Python
+  framework designed for the real-time management and optimisation of
+  decentralised energy systems. Its modular and extensible architecture offers
+  flexibility, facilitating the development, validation and operation of
+  control strategies for energy systems.
+
+  Key features:
+
+  - Configuration management: Structured models for system and component
+    configurations.
+  - Data integration: Support for various interfaces, including MQTT, FIWARE
+    and file-based systems.
+  - Component control: Modular architecture for managing energy system
+    components.
+  - Data validation: Robust data processing using Pydantic-based models.
+
+  EnCoDaPy is open source and is designed for researchers, engineers and
+  practitioners specialising in energy system modelling and optimisation.
+keywords:
+  - energy systems
+  - sector coupling
+  - data analysis
+  - control
+  - optimization
+  - FIWARE
+  - MQTT
+  - Python
+  - Pydantic
+authors:
+  - family-names: Altenburger
+    given-names: Martin
+    email: martin.altenburger@tu-dresden.de
+    orcid: https://orcid.org/0009-0003-0823-8582
+  - family-names: Beyer
+    given-names: Maximilian
+    orcid: https://orcid.org/0000-0003-0180-8143
+  - family-names: Seidel
+    given-names: Paul
+    orcid: https://orcid.org/0009-0004-7903-8411
+identifiers:
+  - type: url
+    value: "https://gewv-tu-dresden.github.io/encodapy/"
+    description: "Documentation"
+  - type: url
+    value: "https://pypi.org/project/encodapy/"
+    description: "PyPI package"
