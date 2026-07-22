@@ -7,10 +7,9 @@ import asyncio
 import sys
 from datetime import datetime
 from typing import Optional, Union
-
 from loguru import logger
 from pydantic import ValidationError
-
+from filip.models.base import DataType
 from encodapy.config import (
     AttributeModel,
     BasicEnvVariables,
@@ -25,7 +24,7 @@ from encodapy.service.communication import (
     FiwareConnection,
     MqttConnection,
 )
-from encodapy.utils.error_handling import ConfigError, InterfaceNotActive, NotSupportedError
+from encodapy.utils.error_handling import ConfigError, InterfaceNotActive
 from encodapy.utils.health import update_health_file
 from encodapy.utils.logging import LoggerControl
 from encodapy.utils.models import (
@@ -598,6 +597,57 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
         return output_data
 
+    def _is_geojson(self, value: dict) -> bool:
+        """Checks heuristically whether a dict is a GeoJSON object."""
+        GEOJSON_TYPES = {
+            "Point", "MultiPoint", "LineString", "MultiLineString",
+            "Polygon", "MultiPolygon", "GeometryCollection",
+            "Feature", "FeatureCollection",
+        }
+        return (
+            isinstance(value.get("type"), str)
+            and value["type"] in GEOJSON_TYPES
+            and ("coordinates" in value or "geometry" in value or "features" in value)
+        )
+    def _get_datatype(
+        self,
+        attribute: AttributeModel,
+        component: DataTransferComponentModel,
+    ) -> DataType:
+        """Helper function to check the datatype of the attribute."""
+
+        match component.value:
+            case bool():        # MUSS vor int stehen!
+                datatype_value = DataType.BOOLEAN
+            case int():
+                datatype_value = DataType.INTEGER
+            case float():
+                datatype_value = DataType.NUMBER
+            case str():
+                datatype_value = DataType.TEXT
+            case dict() if self._is_geojson(component.value):
+                datatype_value = DataType.GEOJSON
+            case dict():
+                datatype_value = DataType.STRUCTUREDVALUE
+            case list():
+                datatype_value = DataType.ARRAY
+            case _:
+                logger.debug(
+                    f"Unsupported datatype for attribute {attribute.id}: {type(component.value)}. "
+                    "Using the datatype from the configuration."
+                )
+                datatype_value = None
+        if datatype_value is not None and datatype_value != attribute.datatype:
+            logger.warning(
+                f"Datatype mismatch for attribute {attribute.id}: "
+                f"expected {attribute.datatype}, got {datatype_value}. "
+                "Using the datatype from the configuration. "
+                "Make sure the datatype in the output configuration is correct "
+                "and matches the actual data type."
+            )
+
+        return attribute.datatype
+
     def _process_attributes(
         self,
         component: DataTransferComponentModel,
@@ -616,6 +666,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                         value=component.value,
                         unit=component.unit,
                         timestamp=component.timestamp,
+                        datatype=self._get_datatype(attribute, component)
                     )
                 )
                 break
