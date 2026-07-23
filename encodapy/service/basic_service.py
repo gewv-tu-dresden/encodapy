@@ -8,6 +8,7 @@ import sys
 from datetime import datetime
 from typing import Optional, Union
 
+from filip.models.base import DataType
 from loguru import logger
 from pydantic import ValidationError
 
@@ -25,7 +26,7 @@ from encodapy.service.communication import (
     FiwareConnection,
     MqttConnection,
 )
-from encodapy.utils.error_handling import ConfigError, InterfaceNotActive, NotSupportedError
+from encodapy.utils.error_handling import ConfigError, InterfaceNotActive
 from encodapy.utils.health import update_health_file
 from encodapy.utils.logging import LoggerControl
 from encodapy.utils.models import (
@@ -57,7 +58,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             log_level=self.env.log_level,
             log_path=self.env.log_path,
             log_retention=self.env.log_retention,
-            log_rotation=self.env.log_rotation
+            log_rotation=self.env.log_rotation,
         )
 
         self.staticdata: Optional[list[StaticDataEntityModel]] = None
@@ -176,15 +177,17 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                     timestamp_latest_output=None,
                 )
                 if fiware_data is not None:
-                    static_data_entity = StaticDataEntityModel(**fiware_data.model_dump())
+                    static_data_entity = StaticDataEntityModel(
+                        **fiware_data.model_dump()
+                    )
                     staticdata.append(static_data_entity)
 
             if static_entity.interface == Interfaces.FILE:
                 staticdata.append(
                     self.get_staticdata_from_file(
                         entity=static_entity,
-                        )
                     )
+                )
 
             if static_entity.interface == Interfaces.MQTT:
                 logger.warning("interface MQTT for staticdata not supported")
@@ -433,29 +436,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                     asyncio.TimeoutError,
                 ) as exc:
                     logger.error(
-                        "Error while sending FIWARE output entity "
-                        f"{output.id}: {exc}"
-                    )
-                try:
-                    await self._send_data_to_fiware(
-                        output_entity=output_entity,
-                        output_attributes=output_attributes,
-                        output_commands=output_commands,
-                    )
-                except (
-                    ConfigError,
-                    InterfaceNotActive,
-                    ValueError,
-                    TypeError,
-                    KeyError,
-                    AttributeError,
-                    OSError,
-                    RuntimeError,
-                    asyncio.TimeoutError,
-                ) as exc:
-                    logger.error(
-                        "Error while sending FIWARE output entity "
-                        f"{output.id}: {exc}"
+                        f"Error while sending FIWARE output entity {output.id}: {exc}"
                     )
 
             elif output_entity.interface is Interfaces.FILE:
@@ -467,19 +448,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                     )
                 except (OSError, ValueError, TypeError) as exc:
                     logger.error(
-                        "Error while writing FILE output entity "
-                        f"{output.id}: {exc}"
-                    )
-                try:
-                    self.send_data_to_json_file(
-                        output_entity=output_entity,
-                        output_attributes=output_attributes,
-                        output_commands=output_commands,
-                    )
-                except (OSError, ValueError, TypeError) as exc:
-                    logger.error(
-                        "Error while writing FILE output entity "
-                        f"{output.id}: {exc}"
+                        f"Error while writing FILE output entity {output.id}: {exc}"
                     )
 
             elif output_entity.interface is Interfaces.MQTT:
@@ -496,8 +465,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                     OSError,
                 ) as exc:
                     logger.error(
-                        "Error while sending MQTT output entity "
-                        f"{output.id}: {exc}"
+                        f"Error while sending MQTT output entity {output.id}: {exc}"
                     )
 
             await asyncio.sleep(0.01)
@@ -598,6 +566,64 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
         return output_data
 
+    def _is_geojson(self, value: dict) -> bool:
+        """Checks heuristically whether a dict is a GeoJSON object."""
+        GEOJSON_TYPES = {
+            "Point",
+            "MultiPoint",
+            "LineString",
+            "MultiLineString",
+            "Polygon",
+            "MultiPolygon",
+            "GeometryCollection",
+            "Feature",
+            "FeatureCollection",
+        }
+        return (
+            isinstance(value.get("type"), str)
+            and value["type"] in GEOJSON_TYPES
+            and ("coordinates" in value or "geometry" in value or "features" in value)
+        )
+
+    def _validate_datatype_against_value(
+        self,
+        attribute: AttributeModel,
+        component: DataTransferComponentModel,
+    ) -> DataType:
+        """Helper function to check the datatype of the attribute."""
+
+        match component.value:
+            case bool():  # MUSS vor int stehen!
+                datatype_value = DataType.BOOLEAN
+            case int():
+                datatype_value = DataType.INTEGER
+            case float():
+                datatype_value = DataType.NUMBER
+            case str():
+                datatype_value = DataType.TEXT
+            case dict() if self._is_geojson(component.value):
+                datatype_value = DataType.GEOJSON
+            case dict():
+                datatype_value = DataType.STRUCTUREDVALUE
+            case list():
+                datatype_value = DataType.ARRAY
+            case _:
+                logger.debug(
+                    f"Unsupported datatype for attribute {attribute.id}: {type(component.value)}. "
+                    "Using the datatype from the configuration."
+                )
+                datatype_value = None
+        if datatype_value is not None and datatype_value != attribute.datatype:
+            logger.warning(
+                f"Datatype mismatch for attribute {attribute.id}: "
+                f"expected {attribute.datatype}, got {datatype_value}. "
+                "Using the datatype from the configuration. "
+                "Make sure the datatype in the output configuration is correct "
+                "and matches the actual data type."
+            )
+
+        return attribute.datatype
+
     def _process_attributes(
         self,
         component: DataTransferComponentModel,
@@ -616,6 +642,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                         value=component.value,
                         unit=component.unit,
                         timestamp=component.timestamp,
+                        datatype=self._validate_datatype_against_value(
+                            attribute, component
+                        ),
                     )
                 )
                 break
@@ -694,8 +723,10 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
                     await self.send_outputs(data_output=data_output)
 
-            except Exception: # pylint: disable=broad-exception-caught
-                logger.exception("Unexpected error in service loop, continuing with next cycle.")
+            except Exception:  # pylint: disable=broad-exception-caught
+                logger.exception(
+                    "Unexpected error in service loop, continuing with next cycle."
+                )
 
             finally:
                 await self._set_health_timestamp()
