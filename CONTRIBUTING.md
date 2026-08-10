@@ -20,7 +20,13 @@ You can help by:
    poetry install
    ```
 
-3. Run the test suite:
+3. Install and set up pre-commit hooks:
+
+   ```bash
+   poetry run pre-commit install --hook-type pre-commit --hook-type pre-push
+   ```
+
+4. Run the test suite:
 
    ```bash
    poetry run pytest
@@ -32,6 +38,8 @@ You can help by:
 - Create a dedicated branch for your work.
 - Keep changes focused and include tests where possible.
 - Run the relevant checks before opening a pull request.
+- The installed pre-commit hooks will run on each commit for style and basic repository checks.
+- The full test suite is configured to run on pre-push, so it will execute before a push is completed.
 - GitHub Actions workflows for tests, linting, and documentation will run automatically for pushes and pull requests. Please make sure the relevant checks are green before asking for review.
 
 ## Pull requests
