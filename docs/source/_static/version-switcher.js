@@ -75,8 +75,10 @@
     const label = document.createElement("label");
     label.className = "encodapy-version-switcher__label";
     label.textContent = "Documentation version";
+    label.htmlFor = "encodapy-version-switcher__select";
 
     const select = document.createElement("select");
+    select.id = "encodapy-version-switcher__select";
     select.className = "encodapy-version-switcher__select";
 
     const manifest = await fetchManifest(config.baseUrl).catch(() => null);
