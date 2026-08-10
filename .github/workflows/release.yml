@@ -6,8 +6,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
 
 jobs:
   publish:
@@ -41,6 +40,8 @@ jobs:
   docs:
     name: Build and publish documentation
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     concurrency:
       group: gh-pages-deploy
       cancel-in-progress: false
@@ -94,6 +95,8 @@ jobs:
   docker-image:
     name: Build and push Docker image
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
 
     steps:
       - name: Checkout code
