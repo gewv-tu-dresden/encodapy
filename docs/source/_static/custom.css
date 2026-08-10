@@ -36,3 +36,51 @@ table.docutils th {
 .sig-name {
   white-space: normal;
 }
+
+.encodapy-version-switcher {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 1000;
+  width: 16rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+}
+
+.encodapy-version-switcher__label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.encodapy-version-switcher__select {
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.35rem;
+  border: 1px solid #b8c1cc;
+  background: #fff;
+  color: #1f2933;
+  font: inherit;
+}
+
+.encodapy-version-switcher__hint {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  opacity: 0.85;
+}
+
+@media screen and (max-width: 768px) {
+  .encodapy-version-switcher {
+    position: static;
+    width: auto;
+    margin: 1rem 0;
+  }
+}

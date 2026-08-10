@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -37,6 +37,59 @@ jobs:
 
       - name: Publish to PyPI
         run: poetry publish
+
+  docs:
+    name: Build and publish documentation
+    runs-on: ubuntu-latest
+    concurrency:
+      group: gh-pages-deploy
+      cancel-in-progress: false
+    env:
+      DOCS_GITHUB_VERSION: ${{ github.ref_name }}
+      DOCS_RELEASE_VERSION: ${{ github.ref_name }}
+      DOCS_BASE_URL: /encodapy/
+      DOCS_PUBLISHED_VERSIONS_URL: https://gewv-tu-dresden.github.io/encodapy/versions.json
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Checkout existing gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+        continue-on-error: true
+
+      - name: Build documentation
+        run: poetry run sphinx-build -b html -a -E ./docs/source ./docs/build
+
+      - name: Prepare versioned documentation
+        run: >
+          poetry run python ./docs/scripts/prepare_versioned_docs.py
+          --build-dir ./docs/build
+          --release-version ${{ github.ref_name }}
+          --existing-manifest ./gh-pages/versions.json
+
+      - name: Deploy release docs to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build
+          keep_files: true
 
   docker-image:
     name: Build and push Docker image
