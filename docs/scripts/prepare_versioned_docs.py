@@ -13,9 +13,16 @@ from pathlib import Path
 
 
 def _copy_tree(source: Path, target: Path) -> None:
+    """Copy to a subdirectory so that versions are preserved."""
     if target.exists():
         shutil.rmtree(target)
-    shutil.copytree(source, target, ignore=_ignore_published_dirs)
+
+    def _ignore(source_dir: str, names: list[str]) -> set[str]:
+        ignored = _ignore_published_dirs(source_dir, names)
+        ignored.add(target.name)
+        return ignored
+
+    shutil.copytree(source, target, ignore=_ignore)
 
 
 def _ignore_published_dirs(source: str, names: list[str]) -> set[str]:
