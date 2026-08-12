@@ -1,0 +1,11 @@
+{% extends "!layout.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  <script>
+    window.ENCODAPY_DOCS = {
+      baseUrl: {{ docs_base_url|tojson }},
+      currentVersion: {{ docs_current_version|tojson }},
+    };
+  </script>
+{% endblock %}

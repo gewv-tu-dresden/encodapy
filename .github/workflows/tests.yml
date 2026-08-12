@@ -42,3 +42,28 @@ jobs:
 
       - name: Run tests
         run: poetry run pytest --cov=encodapy --cov-report=term-missing
+
+  docs-build-test:
+    runs-on: ubuntu-latest
+    env:
+      DOCS_GITHUB_VERSION: ${{ github.head_ref }}
+      DOCS_BASE_URL: /encodapy/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install dependencies
+        run: poetry install
+
+      # -W behandelt Sphinx-Warnungen als Fehler (optional, aber empfehlenswert)
+      - name: Build documentation
+        run: poetry run sphinx-build -b html -a -E -W ./docs/source ./docs/build
