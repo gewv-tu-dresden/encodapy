@@ -1,0 +1,685 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>encodapy.components.flixopt_model_component.flixopt_models &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=76f00390" />
+
+  
+    <link rel="canonical" href="/encodapy/_modules/encodapy/components/flixopt_model_component/flixopt_models.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/version-switcher.js?v=f8facb47"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <script>
+    window.ENCODAPY_DOCS = {
+      baseUrl: "/encodapy/",
+      currentVersion: "main",
+    };
+  </script>
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readme.html">“EnCoDaPy” – Energy Control and Data Preparation in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../basic_service.html">EnCoDaPy Basic Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../components.html">EnCoDaPy Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">encodapy.components.flixopt_model_component.flixopt_models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for encodapy.components.flixopt_model_component.flixopt_models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Description: Collection of configuration and data models for the FlixOpt model component.</span>
+<span class="sd">Authors: Martin Altenburger</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">model_validator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">flixopt</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fx</span> <span class="c1"># type: ignore[import-untyped]</span>
+
+<div class="viewcode-block" id="FlixOptSolverName">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptSolverName">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixOptSolverName</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Names of the available Flixopt solvers</span>
+<span class="sd">    </span>
+<span class="sd">    See flixopt.solvers for available solvers</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">GUROBI</span> <span class="o">=</span> <span class="s2">&quot;GurobiSolver&quot;</span>
+    <span class="n">HIGHS</span> <span class="o">=</span> <span class="s2">&quot;HighsSolver&quot;</span></div>
+
+
+<div class="viewcode-block" id="FlixoptSolverSettings">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixoptSolverSettings">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixoptSolverSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base model for Flixopt solver settings.</span>
+<span class="sd">    Only non-None values override the flixopt defaults.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span>
+    <span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">FlixOptSolverName</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Name of the solver (e.g. &#39;HighsSolver&#39; or &#39;GurobiSolver&#39;)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">mip_rel_gap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Optional relative optimality gap in [0.0, 1.0]&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">time_limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Optional time limit in seconds&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">threads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Optional solver thread limit&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">mip_focus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Optional MIP search focus (solver-specific)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">heuristics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Optional heuristic intensity (solver-specific)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">presolve</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Optional presolve level (solver-specific)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">cuts</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Optional cut generation level (solver-specific)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">additional_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Optional additional solver options forwarded directly to the &quot;</span>
+            <span class="s2">&quot;selected flixopt solver constructor.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FlixoptLogLevel">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixoptLogLevel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log-Levels from flixopt configuration - see: flixopt.CONFIG </span>
+<span class="sd">    </span>
+<span class="sd">    FLIXOPT_CONFIG_MAP is used to map the enum values \</span>
+<span class="sd">        to the actual flixopt configuration functions</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">EXPLORING</span> <span class="o">=</span> <span class="s2">&quot;exploring&quot;</span>
+    <span class="n">DEBUG</span> <span class="o">=</span> <span class="s2">&quot;debug&quot;</span>
+    <span class="n">PRODUCTION</span> <span class="o">=</span> <span class="s2">&quot;production&quot;</span>
+    <span class="n">SILENT</span> <span class="o">=</span> <span class="s2">&quot;silent&quot;</span></div>
+
+
+<span class="n">FLIXOPT_CONFIG_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">EXPLORING</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">CONFIG</span><span class="o">.</span><span class="n">exploring</span><span class="p">,</span>
+    <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">CONFIG</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span>
+    <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">PRODUCTION</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">CONFIG</span><span class="o">.</span><span class="n">production</span><span class="p">,</span>
+    <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">SILENT</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">CONFIG</span><span class="o">.</span><span class="n">silent</span><span class="p">,</span>
+<span class="p">}</span>
+
+<div class="viewcode-block" id="FlixOptBus">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptBus">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixOptBus</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model to define a flow in the flixopt model, like it is used in the flixopt library</span>
+<span class="sd">    https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Bus/</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span>
+    <span class="p">)</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Label of the flow&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">penalty</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Penalty cost for the flow&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FlixOptEffect">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptEffect">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixOptEffect</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model to define a single effect in the flixopt model, like it is used in the flixopt library</span>
+<span class="sd">    https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Effect/</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span>
+    <span class="p">)</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Label of the effect&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">description</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Description of the effect, default is empty string&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1">#TODO add units from encodapy units</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Unit of the effect&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">objective</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Whether the effect is part of the objective function, only one effect can be objective</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FlixOptConverterTypes">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptConverterTypes">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixOptConverterTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Types of FlixOpt converters, supported by encodapy FlixOpt model component</span>
+<span class="sd">    TODO: describe the converter types and add more types if needed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">BOILER</span> <span class="o">=</span> <span class="s2">&quot;boiler&quot;</span>
+    <span class="n">POWER2HEAT</span> <span class="o">=</span> <span class="s2">&quot;power2heat&quot;</span>
+    <span class="n">CHP</span> <span class="o">=</span> <span class="s2">&quot;chp&quot;</span>
+    <span class="n">SUBSTATION</span> <span class="o">=</span> <span class="s2">&quot;substation&quot;</span>
+    <span class="n">BIDIRECTIONAL_SUBSTATION</span> <span class="o">=</span> <span class="s2">&quot;bidirectional_substation&quot;</span></div>
+
+
+<div class="viewcode-block" id="PowerRange">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.PowerRange">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PowerRange</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model to define the power range of a converter in the flixopt model in percentages</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span>
+    <span class="p">)</span>
+    <span class="n">min_power</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mi">0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Minimum power of the converter, default is 0&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">max_power</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mi">100</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum power of the converter, default is 100&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FlixOptStatusParameters">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptStatusParameters">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixOptStatusParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model to define the status parameters of a converter in the flixopt model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span>
+    <span class="p">)</span>
+    <span class="n">min_up_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Minimum up time of the converter in hours&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">max_up_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum up time of the converter in hours&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">min_down_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Minimum down time of the converter in hours&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">max_down_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum down time of the converter in hours&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">startup_effects</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Startup effects of the converter,</span>
+<span class="s2">        where the key is the label of the effect </span>
+<span class="s2">        and the value is the amount of the effect per startup&quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="c1">#TODO could we check this?</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="FlixOptConverter">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptConverter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixOptConverter</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model to define a converter in the flixopt model, like it is used in the flixopt library</span>
+<span class="sd">    https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Converter/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># The model_config is set to forbid extra fields to ensure to use submodels for</span>
+    <span class="c1"># specific converter types (e.g. FlixOptCHPConverter).</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Label / Name of the converter&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">converter_type</span><span class="p">:</span> <span class="n">FlixOptConverterTypes</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Type of the converter, from the FlixOptConverterTypes enum&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">thermal_efficiency</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Thermal efficiency of the converter [0 ... 1]&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">input_flow</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Label of the fuel flow to the converter&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">thermal_flow</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Label of the thermal flow from the converter&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">thermal_nominal_power</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Nominal thermal power of the converter&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">thermal_power_range</span><span class="p">:</span> <span class="n">PowerRange</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">PowerRange</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({}),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Thermal power range of the boiler converter in percentages&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">status_parameters</span><span class="p">:</span> <span class="n">FlixOptStatusParameters</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="n">FlixOptStatusParameters</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({}),</span>
+        <span class="n">description</span><span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Optional status parameters for the converter which includes information </span>
+<span class="s2">        about startup and shutdown limitations&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="c1"># TODO: add more converter types and their specific parameters / startup costs etc.</span>
+    <span class="n">previous_power</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Previous power of the converter in kW</span>
+<span class="s2">        or as label of an input value, used to define the previous flow rate&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">operation_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Operation time of the converter in hours</span>
+<span class="s2">        or as label of an input value, used to define the operation time for startup costs&quot;&quot;&quot;</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FlixOptCHPConverter">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptCHPConverter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixOptCHPConverter</span><span class="p">(</span><span class="n">FlixOptConverter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model to define a CHP converter in the flixopt model, </span>
+<span class="sd">    which inherits from the FlixOptConverter model</span>
+<span class="sd">    and adds specific parameters for the CHP converter type</span>
+<span class="sd">    </span>
+<span class="sd">    Keep in mind, the `nominal_power` parameter in the FlixOptConverter model is the </span>
+<span class="sd">    nominal thermal power of the CHP converter, while the nominal electrical power can be </span>
+<span class="sd">    calculated from the thermal efficiency and the electrical efficiency of the CHP converter.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span>
+    <span class="p">)</span>
+    <span class="n">electrical_efficiency</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Electrical efficiency of the CHP converter&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">electrical_flow</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Label of the electrical flow for the CHP converter&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="FlixOptStorage">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptStorage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixOptStorage</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model to define a storage in the flixopt model, like it is used in the flixopt library</span>
+<span class="sd">    https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Storage/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span>
+    <span class="p">)</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">bus</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Label of the flow for the storage&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">nominal_power</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Nominal power of the storage in kW&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">nominal_capacity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Nominal capacity of the storage in kWh</span>
+<span class="s2">        or as label of an input value, which is then used to read the nominal capacity&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">relative_self_discharge</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Relative self-discharge of the storage in percentage per hour&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">eta_charge</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mf">100.0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Charging efficiency of the storage in percentage&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">eta_discharge</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mf">100.0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Discharging efficiency of the storage in percentage&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">start_soc</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mi">0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Starting state of charge (SOC) of the storage at the beginning of the optimization period,</span>
+<span class="s2">        can be defined as a percentage of the nominal capacity (e.g. 50) or as an label</span>
+<span class="s2">        of a input value (e.g. `initial_soc`) which is then used to read the starting SOC </span>
+<span class="s2">        from the input data and is required there in Percentage of the nominal capacity as well</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">minimal_soc</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mi">0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Minimal state of charge (SOC) of the storage in percentage of the nominal capacity</span>
+<span class="s2">        Defined via number or as label of an input value,</span>
+<span class="s2">        which is then used to read the minimal SOC from the input data&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">maximal_soc</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mi">100</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Maximal state of charge (SOC) of the storage in percentage of the nominal capacity</span>
+<span class="s2">        Defined via number or as label of an input value,</span>
+<span class="s2">        which is then used to read the maximal SOC from the input data&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">final_soc_percentage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Percentage of the start_soc which should be reached at the end</span>
+<span class="s2">        of the optimization period, used to define the required final SOC at the end</span>
+<span class="s2">        of the optimization period (final_soc = start_soc * final_soc_percentage / 100)&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EnergyDirection">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.EnergyDirection">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnergyDirection</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enum to define the energy direction for a sink or source in the flixopt model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SINK</span> <span class="o">=</span> <span class="s2">&quot;sink&quot;</span>
+    <span class="n">SOURCE</span> <span class="o">=</span> <span class="s2">&quot;source&quot;</span>
+    <span class="n">BIDIRECTIONAL</span> <span class="o">=</span> <span class="s2">&quot;bidirectional&quot;</span></div>
+
+
+<div class="viewcode-block" id="FlixOptSinkSource">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptSinkSource">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixOptSinkSource</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model to define a sink or source in the flixopt model, like it is used in the flixopt library</span>
+<span class="sd">    https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Element/</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span>
+    <span class="p">)</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Label of the sink/source&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">direction</span><span class="p">:</span> <span class="n">EnergyDirection</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Direction of the energy flow, either &#39;sink&#39;, &#39;source&#39; or &#39;bidirectional&#39;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">nominal_power</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Nominal power of the sink/source in kW, only required for sources&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">input_bus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Label of the flow for the sink, for the source with an input flow&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">input_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Label of the input time series for the sink (heat demand ...), </span>
+<span class="s2">        if the sink has a time series input&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">input_effects</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Optional dictionary to define the effect of the sink</span>
+<span class="s2">        on the defined effects in the model, where the key is the label of the effect</span>
+<span class="s2">        and the value is the amount of the effect per kWh of energy flow</span>
+
+<span class="s2">        Only used, if input_label is None and the input bus is defined.</span>
+
+<span class="s2">        Example::</span>
+
+<span class="s2">            {</span>
+<span class="s2">                &quot;costs&quot;: 0.15</span>
+<span class="s2">            }</span>
+
+<span class="s2">        The value can also be defined as a label of an input value, </span><span class="se">\</span>
+<span class="s2">            which is then used to read the effect from the input data </span>
+<span class="s2">            (for timeseries or a variable value).</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">output_bus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Label of the output flow for the source, only required for source with an output flow</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">output_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Label of the output time series for the source, if the source has a time series output&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">output_effects</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Optional dictionary to define the effect of the source</span>
+<span class="s2">        on the defined effects in the model, where the key is the label of the effect</span>
+<span class="s2">        and the value is the amount of the effect per kWh of energy flow</span>
+
+<span class="s2">        Only used, if output_label is None and the output bus is defined.</span>
+
+<span class="s2">        Example::</span>
+
+<span class="s2">            {</span>
+<span class="s2">                &quot;costs&quot;: 0.15</span>
+<span class="s2">            }</span>
+
+<span class="s2">        The value can also be defined as a label of an input value, </span><span class="se">\</span>
+<span class="s2">            which is then used to read the effect from the input data </span>
+<span class="s2">            (for timeseries or a variable value).</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;after&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_the_required_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validator to check, if the required fields for the sink/source are defined</span>
+<span class="sd">        depending on the direction and the other fields</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the required fields are not defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">EnergyDirection</span><span class="o">.</span><span class="n">SINK</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_bus</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For a sink, input_bus must be defined&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">EnergyDirection</span><span class="o">.</span><span class="n">SOURCE</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_bus</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For a source, output_bus must be defined&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">EnergyDirection</span><span class="o">.</span><span class="n">BIDIRECTIONAL</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_bus</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_bus</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For a bidirectional sink/source, &quot;</span>
+                                 <span class="s2">&quot;input_bus and output_bus (optional) must be defined&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_bus</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">output_bus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_bus</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nominal_power</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For a bidirectional sink/source, nominal_power must be defined&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+
+<div class="viewcode-block" id="FlixOptModel">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixOptModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model to hold the flixopt Model used in the component</span>
+
+<span class="sd">    # Specific constraints</span>
+<span class="sd">    To add constraints to the FlixOpt model, a Python file or module can be defined in the</span>
+<span class="sd">    &#39;constraints_function&#39; field. This needs to include a function called </span>
+<span class="sd">    &#39;add_constraints(optimization: fx.Optimization, config: FlixOptModel)&#39; </span>
+<span class="sd">    that adds additional constraints to the FlixOpt optimization model.</span>
+<span class="sd">    This function is then called in the component after the FlixOpt model has been built.</span>
+<span class="sd">    You can add more subfunctions to this function to add constraints.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">,</span>
+        <span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+
+    <span class="n">buses</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FlixOptBus</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        List of buses in in the model, which are required to build the flixopt model</span>
+<span class="s2">        (https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Bus/)</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">effects</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FlixOptEffect</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        List of effects in in the model, which are required to build the flixopt optimization model </span>
+<span class="s2">        (https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Effect/)</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">converters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FlixOptConverter</span> <span class="o">|</span> <span class="n">FlixOptCHPConverter</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        List of converters in in the model, which are required to build the flixopt model</span>
+<span class="s2">        (https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Converter/)</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">exchangers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FlixOptSinkSource</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        List of sinks and sources in in the model, which are required to build the flixopt model</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">storages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FlixOptStorage</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        List of storages in in the model, which are required to build the flixopt model </span>
+<span class="s2">        (https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Storage/)</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">manual_elements_function</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Path to a python file or python module which includes a function `add_elements`</span>
+<span class="s2">        used to add additional elements to the flixopt optimization model.</span>
+
+<span class="s2">        The function needs to return a list of flixopt components which should be added to the model.</span>
+
+<span class="s2">        For an example for such a function, see `add_elements.py` in the same folder as this file.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">constraints_function</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Path to a python file or python module which includes a function `add_constraints`</span>
+<span class="s2">        used to add additional constraints to the flixopt optimization model</span>
+<span class="s2">    </span>
+<span class="s2">        The function needs to have the following signature: `add_constraints(optimization:</span>
+<span class="s2">        fx.Optimization, config: FlixOptModel)` and needs to add constraints to the optimization</span>
+<span class="s2">        model based on the configuration of the FlixOptModel.</span>
+<span class="s2">    </span>
+<span class="s2">        For an example for such a function, see `add_constraints.py`</span>
+<span class="s2">        in the same folder as this file.</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

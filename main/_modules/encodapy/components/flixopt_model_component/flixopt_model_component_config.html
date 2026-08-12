@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>encodapy.components.flixopt_model_component.flixopt_model_component_config &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=76f00390" />
+
+  
+    <link rel="canonical" href="/encodapy/_modules/encodapy/components/flixopt_model_component/flixopt_model_component_config.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/version-switcher.js?v=f8facb47"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <script>
+    window.ENCODAPY_DOCS = {
+      baseUrl: "/encodapy/",
+      currentVersion: "main",
+    };
+  </script>
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../readme.html">“EnCoDaPy” – Energy Control and Data Preparation in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../basic_service.html">EnCoDaPy Basic Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../components.html">EnCoDaPy Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">encodapy.components.flixopt_model_component.flixopt_model_component_config</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for encodapy.components.flixopt_model_component.flixopt_model_component_config</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Defines the configuration data models for the new component.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span><span class="p">,</span> <span class="n">ConfigDict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">flixopt</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fx</span> <span class="c1"># type: ignore[import-untyped]</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.basic_component_config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ConfigData</span><span class="p">,</span>
+    <span class="n">InputData</span><span class="p">,</span>
+    <span class="n">OutputData</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataPointGeneral</span><span class="p">,</span> <span class="n">DataPointNumber</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.flixopt_model_component.flixopt_models</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FlixOptSolverName</span><span class="p">,</span>
+    <span class="n">FlixoptSolverSettings</span><span class="p">,</span>
+    <span class="n">FlixoptLogLevel</span>
+<span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="FlixoptModelComponentInputData">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentInputData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixoptModelComponentInputData</span><span class="p">(</span><span class="n">InputData</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Input model for the Flixopt model component</span>
+
+<span class="sd">    The `model_config` field is set to allow flexible input of model parameters, </span>
+<span class="sd">    so the required parameters can be defined in the flixopt model itself.</span>
+<span class="sd">    This way, the component can be used with different flixopt models </span>
+<span class="sd">    without needing to change the input data model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="FlixoptModelComponentOutputData">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentOutputData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixoptModelComponentOutputData</span><span class="p">(</span><span class="n">OutputData</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Output model for the Flixopt model component</span>
+<span class="sd">    </span>
+<span class="sd">    The `model_config` field is set to allow flexible output of model parameters, </span>
+<span class="sd">    so the output parameters can be defined in the flixopt model itself.</span>
+
+<span class="sd">    The component provide this output variables:</span>
+<span class="sd">    - Storage levels for all storages in the model like this: `{storage_label}_soc`</span>
+<span class="sd">    - For all converters in the model, the thermal power like this: \</span>
+<span class="sd">        `{converter_label}_thermal_power`</span>
+<span class="sd">    - For all CHP converters in the model, the electrical power like this: \</span>
+<span class="sd">        `{converter_label}_electrical_power`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="DataPointFlixoptLogLevel">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptLogLevel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataPointFlixoptLogLevel</span><span class="p">(</span><span class="n">DataPointGeneral</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DataPoint for Flixopt log level</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">FlixoptLogLevel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">SILENT</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Log level for the flixopt framework&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;before&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lowercase_to_enum</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert lowercase string to FlixoptLogLevel enum before model validation&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+
+<div class="viewcode-block" id="DataPointFlixoptSolverSettings">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptSolverSettings">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataPointFlixoptSolverSettings</span><span class="p">(</span><span class="n">DataPointGeneral</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DataPoint for Flixopt solver settings.</span>
+<span class="sd">    Leaves solver parameters unset so flixopt can use its own defaults.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">FlixoptSolverSettings</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">FlixoptSolverSettings</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">FlixOptSolverName</span><span class="o">.</span><span class="n">HIGHS</span><span class="p">,</span>
+            <span class="n">mip_rel_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">time_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">threads</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">mip_focus</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">heuristics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">presolve</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">cuts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">additional_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Solver settings for the flixopt framework&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataPointFlixoptModelConfig">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptModelConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataPointFlixoptModelConfig</span><span class="p">(</span><span class="n">DataPointGeneral</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DataPoint for Flixopt model configuration.</span>
+<span class="sd">    Can be a dict or a path to a json file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span><span class="o">|</span><span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Flixopt model configuration as dict or a path to a json file&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FlixoptModelComponentConfigData">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlixoptModelComponentConfigData</span><span class="p">(</span><span class="n">ConfigData</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Config data model for the FlixOpt model component</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">log_level</span><span class="p">:</span> <span class="n">DataPointFlixoptLogLevel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">DataPointFlixoptLogLevel</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({}),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Log level for the flixopt framework&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">solver_settings</span><span class="p">:</span> <span class="n">DataPointFlixoptSolverSettings</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="n">DataPointFlixoptSolverSettings</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({}),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Solver settings for the flixopt framework&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">excess_penalty</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">DataPointNumber</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mf">1e5</span>
+        <span class="p">}),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Penalty cost for excess of limits in the flixopt model&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">flixopt_model</span><span class="p">:</span> <span class="n">DataPointFlixoptModelConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Flixopt model configuration as dict or a path to a json file as ``DataPointFlixoptModelConfig``.</span>
+<span class="s2">        Default to None. A valid flixopt model configuration must be provided.</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="FlixoptModelComponentConfigData.get_solver">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.get_solver">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fx</span><span class="o">.</span><span class="n">solvers</span><span class="o">.</span><span class="n">_Solver</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build the configured solver.</span>
+<span class="sd">        Only forwards parameters explicitly set in the config; otherwise</span>
+<span class="sd">        flixopt uses its own defaults from CONFIG.Solving.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=no-member</span>
+        <span class="n">solver_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_settings</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">solver_cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fx</span><span class="o">.</span><span class="n">solvers</span><span class="p">,</span> <span class="n">solver_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">solver_cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported solver name: </span><span class="si">{</span><span class="n">solver_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># pylint: disable=no-member</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_settings</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">mip_rel_gap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mip_gap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">mip_rel_gap</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">time_limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;time_limit_seconds&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">time_limit</span>
+
+        <span class="c1"># flixopt solver wrappers accept advanced tuning parameters via `extra_options`.</span>
+        <span class="c1"># Use explicit mappings per solver family for predictable behavior.</span>
+        <span class="n">is_gurobi</span> <span class="o">=</span> <span class="n">solver_name</span> <span class="o">==</span> <span class="n">FlixOptSolverName</span><span class="o">.</span><span class="n">GUROBI</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">is_highs</span> <span class="o">=</span> <span class="n">solver_name</span> <span class="o">==</span> <span class="n">FlixOptSolverName</span><span class="o">.</span><span class="n">HIGHS</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">if</span> <span class="n">is_gurobi</span><span class="p">:</span>
+            <span class="n">option_key_map</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;threads&quot;</span><span class="p">:</span> <span class="s2">&quot;Threads&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mip_focus&quot;</span><span class="p">:</span> <span class="s2">&quot;MIPFocus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;heuristics&quot;</span><span class="p">:</span> <span class="s2">&quot;Heuristics&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;presolve&quot;</span><span class="p">:</span> <span class="s2">&quot;Presolve&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;cuts&quot;</span><span class="p">:</span> <span class="s2">&quot;Cuts&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="n">is_highs</span><span class="p">:</span>
+            <span class="n">option_key_map</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;threads&quot;</span><span class="p">:</span> <span class="s2">&quot;threads&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mip_focus&quot;</span><span class="p">:</span> <span class="s2">&quot;mip_focus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;heuristics&quot;</span><span class="p">:</span> <span class="s2">&quot;heuristics&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;presolve&quot;</span><span class="p">:</span> <span class="s2">&quot;presolve&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;cuts&quot;</span><span class="p">:</span> <span class="s2">&quot;cuts&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">option_key_map</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;threads&quot;</span><span class="p">:</span> <span class="s2">&quot;threads&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mip_focus&quot;</span><span class="p">:</span> <span class="s2">&quot;mip_focus&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;heuristics&quot;</span><span class="p">:</span> <span class="s2">&quot;heuristics&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;presolve&quot;</span><span class="p">:</span> <span class="s2">&quot;presolve&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;cuts&quot;</span><span class="p">:</span> <span class="s2">&quot;cuts&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="n">extra_options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">threads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">extra_options</span><span class="p">[</span><span class="n">option_key_map</span><span class="p">[</span><span class="s2">&quot;threads&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">threads</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">mip_focus</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">extra_options</span><span class="p">[</span><span class="n">option_key_map</span><span class="p">[</span><span class="s2">&quot;mip_focus&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">mip_focus</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">heuristics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">extra_options</span><span class="p">[</span><span class="n">option_key_map</span><span class="p">[</span><span class="s2">&quot;heuristics&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">heuristics</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">presolve</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">extra_options</span><span class="p">[</span><span class="n">option_key_map</span><span class="p">[</span><span class="s2">&quot;presolve&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">presolve</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">cuts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">extra_options</span><span class="p">[</span><span class="n">option_key_map</span><span class="p">[</span><span class="s2">&quot;cuts&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">cuts</span>
+        <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">additional_options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">extra_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">cfg</span><span class="o">.</span><span class="n">additional_options</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">extra_options</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;extra_options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">extra_options</span>
+
+        <span class="k">return</span> <span class="n">solver_cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
