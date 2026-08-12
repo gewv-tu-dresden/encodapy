@@ -131,7 +131,7 @@ For information on contributions, see [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 This project uses GitHub Actions for continuous integration and delivery
 (tests, linting, automated releases, docs & Docker image publishing).
-See [.github/workflows/README.md](.github/workflows/README.md) for details.
+See [.github/workflows/README.md](./.github/workflows/README.md) for details.
 
 A changelog is attached with [CHANGELOG.md](CHANGELOG.md).
 
