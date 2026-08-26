@@ -87,12 +87,14 @@ class DataUnits(Enum):
     CMT = ("CMT", "centimeter")
     MTR = ("MTR", "meter")
     MTK = ("MTK", "meter**2")
+    DD = ("DD", "degree")
 
     # speed
     MTS = ("MTS", "meter / second")
 
     # unitless
     PERCENT = ("P1", "percent")
+
 
     # Electrical
     OHM = ("OHM", "ohm")
