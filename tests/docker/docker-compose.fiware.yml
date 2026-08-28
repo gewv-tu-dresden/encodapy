@@ -1,0 +1,75 @@
+# FIWARE Stack for integration testing
+# This compose file provides the necessary services for testing FIWARE connections:
+# - Orion Context Broker (NGSI-v2)
+# - MongoDB (for Orion)
+# - CrateDB (for time series data)
+
+services:
+  # FIWARE Orion Context Broker
+  orion:
+    image: fiware/orion:3.11.0
+    hostname: orion
+    ports:
+      - "1026:1026"
+    command: -dbhost mongo -noCache -logLevel INFO
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      - ORION_MULTISERVICE=TRUE
+      - ORIONDB_HOST=mongo
+      - ORIONDB_PORT=27017
+      - ORIONDB_DB=orion
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1026/version"]
+      interval: 5s
+      timeout: 10s
+      retries: 15
+      start_period: 20s
+    networks:
+      - fiware-test-net
+
+  # MongoDB for Orion
+  mongo:
+    image: mongo:4.4
+    hostname: mongo
+    ports:
+      - "27017:27017"
+    command: --bind_ip_all
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+    networks:
+      - fiware-test-net
+    volumes:
+      - mongodb_db:/data/db
+      - mongodb_configdb:/data/configdb
+
+  # CrateDB for time series data
+  cratedb:
+    image: crate:5.3.0
+    hostname: cratedb
+    ports:
+      - "4200:4200"
+      - "4300:4300"
+    environment:
+      - CRATE_HEAP_SIZE=1g
+      - cluster.name=cratedb-test
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+    networks:
+      - fiware-test-net
+    volumes:
+      - cratedb_data:/data
+
+volumes:
+  mongodb_db:
+  mongodb_configdb:
+  cratedb_data:
+
+networks:
+  fiware-test-net:
+    driver: bridge

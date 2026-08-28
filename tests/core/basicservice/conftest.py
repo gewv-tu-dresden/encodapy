@@ -8,7 +8,6 @@ ControllerBasicService class in the encodapy.service.basic_service module.
 import asyncio
 from datetime import datetime
 from unittest.mock import MagicMock, patch
-
 import pytest
 from filip.models.base import DataType
 
@@ -39,6 +38,8 @@ from encodapy.utils.models import (
 )
 from encodapy.utils.units import DataUnits, TimeUnits
 from encodapy.config.env_values import FiwareEnvVariables, FileEnvVariables, MQTTEnvVariables
+import json
+from pathlib import Path
 
 
 @pytest.fixture
@@ -670,3 +671,27 @@ def unset_shutdown_event():
         asyncio.Event: Event that is not set.
     """
     return asyncio.Event()
+
+
+def _load_config_from_example_01():
+    """Helper function to load the example configuration from examples/01_config/config.json."""
+    # Path from tests/core/basicservice/conftest.py to examples/01_config/config.json
+    # __file__ -> tests/core/basicservice/conftest.py
+    # parent.parent.parent.parent -> encodapy (root)
+    config_path = Path(__file__).parent.parent.parent.parent / "examples" / "01_config" / "config.json"
+    with open(config_path, encoding="utf-8") as f:
+        config_dict = json.load(f)
+    return ConfigModel(**config_dict)
+
+
+@pytest.fixture
+def config_from_example_01():
+    """
+    Fixture that loads the example configuration from examples/01_config/config.json.
+    
+    Useful for integration tests that require a real, complete configuration file.
+    
+    Returns:
+        ConfigModel: Configuration loaded from the example file.
+    """
+    return _load_config_from_example_01()

@@ -17,7 +17,8 @@ from encodapy.utils.deprecated import deprecated
 class TimeUnits(Enum):
     """Possible time units for the time series data
 
-    TODO: Is it better to use standard time units? Like in the unit code?
+    Used for the configuration of time series queries
+    and calculations in the system controller.
 
     """
 

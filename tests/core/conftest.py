@@ -61,4 +61,5 @@ __all__ = [
     'mock_input_data_model',
     'shutdown_event',
     'unset_shutdown_event',
+    'config_from_example_01',
 ]

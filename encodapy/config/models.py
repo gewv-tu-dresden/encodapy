@@ -210,7 +210,7 @@ class TimeSettingsCalculationModel(BaseModel):
     timerange_min: Optional[float] = None
     timerange_max: Optional[float] = None
     timerange_type: Optional[TimerangeTypes] = TimerangeTypes.ABSOLUTE
-    timerange_unit: Optional[TimeUnits] = TimeUnits.MINUTE
+    timerange_unit: TimeUnits = TimeUnits.MINUTE
 
     timestep: Union[float, int] = 1
     timestep_unit: TimeUnits = TimeUnits.SECOND
@@ -294,7 +294,7 @@ class TimeSettingsCalibrationModel(BaseModel):
     """
 
     timerange: Optional[float] = None
-    timerange_unit: Optional[TimeUnits] = TimeUnits.MINUTE
+    timerange_unit: TimeUnits = TimeUnits.MINUTE
 
     timestep: Union[float, int] = 1
     timestep_unit: TimeUnits = TimeUnits.SECOND

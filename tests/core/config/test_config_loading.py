@@ -6,13 +6,12 @@ configuration functionality of the ControllerBasicService class.
 """
 
 from unittest.mock import patch, MagicMock
-
+import asyncio
 import pytest
-
+from pydantic import ValidationError
 from encodapy.service.basic_service import ControllerBasicService
 from encodapy.config import ConfigModel, BasicEnvVariables
 from encodapy.utils.error_handling import ConfigError, InterfaceNotActive
-from pydantic import ValidationError
 
 
 class TestLoadConfig:
@@ -30,7 +29,6 @@ class TestLoadConfig:
         Verifies that _load_config successfully loads and assigns the
         configuration from the specified file path.
         """
-        import asyncio
         
         mock_from_json.return_value = mock_config_all_interfaces
         
@@ -140,11 +138,11 @@ class TestLoadConfig:
         """
         mock_from_json.side_effect = FileNotFoundError("Config file not found")
         service_with_no_config.env = BasicEnvVariables(config_path="nonexistent.json")
-        
+
         with patch.object(service_with_no_config, 'load_fiware_params'):
             with pytest.raises(SystemExit) as exc_info:
                 service_with_no_config._load_config()
-            
+
             assert exc_info.value.code == 1
             mock_logger.error.assert_called_once()
             assert "Error loading configuration file" in str(mock_logger.error.call_args)
@@ -152,8 +150,8 @@ class TestLoadConfig:
     @patch('encodapy.service.basic_service.ConfigModel.from_json')
     @patch('encodapy.service.basic_service.logger')
     def test_load_config_validation_error(
-        self, 
-        mock_logger, 
+        self,
+        mock_logger,
         mock_from_json,
         service_with_no_config
     ):

@@ -26,6 +26,21 @@ from filip.models.ngsi_v2.context import (
 )
 from loguru import logger
 
+
+def _format_datetime_iso8601(dt: datetime) -> str:
+    """Format datetime to ISO 8601 with Z for UTC timezone.
+    
+    Args:
+        dt: datetime object (aware or naive)
+        
+    Returns:
+        ISO 8601 formatted string with Z suffix for UTC
+    """
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    formatted = dt.strftime("%Y-%m-%dT%H:%M:%S%z")
+    return formatted[:-5] + "Z" if formatted.endswith("+0000") else formatted
+
 from encodapy.config import (
     AttributeModel,
     AttributeTypes,
@@ -269,12 +284,22 @@ class FiwareConnection:
                 metadata_model.timestamp = datetime.strptime(
                     timeinstant_value, "%Y-%m-%dT%H:%M:%S.%f%z"
                 )
-            except (ValueError, TypeError) as err:
-                logger.error(
-                    f"Error while parsing timestamp for attribute {fiware_attribute.name}: "
-                    f"Invalid timestamp format: {timeinstant_value}, "
-                    f"{err}"
-                )
+            except ValueError:
+                try:
+                    metadata_model.timestamp = datetime.strptime(
+                        timeinstant_value, "%Y-%m-%dT%H:%M:%S%z"
+                    )
+                except ValueError:
+                    try:
+                        metadata_model.timestamp = datetime.strptime(
+                            timeinstant_value, "%Y-%m-%dT%H:%M:%SZ"
+                        ).replace(tzinfo=timezone.utc)
+                    except (ValueError, TypeError) as err:
+                        logger.error(
+                            f"Error while parsing timestamp for attribute {fiware_attribute.name}: "
+                            f"Invalid timestamp format: {timeinstant_value}, "
+                            f"{err}"
+                        )
         elif metadata_lowercase.get("timeinstant") is not None:
             logger.debug("No timestamp available in the metadata of the attribute.")
 
@@ -392,7 +417,7 @@ class FiwareConnection:
 
         if len(attributes_timeseries) > 0:
             attributes_values.extend(
-                self.get_data_from_datebase(
+                self.get_data_from_database(
                     entity=ContextEntity(
                         id=entity.id_interface, type=fiware_input_entity_type
                     ),
@@ -408,101 +433,87 @@ class FiwareConnection:
         self,
         time_now: datetime,
         last_timestamp: Union[datetime, None],
-        timerange_value: int,
+        timerange_value: Union[int, float],
         timerange_type: Union[TimerangeTypes, None],
-    ) -> tuple[str, str]:
+    ) -> tuple[str, Optional[str]]:
         """Function to calculate the timerange for the input data query based on
         a fixed timerange from the configuration
 
         Args:
             time_now (datetime): Time now
             last_timestamp (datetime): Timestamp of the last output
-            timerange_value (int): Value of the timerange in the configuration
-            timerange_type (str): Type of the timerange (absolute or relative)
+            timerange_value (Union[int, float]): Value of the timerange in the configuration \
+                in seconds
+            timerange_type (Union[TimerangeTypes, None]): Type of the timerange \
+                (absolute or relative)
 
         Returns:
-            tuple[str, str]: Timestamps for the input data query (from_date, to_date)
+            tuple[str, Optional[str]]: Timestamps for the input data query (from_date, to_date)
         """
         if timerange_type is TimerangeTypes.ABSOLUTE or last_timestamp is None:
-            from_date = (time_now - timedelta(seconds=timerange_value)).strftime(
-                "%Y-%m-%dT%H:%M:%S%z"
-            )
+            from_date = _format_datetime_iso8601(time_now - timedelta(seconds=timerange_value))
             return from_date, None
 
-        timeframe = (time_now - last_timestamp).total_seconds() / 60
+        timeframe = (time_now - last_timestamp).total_seconds()
 
         if timerange_type is TimerangeTypes.RELATIVE:
             if timeframe < timerange_value:
-                from_date = (time_now - timedelta(seconds=timerange_value)).strftime(
-                    "%Y-%m-%dT%H:%M:%S%z"
-                )
+                from_date = _format_datetime_iso8601(time_now - timedelta(seconds=timerange_value))
                 return from_date, None
 
-            from_date = last_timestamp.strftime("%Y-%m-%dT%H:%M:%S%z")
-            to_date = (last_timestamp + timedelta(seconds=timerange_value)).strftime(
-                "%Y-%m-%dT%H:%M:%S%z"
-            )
+            from_date = _format_datetime_iso8601(last_timestamp)
+            to_date = _format_datetime_iso8601(last_timestamp + timedelta(seconds=timerange_value))
             return from_date, to_date
 
         # Fallback to absolute if no type is specified
-        from_date = (time_now - timedelta(seconds=timerange_value)).strftime(
-            "%Y-%m-%dT%H:%M:%S%z"
-        )
+        from_date = _format_datetime_iso8601(time_now - timedelta(seconds=timerange_value))
         return from_date, None
 
     def _calculate_timerange_min_max(
         self,
         time_now: datetime,
         last_timestamp: Union[datetime, None],
-        timerange_min: int,
-        timerange_max: int,
-    ) -> tuple[str, str]:
+        timerange_min: Union[int, float],
+        timerange_max: Union[int, float],
+    ) -> tuple[str, Optional[str]]:
         """Function to calculate the timerange for the input data query based on a min
         and max timerange from the configuration
 
         Args:
             time_now (datetime): Time now
             last_timestamp (datetime): Timestamp of the last output, if available
-            timerange_min (int): Minimal value of the timerange in the configuration in seconds
-            timerange_max (int): Maximal value of the timerange in the configuration in seconds
+            timerange_min (Union[int, float]): Minimal value of the timerange in the configuration \
+                in seconds
+            timerange_max (Union[int, float]): Maximal value of the timerange in the configuration \
+                in seconds
             timerange_type (TimerangeTypes): Type of the timerange (absolute or relative)
 
         Returns:
             tuple[str, str]: Timestamps for the input data query (from_date, to_date)
         """
         if last_timestamp is None:
-            from_date = (
-                (time_now - timedelta(seconds=timerange_max))
-                .replace(tzinfo=tz.UTC)
-                .strftime("%Y-%m-%dT%H:%M:%S%z")
-            )
+            from_date = _format_datetime_iso8601(time_now - timedelta(seconds=timerange_max))
             return from_date, None
 
-        timeframe = (time_now - last_timestamp).total_seconds() / 60
+        timeframe = (time_now - last_timestamp).total_seconds()
 
         if timeframe < timerange_min:
-            from_date = (
-                (time_now - timedelta(seconds=timerange_min))
-                .replace(tzinfo=tz.UTC)
-                .strftime("%Y-%m-%dT%H:%M:%S%z")
-            )
+            from_date = _format_datetime_iso8601(time_now - timedelta(seconds=timerange_min))
             return from_date, None
 
         if timeframe < timerange_max:
-            from_date = last_timestamp.strftime("%Y-%m-%dT%H:%M:%S%z")
+            from_date = _format_datetime_iso8601(last_timestamp)
             return from_date, None
 
-        from_date = last_timestamp.strftime("%Y-%m-%dT%H:%M:%S%z")
-        to_date = (last_timestamp + timedelta(seconds=timerange_max)).strftime(
-            "%Y-%m-%dT%H:%M:%S%z"
-        )
+        from_date = _format_datetime_iso8601(last_timestamp)
+        to_date = _format_datetime_iso8601(last_timestamp + timedelta(seconds=timerange_max))
         return from_date, to_date
 
     def _handle_calculation_method(
         self,
         time_now: datetime,
         last_timestamp: datetime,
-    ) -> tuple[str, str]:
+    ) -> tuple[str, Optional[str]]:
         """Funtion to calculate the dates for the calculation method
 
         Args:
@@ -510,7 +521,7 @@ class FiwareConnection:
             last_timestamp (datetime): Timestamp of the last output
 
         Returns:
-            tuple[str, str]: Timestamps for the input data query (from_date, to_date)
+            tuple[str, Optional[str]]: Timestamps for the input data query (from_date, to_date)
         """
         calculation = self.config.controller_settings.time_settings.calculation
 
@@ -577,7 +588,7 @@ class FiwareConnection:
             )
 
         if to_date is None:
-            to_date = time_now.strftime("%Y-%m-%dT%H:%M:%S%z")
+            to_date = _format_datetime_iso8601(time_now)
 
         return from_date, to_date
 
@@ -610,21 +621,17 @@ class FiwareConnection:
             is TimerangeTypes.RELATIVE
             and last_timestamp is not None
         ):
-            from_date = (last_timestamp - timedelta(seconds=timerange)).strftime(
-                "%Y-%m-%dT%H:%M:%S%z"
-            )
+            from_date = _format_datetime_iso8601(last_timestamp - timedelta(seconds=timerange))
             to_date = last_timestamp
 
             return from_date, None
 
-        from_date = (time_now - timedelta(seconds=timerange)).strftime(
-            "%Y-%m-%dT%H:%M:%S%z"
-        )
+        from_date = _format_datetime_iso8601(time_now - timedelta(seconds=timerange))
         to_date = time_now
 
         return from_date, to_date
 
-    def get_data_from_datebase(
+    def get_data_from_database(
         self,
         entity: ContextEntity,
         entity_attributes: dict,
@@ -807,7 +814,7 @@ class FiwareConnection:
             NamedMetadata(
                 name="TimeInstant",
                 type=DataType.DATETIME,
-                value=df.index[-1].strftime("%Y-%m-%dT%H:%M:%S%z"),
+                value=_format_datetime_iso8601(df.index[-1]),
             )
         ]
 
@@ -826,7 +833,7 @@ class FiwareConnection:
                 NamedMetadata(
                     name="TimeInstant",
                     type=DataType.DATETIME,
-                    value=index.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                    value=_format_datetime_iso8601(index),
                 )
             ]
 
@@ -887,6 +894,13 @@ class FiwareConnection:
                         name="unitCode", type=DataType.TEXT, value=attribute.unit.value
                     )
                 )
+
+        elif attribute.unit is None and fiware_unit is not None:
+            meta_data.append(
+                NamedMetadata(
+                    name="unitCode", type=DataType.TEXT, value=fiware_unit.value
+                )
+            )
 
         return attribute, meta_data
 
@@ -981,9 +995,9 @@ class FiwareConnection:
                     name="TimeInstant",
                     type=DataType.DATETIME,
                     value=(
-                        attribute.timestamp.strftime("%Y-%m-%dT%H:%M:%S%z")
+                        _format_datetime_iso8601(attribute.timestamp)
                         if attribute.timestamp is not None
-                        else datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+                        else _format_datetime_iso8601(datetime.now(timezone.utc))
                     ),
                 )
             )
