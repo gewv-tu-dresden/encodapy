@@ -7,13 +7,22 @@ module, covering:
 - Data query and retrieval from FIWARE Context Broker
 - Data sending and entity updates to FIWARE
 - Unit conversion and adjustment for FIWARE compatibility
+- Time calculation utilities
 - Integration tests with Docker containers
 
 Test Organization:
-- test_fiware_connection.py: Unit tests for connection setup and configuration
-- test_fiware_connection_integration.py: Integration tests with Docker containers
-- test_fiware_data_query.py: Unit tests for data retrieval logic
-- test_fiware_data_send.py: Unit tests for data sending logic including unit adjustment
+- Unit Tests (fast, no external dependencies):
+  - test_fiware_connection.py: Connection setup and configuration
+  - test_fiware_data_query.py: Data retrieval logic and metadata extraction
+  - test_fiware_data_send.py: Data sending logic and unit adjustment
+  - test_fiware_time_calculation.py: Time range and date calculation
 
-All tests use pytest framework and mock external dependencies where appropriate.
+- Integration Tests (require Docker containers):
+  - integration/test_fiware_connection_integration.py: End-to-end tests
+
+All unit tests use pytest framework with mocked dependencies.
+Integration tests require Docker containers and use testcontainers.
+
+Shared fixtures for unit tests are in conftest.py.
+Shared fixtures for integration tests are in integration/conftest.py.
 """

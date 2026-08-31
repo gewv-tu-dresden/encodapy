@@ -16,15 +16,14 @@ Test Strategy:
 
 # pylint: disable=protected-access, unused-argument, redefined-outer-name
 
-import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
 import os
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from filip.clients.ngsi_v2 import ContextBrokerClient
-from filip.models.base import FiwareHeaderSecure, DataType
-from filip.models.ngsi_v2.base import NamedMetadata
+from filip.models.base import FiwareHeaderSecure
 
-from encodapy.config import ConfigModel, Interfaces
 from encodapy.config.env_values import FiwareEnvVariables
 from encodapy.service.communication.fiware_connection import FiwareConnection
 from encodapy.utils.cratedb import CrateDBConnection
@@ -45,10 +44,10 @@ from encodapy.utils.models import (
 @pytest.fixture
 def mock_fiware_env_no_auth():
     """Create a mock FiwareEnvVariables with authentication disabled.
-    
+
     Provides environment configuration where FIWARE authentication is turned off.
     Useful for testing scenarios where no authentication is required.
-    
+
     Yields:
         FiwareEnvVariables: Mocked environment with auth=False and test service config.
     """
@@ -65,10 +64,10 @@ def mock_fiware_env_no_auth():
 @pytest.fixture
 def mock_fiware_env_bearer_token():
     """Create a mock FiwareEnvVariables with bearer token authentication.
-    
+
     Provides environment configuration for bearer token authentication mode.
     Useful for testing token-based authentication scenarios.
-    
+
     Yields:
         FiwareEnvVariables: Mocked environment with auth=True and bearer token config.
     """
@@ -94,10 +93,10 @@ def mock_fiware_env_bearer_token():
 @pytest.fixture
 def mock_fiware_env_client_credentials():
     """Create a mock FiwareEnvVariables with client credentials authentication.
-    
+
     Provides environment configuration for OAuth2 client credentials flow.
     Useful for testing authentication with client ID and secret.
-    
+
     Yields:
         FiwareEnvVariables: Mocked environment with client credentials config.
     """
@@ -126,10 +125,10 @@ def mock_fiware_env_client_credentials():
 @pytest.fixture
 def mock_fiware_connection():
     """Create a FiwareConnection instance with mocked parameters.
-    
+
     Provides a FiwareConnection with all connection parameters mocked using MagicMock.
     Useful for testing connection-related methods without actual network calls.
-    
+
     Returns:
         FiwareConnection: Instance with mocked FIWARE and database parameters.
     """
@@ -151,10 +150,10 @@ def mock_fiware_connection():
 @pytest.fixture
 def mock_cb_client():
     """Create a mock ContextBrokerClient for testing.
-    
+
     Provides a mocked FILIP ContextBrokerClient that returns test entity list.
     Useful for testing connection checking and entity operations.
-    
+
     Returns:
         MagicMock: Mocked ContextBrokerClient with get_entity_list returning test data.
     """
@@ -166,7 +165,7 @@ def mock_cb_client():
 @pytest.fixture
 def mock_crate_db_client():
     """Create a mock CrateDBConnection for testing.
-    
+
     Returns:
         MagicMock: Mocked CrateDBConnection instance.
     """
@@ -180,13 +179,13 @@ def mock_crate_db_client():
 
 def test_load_fiware_params_no_auth(mock_fiware_env_no_auth):
     """Test loading FIWARE parameters with authentication disabled.
-    
+
     Verifies that when FIWARE_AUTH is false, the connection parameters are loaded
     without authentication configuration.
-    
+
     Args:
         mock_fiware_env_no_auth: Fixture providing environment with auth disabled
-    
+
     Asserts:
         - fiware_conn_params is created
         - fiware_params is created
@@ -194,13 +193,13 @@ def test_load_fiware_params_no_auth(mock_fiware_env_no_auth):
         - service and service_path are correctly loaded
     """
     connection = FiwareConnection()
-    
+
     with patch(
         "encodapy.service.communication.fiware_connection.FiwareEnvVariables",
         return_value=mock_fiware_env_no_auth,
     ):
         connection.load_fiware_params()
-    
+
     assert connection.fiware_conn_params is not None
     assert connection.fiware_conn_params.fiware_params is not None
     assert connection.fiware_conn_params.fiware_params.authentication is None
@@ -210,13 +209,13 @@ def test_load_fiware_params_no_auth(mock_fiware_env_no_auth):
 
 def test_load_fiware_params_bearer_token(mock_fiware_env_bearer_token):
     """Test loading FIWARE parameters with bearer token authentication.
-    
+
     Verifies that bearer token authentication is correctly configured from
     environment variables.
-    
+
     Args:
         mock_fiware_env_bearer_token: Fixture providing environment with bearer token
-    
+
     Asserts:
         - fiware_conn_params is created
         - fiware_params is created
@@ -224,13 +223,13 @@ def test_load_fiware_params_bearer_token(mock_fiware_env_bearer_token):
         - bearer_token is correctly loaded
     """
     connection = FiwareConnection()
-    
+
     with patch(
         "encodapy.service.communication.fiware_connection.FiwareEnvVariables",
         return_value=mock_fiware_env_bearer_token,
     ):
         connection.load_fiware_params()
-    
+
     assert connection.fiware_conn_params is not None
     assert connection.fiware_conn_params.fiware_params is not None
     assert connection.fiware_conn_params.fiware_params.authentication is not None
@@ -242,26 +241,26 @@ def test_load_fiware_params_bearer_token(mock_fiware_env_bearer_token):
 
 def test_load_fiware_params_client_credentials(mock_fiware_env_client_credentials):
     """Test loading FIWARE parameters with client credentials authentication.
-    
+
     Verifies that OAuth2 client credentials are correctly loaded from environment
     variables.
-    
+
     Args:
         mock_fiware_env_client_credentials: Fixture providing environment with client creds
-    
+
     Asserts:
         - fiware_conn_params is created
         - fiware_params is created
         - authentication contains client_id, client_secret, and token_url
     """
     connection = FiwareConnection()
-    
+
     with patch(
         "encodapy.service.communication.fiware_connection.FiwareEnvVariables",
         return_value=mock_fiware_env_client_credentials,
     ):
         connection.load_fiware_params()
-    
+
     assert connection.fiware_conn_params is not None
     assert connection.fiware_conn_params.fiware_params is not None
     auth = connection.fiware_conn_params.fiware_params.authentication
@@ -273,10 +272,10 @@ def test_load_fiware_params_client_credentials(mock_fiware_env_client_credential
 
 def test_load_fiware_params_no_credentials_raises_error():
     """Test that NoCredentials is raised when auth is enabled but no credentials provided.
-    
+
     Verifies error handling when authentication is required but no valid
     credentials (bearer token or client credentials) are available.
-    
+
     Asserts:
         - NoCredentials exception is raised
     """
@@ -301,9 +300,9 @@ def test_load_fiware_params_no_credentials_raises_error():
             mock_env.cb_url = "http://localhost:1026"
             mock_env.crate_db_url = "http://localhost:4200"
             mock_env_class.return_value = mock_env
-            
+
             connection = FiwareConnection()
-            
+
             with pytest.raises(NoCredentials):
                 connection.load_fiware_params()
 
@@ -317,7 +316,7 @@ def test_check_fiware_connection_success(mock_fiware_connection, mock_cb_client)
     """Test checking FIWARE connection with entities available."""
     mock_fiware_connection.cb_client = mock_cb_client
     mock_cb_client.get_entity_list.return_value = ["entity1", "entity2"]
-    
+
     # Should not raise an exception
     mock_fiware_connection.check_fiware_connection()
 
@@ -326,10 +325,10 @@ def test_check_fiware_connection_no_entities(mock_fiware_connection, mock_cb_cli
     """Test checking FIWARE connection with no entities available."""
     mock_fiware_connection.cb_client = mock_cb_client
     mock_cb_client.get_entity_list.return_value = []
-    
+
     # Should not raise an exception, just log an error
     mock_fiware_connection.check_fiware_connection()
-    
+
     # Verify that get_entity_list was called
     mock_cb_client.get_entity_list.assert_called_once()
 
@@ -337,7 +336,7 @@ def test_check_fiware_connection_no_entities(mock_fiware_connection, mock_cb_cli
 def test_check_fiware_connection_no_client_raises_error(mock_fiware_connection):
     """Test that InterfaceNotActive is raised when client is not available."""
     mock_fiware_connection.cb_client = None
-    
+
     with pytest.raises(InterfaceNotActive, match="ContextBrokerClient is not active"):
         mock_fiware_connection.check_fiware_connection()
 
@@ -347,21 +346,25 @@ def test_check_fiware_connection_no_client_raises_error(mock_fiware_connection):
 # =============================================================================
 
 
-def test_prepare_fiware_connection_no_auth(mock_fiware_connection, mock_cb_client, mock_crate_db_client):
+def test_prepare_fiware_connection_no_auth(
+    mock_fiware_connection, mock_cb_client, mock_crate_db_client
+):
     """Test preparing FIWARE connection without authentication."""
     mock_fiware_connection.fiware_conn_params.fiware_params.authentication = None
-    
+
     with patch("encodapy.service.communication.fiware_connection.ContextBrokerClient") as mock_cbc:
         mock_instance = MagicMock()
         mock_cbc.return_value = mock_instance
         mock_instance.get_entity_list.return_value = ["entity1"]
-        
-        with patch("encodapy.service.communication.fiware_connection.CrateDBConnection") as mock_cdb:
+
+        with patch(
+            "encodapy.service.communication.fiware_connection.CrateDBConnection"
+        ) as mock_cdb:
             mock_cdb_instance = MagicMock()
             mock_cdb.return_value = mock_cdb_instance
-            
+
             mock_fiware_connection.prepare_fiware_connection()
-    
+
     assert mock_fiware_connection.cb_client is not None
     assert mock_fiware_connection.crate_db_client is not None
     assert mock_fiware_connection.fiware_token_client is None
@@ -372,20 +375,24 @@ def test_prepare_fiware_connection_with_bearer_token(mock_fiware_connection, moc
     """Test preparing FIWARE connection with bearer token authentication."""
     auth = FiwareAuth(bearer_token="test_token")
     mock_fiware_connection.fiware_conn_params.fiware_params.authentication = auth
-    
+
     with patch("encodapy.service.communication.fiware_connection.BearerToken") as mock_bearer:
         mock_bearer_instance = MagicMock()
         mock_bearer_instance.bearer_token = "test_token"
         mock_bearer.return_value = mock_bearer_instance
-        
-        with patch("encodapy.service.communication.fiware_connection.ContextBrokerClient") as mock_cbc:
+
+        with patch(
+            "encodapy.service.communication.fiware_connection.ContextBrokerClient"
+        ) as mock_cbc:
             mock_instance = MagicMock()
             mock_cbc.return_value = mock_instance
             mock_instance.get_entity_list.return_value = ["entity1"]
-            
-            with patch("encodapy.service.communication.fiware_connection.CrateDBConnection"):
+
+            with patch(
+                "encodapy.service.communication.fiware_connection.CrateDBConnection"
+            ):
                 mock_fiware_connection.prepare_fiware_connection()
-    
+
     assert mock_fiware_connection.fiware_token_client is not None
     assert mock_fiware_connection.fiware_header is not None
     assert mock_fiware_connection.fiware_header.__dict__["authorization"] == "test_token"
@@ -400,20 +407,22 @@ def test_prepare_fiware_connection_with_client_credentials(mock_fiware_connectio
         token_url="http://localhost:3000/token",
     )
     mock_fiware_connection.fiware_conn_params.fiware_params.authentication = auth
-    
+
     with patch("encodapy.service.communication.fiware_connection.BearerToken") as mock_bearer:
         mock_bearer_instance = MagicMock()
         mock_bearer_instance.bearer_token = "generated_token"
         mock_bearer.return_value = mock_bearer_instance
-        
-        with patch("encodapy.service.communication.fiware_connection.ContextBrokerClient") as mock_cbc:
+
+        with patch(
+            "encodapy.service.communication.fiware_connection.ContextBrokerClient"
+        ) as mock_cbc:
             mock_instance = MagicMock()
             mock_cbc.return_value = mock_instance
             mock_instance.get_entity_list.return_value = ["entity1"]
-            
+
             with patch("encodapy.service.communication.fiware_connection.CrateDBConnection"):
                 mock_fiware_connection.prepare_fiware_connection()
-    
+
     assert mock_fiware_connection.fiware_token_client is not None
     assert mock_fiware_connection.fiware_header is not None
 
@@ -429,16 +438,16 @@ def test_update_authentication_refreshes_token(mock_fiware_connection):
     mock_token_client.check_token.return_value = False
     mock_token_client.bearer_token = "new_token"
     mock_fiware_connection.fiware_token_client = mock_token_client
-    
+
     mock_header = MagicMock(spec=FiwareHeaderSecure)
     mock_header.__dict__ = {"authorization": "old_token"}
     mock_fiware_connection.fiware_header = mock_header
-    
+
     auth = FiwareAuth(bearer_token="old_token")
     mock_fiware_connection.fiware_conn_params.fiware_params.authentication = auth
-    
+
     mock_fiware_connection.update_authentication()
-    
+
     assert mock_header.__dict__["authorization"] == "new_token"
     mock_token_client.check_token.assert_called_once()
 
@@ -448,17 +457,17 @@ def test_update_authentication_no_refresh_needed(mock_fiware_connection):
     mock_token_client = MagicMock(spec=BearerToken)
     mock_token_client.check_token.return_value = True
     mock_fiware_connection.fiware_token_client = mock_token_client
-    
+
     mock_header = MagicMock(spec=FiwareHeaderSecure)
     mock_header.__dict__ = {"authorization": "valid_token"}
     mock_fiware_connection.fiware_header = mock_header
-    
+
     auth = FiwareAuth(bearer_token="valid_token")
     mock_fiware_connection.fiware_conn_params.fiware_params.authentication = auth
-    
+
     original_token = mock_header.__dict__["authorization"]
     mock_fiware_connection.update_authentication()
-    
+
     # Token should not be updated if check_token returns True
     assert mock_header.__dict__["authorization"] == original_token
     mock_token_client.check_token.assert_called_once()
@@ -469,6 +478,6 @@ def test_update_authentication_no_auth(mock_fiware_connection):
     mock_fiware_connection.fiware_conn_params.fiware_params.authentication = None
     mock_fiware_connection.fiware_token_client = None
     mock_fiware_connection.fiware_header = None
-    
+
     # Should not raise an exception
     mock_fiware_connection.update_authentication()
