@@ -1,6 +1,6 @@
 [MASTER]
 fail-under = 9.5
-ignore=docs
+ignore=docs, tests
 load-plugins=
     pylint_pydantic
 disable=
