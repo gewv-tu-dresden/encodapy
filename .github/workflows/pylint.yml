@@ -9,11 +9,11 @@ jobs:
   Pylint-Test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # If you wanted to use multiple Python versions, you'd have specify a matrix in the job and
       # reference the matrixe python version here.
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.11
 
@@ -37,7 +37,7 @@ jobs:
       # The key configuration value here is `virtualenvs-in-project: true`: this creates the
       # venv as a `.venv` in your testing directory, which allows the next step to easily
       # cache it.
-      - uses: snok/install-poetry@v1.4.1
+      - uses: snok/install-poetry@v2
         with:
           version: 1.7.1
           virtualenvs-create: true
@@ -67,5 +67,4 @@ jobs:
 
       # Analyse the code with pylint
       - name: Analyse the code with pylint
-        run: |
-          poetry run pylint $(git ls-files '*.py')
+        run: poetry run pylint

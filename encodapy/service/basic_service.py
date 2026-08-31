@@ -309,7 +309,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """
         if self.config is None:
             return None
-            
+
         for entity in self.config.outputs:
             if entity.id == output_entity_id:
                 return entity
@@ -334,7 +334,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """
         if self.config is None:
             return None
-            
+
         for entity in self.config.outputs:
             if entity.id == output_entity_id:
                 for attribute in entity.attributes:
@@ -361,7 +361,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """
         if self.config is None:
             return None
-            
+
         for entity in self.config.outputs:
             if entity.id == output_entity_id:
                 for commmand in entity.commands:
@@ -585,8 +585,8 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         # First check if value is a dict
         if not isinstance(value, dict):
             return False
-            
-        GEOJSON_TYPES = {
+
+        geojson_types = {
             "Point",
             "MultiPoint",
             "LineString",
@@ -599,8 +599,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         }
         return (
             isinstance(value.get("type"), str)
-            and value["type"] in GEOJSON_TYPES
-            and ("coordinates" in value or "geometry" in value or "features" in value or "geometries" in value)
+            and value["type"] in geojson_types
+            and ("coordinates" in value or "geometry" in value \
+                or "features" in value or "geometries" in value)
         )
 
     def _validate_datatype_against_value(

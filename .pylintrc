@@ -1,7 +1,6 @@
 [MASTER]
 fail-under = 9.5
-ignore=docs, tests
+ignore=docs, tests, examples
 load-plugins=
     pylint_pydantic
-disable=
-    fixme
+disable=W0511
