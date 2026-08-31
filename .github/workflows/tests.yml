@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  pytest:
+  unit-tests:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -41,7 +41,16 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Run tests
-        run: poetry run pytest --cov=encodapy --cov-report=term-missing
+        run: poetry run pytest -m "not integration" --cov=encodapy --cov-report=xml --cov-report=term-missing
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: ./coverage.xml
+          flags: unit-tests
+          name: unit-tests-coverage
+          fail_ci_if_error: false
 
   docs-build-test:
     runs-on: ubuntu-latest
@@ -74,9 +83,7 @@ jobs:
   integration-tests:
     name: Integration Tests (FIWARE + Docker)
     runs-on: ubuntu-latest
-    # Only run on pull requests and main branch pushes
-    # Disabled by default - enable by removing the if condition or setting to true
-    if: false  # Set to true or remove to enable integration tests in CI
+    # Run on pull requests and main branch pushes (same as pytest job)
     
     services:
       # Use Docker-in-Docker service
@@ -108,25 +115,31 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --no-interaction --no-root
-          # Install testcontainers for integration tests
-          poetry add --group dev testcontainers
-          poetry install --no-interaction
+          poetry install --no-interaction --with dev
 
       - name: Run integration tests
         run: |
           poetry run pytest \
-            tests/core/communication/fiware/test_fiware_connection_integration.py \
-            -v \
             -m integration \
-            --cov=encodapy/service/communication/fiware_connection \
+            -v \
+            --cov=encodapy \
+            --cov-report=xml \
             --cov-report=term-missing
         timeout-minutes: 15
         env:
           DOCKER_HOST: tcp://docker:2375
           DOCKER_TLS_VERIFY: "0"
           DOCKER_CLI_EXPERIMENTAL: enabled
-        
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: ./coverage.xml
+          flags: integration-tests
+          name: integration-tests-coverage
+          fail_ci_if_error: false
+      
       - name: Clean up Docker containers
         if: always()
         run: docker system prune -f
