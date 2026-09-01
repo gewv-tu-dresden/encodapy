@@ -84,12 +84,6 @@ jobs:
     name: integration tests
     runs-on: ubuntu-latest
     
-    services:
-      # Use Docker-in-Docker service
-      docker:
-        image: docker:dind
-        options: --privileged
-    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -125,10 +119,6 @@ jobs:
             --cov-report=xml \
             --cov-report=term-missing
         timeout-minutes: 15
-        env:
-          DOCKER_HOST: tcp://docker:2375
-          DOCKER_TLS_VERIFY: "0"
-          DOCKER_CLI_EXPERIMENTAL: enabled
       
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
