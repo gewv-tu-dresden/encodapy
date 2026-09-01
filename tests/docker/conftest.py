@@ -20,11 +20,7 @@ def fiware_environment():
         DockerCompose: An instance of the DockerCompose class representing \
             the running Docker Compose environment.
     """
-    import os
-    
-    # Configure Docker host for DinD in GitHub Actions
-    docker_host = os.environ.get("DOCKER_HOST", "unix://var/run/docker.sock")
-    
+
     compose = DockerCompose(
         context="./tests/docker",
         compose_file_name="docker-compose.fiware.yml"
@@ -32,7 +28,7 @@ def fiware_environment():
     compose.start()
 
     # Wait for Containers
-    # time.sleep(20)
+    time.sleep(20)
 
     yield {
         "orion": "http://127.0.0.1:1026",
@@ -40,7 +36,7 @@ def fiware_environment():
         "cratedb": "http://127.0.0.1:4200"
     }
 
-    # compose.stop()
+    compose.stop()
 
 
 @pytest.fixture
