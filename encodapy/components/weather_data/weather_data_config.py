@@ -1,5 +1,6 @@
 """
 Defines the configuration data models for the OpenWeatherMap component.
+Author: Paul Seidel
 """
 
 from typing import Optional
@@ -15,34 +16,34 @@ from encodapy.utils.datapoints import DataPointGeneral, DataPointNumber
 from encodapy.utils.units import DataUnits
 
 
-class OpenweathermapDataInputData(InputData):
+class WeatherDataInputData(InputData):
     """
-    Input model for the Openweathermap component
+    Input model for the WeatherData component
     
     There is actually no input nessessary for this component, but maybe in future version.
     """
 
     #a_general_input: DataPointGeneral = Field(
     #    ...,
-    #    description="""A general input of the Openweathermap component,
+    #    description="""A general input of the WeatherData component,
     #    Any values allowed, None from MQTT also allowed""",
     #)
     #a_number_input: DataPointNumber = Field(
     #    ...,
-    #    description="A number input of the Openweathermap component",
+    #    description="A number input of the WeatherData component",
     #    json_schema_extra={"unit": "CEL"},
     #)
     #another_number_input: DataPointNumber = Field(
     #    DataPointNumber(value=10, unit=DataUnits.KELVIN),
-    #    description="""Another number input of the Openweathermap component,
+    #    description="""Another number input of the WeatherData component,
     #    with a default value of 10 so no value from inputs is required""",
     #    json_schema_extra={"unit": "KEL"},
     #)
 
 
-class OpenweathermapDataOutputData(OutputData):
+class WeatherDataOutputData(OutputData):
     """
-    Output model for the Openweathermap component
+    Output model for the WeatherData component
     
     If you like to add a validator, see the documentation for \
         :class:`~encodapy.components.basic_component_config.ComponentData`
@@ -50,14 +51,14 @@ class OpenweathermapDataOutputData(OutputData):
 
     t_ambient: DataPointNumber = Field(
         None,
-        description="Output of the Openweathermap component, the ambient temperature in degree celsius",
+        description="Output of the WeatherData component, the ambient temperature in degree celsius",
         json_schema_extra={"unit": "CEL"},
         )
 
 
-class OpenweathermapDataConfigData(ConfigData):
+class WeatherDataConfigData(ConfigData):
     """
-    Config data model for the Openweathermap component
+    Config data model for the WeatherData  component
     
     If you like to add a validator, see the documentation for \
         :class:`~encodapy.components.basic_component_config.ComponentData`
