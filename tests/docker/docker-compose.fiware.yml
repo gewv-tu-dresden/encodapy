@@ -65,6 +65,20 @@ services:
     volumes:
       - cratedb_data:/data
 
+  # MQTT Broker (Mosquitto)
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: mqtt_broker
+    restart: always
+    ports:
+      - "1883:1883"
+    environment:
+      - TZ=Europe/Berlin
+    networks:
+      - fiware-test-net
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
 volumes:
   mongodb_db:
   mongodb_configdb:
@@ -72,4 +86,5 @@ volumes:
 
 networks:
   fiware-test-net:
+    name: fiware-test-net
     driver: bridge

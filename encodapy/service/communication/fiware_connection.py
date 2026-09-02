@@ -9,11 +9,10 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Optional, Union
 import concurrent.futures
 import multiprocessing
-
 import numpy as np
 import pandas as pd
 import requests
-from dateutil import tz
+from loguru import logger
 from filip.clients.exceptions import BaseHttpClientException
 from filip.clients.ngsi_v2 import ContextBrokerClient
 from filip.models.base import DataType, FiwareHeaderSecure
@@ -24,22 +23,6 @@ from filip.models.ngsi_v2.context import (
     NamedCommand,
     NamedContextAttribute,
 )
-from loguru import logger
-
-
-def _format_datetime_iso8601(dt: datetime) -> str:
-    """Format datetime to ISO 8601 with Z for UTC timezone.
-    
-    Args:
-        dt: datetime object (aware or naive)
-        
-    Returns:
-        ISO 8601 formatted string with Z suffix for UTC
-    """
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
-    formatted = dt.strftime("%Y-%m-%dT%H:%M:%S%z")
-    return formatted[:-5] + "Z" if formatted.endswith("+0000") else formatted
 
 from encodapy.config import (
     AttributeModel,
@@ -69,6 +52,19 @@ from encodapy.utils.models import (
 )
 from encodapy.utils.units import DataUnits, adjust_units, get_time_unit_seconds
 
+def _format_datetime_iso8601(dt: datetime) -> str:
+    """Format datetime to ISO 8601 with Z for UTC timezone.
+    
+    Args:
+        dt: datetime object (aware or naive)
+        
+    Returns:
+        ISO 8601 formatted string with Z suffix for UTC
+    """
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    formatted = dt.strftime("%Y-%m-%dT%H:%M:%S%z")
+    return formatted[:-5] + "Z" if formatted.endswith("+0000") else formatted
 
 class FiwareConnection:
     """

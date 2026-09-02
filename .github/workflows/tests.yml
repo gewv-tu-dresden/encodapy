@@ -48,13 +48,14 @@ jobs:
         run: poetry run pytest -m "not integration and not docker" --cov=encodapy --cov-report=xml --cov-report=term-missing
       
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        if: always()
+        uses: codecov/codecov-action@v5
+        if: ${{ !cancelled() }}
         with:
           files: ./coverage.xml
           flags: unit-tests
           name: unit-tests-coverage
-          fail_ci_if_error: false
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   docs-build-test:
     runs-on: ubuntu-latest
@@ -126,12 +127,12 @@ jobs:
       
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
-        if: always()
+        if: ${{ !cancelled() }}
         with:
           files: ./coverage.xml
           flags: integration-tests
           name: integration-tests-coverage
-          fail_ci_if_error: false
+          fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
       
       - name: Clean up Docker containers

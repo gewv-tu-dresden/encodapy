@@ -32,8 +32,9 @@ def fiware_environment():
 
     yield {
         "orion": "http://127.0.0.1:1026",
-        "mongo": "mongodb://127.0.0.1:27017/orion",
-        "cratedb": "http://127.0.0.1:4200"
+        "cratedb": "http://127.0.0.1:4200",
+        "mqtt_host": "127.0.0.1",
+        "mqtt_port": 1883,
     }
 
     compose.stop()

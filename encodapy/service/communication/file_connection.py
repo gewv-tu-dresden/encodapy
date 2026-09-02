@@ -169,11 +169,11 @@ class FileConnection:
 
             match timestep_unit:
                 case TimeUnits.SECOND:
-                    resample_unit = "s"
+                    resample_unit = "sec"
                 case TimeUnits.MINUTE:
-                    resample_unit = "T"
+                    resample_unit = "min"
                 case TimeUnits.HOUR:
-                    resample_unit = "h"
+                    resample_unit = "hour"
                 case TimeUnits.DAY:
                     resample_unit = "D"
                 case _:
