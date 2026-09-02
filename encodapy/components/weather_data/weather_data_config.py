@@ -4,6 +4,7 @@ Author: Paul Seidel
 """
 
 from typing import Optional
+from enum import Enum
 
 from pydantic import Field
 
@@ -12,7 +13,7 @@ from encodapy.components.basic_component_config import (
     InputData,
     OutputData,
 )
-from encodapy.utils.datapoints import DataPointGeneral, DataPointNumber
+from encodapy.utils.datapoints import DataPointGeneral, DataPointNumber, DataPointString
 from encodapy.utils.units import DataUnits
 
 
@@ -55,6 +56,30 @@ class WeatherDataOutputData(OutputData):
         json_schema_extra={"unit": "CEL"},
         )
 
+class WeatherApiCallMethod(Enum):
+    """
+    Enum for the API call methods of the weather data service.
+
+    Members:
+        CURRENT: Retrieve current weather data
+        FORECAST: Retrieve weather forecast data
+    """
+
+    CURRENT = "current"
+    FORECAST = "forecast"
+
+
+class DataPointWeatherApiCallMethod(DataPointGeneral):
+    """
+    Model for datapoints of the controller component which define the API call method.
+
+    Attributes:
+        value: The value of the datapoint, which is a string representing the API call method
+        unit: Optional unit of the datapoint, if applicable
+        time: Optional timestamp of the datapoint, if applicable
+    """
+
+    value: WeatherApiCallMethod
 
 class WeatherDataConfigData(ConfigData):
     """
@@ -73,4 +98,11 @@ class WeatherDataConfigData(ConfigData):
         DataPointNumber(value=52.5),
         description="Value of latitude of the chosen location in degree (default value for Berlin)",
         json_schema_extra={"unit": "DD"}
+    )
+
+    weather_type: DataPointWeatherApiCallMethod = Field(
+        DataPointWeatherApiCallMethod(
+            value=WeatherApiCallMethod.CURRENT
+        ),
+        description="API call method for retrieving weather data (default is 'current' for current weather data)",
     )

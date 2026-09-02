@@ -58,6 +58,7 @@ class WeatherData(BasicComponent):
         # Example calculation logic using the input data stored in the component
         logger.debug("Calculating a_result in WeatherData...")
         a_number = 42.0
+        logger.debug(f"static_data: {self.config_data.latitude.value}, {self.config_data.longitude.value}, {self.config_data.weather_type.value}")
 
         return DataPointNumber(value=a_number, unit=DataUnits.DEGREECELSIUS)
 
