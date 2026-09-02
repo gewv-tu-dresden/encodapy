@@ -6,6 +6,8 @@ Author: Paul Seidel
 from typing import Optional, Union
 
 from loguru import logger
+from datetime import datetime
+import pytz
 
 from encodapy.components.basic_component import BasicComponent, StaticDataEntityModel
 from encodapy.config.models import ControllerComponentModel
@@ -16,6 +18,7 @@ from .weather_data_config import (
     WeatherDataConfigData,
     WeatherDataInputData,
     WeatherDataOutputData,
+    WeatherApiCallMethod,
 )
 
 
@@ -51,23 +54,30 @@ class WeatherData(BasicComponent):
         """
         logger.debug("Hello from WeatherData! Preparing...")
 
-    def calculate_a_result(self) -> DataPointNumber:
+    def get_current_weather_data(self) -> DataPointNumber:
         """
-        Example calculation function for the WeatherData component
+        Example function to get current weather data for the WeatherData component
         """
-        # Example calculation logic using the input data stored in the component
-        logger.debug("Calculating a_result in WeatherData...")
-        a_number = 42.0
-        logger.debug(f"static_data: {self.config_data.latitude.value}, {self.config_data.longitude.value}, {self.config_data.weather_type.value}")
+        # logic to retrieve current weather data from https://brightsky.dev/
+        # https://api.brightsky.dev/current_weather?lat=51.3&lon=13.44&date=2026-08-27
+        logger.debug("collect input data fpr API_Call of brightsky.")
+        
+        latitude = self.config_data.latitude.value
+        longitude = self.config_data.longitude.value
+        berlin_tz = pytz.timezone("Europe/Berlin")
+        time = datetime.now(berlin_tz).strftime("%Y-%m-%dT%H:%M")
+        logger.debug(f"API_Call: {latitude}, {longitude}, {time}")
+        
+
 
         return DataPointNumber(value=a_number, unit=DataUnits.DEGREECELSIUS)
 
-    def calculate_another_result(self) -> DataPointNumber:
+    def get_forecast_weather_data(self) -> DataPointNumber:
         """
         Example calculation function for the WeatherData component
         """
         # Example calculation logic using the input data stored in the component
-        logger.debug("Calculating another_result in WeatherData...")
+        logger.error("Calculating forecast_weather_data not implemented yet.")
         another_number = (
             42
             if self.input_data.another_number_input.value is None
@@ -79,8 +89,19 @@ class WeatherData(BasicComponent):
         """
         Perform the calculations for the WeatherData component
         """
-        logger.debug("Calculating in WeatherData...")
 
-        self.output_data = WeatherDataOutputData(
-            t_ambient=self.calculate_a_result(),
-        )
+        match self.config_data.weather_type.value:
+            case WeatherApiCallMethod.CURRENT:
+                logger.debug("Get Data in WeatherData...")
+                self.output_data = WeatherDataOutputData(
+                        t_ambient=self.get_current_weather_data(),
+                        )
+            case WeatherApiCallMethod.FORECAST:
+                logger.debug("Get Data in WeatherData...")
+                self.output_data = WeatherDataOutputData(
+                        t_ambient=self.get_forecast_weather_data(),
+                        )
+            case _ :
+                logger.error(
+                f"Invalid weather_call_method: {self.config_data.weather_type.value}. Expected 'current' or 'forecast'."
+                )
