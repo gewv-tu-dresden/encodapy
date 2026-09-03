@@ -6,10 +6,28 @@ This module provides a fixture to start and stop the docker environment for inte
 
 """
 import time
+import requests
 import pytest
 from testcontainers.compose import DockerCompose
 from filip.clients.ngsi_v2 import ContextBrokerClient
 from filip.models.base import FiwareHeader
+
+def _wait_for(url: str, timeout: float = 60.0, interval: float = 1.0) -> None:
+    """
+    Waits for a given URL to become available within a specified timeout.
+    """
+    deadline = time.monotonic() + timeout
+    last_err = None
+    while time.monotonic() < deadline:
+        try:
+            r = requests.get(url, timeout=2)
+            if r.status_code == 200:
+                return
+            last_err = f"status {r.status_code}"
+        except requests.RequestException as e:
+            last_err = repr(e)
+        time.sleep(interval)
+    raise RuntimeError(f"{url} not ready within {timeout}s: {last_err}")
 
 @pytest.fixture(scope="session")
 def fiware_environment():
@@ -28,7 +46,8 @@ def fiware_environment():
     compose.start()
 
     # Wait for Containers
-    time.sleep(20)
+    _wait_for("http://127.0.0.1:1026/version")   # Orion
+    _wait_for("http://127.0.0.1:4200")           # CrateDB
 
     yield {
         "orion": "http://127.0.0.1:1026",

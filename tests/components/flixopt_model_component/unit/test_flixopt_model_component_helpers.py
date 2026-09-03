@@ -1,4 +1,4 @@
-﻿"""Unit tests for helper and data paths of FlixoptModelComponent.
+"""Unit tests for helper and data paths of FlixoptModelComponent.
 
 The tests in this module focus on small helper functions, input parsing,
 logging forwarding, and basic control-flow checks.
@@ -328,6 +328,7 @@ def test_loguru_forward_handler_handles_format_errors() -> None:
 
 def test_configure_linopy_logging_is_idempotent() -> None:
     """Verify that linopy logging setup can run more than once safely."""
+    # pylint: disable=protected-access
     cls = FlixoptModelComponent
     original_state = cls._linopy_logger_redirect_configured
     linopy_logger = __import__("logging").getLogger("linopy")
@@ -409,7 +410,11 @@ def test_calculate_skips_output_preparation_when_optimization_fails() -> None:
 
     setattr(component, "prepare_input_data", lambda: None)
     setattr(component, "run_optimization", lambda: None)
-    setattr(component, "prepare_output_data", lambda results: called.update({"prepare_output": True}))
+    setattr(
+        component,
+        "prepare_output_data",
+        lambda results: called.update({"prepare_output": True}),
+    )
 
     getattr(component, "calculate")()
 

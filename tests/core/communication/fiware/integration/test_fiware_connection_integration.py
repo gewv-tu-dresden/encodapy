@@ -349,7 +349,7 @@ class TestFiwareConnectionDataSending:
         # Set values for the output attributes
         output_attributes = []
         for attr in example_output_entity.attributes:
-            attr_with_value = attr.copy()
+            attr_with_value = attr.model_copy()
             attr_with_value.value = 42.0
             output_attributes.append(attr_with_value)
 

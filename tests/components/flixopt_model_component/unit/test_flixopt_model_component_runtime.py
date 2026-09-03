@@ -1,4 +1,5 @@
-﻿"""Unit tests for runtime and dispatch behavior of FlixoptModelComponent.
+# pylint: disable=duplicate-code
+"""Unit tests for runtime and dispatch behavior of FlixoptModelComponent.
 
 The focus is on model loading, converter dispatching, and optimization success
 and failure paths.
@@ -87,7 +88,7 @@ def test_get_converters_skips_invalid_chp_entry() -> None:
 
     converters = getattr(component, "_get_converters")()
 
-    assert converters == []
+    assert not converters
 
 
 def test_add_bidirectional_constraints_raises_when_coords_missing() -> None:
@@ -285,7 +286,9 @@ def test_get_converters_dispatches_all_supported_types() -> None:
         }
     )
     substation = SimpleNamespace(label="sub", converter_type=FlixOptConverterTypes.SUBSTATION)
-    bidir = SimpleNamespace(label="bidir", converter_type=FlixOptConverterTypes.BIDIRECTIONAL_SUBSTATION)
+    bidir = SimpleNamespace(
+        label="bidir", converter_type=FlixOptConverterTypes.BIDIRECTIONAL_SUBSTATION
+    )
     unknown = SimpleNamespace(label="x", converter_type="unknown")
 
     setattr(
@@ -296,7 +299,11 @@ def test_get_converters_dispatches_all_supported_types() -> None:
     setattr(component, "_add_boiler_converter", lambda conv: f"boiler:{conv.label}")
     setattr(component, "_add_p2h_converter", lambda conv: f"p2h:{conv.label}")
     setattr(component, "_add_substation_converter", lambda conv: f"sub:{conv.label}")
-    setattr(component, "_add_bidirectional_substation_converter", lambda conv: [f"bidir:{conv.label}:a", f"bidir:{conv.label}:b"])
+    setattr(
+        component,
+        "_add_bidirectional_substation_converter",
+        lambda conv: [f"bidir:{conv.label}:a", f"bidir:{conv.label}:b"],
+    )
 
     converters = getattr(component, "_get_converters")()
 

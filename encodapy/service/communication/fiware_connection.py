@@ -857,7 +857,7 @@ class FiwareConnection:
         fiware_unit: Optional[DataUnits],
     ) -> tuple[AttributeModel, list[NamedMetadata]]:
         meta_data = []
-        attribute = attribute.copy()
+        attribute = attribute.model_copy()
 
         if attribute.unit is not None and fiware_unit is None:
             meta_data.append(
