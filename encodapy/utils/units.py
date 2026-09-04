@@ -100,6 +100,12 @@ class DataUnits(Enum):
     OHM = ("OHM", "ohm")
     VLT = ("VLT", "volt")
 
+    # pressure
+    HPA = ("A97", "hectopascal")
+
+    # radiation
+    KWM = ("KWM", "kilowatt_hour / meter**2")
+
 
 # Map the units to the unit registry of pint for conversion
 # This is automatically generated from the DataUnits enum

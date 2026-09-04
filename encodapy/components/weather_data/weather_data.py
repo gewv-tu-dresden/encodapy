@@ -8,10 +8,11 @@ from typing import Optional, Union
 from loguru import logger
 from datetime import datetime
 import pytz
+import requests
 
 from encodapy.components.basic_component import BasicComponent, StaticDataEntityModel
 from encodapy.config.models import ControllerComponentModel
-from encodapy.utils.datapoints import DataPointNumber
+from encodapy.utils.datapoints import DataPointNumber, DataPointDict
 from encodapy.utils.units import DataUnits
 
 from .weather_data_config import (
@@ -54,23 +55,45 @@ class WeatherData(BasicComponent):
         """
         logger.debug("Hello from WeatherData! Preparing...")
 
-    def get_current_weather_data(self) -> DataPointNumber:
+    def get_current_weather_data(self) -> DataPointDict:
         """
         Example function to get current weather data for the WeatherData component
         """
         # logic to retrieve current weather data from https://brightsky.dev/
-        # https://api.brightsky.dev/current_weather?lat=51.3&lon=13.44&date=2026-08-27
+        # https://api.brightsky.dev/current_weather?lat=51.3&lon=13.44&tz=Europe/Berlin
         logger.debug("collect input data fpr API_Call of brightsky.")
-        
-        latitude = self.config_data.latitude.value
-        longitude = self.config_data.longitude.value
+
         berlin_tz = pytz.timezone("Europe/Berlin")
         time = datetime.now(berlin_tz).strftime("%Y-%m-%dT%H:%M")
-        logger.debug(f"API_Call: {latitude}, {longitude}, {time}")
-        
+        # parameter as dict for the api-call
+        params = {
+            "lat": self.config_data.latitude.value,
+            "lon": self.config_data.longitude.value,
+            "tz": berlin_tz 
+        }
 
+        url = "https://api.brightsky.dev/current_weather"
 
-        return DataPointNumber(value=a_number, unit=DataUnits.DEGREECELSIUS)
+        try:
+            response = requests.get(url, params=params)
+            response.raise_for_status()  # Exception if error-code is e.g. 404, 500 
+            
+            data = response.json()
+            logger.debug(f"API response: {data}")
+            weather = data["weather"]
+
+            output_dict = {
+                "temperature": float(weather["temperature"]),
+                "relative_humidity": float(weather["relative_humidity"]),
+                "pressure_msl": float(weather["pressure_msl"]),
+                "dew_point": float(weather["dew_point"]),
+                "solar_60": float(weather["solar_60"]),
+            }
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Connection- or API-error: {e}")
+
+        return DataPointDict(value=output_dict)
 
     def get_forecast_weather_data(self) -> DataPointNumber:
         """
@@ -93,9 +116,17 @@ class WeatherData(BasicComponent):
         match self.config_data.weather_type.value:
             case WeatherApiCallMethod.CURRENT:
                 logger.debug("Get Data in WeatherData...")
+
+                output_data = self.get_current_weather_data()
+
                 self.output_data = WeatherDataOutputData(
-                        t_ambient=self.get_current_weather_data(),
+                        temperature=DataPointNumber(value=output_data.value.get("temperature"), unit=DataUnits.DEGREECELSIUS),
+                        relative_humidity=DataPointNumber(value=output_data.value.get("relative_humidity"), unit=DataUnits.PERCENT),
+                        pressure_msl=DataPointNumber(value=output_data.value.get("pressure_msl"), unit=DataUnits.HPA),
+                        dew_point=DataPointNumber(value=output_data.value.get("dew_point"), unit=DataUnits.DEGREECELSIUS),
+                        solar_60=DataPointNumber(value=output_data.value.get("solar_60"), unit=DataUnits.KWM),
                         )
+                
             case WeatherApiCallMethod.FORECAST:
                 logger.debug("Get Data in WeatherData...")
                 self.output_data = WeatherDataOutputData(

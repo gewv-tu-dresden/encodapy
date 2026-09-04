@@ -50,12 +50,32 @@ class WeatherDataOutputData(OutputData):
         :class:`~encodapy.components.basic_component_config.ComponentData`
     """
 
-    t_ambient: DataPointNumber = Field(
+    temperature: Optional[DataPointNumber] = Field(
         None,
-        description="Output of the WeatherData component, the ambient temperature in degree celsius",
+        description="Air temperature at timestamp, 2 m above the ground in degree celsius",
         json_schema_extra={"unit": "CEL"},
         )
-
+    relative_humidity: Optional[DataPointNumber] = Field(
+        None,
+        description="Relative humidity at timestamp in %",
+        json_schema_extra={"unit": "P1"},
+        )
+    pressure_msl: Optional[DataPointNumber]  = Field(
+        None,
+        description="Atmospheric pressure at timestamp, reduced to mean sea level in hPa",
+        json_schema_extra={"unit": "A97"},
+        )
+    dew_point: Optional[DataPointNumber] = Field(
+        None,
+        description="Dew point at timestamp, 2 m above ground in degree celsius",
+        json_schema_extra={"unit": "CEL"},
+        )
+    solar_60: Optional[DataPointNumber] = Field(
+        None,
+        description="Solar irradiation during previous 60 minutes in kWh / m²",
+        json_schema_extra={"unit": "KWM"},
+        )
+    
 class WeatherApiCallMethod(Enum):
     """
     Enum for the API call methods of the weather data service.
