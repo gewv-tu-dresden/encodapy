@@ -3,6 +3,7 @@
 # pylint: disable=protected-access
 
 import asyncio
+from typing import Any, cast
 
 from filip.models.base import DataType
 
@@ -18,7 +19,10 @@ from encodapy.utils.models import (
 def _build_service(outputs: list[OutputModel]) -> ControllerBasicService:
     """Create a service instance without __init__ side effects."""
     service = object.__new__(ControllerBasicService)
-    service.config = type("ConfigStub", (), {"outputs": outputs})()
+    service.config = cast(
+        Any,
+        type("ConfigStub", (), {"outputs": outputs})(),
+    )
     return service
 
 
@@ -63,11 +67,21 @@ def test_send_outputs_fiware_is_called_once():
 
     calls = []
 
-    async def fake_send_data_to_fiware(**kwargs):
+    async def fake_send_data_to_fiware(
+        output_entity: OutputModel,
+        output_attributes: list[AttributeModel],
+        output_commands: list,
+    ):
         """Capture calls of the FIWARE send path for assertions."""
-        calls.append(kwargs)
+        calls.append(
+            {
+                "output_entity": output_entity,
+                "output_attributes": output_attributes,
+                "output_commands": output_commands,
+            }
+        )
 
-    service._send_data_to_fiware = fake_send_data_to_fiware
+    service._send_data_to_fiware = cast(Any, fake_send_data_to_fiware)
     data_output = _build_output_data(value=1.23)
 
     asyncio.run(service.send_outputs(data_output=data_output))
@@ -82,11 +96,21 @@ def test_send_outputs_file_is_called_once():
 
     calls = []
 
-    def fake_send_data_to_json_file(**kwargs):
+    def fake_send_data_to_json_file(
+        output_entity: OutputModel,
+        output_attributes: list[AttributeModel],
+        output_commands: list,
+    ):
         """Capture calls of the FILE send path for assertions."""
-        calls.append(kwargs)
+        calls.append(
+            {
+                "output_entity": output_entity,
+                "output_attributes": output_attributes,
+                "output_commands": output_commands,
+            }
+        )
 
-    service.send_data_to_json_file = fake_send_data_to_json_file
+    service.send_data_to_json_file = cast(Any, fake_send_data_to_json_file)
     data_output = _build_output_data(value=7)
 
     asyncio.run(service.send_outputs(data_output=data_output))
