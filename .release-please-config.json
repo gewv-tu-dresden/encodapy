@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "include-component-in-tag": false,
+  "bootstrap-sha":"3b41de7f8f04984b24d0a2ab3ca7a68a539c67a1",
+  "packages": {
+    ".": {
+      "release-type": "python",
+      "package-name": "encodapy",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        "CITATION.cff"
+      ]
+    }
+  }
+}
