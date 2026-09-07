@@ -13,7 +13,7 @@ from encodapy.components.basic_component_config import (
     InputData,
     OutputData,
 )
-from encodapy.utils.datapoints import DataPointGeneral, DataPointNumber, DataPointString
+from encodapy.utils.datapoints import DataPointGeneral, DataPointNumber, DataPointDict, DataPointString
 from encodapy.utils.units import DataUnits
 
 
@@ -24,6 +24,7 @@ class WeatherDataInputData(InputData):
     There is actually no input nessessary for this component, but maybe in future version.
     """
 
+    # not nesessary for now, but maybe in future version
     #a_general_input: DataPointGeneral = Field(
     #    ...,
     #    description="""A general input of the WeatherData component,
@@ -75,7 +76,11 @@ class WeatherDataOutputData(OutputData):
         description="Solar irradiation during previous 60 minutes in kWh / m²",
         json_schema_extra={"unit": "KWM"},
         )
-    
+    forecast_temperature: Optional[DataPointDict] = Field(
+        None,
+        description="Forecast weather data",
+    )
+
 class WeatherApiCallMethod(Enum):
     """
     Enum for the API call methods of the weather data service.
@@ -125,4 +130,8 @@ class WeatherDataConfigData(ConfigData):
             value=WeatherApiCallMethod.CURRENT
         ),
         description="API call method for retrieving weather data (default is 'current' for current weather data)",
+    )
+    forecast_time_range: Optional[DataPointGeneral] = Field(
+        DataPointString(value="1d"),
+        description="Forecast time range (for the of last weather forecast) to retrieve. Default value is set to 1d ",
     )

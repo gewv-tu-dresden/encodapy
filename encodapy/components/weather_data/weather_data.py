@@ -57,14 +57,12 @@ class WeatherData(BasicComponent):
 
     def get_current_weather_data(self) -> DataPointDict:
         """
-        Example function to get current weather data for the WeatherData component
+        Function to get current weather data for the WeatherData component
         """
         # logic to retrieve current weather data from https://brightsky.dev/
         # https://api.brightsky.dev/current_weather?lat=51.3&lon=13.44&tz=Europe/Berlin
-        logger.debug("collect input data fpr API_Call of brightsky.")
 
         berlin_tz = pytz.timezone("Europe/Berlin")
-        time = datetime.now(berlin_tz).strftime("%Y-%m-%dT%H:%M")
         # parameter as dict for the api-call
         params = {
             "lat": self.config_data.latitude.value,
@@ -102,10 +100,26 @@ class WeatherData(BasicComponent):
 
     def get_forecast_weather_data(self) -> DataPointNumber:
         """
-        Example calculation function for the WeatherData component
+        Function to get forecast weather data for the WeatherData component
         """
-        # Example calculation logic using the input data stored in the component
-        logger.error("Calculating forecast_weather_data not implemented yet.")
+        # logic to retrieve current weather data from https://brightsky.dev/
+        # https://api.brightsky.dev/weather?lat=51.3&lon=13.44&tz=Europe/Berlin
+                
+        berlin_tz = pytz.timezone("Europe/Berlin")
+        actual_time = datetime.now(berlin_tz).strftime("%Y-%m-%dT%H:%M")
+        date_time = datetime.fromisoformat(actual_time).replace(minute=(datetime.fromisoformat(actual_time).minute // 15) * 15, second=0, microsecond=0)
+
+        # parameter as dict for the api-call
+        params = {
+            "lat": self.config_data.latitude.value,
+            "lon": self.config_data.longitude.value,
+            "tz": berlin_tz ,
+            "date": date_time,
+            "last_date": tomorrow.strftime("%Y-%m-%dT%H:%M")
+            }
+        
+        url = "https://api.brightsky.dev/current_weather"
+        
         another_number = (
             42
             if self.input_data.another_number_input.value is None
@@ -120,7 +134,7 @@ class WeatherData(BasicComponent):
 
         match self.config_data.weather_type.value:
             case WeatherApiCallMethod.CURRENT:
-                logger.debug("Get Data in WeatherData...")
+                logger.debug("Get Current Data in WeatherData...")
 
                 output_data = self.get_current_weather_data()
 
@@ -133,9 +147,9 @@ class WeatherData(BasicComponent):
                         )
                 
             case WeatherApiCallMethod.FORECAST:
-                logger.debug("Get Data in WeatherData...")
+                logger.debug("Get Forecast Data in WeatherData...")
                 self.output_data = WeatherDataOutputData(
-                        t_ambient=self.get_forecast_weather_data(),
+                        forecast_temperature=self.get_forecast_weather_data(),
                         )
             case _ :
                 logger.error(
