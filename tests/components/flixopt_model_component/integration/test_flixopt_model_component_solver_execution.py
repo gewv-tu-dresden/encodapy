@@ -26,6 +26,7 @@ class _InputDataStub:
         return iter(self._values.items())
 
     def model_dump(self) -> dict[str, dict[str, Any]]:
+        """Return the stored values as a pydantic-like model dump."""
         return self._values
 
 

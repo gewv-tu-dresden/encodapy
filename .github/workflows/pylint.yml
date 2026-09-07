@@ -5,17 +5,20 @@ on:
     branches: [main]
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   Pylint-Test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       # If you wanted to use multiple Python versions, you'd have specify a matrix in the job and
       # reference the matrixe python version here.
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v7
         with:
-          python-version: 3.11
+          python-version: 3.12
 
       # Cache the installation of Poetry itself, e.g. the next step. This prevents the workflow
       # from installing Poetry every time, which can be slow. Note the use of the Poetry version
@@ -23,7 +26,7 @@ jobs:
       # manually if/when you want to upgrade Poetry, or if something goes wrong. This could be
       # mildly cleaner by using an environment variable, but I don't really care.
       - name: cache poetry install
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.local
           key: poetry-1.7.1-0
@@ -37,7 +40,7 @@ jobs:
       # The key configuration value here is `virtualenvs-in-project: true`: this creates the
       # venv as a `.venv` in your testing directory, which allows the next step to easily
       # cache it.
-      - uses: snok/install-poetry@v1.4.1
+      - uses: snok/install-poetry@v1
         with:
           version: 1.7.1
           virtualenvs-create: true
@@ -48,7 +51,7 @@ jobs:
       # them in the cache key. I'm not, so it can be simple and just depend on the poetry.lock.
       - name: cache deps
         id: cache-deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .venv
           key: pydeps-${{ hashFiles('**/poetry.lock') }}
@@ -67,5 +70,4 @@ jobs:
 
       # Analyse the code with pylint
       - name: Analyse the code with pylint
-        run: |
-          poetry run pylint $(git ls-files '*.py')
+        run: poetry run pylint --rcfile=.pylintrc encodapy/

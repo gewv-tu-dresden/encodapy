@@ -170,27 +170,32 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             return []
 
         for static_entity in self.config.staticdata:
-            if static_entity.interface == Interfaces.FIWARE:
-                fiware_data = self.get_data_from_fiware(
-                    method=method,
-                    entity=static_entity,
-                    timestamp_latest_output=None,
-                )
-                if fiware_data is not None:
-                    static_data_entity = StaticDataEntityModel(
-                        **fiware_data.model_dump()
+            try:
+                if static_entity.interface == Interfaces.FIWARE:
+                    fiware_data = self.get_data_from_fiware(
+                        method=method,
+                        entity=static_entity,
+                        timestamp_latest_output=None,
                     )
-                    staticdata.append(static_data_entity)
+                    if fiware_data is not None:
+                        static_data_entity = StaticDataEntityModel(
+                            **fiware_data.model_dump()
+                        )
+                        staticdata.append(static_data_entity)
 
-            if static_entity.interface == Interfaces.FILE:
-                staticdata.append(
-                    self.get_staticdata_from_file(
+                elif static_entity.interface == Interfaces.FILE:
+                    file_data = self.get_staticdata_from_file(
                         entity=static_entity,
                     )
-                )
+                    if file_data is not None:
+                        staticdata.append(file_data)
 
-            if static_entity.interface == Interfaces.MQTT:
-                logger.warning("interface MQTT for staticdata not supported")
+                elif static_entity.interface == Interfaces.MQTT:
+                    logger.warning("interface MQTT for staticdata not supported")
+
+            except Exception as e:
+                logger.error(f"Error loading static data for entity {static_entity.id}: {e}")
+                continue
 
         return staticdata
 
@@ -302,6 +307,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             - Union[OutputModel, None]: configuration of the output entity
             or None if the entity is not found
         """
+        if self.config is None:
+            return None
+
         for entity in self.config.outputs:
             if entity.id == output_entity_id:
                 return entity
@@ -324,6 +332,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             - Union[AttributeModel, None]: configuration of the output attribute
             or None if the attribute is not found
         """
+        if self.config is None:
+            return None
+
         for entity in self.config.outputs:
             if entity.id == output_entity_id:
                 for attribute in entity.attributes:
@@ -338,16 +349,19 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         output_command_id: str,
     ) -> Union[CommandModel, None]:
         """
-        Function to get the configuration of the output attribute
+        Function to get the configuration of the output command
 
         Args:
             - output_entity: id of the output entity
-            - output_attribute: id of the output attribute
+            - output_command: id of the output command
 
         Returns:
-            - Union[AttributeModel, None]: configuration of the output attribute
-            or None if the attribute is not found
+            - Union[CommandModel, None]: configuration of the output command
+            or None if the command is not found
         """
+        if self.config is None:
+            return None
+
         for entity in self.config.outputs:
             if entity.id == output_entity_id:
                 for commmand in entity.commands:
@@ -568,7 +582,11 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
 
     def _is_geojson(self, value: dict) -> bool:
         """Checks heuristically whether a dict is a GeoJSON object."""
-        GEOJSON_TYPES = {
+        # First check if value is a dict
+        if not isinstance(value, dict):
+            return False
+
+        geojson_types = {
             "Point",
             "MultiPoint",
             "LineString",
@@ -581,8 +599,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         }
         return (
             isinstance(value.get("type"), str)
-            and value["type"] in GEOJSON_TYPES
-            and ("coordinates" in value or "geometry" in value or "features" in value)
+            and value["type"] in geojson_types
+            and ("coordinates" in value or "geometry" in value \
+                or "features" in value or "geometries" in value)
         )
 
     def _validate_datatype_against_value(

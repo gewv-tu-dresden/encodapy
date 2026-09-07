@@ -1,0 +1,63 @@
+# Codecov configuration for EnCoDaPy
+# https://docs.codecov.io/docs/codecov-yaml
+
+codecov:
+  # Require CI to pass before updating coverage status
+  require_ci_to_pass: true
+  
+  # Branch coverage settings
+  branch: main
+
+coverage:
+  # Precision of coverage percentages
+  precision: 2
+  
+  # Round coverage to nearest whole number
+  round: nearest
+  
+  # Coverage range to consider as "success" (optional)
+  range: "70..100"
+
+  # Status updates: fail if coverage drops below this percentage
+  status:
+    project:
+      default:
+        # Basic project coverage threshold
+        target: auto
+        threshold: 1%
+        base: auto
+        paths:
+          - "encodapy/"
+        
+    patch:
+      default:
+        # Patch coverage threshold
+        target: auto
+        threshold: 1%
+        base: auto
+        paths:
+          - "encodapy/"
+
+  # Ignore paths from coverage reporting
+  ignore:
+    - "tests/"
+    - "docs/"
+    - "examples/"
+    - ".venv/"
+    - "build/"
+    - "dist/"
+    - "*.pyc"
+    - ".pytest_cache/"
+    - ".git/"
+    - "*.egg-info/"
+
+parsers:
+  # Enable Python parser
+  python:
+    enable: true
+
+comment:
+  # Post comment on PRs
+  layout: "reach,diff,files"
+  behavior: default
+  require_changes: false

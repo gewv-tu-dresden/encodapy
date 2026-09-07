@@ -171,7 +171,7 @@ class FileConnection:
                 case TimeUnits.SECOND:
                     resample_unit = "s"
                 case TimeUnits.MINUTE:
-                    resample_unit = "T"
+                    resample_unit = "min"
                 case TimeUnits.HOUR:
                     resample_unit = "h"
                 case TimeUnits.DAY:
