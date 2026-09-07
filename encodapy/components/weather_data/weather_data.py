@@ -76,19 +76,22 @@ class WeatherData(BasicComponent):
 
         try:
             response = requests.get(url, params=params)
-            response.raise_for_status()  # Exception if error-code is e.g. 404, 500 
-            
-            data = response.json()
-            logger.debug(f"API response: {data}")
-            weather = data["weather"]
+            if response.status_code >= 400:
+                error_text = response.json()["message"]
+                logger.debug(f"Failed read data of brightsky: {error_text}")
+                raise Exception(error_text)
 
-            output_dict = {
-                "temperature": float(weather["temperature"]),
-                "relative_humidity": float(weather["relative_humidity"]),
-                "pressure_msl": float(weather["pressure_msl"]),
-                "dew_point": float(weather["dew_point"]),
-                "solar_60": float(weather["solar_60"]),
-            }
+            if response.status_code == 200:
+                data = response.json()
+                weather = data["weather"]
+
+                output_dict = {
+                    "temperature": float(weather["temperature"]),
+                    "relative_humidity": float(weather["relative_humidity"]),
+                    "pressure_msl": float(weather["pressure_msl"]),
+                    "dew_point": float(weather["dew_point"]),
+                    "solar_60": float(weather["solar_60"]),
+                }
             
         except requests.exceptions.RequestException as e:
             logger.error(f"Connection- or API-error: {e}")
