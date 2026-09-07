@@ -75,7 +75,7 @@ class WeatherData(BasicComponent):
         url = "https://api.brightsky.dev/current_weather"
 
         try:
-            response = requests.get(url, params=params)
+            response = requests.get(url, params=params, timeout=5.0)
             if response.status_code >= 400:
                 error_text = response.json()["message"]
                 logger.debug(f"Failed read data of brightsky: {error_text}")
@@ -92,7 +92,9 @@ class WeatherData(BasicComponent):
                     "dew_point": float(weather["dew_point"]),
                     "solar_60": float(weather["solar_60"]),
                 }
-            
+
+        except requests.exceptions.Timeout:
+            logger.error("error: The API did not respond quickly enough (timeout exceeded).")
         except requests.exceptions.RequestException as e:
             logger.error(f"Connection- or API-error: {e}")
 
