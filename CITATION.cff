@@ -4,8 +4,8 @@ message: >-
   software package.
 title: 'EnCoDaPy - Energy Control and Data Preparation in Python'
 type: software
-version: 0.9.3 # x-release-please-version
-date-released: '2026-07-02'  # x-release-please-date
+version: 0.9.4 # x-release-please-version
+date-released: '2026-09-07'  # x-release-please-date
 repository-code: https://github.com/gewv-tu-dresden/encodapy
 url: https://gewv-tu-dresden.github.io/encodapy/
 doi: 10.5281/zenodo.21130839
