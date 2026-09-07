@@ -43,20 +43,22 @@ def fiware_environment():
         context="./tests/docker",
         compose_file_name="docker-compose.fiware.yml"
         )
-    compose.start()
+    try:
+        compose.start()
 
-    # Wait for Containers
-    _wait_for("http://127.0.0.1:1026/version")   # Orion
-    _wait_for("http://127.0.0.1:4200")           # CrateDB
+        # Wait for Containers
+        _wait_for("http://127.0.0.1:1026/version")   # Orion
+        _wait_for("http://127.0.0.1:4200")           # CrateDB
 
-    yield {
-        "orion": "http://127.0.0.1:1026",
-        "cratedb": "http://127.0.0.1:4200",
-        "mqtt_host": "127.0.0.1",
-        "mqtt_port": 1883,
-    }
+        yield {
+            "orion": "http://127.0.0.1:1026",
+            "cratedb": "http://127.0.0.1:4200",
+            "mqtt_host": "127.0.0.1",
+            "mqtt_port": 1883,
+        }
 
-    compose.stop()
+    finally:
+        compose.stop()
 
 
 @pytest.fixture

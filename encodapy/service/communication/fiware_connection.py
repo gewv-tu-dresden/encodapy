@@ -280,7 +280,7 @@ class FiwareConnection:
                 metadata_model.timestamp = datetime.strptime(
                     timeinstant_value, "%Y-%m-%dT%H:%M:%S.%f%z"
                 )
-            except ValueError:
+            except (ValueError, TypeError):
                 try:
                     metadata_model.timestamp = datetime.strptime(
                         timeinstant_value, "%Y-%m-%dT%H:%M:%S%z"

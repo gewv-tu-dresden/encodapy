@@ -69,6 +69,11 @@ from .conftest import (
     fiware_conn_params,
 )
 
+pytestmark = [
+    pytest.mark.integration,
+    pytest.mark.docker,
+    pytest.mark.slow,
+]
 
 def create_mock_config():
     """Creates a minimal ConfigModel instance for testing.
