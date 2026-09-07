@@ -1,0 +1,49 @@
+# Dependabot configuration for EnCoDaPy.
+# Documentation: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Python dependencies managed with Poetry (pyproject.toml / poetry.lock)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    groups:
+      production:
+        dependency-type: "production"
+      development:
+        dependency-type: "development"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(dev)"
+    labels:
+      - "dependencies"
+      - "python"
+
+  # GitHub Actions used in the workflows under .github/workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(ci)"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Base images used in Dockerfile and Dockerfile.dev
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(docker)"
+    labels:
+      - "dependencies"
+      - "docker"
