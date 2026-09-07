@@ -83,11 +83,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for encodapy.utils.units</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Description: This file contains the units for the use and conversion</span>
 <span class="sd">of different units and in the system controller.</span>
 <span class="sd">Author: Martin Altenburger</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
@@ -102,45 +102,45 @@
 <div class="viewcode-block" id="TimeUnits">
 <a class="viewcode-back" href="../../../basic_service/utils_models.html#encodapy.utils.units.TimeUnits">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TimeUnits</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Possible time units for the time series data</span>
+<span class="w">    </span><span class="sd">"""Possible time units for the time series data</span>
 
 <span class="sd">    TODO: Is it better to use standard time units? Like in the unit code?</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">SECOND</span> <span class="o">=</span> <span class="s2">&quot;second&quot;</span>
-    <span class="n">MINUTE</span> <span class="o">=</span> <span class="s2">&quot;minute&quot;</span>
-    <span class="n">HOUR</span> <span class="o">=</span> <span class="s2">&quot;hour&quot;</span>
-    <span class="n">DAY</span> <span class="o">=</span> <span class="s2">&quot;day&quot;</span>
-    <span class="n">MONTH</span> <span class="o">=</span> <span class="s2">&quot;month&quot;</span></div>
+    <span class="n">SECOND</span> <span class="o">=</span> <span class="s2">"second"</span>
+    <span class="n">MINUTE</span> <span class="o">=</span> <span class="s2">"minute"</span>
+    <span class="n">HOUR</span> <span class="o">=</span> <span class="s2">"hour"</span>
+    <span class="n">DAY</span> <span class="o">=</span> <span class="s2">"day"</span>
+    <span class="n">MONTH</span> <span class="o">=</span> <span class="s2">"month"</span></div>
 
 
 
 <div class="viewcode-block" id="DataUnits">
 <a class="viewcode-back" href="../../../basic_service/utils_models.html#encodapy.utils.units.DataUnits">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataUnits</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Possible units for the data</span>
 <span class="sd">    Units which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download</span>
 <span class="sd">    or https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)</span>
 <span class="sd">    or here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf</span>
 
-<span class="sd">    The enum value is the standardized unit code (e.g., &quot;SEC&quot; for seconds).</span>
+<span class="sd">    The enum value is the standardized unit code (e.g., "SEC" for seconds).</span>
 <span class="sd">    The pint_unit attribute contains the corresponding pint unit string for conversion.</span>
 
-<span class="sd">    To add a new unit, add it to the DataUnits enum: UNIT_NAME = (&quot;CODE&quot;, &quot;pint_string&quot;)</span>
+<span class="sd">    To add a new unit, add it to the DataUnits enum: UNIT_NAME = ("CODE", "pint_string")</span>
 <span class="sd">    The _UNIT_MAP will be generated automatically from the pint_unit attributes.</span>
 
 <span class="sd">    Usage:</span>
-<span class="sd">        - DataUnits.PERCENT.value -&gt; &quot;P1&quot; (unit code, for serialization)</span>
-<span class="sd">        - DataUnits.PERCENT.pint_unit -&gt; &quot;percent&quot; (for pint conversion)</span>
-<span class="sd">        - DataUnits(&quot;P1&quot;) -&gt; DataUnits.PERCENT (lookup by unit code)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        - DataUnits.PERCENT.value -&gt; "P1" (unit code, for serialization)</span>
+<span class="sd">        - DataUnits.PERCENT.pint_unit -&gt; "percent" (for pint conversion)</span>
+<span class="sd">        - DataUnits("P1") -&gt; DataUnits.PERCENT (lookup by unit code)</span>
+<span class="sd">    """</span>
 
     <span class="n">pint_unit</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Type annotation for the attribute set in __new__</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">unit_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pint_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
-        <span class="c1"># pint_unit has a default for type checking during lookup (DataUnits(&quot;CEL&quot;))</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">unit_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pint_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">):</span>
+        <span class="c1"># pint_unit has a default for type checking during lookup (DataUnits("CEL"))</span>
         <span class="c1"># but is always required when defining enum members</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="n">obj</span><span class="o">.</span><span class="n">_value_</span> <span class="o">=</span> <span class="n">unit_code</span>  <span class="c1"># This makes .value return the unit_code</span>
@@ -148,45 +148,45 @@
         <span class="k">return</span> <span class="n">obj</span>
 
     <span class="c1"># Time</span>
-    <span class="n">SECOND</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;SEC&quot;</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">)</span>
-    <span class="n">HOUR</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;HUR&quot;</span><span class="p">,</span> <span class="s2">&quot;hour&quot;</span><span class="p">)</span>
-    <span class="n">MINUTE</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span> <span class="s2">&quot;minute&quot;</span><span class="p">)</span>
-    <span class="n">DAY</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span> <span class="s2">&quot;day&quot;</span><span class="p">)</span>
-    <span class="n">MONTH</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MON&quot;</span><span class="p">,</span> <span class="s2">&quot;month&quot;</span><span class="p">)</span>
-    <span class="n">YEAR</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ANN&quot;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">)</span>
+    <span class="n">SECOND</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"SEC"</span><span class="p">,</span> <span class="s2">"second"</span><span class="p">)</span>
+    <span class="n">HOUR</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"HUR"</span><span class="p">,</span> <span class="s2">"hour"</span><span class="p">)</span>
+    <span class="n">MINUTE</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"MIN"</span><span class="p">,</span> <span class="s2">"minute"</span><span class="p">)</span>
+    <span class="n">DAY</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"DAY"</span><span class="p">,</span> <span class="s2">"day"</span><span class="p">)</span>
+    <span class="n">MONTH</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"MON"</span><span class="p">,</span> <span class="s2">"month"</span><span class="p">)</span>
+    <span class="n">YEAR</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"ANN"</span><span class="p">,</span> <span class="s2">"year"</span><span class="p">)</span>
 
     <span class="c1"># Temperature</span>
-    <span class="n">DEGREECELSIUS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;CEL&quot;</span><span class="p">,</span> <span class="s2">&quot;degC&quot;</span><span class="p">)</span>
-    <span class="n">KELVIN</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;KEL&quot;</span><span class="p">,</span> <span class="s2">&quot;kelvin&quot;</span><span class="p">)</span>
+    <span class="n">DEGREECELSIUS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"CEL"</span><span class="p">,</span> <span class="s2">"degC"</span><span class="p">)</span>
+    <span class="n">KELVIN</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"KEL"</span><span class="p">,</span> <span class="s2">"kelvin"</span><span class="p">)</span>
 
     <span class="c1"># Volume / Volumeflow</span>
-    <span class="n">LITER</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;LTR&quot;</span><span class="p">,</span> <span class="s2">&quot;liter&quot;</span><span class="p">)</span>
-    <span class="n">MTQ</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MTQ&quot;</span><span class="p">,</span> <span class="s2">&quot;meter**3&quot;</span><span class="p">)</span>
-    <span class="n">MQH</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MQH&quot;</span><span class="p">,</span> <span class="s2">&quot;meter**3 / hour&quot;</span><span class="p">)</span>
-    <span class="n">MQS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MQS&quot;</span><span class="p">,</span> <span class="s2">&quot;meter**3 / second&quot;</span><span class="p">)</span>
-    <span class="n">E32</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;E32&quot;</span><span class="p">,</span> <span class="s2">&quot;liter / hour&quot;</span><span class="p">)</span>
-    <span class="n">L2</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;L2&quot;</span><span class="p">,</span> <span class="s2">&quot;liter / minute&quot;</span><span class="p">)</span>
+    <span class="n">LITER</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"LTR"</span><span class="p">,</span> <span class="s2">"liter"</span><span class="p">)</span>
+    <span class="n">MTQ</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"MTQ"</span><span class="p">,</span> <span class="s2">"meter**3"</span><span class="p">)</span>
+    <span class="n">MQH</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"MQH"</span><span class="p">,</span> <span class="s2">"meter**3 / hour"</span><span class="p">)</span>
+    <span class="n">MQS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"MQS"</span><span class="p">,</span> <span class="s2">"meter**3 / second"</span><span class="p">)</span>
+    <span class="n">E32</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"E32"</span><span class="p">,</span> <span class="s2">"liter / hour"</span><span class="p">)</span>
+    <span class="n">L2</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"L2"</span><span class="p">,</span> <span class="s2">"liter / minute"</span><span class="p">)</span>
 
     <span class="c1"># Energy / Power</span>
-    <span class="n">WTT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;WTT&quot;</span><span class="p">,</span> <span class="s2">&quot;watt&quot;</span><span class="p">)</span>
-    <span class="n">KWT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;KWT&quot;</span><span class="p">,</span> <span class="s2">&quot;kilowatt&quot;</span><span class="p">)</span>
-    <span class="n">WHR</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;WHR&quot;</span><span class="p">,</span> <span class="s2">&quot;watt_hour&quot;</span><span class="p">)</span>
-    <span class="n">KWH</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;KWH&quot;</span><span class="p">,</span> <span class="s2">&quot;kilowatt_hour&quot;</span><span class="p">)</span>
+    <span class="n">WTT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"WTT"</span><span class="p">,</span> <span class="s2">"watt"</span><span class="p">)</span>
+    <span class="n">KWT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"KWT"</span><span class="p">,</span> <span class="s2">"kilowatt"</span><span class="p">)</span>
+    <span class="n">WHR</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"WHR"</span><span class="p">,</span> <span class="s2">"watt_hour"</span><span class="p">)</span>
+    <span class="n">KWH</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"KWH"</span><span class="p">,</span> <span class="s2">"kilowatt_hour"</span><span class="p">)</span>
 
     <span class="c1"># Distance/ Area</span>
-    <span class="n">CMT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;CMT&quot;</span><span class="p">,</span> <span class="s2">&quot;centimeter&quot;</span><span class="p">)</span>
-    <span class="n">MTR</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MTR&quot;</span><span class="p">,</span> <span class="s2">&quot;meter&quot;</span><span class="p">)</span>
-    <span class="n">MTK</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MTK&quot;</span><span class="p">,</span> <span class="s2">&quot;meter**2&quot;</span><span class="p">)</span>
+    <span class="n">CMT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"CMT"</span><span class="p">,</span> <span class="s2">"centimeter"</span><span class="p">)</span>
+    <span class="n">MTR</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"MTR"</span><span class="p">,</span> <span class="s2">"meter"</span><span class="p">)</span>
+    <span class="n">MTK</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"MTK"</span><span class="p">,</span> <span class="s2">"meter**2"</span><span class="p">)</span>
 
     <span class="c1"># speed</span>
-    <span class="n">MTS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;MTS&quot;</span><span class="p">,</span> <span class="s2">&quot;meter / second&quot;</span><span class="p">)</span>
+    <span class="n">MTS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"MTS"</span><span class="p">,</span> <span class="s2">"meter / second"</span><span class="p">)</span>
 
     <span class="c1"># unitless</span>
-    <span class="n">PERCENT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;P1&quot;</span><span class="p">,</span> <span class="s2">&quot;percent&quot;</span><span class="p">)</span>
+    <span class="n">PERCENT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"P1"</span><span class="p">,</span> <span class="s2">"percent"</span><span class="p">)</span>
 
     <span class="c1"># Electrical</span>
-    <span class="n">OHM</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;OHM&quot;</span><span class="p">,</span> <span class="s2">&quot;ohm&quot;</span><span class="p">)</span>
-    <span class="n">VLT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;VLT&quot;</span><span class="p">,</span> <span class="s2">&quot;volt&quot;</span><span class="p">)</span></div>
+    <span class="n">OHM</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"OHM"</span><span class="p">,</span> <span class="s2">"ohm"</span><span class="p">)</span>
+    <span class="n">VLT</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"VLT"</span><span class="p">,</span> <span class="s2">"volt"</span><span class="p">)</span></div>
 
 
 
@@ -198,11 +198,11 @@
 
 <div class="viewcode-block" id="get_unit_adjustment_factor">
 <a class="viewcode-back" href="../../../basic_service/utils_models.html#encodapy.utils.units.get_unit_adjustment_factor">[docs]</a>
-<span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use adjust_unit_of_value instead. Will be removed in future versions.&quot;</span><span class="p">)</span>
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s2">"Use adjust_unit_of_value instead. Will be removed in future versions."</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_unit_adjustment_factor</span><span class="p">(</span>
     <span class="n">unit_actual</span><span class="p">:</span> <span class="n">DataUnits</span><span class="p">,</span> <span class="n">unit_target</span><span class="p">:</span> <span class="n">DataUnits</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to get the adjustment factor for the conversion of units</span>
+<span class="w">    </span><span class="sd">"""Function to get the adjustment factor for the conversion of units</span>
 
 <span class="sd">    It is recommended to use adjust_units instead, which directly adjusts the value \</span>
 <span class="sd">    and unit of a datapoint, \</span>
@@ -221,36 +221,36 @@
 <span class="sd">        Optional[float]: Adjustment factor for the conversion of the units, if found</span>
 
 <span class="sd">    TODO: Remove the function</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">unit_actual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
-            <span class="s2">&quot;Actual unit is None, cannot determine adjustment factor&quot;</span>
+            <span class="s2">"Actual unit is None, cannot determine adjustment factor"</span>
         <span class="p">)</span>
         <span class="k">assert</span> <span class="n">unit_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
-            <span class="s2">&quot;Target unit is None, cannot determine adjustment factor&quot;</span>
+            <span class="s2">"Target unit is None, cannot determine adjustment factor"</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Cannot determine adjustment factor: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Cannot determine adjustment factor: "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">unit_actual</span> <span class="o">==</span> <span class="n">unit_target</span><span class="p">:</span>
         <span class="k">return</span> <span class="mf">1.0</span>
     <span class="k">if</span> <span class="n">unit_actual</span> <span class="ow">in</span> <span class="p">[</span><span class="n">DataUnits</span><span class="o">.</span><span class="n">KELVIN</span><span class="p">,</span> <span class="n">DataUnits</span><span class="o">.</span><span class="n">DEGREECELSIUS</span><span class="p">]:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s2">&quot;Cannot determine adjustment factor for temperature &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;units </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">"Cannot determine adjustment factor for temperature "</span>
+            <span class="sa">f</span><span class="s2">"units </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">actual</span> <span class="o">=</span> <span class="n">_UNIT_MAP</span><span class="p">[</span><span class="n">unit_actual</span><span class="p">]</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">_UNIT_MAP</span><span class="p">[</span><span class="n">unit_target</span><span class="p">]</span>
         <span class="k">assert</span> <span class="n">unit_actual</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">DataUnits</span><span class="o">.</span><span class="n">KELVIN</span><span class="p">,</span> <span class="n">DataUnits</span><span class="o">.</span><span class="n">DEGREECELSIUS</span><span class="p">],</span> <span class="p">(</span>
-            <span class="s2">&quot;Temperature units are not supported for adjustment factor calculation&quot;</span>
+            <span class="s2">"Temperature units are not supported for adjustment factor calculation"</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Could not map the unit for </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Could not map the unit for </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
@@ -258,7 +258,7 @@
         <span class="n">q</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">_ureg</span><span class="o">.</span><span class="n">parse_expression</span><span class="p">(</span><span class="n">actual</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">pint</span><span class="o">.</span><span class="n">DimensionalityError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incompatible units: </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Incompatible units: </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
@@ -268,7 +268,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">adjust_unit_of_value</span><span class="p">(</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span> <span class="n">unit_actual</span><span class="p">:</span> <span class="n">DataUnits</span><span class="p">,</span> <span class="n">unit_target</span><span class="p">:</span> <span class="n">DataUnits</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to adjust the unit of a value.</span>
+<span class="w">    </span><span class="sd">"""Function to adjust the unit of a value.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        value (float | int): Value to adjust.</span>
@@ -277,21 +277,21 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Optional[float]: Adjusted value, if adjustment factor could be determined.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">unit_actual</span> <span class="o">==</span> <span class="n">unit_target</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">value</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Value must be a float or int for unit adjustment, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Value must be a float or int for unit adjustment, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">actual</span> <span class="o">=</span> <span class="n">_UNIT_MAP</span><span class="p">[</span><span class="n">unit_actual</span><span class="p">]</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">_UNIT_MAP</span><span class="p">[</span><span class="n">unit_target</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unit mapping missing for </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unit mapping missing for </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Unit mapping missing for </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Unit mapping missing for </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -299,9 +299,9 @@
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
 
     <span class="k">except</span> <span class="n">pint</span><span class="o">.</span><span class="n">DimensionalityError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incompatible units: </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Incompatible units: </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Incompatible units: </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Incompatible units: </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span></div>
 
 
@@ -314,7 +314,7 @@
     <span class="n">unit_target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataUnits</span><span class="p">],</span>
     <span class="n">column_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Function to adjust the unit of a datapoint.</span>
 <span class="sd">    To use this function, simply pass the value, the actual unit and the target unit, like:</span>
 
@@ -338,13 +338,13 @@
 <span class="sd">        Optional[Union[str, float, int, pd.DataFrame, pd.Series, list, dict, bool]]: \</span>
 <span class="sd">            Datapoint with adjusted unit, if adjustment factor could be determined, otherwise None</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">unit_actual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Actual unit is None, cannot adjust unit&quot;</span>
-        <span class="k">assert</span> <span class="n">unit_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Target unit is None, cannot adjust unit&quot;</span>
-        <span class="k">assert</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Value is None, cannot adjust unit&quot;</span>
+        <span class="k">assert</span> <span class="n">unit_actual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"Actual unit is None, cannot adjust unit"</span>
+        <span class="k">assert</span> <span class="n">unit_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"Target unit is None, cannot adjust unit"</span>
+        <span class="k">assert</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"Value is None, cannot adjust unit"</span>
     <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Cannot adjust unit: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Cannot adjust unit: "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">unit_actual</span> <span class="o">==</span> <span class="n">unit_target</span><span class="p">:</span>
@@ -354,7 +354,7 @@
     <span class="p">]</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value is </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, cannot adjust unit&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Value is </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, cannot adjust unit"</span><span class="p">)</span>
             <span class="n">adjusted_value</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="n">adjusted_value</span> <span class="o">=</span> <span class="n">adjust_unit_of_value</span><span class="p">(</span>
@@ -384,17 +384,17 @@
                     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                 <span class="p">}</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value in dict cannot be adjusted: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Value in dict cannot be adjusted: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">adjusted_value</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Value type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2"> not supported for unit adjustment&quot;</span>
+                <span class="sa">f</span><span class="s2">"Value type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2"> not supported for unit adjustment"</span>
             <span class="p">)</span>
             <span class="n">adjusted_value</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="n">adjusted_value</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unit adjustment failed with ValueError: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unit adjustment failed with ValueError: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
@@ -404,7 +404,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_time_unit_seconds</span><span class="p">(</span>
     <span class="n">time_unit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TimeUnits</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">DataUnits</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to get the seconds for a time unit using pint</span>
+<span class="w">    </span><span class="sd">"""Function to get the seconds for a time unit using pint</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        time_unit (Union[TimeUnits, str, DataUnits]): time unit / Name of the time unit \</span>
@@ -413,7 +413,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Optional[float]: Number of seconds for the time unit\</span>
 <span class="sd">            or None if the time unit is not available</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Convert input to TimeUnits if needed</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time_unit</span><span class="p">,</span> <span class="n">TimeUnits</span><span class="p">):</span>
@@ -423,22 +423,22 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time_unit</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">unit_name</span> <span class="o">=</span> <span class="n">time_unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time unit type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">time_unit</span><span class="p">)</span><span class="si">}</span><span class="s2"> not supported&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Time unit type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">time_unit</span><span class="p">)</span><span class="si">}</span><span class="s2"> not supported"</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="c1"># Convert to seconds using pint</span>
         <span class="n">unit_expr</span> <span class="o">=</span> <span class="n">_ureg</span><span class="o">.</span><span class="n">parse_expression</span><span class="p">(</span><span class="n">unit_name</span><span class="p">)</span>
-        <span class="n">seconds</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">unit_expr</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+        <span class="n">seconds</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">unit_expr</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"second"</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span>
 
     <span class="k">except</span> <span class="n">pint</span><span class="o">.</span><span class="n">UndefinedUnitError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time unit &#39;</span><span class="si">{</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">&#39; is not defined in pint: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Time unit '</span><span class="si">{</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">' is not defined in pint: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">except</span> <span class="n">pint</span><span class="o">.</span><span class="n">DimensionalityError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time unit &#39;</span><span class="si">{</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">&#39; cannot be converted to seconds: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Time unit '</span><span class="si">{</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">' cannot be converted to seconds: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid time unit input &#39;</span><span class="si">{</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid time unit input '</span><span class="si">{</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 </pre></div>

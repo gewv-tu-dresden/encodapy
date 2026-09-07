@@ -119,6 +119,22 @@ There are examples of how to use the image in [examples/07_component_runner](htt
 - Solver-based Flixopt integration tests depend on optional runtime packages (for example highspy).
 - If those optional packages are unavailable, solver-based tests are skipped.
 
+## Contribution
+
+For information on contributions, see [CONTRIBUTING.md](https://github.com/gewv-tu-dresden/encodapy/blob/main/CONTRIBUTING.md)
+
+> Releases are driven by [Conventional Commits](https://www.conventionalcommits.org).
+> Please make sure your **pull request title** follows the convention
+> (e.g. `feat: …`, `fix: …`), otherwise the `lint-pr-title` check will fail.
+
+## Development & CI
+
+This project uses GitHub Actions for continuous integration and delivery
+(tests, linting, automated releases, docs & Docker image publishing).
+See [.github/workflows/README.md](https://github.com/gewv-tu-dresden/encodapy/blob/main/.github/workflows/README.md) for details.
+
+A changelog is attached with [CHANGELOG.md](https://github.com/gewv-tu-dresden/encodapy/blob/main/CHANGELOG.md).
+
 ## References
 
 If you use EnCoDaPy in your research or project, please cite [https://doi.org/10.5281/zenodo.21130839](https://doi.org/10.5281/zenodo.21130839) or the version of the software currently in use.
@@ -129,7 +145,7 @@ This project is licensed under the BSD License - see the [LICENSE](https://githu
 
 ## Copyright
 
-<a href="https://tu-dresden.de/ing/maschinenwesen/iet/gewv"> <img alt="TUD GEWV" src="https://raw.githubusercontent.com/gewv-tu-dresden/encodapy/main/docs/source/logos/GEWV_Logo.svg" height="75"> </a>
+<a href="https://tu-dresden.de/ing/maschinenwesen/iet/gewv?set_language=en"> <img alt="TUD GEWV" src="https://raw.githubusercontent.com/gewv-tu-dresden/encodapy/main/docs/source/logos/GEWV_Logo.svg" height="75"> </a>
 
 2024-2026, TUD Dresden University of Technology, Chair of Building Energy Systems and Heat Supply
 

@@ -161,9 +161,9 @@ An example can be found under <a class="reference external" href="https://github
 <h4><code class="docutils literal notranslate"><span class="pre">IOModell</span></code><a class="headerlink" href="#iomodell" title="Link to this heading"></a></h4>
 <p>Root-Modell to describe the structur of the Inputs, Outputs and static data (<code class="docutils literal notranslate"><span class="pre">$INPUT_OR_OUTPUT_VARIABLE</span></code>) of a component as a dictionary of <code class="docutils literal notranslate"><span class="pre">IOAllocationModel</span></code>, like:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;INPUT_OR_OUTPUT_VARIABLE_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IOAllocationModel&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;INPUT_OR_OUTPUT_VARIABLE_2&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IOAllocationModel&quot;</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"INPUT_OR_OUTPUT_VARIABLE_1"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IOAllocationModel"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"INPUT_OR_OUTPUT_VARIABLE_2"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IOAllocationModel"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -174,9 +174,9 @@ An example can be found under <a class="reference external" href="https://github
 <p>Defines how inputs, outputs and static data of a component are mapped to specific entities and attributes.</p>
 <p>The expected format for each input or output (<code class="docutils literal notranslate"><span class="pre">$INPUT_OR_OUTPUT_VARIABLE</span></code>) within the controller components (<code class="docutils literal notranslate"><span class="pre">controller_components</span></code>) configuration is:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;INPUT_OR_OUTPUT_VARIABLE&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;entity_id&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;attribute&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;attribute_id&quot;</span>
+<span class="w">  </span><span class="nt">"INPUT_OR_OUTPUT_VARIABLE"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"entity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"entity_id"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"attribute"</span><span class="p">:</span><span class="w"> </span><span class="s2">"attribute_id"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -229,9 +229,9 @@ An example can be found under <a class="reference external" href="https://github
 <ul>
 <li><p>When implementing a new component, begin by initializing the base class in <code class="docutils literal notranslate"><span class="pre">NewComponent</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">NewComponent</span><span class="p">(</span><span class="n">BasicComponent</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Class for a new component</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
 
   <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
       <span class="bp">self</span><span class="p">,</span>
@@ -271,19 +271,19 @@ An example can be found under <a class="reference external" href="https://github
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">NewComponentInputData</span><span class="p">(</span><span class="n">InputData</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Input model for the new component</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">input_value</span><span class="p">:</span> <span class="n">DataPointGeneral</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="o">...</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input of the new component&quot;</span><span class="p">,</span>
-        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;$unit_value&quot;</span><span class="p">}</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Input of the new component"</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">"unit"</span><span class="p">:</span> <span class="s2">"$unit_value"</span><span class="p">}</span>
     <span class="p">)</span>
     <span class="n">input_value_with_default</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">DataPointNumber</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Input of the new component&quot;</span><span class="p">,</span>
-        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;$unit_value&quot;</span><span class="p">}</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Input of the new component"</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">"unit"</span><span class="p">:</span> <span class="s2">"$unit_value"</span><span class="p">}</span>
     <span class="p">)</span>
 </pre></div>
 </div>
@@ -293,9 +293,9 @@ An example can be found under <a class="reference external" href="https://github
 this model is also used for the datatransfer to the components. This model looks different so the validator needs to check the datatype before trying to validate the data to avoid unexpected errors.</p>
 <p>The following example shows how to check the datatype in the validator:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_validator</span><span class="p">,</span> <span class="n">field_validator</span>
-<span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">check_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;InputPreparationInputData&quot;</span><span class="p">:</span>
-    <span class="s1">&#39;Model validator to check the model after initialization.&#39;</span>
+<span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"InputPreparationInputData"</span><span class="p">:</span>
+    <span class="s1">'Model validator to check the model after initialization.'</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="p">,</span> <span class="n">DataPointGeneral</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
@@ -303,10 +303,10 @@ this model is also used for the datatransfer to the components. This model looks
     <span class="c1"># check the model with your code</span>
     <span class="k">return</span> <span class="bp">self</span>
 
-<span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;before&#39;</span><span class="p">)</span>
+<span class="nd">@field_validator</span><span class="p">(</span><span class="s1">'field'</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'before'</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span><span class="n">DataPointGeneral</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataPointGeneral</span><span class="p">:</span>
-    <span class="s1">&#39; Check only a field befor initialization&#39;</span>
+    <span class="s1">' Check only a field befor initialization'</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">DataPointTimeSeries</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">value</span>
@@ -323,19 +323,19 @@ this model is also used for the datatransfer to the components. This model looks
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataPointGeneral</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">NewComponentOutputData</span><span class="p">(</span><span class="n">OutputData</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Output model for the new component</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">result</span><span class="p">:</span> <span class="n">DataPointGeneral</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="o">...</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Result of the new component&quot;</span><span class="p">,</span>
-        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;$unit_value&quot;</span><span class="p">}</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Result of the new component"</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">"unit"</span><span class="p">:</span> <span class="s2">"$unit_value"</span><span class="p">}</span>
     <span class="p">)</span>
     <span class="n">optional_result</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointGeneral</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="o">...</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is an optional result of the new component and does not need to be exported.&quot;</span><span class="p">,</span>
-        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;$unit_value&quot;</span><span class="p">}</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"This is an optional result of the new component and does not need to be exported."</span><span class="p">,</span>
+        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">"unit"</span><span class="p">:</span> <span class="s2">"$unit_value"</span><span class="p">}</span>
     <span class="p">)</span>
 </pre></div>
 </div>
@@ -349,16 +349,16 @@ If you like to add a validator, see the documentation for <a class="reference in
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataPointGeneral</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">NewComponentConfigData</span><span class="p">(</span><span class="n">ConfigData</span><span class="p">):</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Model for the configuration data of the thermal storage service.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="n">config_value</span><span class="p">:</span> <span class="n">DataPointGeneral</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
     <span class="o">...</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Static value for the new component&quot;</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">"Static value for the new component"</span>
 <span class="p">)</span>
 <span class="n">optional_config_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataPointGeneral</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
     <span class="n">DataPointGeneral</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Optional static value for the new component&quot;</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">"Optional static value for the new component"</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -403,10 +403,10 @@ This data will be used by the basic component and the basic service/component ru
 </ul>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="c1">// ...</span>
-<span class="w">  </span><span class="nt">&quot;controller_components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"controller_components"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">          </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;example_controller&quot;</span><span class="p">,</span>
-<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$your_project.$your_modules.$new_component&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"example_controller"</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$your_project.$your_modules.$new_component"</span><span class="p">,</span>
 <span class="w">          </span><span class="c1">// ...</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">]</span>

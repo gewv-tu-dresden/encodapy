@@ -83,11 +83,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for encodapy.config.env_values</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">This module contains the environment variables for the communication interfaces.</span>
 <span class="sd">Authors: Martin Altenburger, Paul Seidel, Maximilian Beyer</span>
 <span class="sd">more information: https://docs.pydantic.dev/latest/concepts/pydantic_settings/#usage</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">time</span><span class="p">,</span> <span class="n">timedelta</span>
@@ -98,50 +98,50 @@
 <div class="viewcode-block" id="BasicEnvVariables">
 <a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.env_values.BasicEnvVariables">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BasicEnvVariables</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Basic environment variables for the service.</span>
 <span class="sd">    They are automatically loaded from the environment or a .env file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">SettingsConfigDict</span><span class="p">(</span>
-        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">env_file</span><span class="o">=</span><span class="s2">&quot;.env&quot;</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">env_file</span><span class="o">=</span><span class="s2">".env"</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
 
     <span class="n">config_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;config.json&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to the configuration file&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"config.json"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Path to the configuration file"</span>
     <span class="p">)</span>
     <span class="n">log_level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Logging level for the service&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"WARNING"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Logging level for the service"</span>
     <span class="p">)</span>
     <span class="n">log_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Path to the log file. If not provided, logs will be printed to the console. &quot;</span>
-            <span class="s2">&quot;Example: &#39;./logs/service.log&#39;&quot;</span>
+            <span class="s2">"Path to the log file. If not provided, logs will be printed to the console. "</span>
+            <span class="s2">"Example: './logs/service.log'"</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">log_retention</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">timedelta</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Retention policy for log files. Can be an integer (number of files to keep), &quot;</span>
-            <span class="s2">&quot;a string (e.g., &#39;7 days&#39;), or a timedelta object. &quot;</span>
-            <span class="s2">&quot;Example: &#39;7 days&#39; or 5 (to keep the last 5 log files).&quot;</span>
+            <span class="s2">"Retention policy for log files. Can be an integer (number of files to keep), "</span>
+            <span class="s2">"a string (e.g., '7 days'), or a timedelta object. "</span>
+            <span class="s2">"Example: '7 days' or 5 (to keep the last 5 log files)."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">log_rotation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">time</span> <span class="o">|</span> <span class="n">timedelta</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Rotation policy for log files. Can be an integer (size in bytes), a string &quot;</span>
-            <span class="s2">&quot;(e.g., &#39;00:00&#39; for daily rotation at midnight), a time object, or a timedelta object. &quot;</span>
-            <span class="s2">&quot;Example: &#39;00:00&#39; for daily rotation at midnight or 10485760 (to rotate after 10 MB).&quot;</span>
+            <span class="s2">"Rotation policy for log files. Can be an integer (size in bytes), a string "</span>
+            <span class="s2">"(e.g., '00:00' for daily rotation at midnight), a time object, or a timedelta object. "</span>
+            <span class="s2">"Example: '00:00' for daily rotation at midnight or 10485760 (to rotate after 10 MB)."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">reload_staticdata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If true, static data will be reloaded at each time step&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"If true, static data will be reloaded at each time step"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">start_hold_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Time in seconds to hold the start of the service&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Time in seconds to hold the start of the service"</span>
     <span class="p">)</span></div>
 
 
@@ -149,52 +149,52 @@
 <div class="viewcode-block" id="FiwareEnvVariables">
 <a class="viewcode-back" href="../../../basic_service/interfaces.html#encodapy.config.env_values.FiwareEnvVariables">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FiwareEnvVariables</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Environment variables for FIWARE communication.</span>
 <span class="sd">    They are automatically loaded from the environment or a .env file.</span>
 
 <span class="sd">    Environment variables always have the prefix `FIWARE_`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">SettingsConfigDict</span><span class="p">(</span>
-        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">env_file</span><span class="o">=</span><span class="s2">&quot;.env&quot;</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">&quot;FIWARE_&quot;</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">env_file</span><span class="o">=</span><span class="s2">".env"</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">"FIWARE_"</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
 
     <span class="n">auth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Enables authentication for FIWARE requests&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Enables authentication for FIWARE requests"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">client_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Client ID for FIWARE authentication&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Client ID for FIWARE authentication"</span>
     <span class="p">)</span>
     <span class="n">client_pw</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Client password for FIWARE authentication&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Client password for FIWARE authentication"</span>
     <span class="p">)</span>
     <span class="n">token_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AnyHttpUrl</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Token URL for FIWARE authentication&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Token URL for FIWARE authentication"</span>
     <span class="p">)</span>
     <span class="n">bearer_token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Bearer token for FIWARE authentication&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Bearer token for FIWARE authentication"</span>
     <span class="p">)</span>
     <span class="n">cb_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AnyHttpUrl</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">AnyHttpUrl</span><span class="p">(</span><span class="s2">&quot;http://127.0.0.1:1026&quot;</span><span class="p">),</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;URL of the Context Broker (e.g., Orion-LD)&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">AnyHttpUrl</span><span class="p">(</span><span class="s2">"http://127.0.0.1:1026"</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"URL of the Context Broker (e.g., Orion-LD)"</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">service</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;FIWARE Service header for tenant isolation&quot;</span><span class="p">)</span>
+    <span class="n">service</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"FIWARE Service header for tenant isolation"</span><span class="p">)</span>
     <span class="n">service_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;FIWARE Service Path for sub-tenant isolation&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"FIWARE Service Path for sub-tenant isolation"</span>
     <span class="p">)</span>
 
     <span class="n">crate_db_url</span><span class="p">:</span> <span class="n">AnyHttpUrl</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">AnyHttpUrl</span><span class="p">(</span><span class="s2">&quot;http://127.0.0.1:4200&quot;</span><span class="p">),</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;URL of the CrateDB instance&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">AnyHttpUrl</span><span class="p">(</span><span class="s2">"http://127.0.0.1:4200"</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"URL of the CrateDB instance"</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">crate_db_user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;crate&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Username for CrateDB&quot;</span><span class="p">)</span>
+    <span class="n">crate_db_user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">"crate"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Username for CrateDB"</span><span class="p">)</span>
     <span class="n">crate_db_pw</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Password for CrateDB (empty = no authentication)&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Password for CrateDB (empty = no authentication)"</span>
     <span class="p">)</span>
     <span class="n">crate_db_ssl</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Enables SSL for the connection to CrateDB&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Enables SSL for the connection to CrateDB"</span>
     <span class="p">)</span></div>
 
 
@@ -202,73 +202,73 @@
 <div class="viewcode-block" id="MQTTEnvVariables">
 <a class="viewcode-back" href="../../../basic_service/interfaces.html#encodapy.config.env_values.MQTTEnvVariables">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MQTTEnvVariables</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    MQTT environment variables for the service.</span>
 <span class="sd">    They are automatically loaded from the environment or a .env file.</span>
 
 <span class="sd">    Environment variables always have the prefix `MQTT_`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">SettingsConfigDict</span><span class="p">(</span>
-        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">env_file</span><span class="o">=</span><span class="s2">&quot;.env&quot;</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">&quot;MQTT_&quot;</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">env_file</span><span class="o">=</span><span class="s2">".env"</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">"MQTT_"</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
 
     <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Hostname or IP address of the MQTT broker&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"127.0.0.1"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Hostname or IP address of the MQTT broker"</span>
     <span class="p">)</span>
-    <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1883</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Port number of the MQTT broker&quot;</span><span class="p">)</span>
+    <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1883</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Port number of the MQTT broker"</span><span class="p">)</span>
     <span class="n">username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Username for MQTT broker authentication&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Username for MQTT broker authentication"</span>
     <span class="p">)</span>
     <span class="n">password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Password for MQTT broker authentication&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Password for MQTT broker authentication"</span>
     <span class="p">)</span>
     <span class="n">topic_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Prefix for all MQTT topics used by the service&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Prefix for all MQTT topics used by the service"</span>
     <span class="p">)</span>
     <span class="n">timestamp_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;TimeInstant&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"TimeInstant"</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Key name in the MQTT message payload that contains the timestamp. &quot;</span>
-            <span class="s2">&quot;Examples: &#39;TimeInstant&#39; (default), &#39;timestamp&#39;, &#39;time&#39;. &quot;</span>
-            <span class="s2">&quot;If the key is not present in the payload, &quot;</span>
-            <span class="s2">&quot;the timestamp of the MQTT message receipt will be used.&quot;</span>
+            <span class="s2">"Key name in the MQTT message payload that contains the timestamp. "</span>
+            <span class="s2">"Examples: 'TimeInstant' (default), 'timestamp', 'time'. "</span>
+            <span class="s2">"If the key is not present in the payload, "</span>
+            <span class="s2">"the timestamp of the MQTT message receipt will be used."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">tls_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Enable TLS/SSL encryption for MQTT connection&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Enable TLS/SSL encryption for MQTT connection"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">tls_ca_cert</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Path to the CA certificate file for TLS/SSL verification. &quot;</span>
-            <span class="s2">&quot;Optional - if not provided, system default certificates are used. &quot;</span>
-            <span class="s2">&quot;Only needed for self-signed or custom CA certificates.&quot;</span>
+            <span class="s2">"Path to the CA certificate file for TLS/SSL verification. "</span>
+            <span class="s2">"Optional - if not provided, system default certificates are used. "</span>
+            <span class="s2">"Only needed for self-signed or custom CA certificates."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">tls_insecure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Set to True to disable certificate verification (insecure). &quot;</span>
-            <span class="s2">&quot;Only use for testing purposes.&quot;</span>
+            <span class="s2">"Set to True to disable certificate verification (insecure). "</span>
+            <span class="s2">"Only use for testing purposes."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">publish_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Delay in seconds before publishing MQTT messages. &quot;</span>
-            <span class="s2">&quot;Can be used to give slow clients sufficient time to receive everything. &quot;</span>
-            <span class="s2">&quot;Be careful when using this option, as unexpected behaviour may occur if the &quot;</span>
-            <span class="s2">&quot;delay of all messages is longer than the sampling time.&quot;</span>
+            <span class="s2">"Delay in seconds before publishing MQTT messages. "</span>
+            <span class="s2">"Can be used to give slow clients sufficient time to receive everything. "</span>
+            <span class="s2">"Be careful when using this option, as unexpected behaviour may occur if the "</span>
+            <span class="s2">"delay of all messages is longer than the sampling time."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">skip_none_values</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;If True, attributes with None values will not be published to MQTT. &quot;</span>
-            <span class="s2">&quot;This can help reduce message size and avoid sending irrelevant data. &quot;</span>
-            <span class="s2">&quot;Default is True, meaning None values will not be published.&quot;</span>
+            <span class="s2">"If True, attributes with None values will not be published to MQTT. "</span>
+            <span class="s2">"This can help reduce message size and avoid sending irrelevant data. "</span>
+            <span class="s2">"Default is True, meaning None values will not be published."</span>
         <span class="p">)</span>
     <span class="p">)</span></div>
 
@@ -277,32 +277,32 @@
 <div class="viewcode-block" id="FileEnvVariables">
 <a class="viewcode-back" href="../../../basic_service/interfaces.html#encodapy.config.env_values.FileEnvVariables">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FileEnvVariables</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    File environment variables for the service.</span>
 <span class="sd">    They are automatically loaded from the environment or a .env file.</span>
 
 <span class="sd">    Environment variables always have the prefix `FILE_`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">SettingsConfigDict</span><span class="p">(</span>
-        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">env_file</span><span class="o">=</span><span class="s2">&quot;.env&quot;</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">&quot;FILE_&quot;</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">env_file</span><span class="o">=</span><span class="s2">".env"</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">"FILE_"</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
 
     <span class="n">storage_method</span><span class="p">:</span> <span class="n">FileStorageMethod</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="n">FileStorageMethod</span><span class="o">.</span><span class="n">APPEND</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Type of file storage: &#39;overwrite&#39;, &#39;append&#39;, or &#39;new_file&#39;,</span>
-<span class="s2">        see FileStorageMethod enum for details&quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"""Type of file storage: 'overwrite', 'append', or 'new_file',</span>
+<span class="s2">        see FileStorageMethod enum for details"""</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">path_of_input_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;./input/input_file.csv&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to the input CSV file&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"./input/input_file.csv"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Path to the input CSV file"</span>
     <span class="p">)</span>
     <span class="n">path_of_static_data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;./input/static_data.json&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to the static data JSON file&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"./input/static_data.json"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Path to the static data JSON file"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">path_of_results</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;./results&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Directory path to store the results&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"./results"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Directory path to store the results"</span>
     <span class="p">)</span></div>
 
 </pre></div>

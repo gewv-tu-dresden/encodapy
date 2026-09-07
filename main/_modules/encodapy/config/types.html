@@ -83,10 +83,10 @@
            <div itemprop="articleBody">
              
   <h1>Source code for encodapy.config.types</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Description: Enum classes for the types in the configuration</span>
 <span class="sd">Authors: Martin Altenburger</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 
@@ -94,101 +94,101 @@
 <div class="viewcode-block" id="Interfaces">
 <a class="viewcode-back" href="../../../basic_service/utils_models.html#encodapy.config.types.Interfaces">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Interfaces</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Enum class for the interfaces</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        MQTT (str): MQTT interface &quot;mqtt&quot;</span>
-<span class="sd">        FIWARE (str): FIWARE interface &quot;fiware&quot;</span>
-<span class="sd">        FILE (str): File interface &quot;file&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        MQTT (str): MQTT interface "mqtt"</span>
+<span class="sd">        FIWARE (str): FIWARE interface "fiware"</span>
+<span class="sd">        FILE (str): File interface "file"</span>
+<span class="sd">    """</span>
 
-    <span class="n">MQTT</span> <span class="o">=</span> <span class="s2">&quot;mqtt&quot;</span>
-    <span class="n">FIWARE</span> <span class="o">=</span> <span class="s2">&quot;fiware&quot;</span>
-    <span class="n">FILE</span> <span class="o">=</span> <span class="s2">&quot;file&quot;</span></div>
+    <span class="n">MQTT</span> <span class="o">=</span> <span class="s2">"mqtt"</span>
+    <span class="n">FIWARE</span> <span class="o">=</span> <span class="s2">"fiware"</span>
+    <span class="n">FILE</span> <span class="o">=</span> <span class="s2">"file"</span></div>
 
 
 
 <div class="viewcode-block" id="AttributeTypes">
 <a class="viewcode-back" href="../../../basic_service/utils_models.html#encodapy.config.types.AttributeTypes">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AttributeTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Enum class for the attribute types</span>
 <span class="sd">    </span>
 <span class="sd">    Attributes:</span>
-<span class="sd">        TIMESERIES (str): Timeseries data &quot;timeseries&quot;</span>
-<span class="sd">        VALUE (str): Single value data &quot;value&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        TIMESERIES (str): Timeseries data "timeseries"</span>
+<span class="sd">        VALUE (str): Single value data "value"</span>
+<span class="sd">    """</span>
 
-    <span class="n">TIMESERIES</span> <span class="o">=</span> <span class="s2">&quot;timeseries&quot;</span>
-    <span class="n">VALUE</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span></div>
+    <span class="n">TIMESERIES</span> <span class="o">=</span> <span class="s2">"timeseries"</span>
+    <span class="n">VALUE</span> <span class="o">=</span> <span class="s2">"value"</span></div>
 
 
 
 <div class="viewcode-block" id="TimerangeTypes">
 <a class="viewcode-back" href="../../../basic_service/utils_models.html#encodapy.config.types.TimerangeTypes">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TimerangeTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Enum class for the timedelta types, used for the functions to get timeseries data</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        ABSOLUTE (str): The timedelta is calculated from the actual time &quot;absolute&quot;</span>
-<span class="sd">        RELATIVE (str): The timedelta is calculated from the last timestamp &quot;relative&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        ABSOLUTE (str): The timedelta is calculated from the actual time "absolute"</span>
+<span class="sd">        RELATIVE (str): The timedelta is calculated from the last timestamp "relative"</span>
+<span class="sd">    """</span>
 
-    <span class="n">ABSOLUTE</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span>
-    <span class="n">RELATIVE</span> <span class="o">=</span> <span class="s2">&quot;relative&quot;</span></div>
+    <span class="n">ABSOLUTE</span> <span class="o">=</span> <span class="s2">"absolute"</span>
+    <span class="n">RELATIVE</span> <span class="o">=</span> <span class="s2">"relative"</span></div>
 
 
 
 <div class="viewcode-block" id="DataQueryTypes">
 <a class="viewcode-back" href="../../../basic_service/utils_models.html#encodapy.config.types.DataQueryTypes">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataQueryTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Enum class for the data query types, used for the functions to get data</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        CALCULATION (str): Calculation of the data &quot;calculation&quot;</span>
-<span class="sd">        CALIBRATION (str): Calibration of the data &quot;calibration&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        CALCULATION (str): Calculation of the data "calculation"</span>
+<span class="sd">        CALIBRATION (str): Calibration of the data "calibration"</span>
+<span class="sd">    """</span>
 
-    <span class="n">CALCULATION</span> <span class="o">=</span> <span class="s2">&quot;calculation&quot;</span>
-    <span class="n">CALIBRATION</span> <span class="o">=</span> <span class="s2">&quot;calibration&quot;</span></div>
+    <span class="n">CALCULATION</span> <span class="o">=</span> <span class="s2">"calculation"</span>
+    <span class="n">CALIBRATION</span> <span class="o">=</span> <span class="s2">"calibration"</span></div>
 
 
 
 <div class="viewcode-block" id="FileExtensionTypes">
 <a class="viewcode-back" href="../../../basic_service/utils_models.html#encodapy.config.types.FileExtensionTypes">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FileExtensionTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Enum class for file Extensions,\</span>
 <span class="sd">        used for the file interface and defines the possible file formats</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        CSV (str): Comma-separated values &quot;csv&quot;</span>
-<span class="sd">        JSON (str): JavaScript Object Notation &quot;json&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        CSV (str): Comma-separated values "csv"</span>
+<span class="sd">        JSON (str): JavaScript Object Notation "json"</span>
+<span class="sd">    """</span>
 
-    <span class="n">CSV</span> <span class="o">=</span> <span class="s2">&quot;.csv&quot;</span>
-    <span class="n">JSON</span> <span class="o">=</span> <span class="s2">&quot;.json&quot;</span></div>
+    <span class="n">CSV</span> <span class="o">=</span> <span class="s2">".csv"</span>
+    <span class="n">JSON</span> <span class="o">=</span> <span class="s2">".json"</span></div>
 
 
 <div class="viewcode-block" id="MQTTFormatTypes">
 <a class="viewcode-back" href="../../../basic_service/utils_models.html#encodapy.config.types.MQTTFormatTypes">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MQTTFormatTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Enum class for MQTT format types</span>
 <span class="sd">    Possible values:</span>
 <span class="sd">    - PLAIN (plain): Plain format</span>
 <span class="sd">    - FIWARE_ATTR (fiware-attr): FIWARE attribute format</span>
 <span class="sd">    - FIWARE_CMDEXE (fiware-cmdexe): FIWARE command execution format</span>
 <span class="sd">    - TEMPLATE (template): Template-based format</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">PLAIN</span> <span class="o">=</span> <span class="s2">&quot;plain&quot;</span>
-    <span class="n">FIWARE_ATTR</span> <span class="o">=</span> <span class="s2">&quot;fiware-attr&quot;</span>
-    <span class="n">FIWARE_CMDEXE</span> <span class="o">=</span> <span class="s2">&quot;fiware-cmdexe&quot;</span>
-    <span class="n">TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;template&quot;</span></div>
+    <span class="n">PLAIN</span> <span class="o">=</span> <span class="s2">"plain"</span>
+    <span class="n">FIWARE_ATTR</span> <span class="o">=</span> <span class="s2">"fiware-attr"</span>
+    <span class="n">FIWARE_CMDEXE</span> <span class="o">=</span> <span class="s2">"fiware-cmdexe"</span>
+    <span class="n">TEMPLATE</span> <span class="o">=</span> <span class="s2">"template"</span></div>
 
 </pre></div>
 
