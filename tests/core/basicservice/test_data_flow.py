@@ -23,6 +23,7 @@ from encodapy.config import (
 from encodapy.utils.models import (
     DataTransferComponentModel,
     DataTransferModel,
+    InputDataEntityModel,
     InputDataModel,
     OutputDataEntityModel,
     OutputDataModel,
@@ -107,9 +108,6 @@ class TestGetData:
         ):
             # Return InputDataEntityModel objects for all interfaces
             # Note: FIWARE and FILE check for None before appending, but MQTT does not
-            # So we return empty lists to avoid validation errors
-            from encodapy.utils.models import InputDataEntityModel
-
             mock_get_data_fiware.return_value = InputDataEntityModel(
                 id="input_1", attributes=[]
             )
@@ -185,12 +183,12 @@ class TestGetData:
         assert len(result.output_entities) == 0
 
     @pytest.mark.asyncio
-    async def test_get_data_all_interfaces_return_none(self, basic_service):
+    async def test_get_data_skips_missing_fiware_and_file_data(self, basic_service):
         """
-        Test get_data when all interface methods return None.
+        Test get_data when FIWARE and FILE return None and MQTT returns data.
 
-        Verifies that get_data handles the case where all data retrieval
-        methods return None.
+        Verifies that get_data skips missing FIWARE and FILE data while
+        retaining the MQTT entity returned by its interface implementation.
         """
         from encodapy.utils.models import OutputDataEntityModel
 
@@ -206,6 +204,13 @@ class TestGetData:
                 id="input_2",
                 interface=Interfaces.FILE,
                 id_interface="input_2",
+                attributes=[],
+                commands=[],
+            ),
+            InputModel(
+                id="input_3",
+                interface=Interfaces.MQTT,
+                id_interface="input_3",
                 attributes=[],
                 commands=[],
             ),
@@ -225,12 +230,23 @@ class TestGetData:
                 attributes=[],
                 commands=[],
             ),
+            OutputModel(
+                id="output_3",
+                interface=Interfaces.MQTT,
+                id_interface="output_3",
+                attributes=[],
+                commands=[],
+            ),
         ]
 
         with (
             patch.object(basic_service, "get_data_from_fiware", return_value=None),
             patch.object(basic_service, "get_data_from_file", return_value=None),
-            patch.object(basic_service, "get_data_from_mqtt", return_value=None),
+            patch.object(
+                basic_service,
+                "get_data_from_mqtt",
+                return_value=InputDataEntityModel(id="input_3", attributes=[]),
+            ),
             patch.object(
                 basic_service,
                 "_get_last_timestamp_for_fiware_output",
@@ -259,8 +275,8 @@ class TestGetData:
             result = await basic_service.get_data(method=DataQueryTypes.CALCULATION)
 
         assert isinstance(result, InputDataModel)
-        # All return None, so input_entities should be empty
-        assert len(result.input_entities) == 0
+        assert len(result.input_entities) == 1
+        assert result.input_entities[0].id == "input_3"
 
     @pytest.mark.asyncio
     async def test_get_data_reload_staticdata_disabled(self, basic_service):
