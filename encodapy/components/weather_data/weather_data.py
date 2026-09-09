@@ -6,7 +6,8 @@ Author: Paul Seidel
 from typing import Optional, Union
 
 from loguru import logger
-from datetime import datetime
+from datetime import datetime, timedelta
+import re
 import pytz
 import requests
 
@@ -98,7 +99,26 @@ class WeatherData(BasicComponent):
 
         return DataPointDict(value=output_dict)
 
-    def get_forecast_weather_data(self) -> DataPointNumber:
+    def get_forecast_time_string(self, base_date, time_str):
+        '''
+        Uses regex to separate the number and the letter (unit)
+        Input: base_date (datetime), time_str (str) e.g. "2d" or "4h"
+        Output: datetime object with the calculated date and time (end of forecast)  
+        '''
+        match = re.match(r"(\d+)([dh])", time_str.strip().lower())
+        if not match:
+            raise ValueError(f"Invalid format: {time_str}. Use e.g., '2d' or '4h'.")
+        
+        value = int(match.group(1))
+        unit = match.group(2)
+    
+        # calculating matching timedelta 
+        if unit == 'd':
+            return base_date + timedelta(days=value)
+        elif unit == 'h':
+            return base_date + timedelta(hours=value)
+
+    def get_forecast_weather_data(self) -> DataPointDict:
         """
         Function to get forecast weather data for the WeatherData component
         """
@@ -107,25 +127,47 @@ class WeatherData(BasicComponent):
                 
         berlin_tz = pytz.timezone("Europe/Berlin")
         actual_time = datetime.now(berlin_tz).strftime("%Y-%m-%dT%H:%M")
-        date_time = datetime.fromisoformat(actual_time).replace(minute=(datetime.fromisoformat(actual_time).minute // 15) * 15, second=0, microsecond=0)
-
+        forecast_start_time = datetime.fromisoformat(actual_time).replace(minute=(datetime.fromisoformat(actual_time).minute // 15) * 15, second=0, microsecond=0)
+        forecast_time_delta = self.config_data.forecast_time_range.value
+        forecast_end_time = self.get_forecast_time_string(forecast_start_time, forecast_time_delta)
+        
         # parameter as dict for the api-call
         params = {
             "lat": self.config_data.latitude.value,
             "lon": self.config_data.longitude.value,
             "tz": berlin_tz ,
-            "date": date_time,
-            "last_date": tomorrow.strftime("%Y-%m-%dT%H:%M")
+            "date": forecast_start_time,
+            "last_date": forecast_end_time
             }
         
-        url = "https://api.brightsky.dev/current_weather"
+        url = "https://api.brightsky.dev/weather"
         
-        another_number = (
-            42
-            if self.input_data.another_number_input.value is None
-            else self.input_data.another_number_input.value
-        )
-        return DataPointNumber(value=another_number, unit=DataUnits.DEGREECELSIUS)
+        try:
+            response = requests.get(url, params=params, timeout=5.0)
+            if response.status_code >= 400:
+                error_text = response.json()["message"]
+                logger.debug(f"Failed read data of brightsky: {error_text}")
+                raise Exception(error_text)
+
+            if response.status_code == 200:
+                data = response.json()
+                
+                weather = data["weather"]
+  
+                temp_dict = {hour["timestamp"]: hour["temperature"] for hour in weather}
+                solar_dict = {hour["timestamp"]: hour["solar"] for hour in weather}
+
+                output_dict = {
+                    "forecast_temperature": temp_dict,
+                    "forecast_solar": solar_dict
+                }
+
+        except requests.exceptions.Timeout:
+            logger.error("error: The API did not respond quickly enough (timeout exceeded).")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Connection- or API-error: {e}")
+        
+        return DataPointDict(value=output_dict)
 
     def calculate(self) -> None:
         """
@@ -148,8 +190,23 @@ class WeatherData(BasicComponent):
                 
             case WeatherApiCallMethod.FORECAST:
                 logger.debug("Get Forecast Data in WeatherData...")
+ 
+                data = WeatherData.get_forecast_weather_data(self)
+                logger.debug(f"Forecast data retrieved: {data.value}")
+                
+                temperature_dict = data.value.get('forecast_temperature', {})
+                solar_dict = data.value.get('forecast_solar', {})
+            
+                forecast_temperature = DataPointDict(
+                    value={str(index): value for index, value in temperature_dict.items()}, unit=DataUnits.DEGREECELSIUS
+                    )
+                forecast_solar = DataPointDict(
+                    value={str(index): value for index, value in solar_dict.items()}, unit=DataUnits.KWM
+                    )
+
                 self.output_data = WeatherDataOutputData(
-                        forecast_temperature=self.get_forecast_weather_data(),
+                        forecast_temperature=forecast_temperature,
+                        forecast_solar=forecast_solar
                         )
             case _ :
                 logger.error(

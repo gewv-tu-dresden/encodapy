@@ -78,8 +78,14 @@ class WeatherDataOutputData(OutputData):
         )
     forecast_temperature: Optional[DataPointDict] = Field(
         None,
-        description="Forecast weather data",
-    )
+        description="Forecast temperature data",
+        json_schema_extra={"unit": "CEL"},
+        )
+    forecast_solar: Optional[DataPointDict] = Field(
+        None,
+        description="Forecast solar irradiation data during previous 60 minutes",
+        json_schema_extra={"unit": "KWM"},
+        )
 
 class WeatherApiCallMethod(Enum):
     """
