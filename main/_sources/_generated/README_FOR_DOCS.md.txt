@@ -7,6 +7,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21130839.svg)](https://doi.org/10.5281/zenodo.21130839)
 [![Pylint](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/pylint.yml/badge.svg?branch=main)](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/pylint.yml)
 [![Tests](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/gewv-tu-dresden/encodapy/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/gewv-tu-dresden/encodapy/graph/badge.svg?token=4556416BLJ)](https://codecov.io/gh/gewv-tu-dresden/encodapy)
 
 ## Overview
 
