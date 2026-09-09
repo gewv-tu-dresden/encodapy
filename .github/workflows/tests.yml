@@ -1,3 +1,4 @@
+# Author: Martin Altenburger
 name: Tests
 
 on:
@@ -57,7 +58,6 @@ jobs:
         with:
           files: ./coverage.xml
           flags: unit-tests
-          name: unit-tests-coverage
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -71,7 +71,7 @@ jobs:
             -d '{
               "state": "success",
               "description": "Codecov: Skipped for Dependabot",
-              "context": "unit-tests-coverage"  #
+              "context": "codecov/patch"
             }'
 
   docs-build-test:
@@ -152,7 +152,6 @@ jobs:
         with:
           files: ./coverage.xml
           flags: integration-tests
-          name: integration-tests-coverage
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -166,7 +165,7 @@ jobs:
             -d '{
               "state": "success",
               "description": "Codecov: Skipped for Dependabot",
-              "context": "integration-tests-coverage"
+              "context": "codecov/patch"
             }'
 
       - name: Clean up Docker containers
