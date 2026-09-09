@@ -50,29 +50,12 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
-        if: ${{
-            !cancelled() &&
-            github.actor != 'dependabot[bot]' &&
-            (github.ref == 'refs/heads/main' || github.event_name == 'pull_request')
-          }}
+        if: ${{ !cancelled() && github.actor != 'dependabot[bot]' && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request') }}
         with:
           files: ./coverage.xml
           flags: unit-tests
-          fail_ci_if_error: true
+          fail_ci_if_error: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
           token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Report Codecov status for Dependabot
-        if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' }}
-        run: |
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }}" \
-            -d '{
-              "state": "success",
-              "description": "Codecov: Skipped for Dependabot",
-              "context": "codecov/patch"
-            }'
 
   docs-build-test:
     runs-on: ubuntu-latest
@@ -144,29 +127,12 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
-        if: ${{
-            !cancelled() &&
-            github.actor != 'dependabot[bot]' &&
-            (github.ref == 'refs/heads/main' || github.event_name == 'pull_request')
-          }}
+        if: ${{ !cancelled() && github.actor != 'dependabot[bot]' && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request') }}
         with:
           files: ./coverage.xml
           flags: integration-tests
-          fail_ci_if_error: true
+          fail_ci_if_error: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
           token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Report Codecov status for Dependabot
-        if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' }}
-        run: |
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }}" \
-            -d '{
-              "state": "success",
-              "description": "Codecov: Skipped for Dependabot",
-              "context": "codecov/patch"
-            }'
 
       - name: Clean up Docker containers
         if: always()
