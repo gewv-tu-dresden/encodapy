@@ -70,8 +70,8 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }}" \
             -d '{
               "state": "success",
-              "description": "Codecov: Skipped for Dependabot (no token access)",
-              "context": "codecov/patch"
+              "description": "Codecov: Skipped for Dependabot",
+              "context": "unit-tests-coverage"  #
             }'
 
   docs-build-test:
@@ -165,8 +165,8 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }}" \
             -d '{
               "state": "success",
-              "description": "Codecov: Skipped for Dependabot (no token access)",
-              "context": "codecov/patch"
+              "description": "Codecov: Skipped for Dependabot",
+              "context": "integration-tests-coverage"
             }'
 
       - name: Clean up Docker containers
