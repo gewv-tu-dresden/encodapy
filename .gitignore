@@ -10,3 +10,5 @@ health
 *.log*
 *.sqlite
 .venv/
+/.mypy_cache/
+coverage.xml

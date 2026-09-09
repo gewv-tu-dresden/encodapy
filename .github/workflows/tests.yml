@@ -5,8 +5,12 @@ on:
     branches: [main]
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  pytest:
+  unit-tests:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -14,13 +18,13 @@ jobs:
         python-version: ["3.11", "3.12"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: snok/install-poetry@v1.4.1
+      - uses: snok/install-poetry@v1
         with:
           version: 1.7.1
           virtualenvs-create: true
@@ -28,7 +32,7 @@ jobs:
 
       - name: Cache dependencies
         id: cache-deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .venv
           key: pydeps-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
@@ -41,7 +45,17 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Run tests
-        run: poetry run pytest --cov=encodapy --cov-report=term-missing
+        run: poetry run pytest -m "not integration and not docker" --cov=encodapy --cov-report=xml --cov-report=term-missing
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        if: ${{ !cancelled() }}
+        with:
+          files: ./coverage.xml
+          flags: unit-tests
+          name: unit-tests-coverage
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   docs-build-test:
     runs-on: ubuntu-latest
@@ -49,12 +63,12 @@ jobs:
       DOCS_GITHUB_VERSION: ${{ github.head_ref }}
       DOCS_BASE_URL: /encodapy/
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -64,6 +78,63 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
-      # -W behandelt Sphinx-Warnungen als Fehler (optional, aber empfehlenswert)
+      # -W treats warnings as errors, -E ignores cached files, -a rebuilds all files
       - name: Build documentation
         run: poetry run sphinx-build -b html -a -E -W ./docs/source ./docs/build
+
+  # Integration tests with Docker containers
+  # These tests require Docker and testcontainers
+
+  integration-tests:
+    name: integration tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: pydeps-integration-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction --with dev
+
+      - name: Run integration tests
+        run: |
+          poetry run pytest \
+            -m "integration or docker" \
+            -v \
+            --cov=encodapy \
+            --cov-report=xml \
+            --cov-report=term-missing
+        timeout-minutes: 15
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        if: ${{ !cancelled() }}
+        with:
+          files: ./coverage.xml
+          flags: integration-tests
+          name: integration-tests-coverage
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+      
+      - name: Clean up Docker containers
+        if: always()
+        run: docker system prune -f
