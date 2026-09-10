@@ -17,6 +17,32 @@ from encodapy.utils.datapoints import DataPointGeneral, DataPointNumber, DataPoi
 from encodapy.utils.units import DataUnits
 
 
+class WeatherApiCallMethod(Enum):
+    """
+    Enum for the API call methods of the weather data service.
+
+    Members:
+        CURRENT: Retrieve current weather data
+        FORECAST: Retrieve weather forecast data
+    """
+
+    CURRENT = "current"
+    FORECAST = "forecast"
+
+
+class DataPointWeatherApiCallMethod(DataPointGeneral):
+    """
+    Model for datapoints of the controller component which define the API call method.
+
+    Attributes:
+        value: The value of the datapoint, which is a string representing the API call method
+        unit: Optional unit of the datapoint, if applicable
+        time: Optional timestamp of the datapoint, if applicable
+    """
+
+    value: WeatherApiCallMethod
+
+
 class WeatherDataInputData(InputData):
     """
     Input model for the WeatherData component
@@ -54,63 +80,56 @@ class WeatherDataOutputData(OutputData):
     temperature: Optional[DataPointNumber] = Field(
         None,
         description="Air temperature at timestamp, 2 m above the ground in degree celsius",
-        json_schema_extra={"unit": "CEL"},
+        json_schema_extra={"unit": "CEL",
+            "weather_type": WeatherApiCallMethod.CURRENT
+            },
         )
     relative_humidity: Optional[DataPointNumber] = Field(
         None,
         description="Relative humidity at timestamp in %",
-        json_schema_extra={"unit": "P1"},
+        json_schema_extra={"unit": "P1",
+            "weather_type": WeatherApiCallMethod.CURRENT
+            },
         )
     pressure_msl: Optional[DataPointNumber]  = Field(
         None,
         description="Atmospheric pressure at timestamp, reduced to mean sea level in hPa",
-        json_schema_extra={"unit": "A97"},
+        json_schema_extra={"unit": "A97",
+            "weather_type": WeatherApiCallMethod.CURRENT
+            },
         )
     dew_point: Optional[DataPointNumber] = Field(
         None,
         description="Dew point at timestamp, 2 m above ground in degree celsius",
-        json_schema_extra={"unit": "CEL"},
+        json_schema_extra={"unit": "CEL",
+            "weather_type": WeatherApiCallMethod.CURRENT
+            },
         )
     solar_60: Optional[DataPointNumber] = Field(
         None,
         description="Solar irradiation during previous 60 minutes in kWh / m²",
-        json_schema_extra={"unit": "KWM"},
+        json_schema_extra={
+            "unit": "KWM",
+            "weather_type": WeatherApiCallMethod.CURRENT
+            },
         )
     forecast_temperature: Optional[DataPointDict] = Field(
         None,
         description="Forecast temperature data",
-        json_schema_extra={"unit": "CEL"},
+        json_schema_extra={
+            "unit": "CEL",
+            "weather_type": WeatherApiCallMethod.FORECAST
+            },
         )
     forecast_solar: Optional[DataPointDict] = Field(
         None,
         description="Forecast solar irradiation data during previous 60 minutes",
-        json_schema_extra={"unit": "KWM"},
+        json_schema_extra={
+            "unit": "KWM",
+            "weather_type": WeatherApiCallMethod.FORECAST
+            },
         )
 
-class WeatherApiCallMethod(Enum):
-    """
-    Enum for the API call methods of the weather data service.
-
-    Members:
-        CURRENT: Retrieve current weather data
-        FORECAST: Retrieve weather forecast data
-    """
-
-    CURRENT = "current"
-    FORECAST = "forecast"
-
-
-class DataPointWeatherApiCallMethod(DataPointGeneral):
-    """
-    Model for datapoints of the controller component which define the API call method.
-
-    Attributes:
-        value: The value of the datapoint, which is a string representing the API call method
-        unit: Optional unit of the datapoint, if applicable
-        time: Optional timestamp of the datapoint, if applicable
-    """
-
-    value: WeatherApiCallMethod
 
 class WeatherDataConfigData(ConfigData):
     """
@@ -129,13 +148,6 @@ class WeatherDataConfigData(ConfigData):
         DataPointNumber(value=52.5),
         description="Value of latitude of the chosen location in degree (default value for Berlin)",
         json_schema_extra={"unit": "DD"}
-    )
-
-    weather_type: DataPointWeatherApiCallMethod = Field(
-        DataPointWeatherApiCallMethod(
-            value=WeatherApiCallMethod.CURRENT
-        ),
-        description="API call method for retrieving weather data (default is 'current' for current weather data)",
     )
     forecast_time_range: Optional[DataPointGeneral] = Field(
         DataPointString(value="1d"),
