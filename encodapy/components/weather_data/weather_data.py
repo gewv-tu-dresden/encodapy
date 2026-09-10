@@ -36,7 +36,7 @@ class WeatherData(BasicComponent):
         static_data: Optional[list[StaticDataEntityModel]] = None,
     ) -> None:
         # Add the necessary instance variables here
-        self.example_variable: float = 1
+        self.unique_weather_types: list[str] = []
 
         # Add the type declaration for the following variables so that autofill works properly
         self.config_data: WeatherDataConfigData
@@ -55,8 +55,23 @@ class WeatherData(BasicComponent):
         Prepare the component (e.g., initialize resources)
         """
         logger.debug("Hello from WeatherData! Preparing Calculation part depending in the output-configuration.")
-        outputs = self.io_model.output
-        logger.error(f"Outputs: {outputs}")
+        outputs_allowed_datatypes =  WeatherDataOutputData.get_weather_types()
+        outputs_configured = self.io_model.output
+
+        matched_weather_types = {
+            key: value
+            for key, value in outputs_allowed_datatypes.items()
+            if key in outputs_configured.model_dump().keys()
+            }
+        available_weather_types = {
+            key: value
+            for key, value in matched_weather_types.items()
+            if getattr(outputs_configured, key) is not None
+            }
+        
+        self.unique_weather_types = list(dict.fromkeys(available_weather_types.values()))
+
+
 
     def get_current_weather_data(self) -> DataPointDict:
         """
@@ -176,38 +191,42 @@ class WeatherData(BasicComponent):
         Perform the calculations for the WeatherData component
         """
 
-        #match self.config_data.weather_type.value:
-        #    case WeatherApiCallMethod.CURRENT:
-        logger.debug("Get Current Data in WeatherData...")
+        output = WeatherDataOutputData()
 
-        current_data = self.get_current_weather_data()
-                
-        #    case WeatherApiCallMethod.FORECAST:
-        logger.debug("Get Forecast Data in WeatherData...")
- 
-        forecast_data = WeatherData.get_forecast_weather_data(self)
-        logger.debug(f"Forecast data retrieved: {forecast_data.value}")
-                
-        temperature_dict = forecast_data.value.get('forecast_temperature', {})
-        solar_dict = forecast_data.value.get('forecast_solar', {})
-           
-        forecast_temperature = DataPointDict(
-                    value={str(index): value for index, value in temperature_dict.items()}, unit=DataUnits.DEGREECELSIUS
-                    )
-        forecast_solar = DataPointDict(
-                    value={str(index): value for index, value in solar_dict.items()}, unit=DataUnits.KWM
-                    )
+        if WeatherApiCallMethod.CURRENT.value in self.unique_weather_types:
+            
+            logger.debug("Get Current Data from Brightsky...")
 
-        self.output_data = WeatherDataOutputData(
+            current_data = self.get_current_weather_data()
+
+            output = WeatherDataOutputData(
                 temperature=DataPointNumber(value=current_data.value.get("temperature"), unit=DataUnits.DEGREECELSIUS),
                 relative_humidity=DataPointNumber(value=current_data.value.get("relative_humidity"), unit=DataUnits.PERCENT),
                 pressure_msl=DataPointNumber(value=current_data.value.get("pressure_msl"), unit=DataUnits.HPA),
                 dew_point=DataPointNumber(value=current_data.value.get("dew_point"), unit=DataUnits.DEGREECELSIUS),
-                solar_60=DataPointNumber(value=current_data.value.get("solar_60"), unit=DataUnits.KWM),
-                forecast_temperature=forecast_temperature,
-                forecast_solar=forecast_solar
+                solar_60=DataPointNumber(value=current_data.value.get("solar_60"), unit=DataUnits.KWM)
+            )
+                
+        if WeatherApiCallMethod.FORECAST.value in self.unique_weather_types:
+            logger.debug("Get Forecast Data from Brightsky...")
+ 
+            forecast_data = WeatherData.get_forecast_weather_data(self)
+                
+            temperature_dict = forecast_data.value.get('forecast_temperature', {})
+            solar_dict = forecast_data.value.get('forecast_solar', {})
+           
+            output.forecast_temperature = DataPointDict(
+                    value={str(index): value for index, value in temperature_dict.items()}, unit=DataUnits.DEGREECELSIUS
+                    )
+            output.forecast_solar = DataPointDict(
+                    value={str(index): value for index, value in solar_dict.items()}, unit=DataUnits.KWM
+                    )
+            
+
+        if not any(weather_type in self.unique_weather_types for weather_type in [WeatherApiCallMethod.CURRENT.value, WeatherApiCallMethod.FORECAST.value]):
+           logger.error(
+                f"Invalid weather_call_method: {self.config_data.weather_type.value}. Expected 'current' or 'forecast'."
              )
-            #case _ :
-            #    logger.error(
-            #    f"Invalid weather_call_method: {self.config_data.weather_type.value}. Expected 'current' or 'forecast'."
-            #     )
+
+           
+        self.output_data = output

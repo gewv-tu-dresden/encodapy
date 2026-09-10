@@ -3,7 +3,7 @@ Defines the configuration data models for the OpenWeatherMap component.
 Author: Paul Seidel
 """
 
-from typing import Optional
+from typing import Optional, Dict
 from enum import Enum
 
 from pydantic import Field
@@ -81,28 +81,28 @@ class WeatherDataOutputData(OutputData):
         None,
         description="Air temperature at timestamp, 2 m above the ground in degree celsius",
         json_schema_extra={"unit": "CEL",
-            "weather_type": WeatherApiCallMethod.CURRENT
+            "weather_type": "current"
             },
         )
     relative_humidity: Optional[DataPointNumber] = Field(
         None,
         description="Relative humidity at timestamp in %",
         json_schema_extra={"unit": "P1",
-            "weather_type": WeatherApiCallMethod.CURRENT
+            "weather_type": "current"
             },
         )
     pressure_msl: Optional[DataPointNumber]  = Field(
         None,
         description="Atmospheric pressure at timestamp, reduced to mean sea level in hPa",
         json_schema_extra={"unit": "A97",
-            "weather_type": WeatherApiCallMethod.CURRENT
+            "weather_type": "current"
             },
         )
     dew_point: Optional[DataPointNumber] = Field(
         None,
         description="Dew point at timestamp, 2 m above ground in degree celsius",
         json_schema_extra={"unit": "CEL",
-            "weather_type": WeatherApiCallMethod.CURRENT
+            "weather_type": "current"
             },
         )
     solar_60: Optional[DataPointNumber] = Field(
@@ -110,7 +110,7 @@ class WeatherDataOutputData(OutputData):
         description="Solar irradiation during previous 60 minutes in kWh / m²",
         json_schema_extra={
             "unit": "KWM",
-            "weather_type": WeatherApiCallMethod.CURRENT
+            "weather_type": "current"
             },
         )
     forecast_temperature: Optional[DataPointDict] = Field(
@@ -118,7 +118,7 @@ class WeatherDataOutputData(OutputData):
         description="Forecast temperature data",
         json_schema_extra={
             "unit": "CEL",
-            "weather_type": WeatherApiCallMethod.FORECAST
+            "weather_type": "forecast"
             },
         )
     forecast_solar: Optional[DataPointDict] = Field(
@@ -126,9 +126,21 @@ class WeatherDataOutputData(OutputData):
         description="Forecast solar irradiation data during previous 60 minutes",
         json_schema_extra={
             "unit": "KWM",
-            "weather_type": WeatherApiCallMethod.FORECAST
+            "weather_type": "forecast"
             },
         )
+
+    @classmethod
+    def get_weather_types(cls) -> Dict[str, WeatherApiCallMethod]:
+        """
+        get a dict with {key: weather_type} for all fields in this class,
+        which defines "weather_type" in json_schema_extra.
+        """
+        return {
+            name: field.json_schema_extra["weather_type"]
+            for name, field in cls.model_fields.items()
+            if field.json_schema_extra and "weather_type" in field.json_schema_extra
+        }
 
 
 class WeatherDataConfigData(ConfigData):
