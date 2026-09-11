@@ -15,7 +15,7 @@ authors:
     corresponding: true
   - name: Maximilian Beyer
     orcid: 0000-0003-0180-8143
-    affiliation: 1 
+    affiliation: 1
   - name: Paul Seidel
     orcid: 0009-0004-7903-8411
     affiliation: 1
@@ -228,6 +228,6 @@ All AI-generated content (code, tests, text) was reviewed, adapted, and approved
 
 # Acknowledgements
 
-The authors gratefully acknowledge the financial support provided by  the German Federal Ministry for Economic Affairs and Energy for the research projects "N5GEH-Serv" (grant number 03EN1030A) and "E³" (grant number 03EN3058C). The sponsors had no role in study design, software development, or manuscript preparation.
+The authors gratefully acknowledge the financial support provided by the German Federal Ministry for Economic Affairs and Energy for the research projects "N5GEH-Serv" (grant number 03EN1030A) and "E³" (grant number 03EN3058C). The sponsors had no role in study design, software development, or manuscript preparation.
 
 # References
