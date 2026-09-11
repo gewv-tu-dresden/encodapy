@@ -23,19 +23,8 @@ affiliations:
   - name: Chair of Building Energy Systems and Heat Supply, TUD Dresden University of Technology, Germany
     index: 1
 
-date: xx September 2026
+date: 11 September 2026
 bibliography: paper.bib
-
-# Optional fields for papers that are part of a joint submission.
-# For example, submitting to a AAS journal too, see this blog post:
-# https://blog.joss.theoj.org/2018/12/a-new-collaboration-with-aas-publishing
-#
-# If you are not making a joint submission you should remove these lines.
-#
-
-# Example see https://joss.readthedocs.io/en/latest/example_paper.html
-# aas-doi:  <- update this with the DOI from AAS once you know it.
-# aas-journal:  <- The name of the AAS journal.
 ---
 
 
@@ -49,7 +38,7 @@ The central starting point is the use of the open-source FIWARE platform, which 
 
 The increasing integration of decentralized energy producers, storage systems, and flexible consumers requires software capable of collecting and processing energy data from heterogeneous sources and exchanging it among distributed components. For research and prototyping applications, data acquisition, configuration management, validation, calculations, and communication often need to be flexibly integrated. Communication interfaces such as MQTT and FIWARE provide important mechanisms for this purpose, but they do not handle the application-specific processing and calculation of energy data.
 
-EnCoDaPy addresses this need as a modular, open-source Python framework for energy management, energy data processing, and control applications. The framework provides a common base service for configuration, data acquisition, calculation, and the transmission of results. Application-specific functions can be implemented, reused, and extended using configurable components. Both current-state data and historical time series can be processed.
+EnCoDaPy addresses this need as a modular, open-source Python framework for energy management, energy data processing, and control applications. The framework provides a common base service for configuration, data acquisition, calculation, and the transmission of results. Application-specific functions can be implemented, reused, and extended using configurable components. Both current-state data and historical time series can be processed. The framework targets researchers and engineers prototyping energy management and control services such as data analytics.
 
 # State of the field 
 
@@ -71,30 +60,23 @@ Although both frameworks use modular architectures and support communication mec
 
 NeuraFlux is based on a modular, agent-based architecture and supports the processing of current and historical simulation data [@desage_2025]. Although the publication describes integration with hardware, APIs, and OEM software [@desage_2025], the authors’ analysis of the publicly accessible repository at commit `4c5ebc6` identified no specific, documented interface for importing real-world data from external systems [@desage_neuraflux_2025]. Instead, data exchange in the inspected implementation is performed through internal Python functions. The publication therefore describes a broader intended or conceptual scope than the directly usable external-integration functionality identified in the inspected repository.
 
-Other approaches focus on specific multi-agent energy-management applications, such as resource allocation, energy trading, or schedule generation [@davoudi_2024; @blaauwbroek_2015]. The authors did not identify public code repositories for these approaches in the cited publications or during the repository search conducted for this comparison. Taken together, these approaches illustrate how modular and distributed architectures have been applied to energy system control, scheduling, and resource-allocation problems. The selected references focus primarily on agent-based application frameworks, the integration of simulations, and specific energy management tasks. The selected references focus primarily on agent-based application frameworks, the integration of simulations, or specific energy management tasks, whereas EnCoDaPy emphasizes the combination of a configuration-driven cyclic runtime environment, heterogeneous data interfaces, and reusable application-specific components organized around service workflows.
+Other approaches focus on specific multi-agent energy-management applications, such as resource allocation, energy trading, or schedule generation [@davoudi_2024; @blaauwbroek_2015]. The authors did not identify public code repositories for these approaches in the cited publications or during the repository search conducted for this comparison. Taken together, these approaches illustrate how modular and distributed architectures have been applied to energy system control, scheduling, and resource-allocation problems. The selected references focus primarily on agent-based application frameworks, the integration of simulations, or specific energy management tasks, whereas EnCoDaPy emphasizes the combination of a configuration-driven cyclic runtime environment, heterogeneous data interfaces, and reusable application-specific components organized around service workflows.
 
 EnCoDaPy is primarily intended for research and prototyping applications involving data processing and control in real or emulated energy systems. Unlike simulation-oriented frameworks, it does not provide an explicit interface for integrating simulation models. However, simulated or emulated components can be connected via the same interfaces used for real data sources. This allows EnCoDaPy to be used for testing and prototyping without simulation integration being the primary focus.
 
 # Software design
 
-## Main Function
+## Design Overview
 
-As its name suggests, EnCoDaPy's main function is to facilitate the integration, processing, and control of energy-related data in a modular and scalable way. Designed to connect raw data acquisition, control, and advanced energy system analysis, EnCoDaPy is particularly relevant for smart grid, building energy management, and energy system research and industrial applications using the Internet of Things (IoT) for monitoring and control.
-The framework addresses several key challenges in energy data management, primarily focusing on the following aspects:
+EnCoDaPy has a layered, modular architecture which separates data ingestion, processing, and control logic. The core consists of three layers:
 
-- Heterogeneous Data Sources  
-EnCoDaPy supports multiple interfaces (e.g., FIWARE, MQTT, file-based) to ingest data from diverse sources, ensuring compatibility with existing infrastructure. This enables seamless interaction between multiple EnCoDaPy instances or external systems via standardised interfaces.
-- Modularity and Extensibility  
-The framework provides a base function that is responsible for configuration and communication. Based on this, a component runner is included which enables components with special functions to be run. The framework also provides some base components for building energy management, such as a thermal storage calculator or a typical thermal controller.
-Users can customise and extend the framework by developing their own components or leveraging pre-built modules for specific tasks.
-- Processing  
-The framework is optimised for current data processing and control, enabling dynamic responses to changing energy conditions. Depending on the computing speed, variable iteration can make it possible to achieve higher speeds in simulations.
-- Trusted and unified  
-During the runtime of a controller, problems often arise from incorrect configurations. The framework gives you a way to check the configuration when the algorithm starts, based on Pydantic [@colvin_pydantic_2024]. The centralised JSON and environmental values-based configuration ensure consistency and security across deployments. This makes it easier to reuse and extend configurations.
-- Processing variable data  
-It is possible to process status data as well as historical data. Data can be combined and evaluated according to the specific requirements. Time series or current values/target values can also be output as results.
+- A configuration layer based on Pydantic-validated JSON and environment variables to ensure consistency across deployments and prevent runtime errors caused by malformed configurations.
+- A communication layer that abstracts the FIWARE, MQTT, and file-based interfaces behind a unified API to enable interoperability with heterogeneous data sources.
+- A component runner that dynamically loads and executes specialized modules (e.g., thermal storage calculators), while maintaining a shared state for real-time data processing.
 
-## Code Sructure
+This design prioritizes both extensibility and real-time capability. Extensibility allows for the addition of custom components without modifying the core, while real-time capability supports variable iteration speeds for simulations and faster-than-real-time studies.
+
+## Code Structure
 
 EnCoDaPy is based on a basic (core) service that provides essential functionality for each algorithm, whether for controllers or data preparation. This basic service has been developed as an asynchronous Python application comprising the following subtasks:
 
@@ -124,7 +106,7 @@ The configuration is divided into a main configuration from a file, which is eas
 
 ![Schema of the basic configuration \label{fig:schema_basic_config}](./schema_basic_config.pdf)
 
-Verification is performed while loading the configuration using the solutions from Pydantic [@colvin_pydantic_2024]. This means that any configuration-related issues will be logged, and the service will stop if necessary. This ensures that the service will not crash later due to these issues. Using Pyndatic [@colvin_pydantic_2024] BaseModel makes it easy to document the configuration and use the variables in the code without encountering any type issues.
+Verification is performed while loading the configuration using the solutions from Pydantic [@colvin_pydantic_2024]. This means that any configuration-related issues will be logged, and the service will stop if necessary. This ensures that the service will not crash later due to these issues. Using Pydantic [@colvin_pydantic_2024] BaseModel makes it easy to document the configuration and use the variables in the code without encountering any type issues.
 
 ## Interfaces
 
@@ -142,21 +124,7 @@ EnCoDaPy's component architecture builds on the basic service, creating a modula
 
 ### Using and Creating Components
 
-The component runner enables creating a Python service for data preparation or energy management by configuring existing components or building custom ones. Components require:
-
-- Input/output configuration (and optionally parameter configuration)
-- A `calculate()` method to compute results
-
-All components must follow this consistent template for "new_component".
-
-```text
-<new_component>/
-├── __init__.py                 # can be empty
-├── new_component.py            # initialises the class NewComponent
-└── new_component_config.py     # contains all necessary configurations
-```
-
-The `new_component_config.py` defines the configuration of inputs, outputs, and parameters, while `new_component.py` implements the algorithm with a `calculate()` method.
+The component runner enables creating a Python service for data preparation or energy management by configuring existing components or building custom ones. To build a custom component, users subclass `BasicComponent` and implement `calculate()`; the example below shows a minimal component that aggregates a result.
 
 ```python
 
@@ -175,7 +143,7 @@ class NewComponent(BasicComponent):
 
 ```
 
-EnCoDaPy includes components for calculating thermal storage energy and optimizing model-predictive control, which addresses common energy management needs.
+EnCoDaPy includes components for calculating thermal storage energy and optimizing model-predictive control, which addresses energy management needs.
 
 ### Thermal Storage Component
 
@@ -194,15 +162,15 @@ Here, $m_\mathrm{TS}$ denotes the total storage mass, where $m_{\mathrm{TS}} = \
 
 The flixOpt Model Component combines the flixOpt optimization framework [@panitz_2022; @bumann_flixopt_2026] with EnCoDaPy, allowing for operational optimization without manual setup. The component uses HiGHS as the default solver, though Gurobi is optional and is selected based on the complexity of the model and the required solve speed. The component validates configurations, aggregates incoming time series into an internal DataFrame, and constructs and solves a flixOpt FlowSystem. The results are automatically mapped to EnCoDaPy output data points (e.g., `{storage_label}_soc`, `{converter_label}_thermal_power`). The responsibilities between EnCoDaPy and flixOpt are divided as shown in \autoref{tab:flixopt}.
 
-| Task                     |      EnCoDaPy      |     flixOpt      |
-| ------------------------ | :----------------: | :--------------: |
-| Input data acquisition   |         x          |                  |
-| Time series aggregation  |         x          |                  |
-| Model description        | x(via config/JSON) |                  |
-| Optimization model       |                    |        x         |
-| Solver invocation        |                    | x (HiGHS/Gurobi) |
-| Result mapping           |         x          |                  |
-| External system transfer |         x          |                  |
+| Task                     |      EnCoDaPy       |     flixOpt      |
+| ------------------------ | :-----------------: | :--------------: |
+| Input data acquisition   |          x          |                  |
+| Time series aggregation  |          x          |                  |
+| Model description        | x (via config/JSON) |                  |
+| Optimization model       |                     |        x         |
+| Solver invocation        |                     | x (HiGHS/Gurobi) |
+| Result mapping           |          x          |                  |
+| External system transfer |          x          |                  |
 
 Table: Responsibilities between EnCoDaPy and flixOpt in flixOpt Model Component \label{tab:flixopt}
 
@@ -237,20 +205,29 @@ EnCoDaPy is designed for research and prototyping in smart grids, building energ
 
 # AI usage disclosure
 
-Generative AI tools were used in the development and creation of this work as follows:
+Generative AI tools were used in the development and creation of this work. The tools, their models/versions, and the scope of assistance are listed below.
 
-- Code validation and review:  
+- **Code validation and review:**
   Assistance in checking and validating code snippets, including as a tool for pull request reviews.
-  The following were used: GitHub Copilot; You.com with Claude Opus; Vibe (formerly Le Chat) by Mistral AI
-- Test development: Assistance in generating tests, which were subsequently reviewed and verified by the authors.
-  The following were used: GitHub Copilot; You.com with Claude Opus
-- Manuscript: Assistance in revising the paper’s language and structure.
-  The following were used: You.com with Claude Opus; GitHub Copilot; DeepL
+  - GitHub Copilot (model: GPT-4o, hosted via GitHub.com, used 2024–2026)
+  - You.com (model: Claude Opus 4, accessed via You.com web interface, 2026)
+  - Vibe by Mistral AI (model: Mistral Large 2, accessed 2026)
 
-All AI-generated content (code, tests, text) was reviewed, adapted, and approved by the authors.
+- **Test development:**
+  Assistance in generating tests, which were subsequently reviewed and verified by the authors.
+  - GitHub Copilot (model: GPT-4o, hosted via GitHub.com, used 2024–2026)
+  - You.com (model: Claude Opus 4, accessed via You.com web interface, 2026)
+
+- **Manuscript:**
+  Assistance in revising the paper’s language and structure.
+  - You.com (model: Claude Opus 4, accessed via You.com web interface, 2026)
+  - GitHub Copilot (model: GPT-4o, hosted via GitHub.com, used 2024–2026)
+  - DeepL (DeepL Write, web application, accessed 2026)
+
+All AI-generated content (code, tests, text) was reviewed, adapted, and approved by the authors, who made all core design decisions.
 
 # Acknowledgements
 
-The authors gratefully acknowledge the financial support provided by  the German Federal Ministry for Economic Affairs and Energy for the research projects N5GEH-Serv (grant number 03EN1030A) and E³ (grant number 03EN3058C)
+The authors gratefully acknowledge the financial support provided by  the German Federal Ministry for Economic Affairs and Energy for the research projects "N5GEH-Serv" (grant number 03EN1030A) and "E³" (grant number 03EN3058C). The sponsors had no role in study design, software development, or manuscript preparation.
 
 # References
