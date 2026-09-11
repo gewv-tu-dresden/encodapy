@@ -116,21 +116,23 @@ class ComponentRunnerService(ControllerBasicService):
 
         for result in results:
 
+            entity_found = False
             for input_entity in data.input_entities:
                 if input_entity.id == result.entity_id:
-
                     input_entity = self._add_result_to_input_entity(
                         result, input_entity
                     )
+                    entity_found = True
                     break
 
-            # Add a new entity to the inputs
-            data.input_entities.append(
-                InputDataEntityModel(
-                    id=result.entity_id,
-                    attributes=[self._result_to_input_data_attribute(result)],
+            # Add a new entity to the inputs if not found
+            if not entity_found:
+                data.input_entities.append(
+                    InputDataEntityModel(
+                        id=result.entity_id,
+                        attributes=[self._result_to_input_data_attribute(result)],
+                    )
                 )
-            )
 
         return data
 

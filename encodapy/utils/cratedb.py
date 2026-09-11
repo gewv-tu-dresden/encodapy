@@ -2,11 +2,11 @@
 Description: Class to connect to a CrateDB and query data from it
 Author: Martin Altenburger
 """
-
-import crate.client
+from typing import Optional
+import crate.client # type: ignore[import-untyped]
 import pandas as pd
 from filip.models.ngsi_v2.context import ContextEntity
-
+from loguru import logger
 
 class CrateDBConnection:
     """
@@ -22,8 +22,8 @@ class CrateDBConnection:
     def __init__(
         self,
         crate_db_url: str,
-        crate_db_user: str = None,
-        crate_db_pw: str = None,
+        crate_db_user: Optional[str] = None,
+        crate_db_pw: Optional[str] = None,
         crate_db_ssl: bool = False,
     ) -> None:
         self.crate_db_url = crate_db_url
@@ -75,7 +75,7 @@ class CrateDBConnection:
         # check which column exists
         cursor.execute(
             f"SELECT column_name FROM information_schema.columns "
-            f"WHERE table_name = 'et{entity_type}' "
+            f"WHERE table_name = 'et{entity_type.lower()}' "
             f"AND table_schema = 'mt{service}' "
             f"AND column_name IN ({attrs})"
         )
@@ -111,10 +111,16 @@ class CrateDBConnection:
         Return:
             - dataframe with time index in utc and attributes as columns
         """
-
         attributes_db = self.query_existing_attributes(
             service=service, entity_type=entity.type, attributes=attributes
         )
+
+        if len(attributes_db) == 0:
+            logger.warning(
+                f"No attributes found in CrateDB for entity {entity.id} of type {entity.type} "
+                f"in service {service}."
+                )
+            return pd.DataFrame()
 
         connection = self.get_database_connection()
         cursor = connection.cursor()
@@ -146,9 +152,9 @@ class CrateDBConnection:
         if len(results) > 0:
             df = pd.DataFrame(results)
 
-            df.columns = [desc[0] for desc in cursor.description]
+            df.columns = pd.Index([desc[0] for desc in cursor.description])
 
-            df.time_index = pd.to_datetime(df.time_index, unit="ms").dt.tz_localize(
+            df['time_index'] = pd.to_datetime(df.time_index, unit="ms").dt.tz_localize(
                 "UTC"
             )
             df.rename(columns={"time_index": "datetime"}, inplace=True)

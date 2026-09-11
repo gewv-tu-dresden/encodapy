@@ -1,4 +1,4 @@
-﻿"""Unit tests for hard-to-reach branches of FlixoptModelComponent.
+"""Unit tests for hard-to-reach branches of FlixoptModelComponent.
 
 This module covers defensive branches, exception paths, and special
 configuration combinations with targeted mocks.
@@ -12,7 +12,9 @@ import pytest
 import xarray as xr
 
 from encodapy.components.flixopt_model_component import flixopt_model_component as flix_module
-from encodapy.components.flixopt_model_component import flixopt_model_component_config as config_module
+from encodapy.components.flixopt_model_component import (
+    flixopt_model_component_config as config_module,
+)
 from encodapy.components.flixopt_model_component.add_constraints import add_constraints
 from encodapy.components.flixopt_model_component.flixopt_model_component import (
     FlixoptModelComponent,
@@ -68,7 +70,9 @@ def _model_dict() -> dict[str, Any]:
 
 def test_init_sets_default_members(monkeypatch: pytest.MonkeyPatch) -> None:
     """Verify that the constructor sets the expected default members."""
-    monkeypatch.setattr(BasicComponent, "__init__", lambda self, config, component_id, static_data=None: None)
+    monkeypatch.setattr(
+        BasicComponent, "__init__", lambda self, config, component_id, static_data=None: None
+    )
 
     component = FlixoptModelComponent(config={}, component_id="c1")
 
@@ -132,7 +136,9 @@ def test_prepare_component_reaches_non_dict_non_path_value_branch() -> None:
         getattr(component, "prepare_component")()
 
 
-def test_prepare_component_loads_constraint_and_element_helpers(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_prepare_component_loads_constraint_and_element_helpers(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Load both optional helper functions during component preparation."""
     component = _component()
 
@@ -175,7 +181,9 @@ def test_load_helper_functions_import_errors(monkeypatch: pytest.MonkeyPatch) ->
     """Exercise helper loading import errors for spec and loader failures."""
     component = _component()
 
-    monkeypatch.setattr(flix_module.importlib.util, "spec_from_file_location", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(
+        flix_module.importlib.util, "spec_from_file_location", lambda *_args, **_kwargs: None
+    )
     with pytest.raises(ImportError, match="Could not create module spec"):
         getattr(component, "_load_helper_functions")("foo.py", "add_constraints")
 
@@ -277,7 +285,11 @@ def test_prepare_input_data_uses_default_hour_for_non_inferable_freq() -> None:
 def test_prepare_flixopt_flow_system_builds_elements() -> None:
     """Build a flow system with buses and effects."""
     component = _component()
-    setattr(component, "df_input", pd.DataFrame(index=pd.date_range("2026-01-01", periods=2, freq="h")))
+    setattr(
+        component,
+        "df_input",
+        pd.DataFrame(index=pd.date_range("2026-01-01", periods=2, freq="h")),
+    )
     setattr(component, "flixopt_model", FlixOptModel.model_validate(_model_dict()))
 
     flow_system = getattr(component, "_prepare_flixopt_flow_system")()
@@ -304,7 +316,9 @@ def test_add_chp_converter_raises_for_wrong_type() -> None:
         getattr(component, "_add_chp_converter")(wrong)
 
 
-def test_converter_builder_methods_return_constructed_objects(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_converter_builder_methods_return_constructed_objects(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Verify that the converter builder helpers create the expected objects."""
     component = _component()
     setattr(component, "_get_input_value", lambda *args, **kwargs: 0.0)
@@ -332,12 +346,12 @@ def test_converter_builder_methods_return_constructed_objects(monkeypatch: pytes
         }
     )
 
-    monkeypatch.setattr(flix_module.fx, "Flow", lambda **kwargs: SimpleNamespace(**kwargs))
-    monkeypatch.setattr(flix_module.fx, "StatusParameters", lambda **kwargs: SimpleNamespace(**kwargs))
-    monkeypatch.setattr(flix_module.fx.linear_converters, "Boiler", lambda **kwargs: SimpleNamespace(**kwargs))
-    monkeypatch.setattr(flix_module.fx.linear_converters, "Power2Heat", lambda **kwargs: SimpleNamespace(**kwargs))
-    monkeypatch.setattr(flix_module.fx.linear_converters, "CHP", lambda **kwargs: SimpleNamespace(**kwargs))
-    monkeypatch.setattr(flix_module.fx.components, "LinearConverter", lambda **kwargs: SimpleNamespace(**kwargs))
+    monkeypatch.setattr(flix_module.fx, "Flow", SimpleNamespace)
+    monkeypatch.setattr(flix_module.fx, "StatusParameters", SimpleNamespace)
+    monkeypatch.setattr(flix_module.fx.linear_converters, "Boiler", SimpleNamespace)
+    monkeypatch.setattr(flix_module.fx.linear_converters, "Power2Heat", SimpleNamespace)
+    monkeypatch.setattr(flix_module.fx.linear_converters, "CHP", SimpleNamespace)
+    monkeypatch.setattr(flix_module.fx.components, "LinearConverter", SimpleNamespace)
 
     out_flow = getattr(component, "_add_output_flow_to_converter")(converter)
     in_flow = getattr(component, "_add_input_flow_to_converter")(converter)
@@ -388,10 +402,16 @@ def test_add_bidirectional_substation_converter_builds_forward_and_reverse(
         }
     )
 
-    monkeypatch.setattr(flix_module.fx.components, "LinearConverter", lambda **kwargs: SimpleNamespace(**kwargs))
-    monkeypatch.setattr(component, "_add_input_flow_to_converter", lambda _c: SimpleNamespace(label="in"))
-    monkeypatch.setattr(component, "_add_output_flow_to_converter", lambda _c: SimpleNamespace(label="out"))
-    monkeypatch.setattr(component, "_add_status_parameters_to_converter", lambda _c: SimpleNamespace())
+    monkeypatch.setattr(flix_module.fx.components, "LinearConverter", SimpleNamespace)
+    monkeypatch.setattr(
+        component, "_add_input_flow_to_converter", lambda _c: SimpleNamespace(label="in")
+    )
+    monkeypatch.setattr(
+        component, "_add_output_flow_to_converter", lambda _c: SimpleNamespace(label="out")
+    )
+    monkeypatch.setattr(
+        component, "_add_status_parameters_to_converter", lambda _c: SimpleNamespace()
+    )
 
     converters = getattr(component, "_add_bidirectional_substation_converter")(converter)
 
@@ -460,7 +480,7 @@ def test_get_flow_effects_and_information_return_empty_on_invalid_direction() ->
     effects = getattr(component, "_get_flow_effects")(sink_source, "invalid")
     info = getattr(component, "_get_flow_information")(sink_source, "invalid")
 
-    assert effects == {}
+    assert not effects
     assert info == {"size": 1}
 
 
@@ -472,7 +492,7 @@ def test_get_sinks_and_sources_skips_unknown_direction() -> None:
 
     out = getattr(component, "_get_sinks_and_sources")()
 
-    assert out == []
+    assert not out
 
 
 def test_get_sinks_and_sources_handles_source_direction(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -480,9 +500,13 @@ def test_get_sinks_and_sources_handles_source_direction(monkeypatch: pytest.Monk
     component = _component()
     src = SimpleNamespace(label="src", direction=EnergyDirection.SOURCE)
     setattr(component, "flixopt_model", SimpleNamespace(exchangers=[src]))
-    monkeypatch.setattr(component, "_get_flow_information", lambda *_args, **_kwargs: {"label": "x", "bus": "b", "size": 1})
-    monkeypatch.setattr(flix_module.fx, "Flow", lambda **kwargs: SimpleNamespace(**kwargs))
-    monkeypatch.setattr(flix_module.fx, "Source", lambda **kwargs: SimpleNamespace(**kwargs))
+    monkeypatch.setattr(
+        component,
+        "_get_flow_information",
+        lambda *_args, **_kwargs: {"label": "x", "bus": "b", "size": 1},
+    )
+    monkeypatch.setattr(flix_module.fx, "Flow", SimpleNamespace)
+    monkeypatch.setattr(flix_module.fx, "Source", SimpleNamespace)
 
     out = getattr(component, "_get_sinks_and_sources")()
 
@@ -492,11 +516,12 @@ def test_get_sinks_and_sources_handles_source_direction(monkeypatch: pytest.Monk
 
 def test_loguru_forward_handler_success_path(monkeypatch: pytest.MonkeyPatch) -> None:
     """Exercise the success path of the Loguru forward handler."""
-    handler = flix_module._LoguruForwardHandler()
+    handler = flix_module._LoguruForwardHandler()  # pylint: disable=protected-access
     called = {"log": False}
 
-    class _Opt:
+    class _Opt:  # pylint: disable=too-few-public-methods
         def log(self, level: str, message: str) -> None:
+            """Record that a log call happened and assert its payload."""
             called["log"] = True
             assert level == "INFO"
             assert message == "hello"
@@ -540,7 +565,9 @@ def test_run_optimization_calls_constraint_function(monkeypatch: pytest.MonkeyPa
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
     setattr(component, "flixopt_model", SimpleNamespace())
     called = {"constraint": False}
-    setattr(component, "constraint_function", lambda optimization: called.update({"constraint": True}))
+    setattr(
+        component, "constraint_function", lambda optimization: called.update({"constraint": True})
+    )
 
     result = getattr(component, "run_optimization")()
 
@@ -551,7 +578,11 @@ def test_run_optimization_calls_constraint_function(monkeypatch: pytest.MonkeyPa
 def test_run_optimization_manual_elements_invalid_type_raises() -> None:
     """Raise when the manual elements function returns invalid objects."""
     component = _component()
-    setattr(component, "_prepare_flixopt_flow_system", lambda: SimpleNamespace(add_elements=lambda e: None))
+    setattr(
+        component,
+        "_prepare_flixopt_flow_system",
+        lambda: SimpleNamespace(add_elements=lambda e: None),
+    )
     setattr(component, "_get_converters", lambda: [])
     setattr(component, "_get_storages", lambda: [])
     setattr(component, "_get_sinks_and_sources", lambda: [])
@@ -572,7 +603,9 @@ def test_run_optimization_returns_none_on_file_not_found(monkeypatch: pytest.Mon
         lambda: SimpleNamespace(
             add_elements=lambda e: None,
             build_model=lambda: None,
-            solve=lambda _solver, **_kwargs: (_ for _ in ()).throw(FileNotFoundError("solver not found")),
+            solve=lambda _solver, **_kwargs: (_ for _ in ()).throw(
+                FileNotFoundError("solver not found")
+            ),
             solution=SimpleNamespace(summary={"Main Results": {"Objective": 0}}),
             durations={"modeling": 0.1, "solving": 0.2},
             model=SimpleNamespace(get_coords=lambda: []),
@@ -600,7 +633,11 @@ def test_export_results_as_timeseries_raises_when_input_missing() -> None:
 def test_export_results_as_timeseries_handles_scalar_data_var() -> None:
     """Ignore scalar data variables during time series export."""
     component = _component()
-    setattr(component, "df_input", pd.DataFrame(index=pd.date_range("2026-01-01", periods=3, freq="h")))
+    setattr(
+        component,
+        "df_input",
+        pd.DataFrame(index=pd.date_range("2026-01-01", periods=3, freq="h")),
+    )
     setattr(component, "df_input_timezone", None)
 
     dataset = xr.Dataset(
@@ -683,7 +720,7 @@ def test_prepare_output_data_maps_chp_and_exchanger_io() -> None:
 def test_get_solver_forwards_time_limit_seconds(monkeypatch: pytest.MonkeyPatch) -> None:
     """Forward explicit solver settings, including the time limit."""
 
-    class _FakeHighsSolver:
+    class _FakeHighsSolver:  # pylint: disable=too-few-public-methods
         def __init__(self, **kwargs: Any) -> None:
             self.kwargs = kwargs
 
@@ -717,7 +754,7 @@ def test_get_solver_forwards_advanced_settings_via_extra_options(
 ) -> None:
     """Forward advanced tuning settings via flixopt's extra_options argument."""
 
-    class _FakeGurobiSolver:
+    class _FakeGurobiSolver:  # pylint: disable=too-few-public-methods
         def __init__(self, **kwargs: Any) -> None:
             self.kwargs = kwargs
 
@@ -766,7 +803,7 @@ def test_get_solver_forwards_highs_advanced_settings_via_extra_options(
 ) -> None:
     """Forward Highs tuning settings with lowercase option keys."""
 
-    class _FakeHighsSolver:
+    class _FakeHighsSolver:  # pylint: disable=too-few-public-methods
         def __init__(self, **kwargs: Any) -> None:
             self.kwargs = kwargs
 

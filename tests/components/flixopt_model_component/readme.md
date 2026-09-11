@@ -8,6 +8,8 @@ and output mapping in a maintainable way.
 
 - [test_flixopt_model_component_helpers.py](./unit/test_flixopt_model_component_helpers.py): helper methods, input handling,
   logging forwarding, and simple control-flow checks.
+- [test_flixopt_model_component.py](./unit/test_flixopt_model_component.py): regression test ensuring that a failed
+  optimization clears stale output data from the previous run.
 - [test_flixopt_model_component_runtime.py](./unit/test_flixopt_model_component_runtime.py): runtime behavior, converter
   dispatch, and optimization success and failure paths.
 - [test_flixopt_model_component_branches.py](./unit/test_flixopt_model_component_branches.py): targeted branch and edge-case
@@ -63,6 +65,7 @@ poetry run pytest tests/components/flixopt_model_component --cov=encodapy.compon
 ## Test files and scope
 
 - [test_flixopt_model_component_helpers.py](./unit/test_flixopt_model_component_helpers.py): helper loading, input handling, data preparation, and logging-related behavior.
+- [test_flixopt_model_component.py](./unit/test_flixopt_model_component.py): regression test for stale output data clearing on failed optimization.
 - [test_flixopt_model_component_runtime.py](./unit/test_flixopt_model_component_runtime.py): runtime flow, converter dispatch, and optimization success/failure handling.
 - [test_flixopt_model_component_branches.py](./unit/test_flixopt_model_component_branches.py): defensive branches and edge cases that are hard to reach in standard runtime tests.
 - [test_flixopt_model_component_output_mapping.py](./integration/test_flixopt_model_component_output_mapping.py): integration-style checks for result export and output mapping.
