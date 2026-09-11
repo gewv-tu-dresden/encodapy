@@ -95,7 +95,9 @@ def test_get_input_value_returns_ndarray_for_series() -> None:
         SimpleNamespace(model_dump=lambda: {"series_input": {"value": series}}),
     )
 
-    result = getattr(component, "_get_input_value")("series_input", ndarray_allowed=True)
+    result = getattr(component, "_get_input_value")(
+        "series_input", ndarray_allowed=True
+    )
 
     assert isinstance(result, np.ndarray)
     assert list(result) == [1.0, 2.0, 3.0]
@@ -108,8 +110,8 @@ def test_get_input_arrays_returns_column_values() -> None:
         component,
         "df_input",
         pd.DataFrame(
-        {"series_input": [4.0, 5.0, 6.0]},
-        index=pd.date_range("2026-01-01", periods=3, freq="h"),
+            {"series_input": [4.0, 5.0, 6.0]},
+            index=pd.date_range("2026-01-01", periods=3, freq="h"),
         ),
     )
 
@@ -128,10 +130,14 @@ def test_prepare_input_data_merges_series_and_strips_timezone() -> None:
     series_b = DataPointTimeSeries.model_validate(
         {"value": pd.Series([10.0, 20.0, 30.0], index=index)}
     )
-    setattr(component, "input_data", [
-        ("series_a", series_a.model_dump()),
-        ("series_b", series_b.model_dump()),
-    ])
+    setattr(
+        component,
+        "input_data",
+        [
+            ("series_a", series_a.model_dump()),
+            ("series_b", series_b.model_dump()),
+        ],
+    )
 
     getattr(component, "prepare_input_data")()
 
@@ -160,7 +166,9 @@ def test_load_helper_functions_loads_python_module(tmp_path) -> None:
         encoding="utf-8",
     )
 
-    function = getattr(component, "_load_helper_functions")(str(helper_file), "add_constraints")
+    function = getattr(component, "_load_helper_functions")(
+        str(helper_file), "add_constraints"
+    )
 
     assert function is not None
     assert function.__name__ == "add_constraints"
@@ -211,7 +219,9 @@ def test_min_uptime_profile_is_reduced_for_carry_over_runtime() -> None:
         }
     )
 
-    status_parameters = getattr(component, "_add_status_parameters_to_converter")(converter)
+    status_parameters = getattr(component, "_add_status_parameters_to_converter")(
+        converter
+    )
 
     assert status_parameters.min_uptime is not None
     assert list(status_parameters.min_uptime)[:2] == [3.0, 2.0]
@@ -224,37 +234,41 @@ def test_get_storages_clips_initial_soc_to_bounds() -> None:
         component,
         "input_data",
         SimpleNamespace(
-        model_dump=lambda: {
-            "storage_capacity": {"value": 100},
-            "storage_start": {"value": 80},
-            "storage_min": {"value": 20},
-            "storage_max": {"value": 60},
-        }
-    ),
+            model_dump=lambda: {
+                "storage_capacity": {"value": 100},
+                "storage_start": {"value": 80},
+                "storage_min": {"value": 20},
+                "storage_max": {"value": 60},
+            }
+        ),
     )
-    setattr(component, "flixopt_model", FlixOptModel.model_validate(
-        {
-            "buses": [
-                {"label": "heat"},
-            ],
-            "effects": [
-                {"label": "costs", "unit": "EUR"},
-            ],
-            "converters": [],
-            "exchangers": [],
-            "storages": [
-                {
-                    "label": "storage_1",
-                    "bus": "heat",
-                    "nominal_power": 25,
-                    "nominal_capacity": "storage_capacity",
-                    "start_soc": "storage_start",
-                    "minimal_soc": "storage_min",
-                    "maximal_soc": "storage_max",
-                }
-            ],
-        }
-    ))
+    setattr(
+        component,
+        "flixopt_model",
+        FlixOptModel.model_validate(
+            {
+                "buses": [
+                    {"label": "heat"},
+                ],
+                "effects": [
+                    {"label": "costs", "unit": "EUR"},
+                ],
+                "converters": [],
+                "exchangers": [],
+                "storages": [
+                    {
+                        "label": "storage_1",
+                        "bus": "heat",
+                        "nominal_power": 25,
+                        "nominal_capacity": "storage_capacity",
+                        "start_soc": "storage_start",
+                        "minimal_soc": "storage_min",
+                        "maximal_soc": "storage_max",
+                    }
+                ],
+            }
+        ),
+    )
 
     storages = getattr(component, "_get_storages")()
 
@@ -268,27 +282,31 @@ def test_get_sinks_and_sources_builds_bidirectional_source_and_sink() -> None:
     """Build the bidirectional sink and source representation."""
     component: Any = _create_component()
     setattr(component, "input_data", SimpleNamespace(model_dump=lambda: {}))
-    setattr(component, "flixopt_model", FlixOptModel.model_validate(
-        {
-            "buses": [
-                {"label": "heat"},
-            ],
-            "effects": [
-                {"label": "costs", "unit": "EUR"},
-            ],
-            "converters": [],
-            "exchangers": [
-                {
-                    "label": "exchange_1",
-                    "direction": EnergyDirection.BIDIRECTIONAL,
-                    "nominal_power": 25,
-                    "input_bus": "heat_in",
-                    "output_bus": "heat_out",
-                }
-            ],
-            "storages": [],
-        }
-    ))
+    setattr(
+        component,
+        "flixopt_model",
+        FlixOptModel.model_validate(
+            {
+                "buses": [
+                    {"label": "heat"},
+                ],
+                "effects": [
+                    {"label": "costs", "unit": "EUR"},
+                ],
+                "converters": [],
+                "exchangers": [
+                    {
+                        "label": "exchange_1",
+                        "direction": EnergyDirection.BIDIRECTIONAL,
+                        "nominal_power": 25,
+                        "input_bus": "heat_in",
+                        "output_bus": "heat_out",
+                    }
+                ],
+                "storages": [],
+            }
+        ),
+    )
 
     sinks_and_sources = getattr(component, "_get_sinks_and_sources")()
 
@@ -298,6 +316,7 @@ def test_get_sinks_and_sources_builds_bidirectional_source_and_sink() -> None:
 
 def test_loguru_forward_handler_handles_format_errors() -> None:
     """Exercise the error path of the Loguru forward handler."""
+
     class _FailingHandler(_LoguruForwardHandler):
         def __init__(self) -> None:
             super().__init__()
@@ -360,7 +379,9 @@ def test_load_helper_functions_raises_for_missing_symbol(tmp_path) -> None:
     helper_file.write_text("def some_other_name():\n    return 1\n", encoding="utf-8")
 
     try:
-        getattr(component, "_load_helper_functions")(str(helper_file), "add_constraints")
+        getattr(component, "_load_helper_functions")(
+            str(helper_file), "add_constraints"
+        )
     except ImportError as exc:
         assert "not found" in str(exc)
     else:

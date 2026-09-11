@@ -51,6 +51,7 @@ from encodapy.utils.units import DataUnits, TimeUnits
 # Fixtures
 # =============================================================================
 
+
 @pytest.fixture
 def mock_fiware_connection_full():
     """Create a fully mocked FiwareConnection instance for data sending tests.
@@ -84,12 +85,16 @@ def mock_fiware_connection_full():
     # Mock config with proper structure
     connection.config = MagicMock(spec=ConfigModel)
     connection.config.controller_settings = MagicMock(spec=ControllerSettingModel)
-    connection.config.controller_settings.time_settings = MagicMock(spec=TimeSettingsModel)
+    connection.config.controller_settings.time_settings = MagicMock(
+        spec=TimeSettingsModel
+    )
     connection.config.controller_settings.time_settings.calculation = MagicMock(
         spec=TimeSettingsCalculationModel
     )
     connection.config.controller_settings.time_settings.calculation.timestep = 60
-    connection.config.controller_settings.time_settings.calculation.timestep_unit = "minute"
+    connection.config.controller_settings.time_settings.calculation.timestep_unit = (
+        "minute"
+    )
     connection.config.controller_settings.time_settings.calibration = None
 
     return connection
@@ -133,10 +138,12 @@ def mock_output_entity_with_dataframe():
         OutputModel: Mock output entity with timeseries temperature data.
     """
     # Create a DataFrame for timeseries data
-    df = pd.DataFrame({
-        "time": pd.date_range("2024-01-15 10:00:00", periods=3, freq="10min"),
-        "temperature": [20.0, 21.0, 22.0],
-    })
+    df = pd.DataFrame(
+        {
+            "time": pd.date_range("2024-01-15 10:00:00", periods=3, freq="10min"),
+            "temperature": [20.0, 21.0, 22.0],
+        }
+    )
     df.set_index("time", inplace=True)
 
     return OutputModel(
@@ -383,8 +390,8 @@ async def test_send_data_to_fiware_request_exception_on_get_entity():
     """
     connection = FiwareConnection()
     connection.cb_client = MagicMock()
-    connection.cb_client.get_entity.side_effect = (
-        requests.exceptions.RequestException("Request failed")
+    connection.cb_client.get_entity.side_effect = requests.exceptions.RequestException(
+        "Request failed"
     )
     connection.config = MagicMock()
 
@@ -475,7 +482,9 @@ async def test_send_data_to_fiware_value_error_on_attribute_creation():
 
     connection.config = MagicMock()
     connection.config.controller_settings.time_settings.calibration.timerange = 24
-    connection.config.controller_settings.time_settings.calibration.timerange_unit = TimeUnits.HOUR
+    connection.config.controller_settings.time_settings.calibration.timerange_unit = (
+        TimeUnits.HOUR
+    )
 
     output_entity = OutputModel(
         id="test_output",
@@ -540,12 +549,17 @@ async def test_send_data_to_fiware_with_timeseries_attribute():
 
     connection.config = MagicMock()
     connection.config.controller_settings.time_settings.calibration.timerange = 24
-    connection.config.controller_settings.time_settings.calibration.timerange_unit = TimeUnits.HOUR
+    connection.config.controller_settings.time_settings.calibration.timerange_unit = (
+        TimeUnits.HOUR
+    )
 
     # Create DataFrame for timeseries
-    df = pd.DataFrame({
-        "temperature": [20.0, 21.0, 22.0],
-    }, index=pd.date_range("2024-01-15 10:00:00", periods=3, freq="10min"))
+    df = pd.DataFrame(
+        {
+            "temperature": [20.0, 21.0, 22.0],
+        },
+        index=pd.date_range("2024-01-15 10:00:00", periods=3, freq="10min"),
+    )
 
     output_entity = OutputModel(
         id="test_output",
@@ -615,7 +629,9 @@ async def test_send_data_to_fiware_with_commands():
 
     connection.config = MagicMock()
     connection.config.controller_settings.time_settings.calibration.timerange = 24
-    connection.config.controller_settings.time_settings.calibration.timerange_unit = TimeUnits.HOUR
+    connection.config.controller_settings.time_settings.calibration.timerange_unit = (
+        TimeUnits.HOUR
+    )
 
     output_entity = OutputModel(
         id="test_output",
@@ -687,7 +703,9 @@ async def test_send_data_to_fiware_retry_logic():
 
     connection.config = MagicMock()
     connection.config.controller_settings.time_settings.calibration.timerange = 24
-    connection.config.controller_settings.time_settings.calibration.timerange_unit = TimeUnits.HOUR
+    connection.config.controller_settings.time_settings.calibration.timerange_unit = (
+        TimeUnits.HOUR
+    )
 
     output_entity = OutputModel(
         id="test_output",

@@ -11,7 +11,9 @@ import pandas as pd
 import pytest
 import xarray as xr
 
-from encodapy.components.flixopt_model_component import flixopt_model_component as flix_module
+from encodapy.components.flixopt_model_component import (
+    flixopt_model_component as flix_module,
+)
 from encodapy.components.flixopt_model_component import (
     flixopt_model_component_config as config_module,
 )
@@ -71,7 +73,9 @@ def _model_dict() -> dict[str, Any]:
 def test_init_sets_default_members(monkeypatch: pytest.MonkeyPatch) -> None:
     """Verify that the constructor sets the expected default members."""
     monkeypatch.setattr(
-        BasicComponent, "__init__", lambda self, config, component_id, static_data=None: None
+        BasicComponent,
+        "__init__",
+        lambda self, config, component_id, static_data=None: None,
     )
 
     component = FlixoptModelComponent(config={}, component_id="c1")
@@ -151,7 +155,9 @@ def test_prepare_component_loads_constraint_and_element_helpers(
         "config_data",
         SimpleNamespace(
             log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
-            flixopt_model=DataPointFlixoptModelConfig.model_validate({"value": model_with_helpers}),
+            flixopt_model=DataPointFlixoptModelConfig.model_validate(
+                {"value": model_with_helpers}
+            ),
         ),
     )
 
@@ -182,7 +188,9 @@ def test_load_helper_functions_import_errors(monkeypatch: pytest.MonkeyPatch) ->
     component = _component()
 
     monkeypatch.setattr(
-        flix_module.importlib.util, "spec_from_file_location", lambda *_args, **_kwargs: None
+        flix_module.importlib.util,
+        "spec_from_file_location",
+        lambda *_args, **_kwargs: None,
     )
     with pytest.raises(ImportError, match="Could not create module spec"):
         getattr(component, "_load_helper_functions")("foo.py", "add_constraints")
@@ -230,7 +238,11 @@ def test_get_input_arrays_raises_for_missing_data_and_column() -> None:
 def test_get_input_value_unknown_key_and_invalid_none_allowed() -> None:
     """Raise for missing keys and invalid non-numeric input values."""
     component = _component()
-    setattr(component, "input_data", SimpleNamespace(model_dump=lambda: {"a": {"value": "x"}}))
+    setattr(
+        component,
+        "input_data",
+        SimpleNamespace(model_dump=lambda: {"a": {"value": "x"}}),
+    )
 
     with pytest.raises(ValueError, match="not found in input data"):
         getattr(component, "_get_input_value")("missing")
@@ -259,7 +271,11 @@ def test_get_input_value_raises_if_input_data_missing() -> None:
 def test_get_input_value_raises_for_non_numeric_without_none_allowed() -> None:
     """Raise for non-numeric input when None is not allowed."""
     component = _component()
-    setattr(component, "input_data", SimpleNamespace(model_dump=lambda: {"a": {"value": "x"}}))
+    setattr(
+        component,
+        "input_data",
+        SimpleNamespace(model_dump=lambda: {"a": {"value": "x"}}),
+    )
 
     with pytest.raises(ValueError, match="not a float or int"):
         getattr(component, "_get_input_value")("a")
@@ -275,7 +291,9 @@ def test_prepare_input_data_uses_default_hour_for_non_inferable_freq() -> None:
             "2026-01-01 01:00:00",
         ]
     )
-    ts = DataPointTimeSeries.model_validate({"value": pd.Series([1.0, 2.0, 3.0], index=index)})
+    ts = DataPointTimeSeries.model_validate(
+        {"value": pd.Series([1.0, 2.0, 3.0], index=index)}
+    )
     setattr(component, "input_data", [("a", ts.model_dump())])
 
     with pytest.raises(ValueError):
@@ -368,7 +386,9 @@ def test_converter_builder_methods_return_constructed_objects(
     assert sub.label == "boiler_1"
 
 
-def test_add_bidirectional_substation_converter_rejects_non_positive_efficiency() -> None:
+def test_add_bidirectional_substation_converter_rejects_non_positive_efficiency() -> (
+    None
+):
     """Reject a bidirectional substation with non-positive efficiency."""
     component = _component()
     converter = FlixOptConverter.model_validate(
@@ -404,16 +424,22 @@ def test_add_bidirectional_substation_converter_builds_forward_and_reverse(
 
     monkeypatch.setattr(flix_module.fx.components, "LinearConverter", SimpleNamespace)
     monkeypatch.setattr(
-        component, "_add_input_flow_to_converter", lambda _c: SimpleNamespace(label="in")
+        component,
+        "_add_input_flow_to_converter",
+        lambda _c: SimpleNamespace(label="in"),
     )
     monkeypatch.setattr(
-        component, "_add_output_flow_to_converter", lambda _c: SimpleNamespace(label="out")
+        component,
+        "_add_output_flow_to_converter",
+        lambda _c: SimpleNamespace(label="out"),
     )
     monkeypatch.setattr(
         component, "_add_status_parameters_to_converter", lambda _c: SimpleNamespace()
     )
 
-    converters = getattr(component, "_add_bidirectional_substation_converter")(converter)
+    converters = getattr(component, "_add_bidirectional_substation_converter")(
+        converter
+    )
 
     assert len(converters) == 2
     assert "bidir" in getattr(component, "_bidirectional_substations")
@@ -445,9 +471,15 @@ def test_get_converters_handles_valid_chp_branch() -> None:
 def test_add_bidirectional_substation_constraints_adds_binary_gates() -> None:
     """Add binary gates for bidirectional substation constraints."""
     component = _component()
-    forward = SimpleNamespace(inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1.0))])
-    reverse = SimpleNamespace(inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1.0))])
-    setattr(component, "_bidirectional_substations", {"s1": (forward, reverse, 10.0, 5.0)})
+    forward = SimpleNamespace(
+        inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1.0))]
+    )
+    reverse = SimpleNamespace(
+        inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1.0))]
+    )
+    setattr(
+        component, "_bidirectional_substations", {"s1": (forward, reverse, 10.0, 5.0)}
+    )
 
     called_constraints: list[str] = []
 
@@ -495,7 +527,9 @@ def test_get_sinks_and_sources_skips_unknown_direction() -> None:
     assert not out
 
 
-def test_get_sinks_and_sources_handles_source_direction(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_get_sinks_and_sources_handles_source_direction(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Build a source element for exchangers with SOURCE direction."""
     component = _component()
     src = SimpleNamespace(label="src", direction=EnergyDirection.SOURCE)
@@ -542,7 +576,9 @@ def test_loguru_forward_handler_success_path(monkeypatch: pytest.MonkeyPatch) ->
     assert called["log"] is True
 
 
-def test_run_optimization_calls_constraint_function(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_run_optimization_calls_constraint_function(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Invoke the optional constraint function during optimization."""
     component = _component()
     del monkeypatch
@@ -561,12 +597,18 @@ def test_run_optimization_calls_constraint_function(monkeypatch: pytest.MonkeyPa
     setattr(component, "_get_converters", lambda: [])
     setattr(component, "_get_storages", lambda: [])
     setattr(component, "_get_sinks_and_sources", lambda: [])
-    setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
+    setattr(
+        component,
+        "_add_bidirectional_substation_constraints",
+        lambda optimization: None,
+    )
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
     setattr(component, "flixopt_model", SimpleNamespace())
     called = {"constraint": False}
     setattr(
-        component, "constraint_function", lambda optimization: called.update({"constraint": True})
+        component,
+        "constraint_function",
+        lambda optimization: called.update({"constraint": True}),
     )
 
     result = getattr(component, "run_optimization")()
@@ -593,7 +635,9 @@ def test_run_optimization_manual_elements_invalid_type_raises() -> None:
         getattr(component, "run_optimization")()
 
 
-def test_run_optimization_returns_none_on_file_not_found(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_run_optimization_returns_none_on_file_not_found(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Return None when the solver executable cannot be found."""
     component = _component()
     del monkeypatch
@@ -614,7 +658,11 @@ def test_run_optimization_returns_none_on_file_not_found(monkeypatch: pytest.Mon
     setattr(component, "_get_converters", lambda: [])
     setattr(component, "_get_storages", lambda: [])
     setattr(component, "_get_sinks_and_sources", lambda: [])
-    setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
+    setattr(
+        component,
+        "_add_bidirectional_substation_constraints",
+        lambda optimization: None,
+    )
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
     setattr(component, "flixopt_model", SimpleNamespace())
 
@@ -717,7 +765,9 @@ def test_prepare_output_data_maps_chp_and_exchanger_io() -> None:
     assert getattr(out, "ex_src_output").value.tolist() == [2.0, 2.1, 2.2]
 
 
-def test_get_solver_forwards_time_limit_seconds(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_get_solver_forwards_time_limit_seconds(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Forward explicit solver settings, including the time limit."""
 
     class _FakeHighsSolver:  # pylint: disable=too-few-public-methods
@@ -889,7 +939,9 @@ def test_flixopt_sink_source_source_requires_output_bus() -> None:
 
 def test_flixopt_sink_source_bidirectional_requires_any_bus() -> None:
     """Reject bidirectional exchangers when both buses are missing."""
-    with pytest.raises(Exception, match=r"input_bus and output_bus \(optional\) must be defined"):
+    with pytest.raises(
+        Exception, match=r"input_bus and output_bus \(optional\) must be defined"
+    ):
         FlixOptSinkSource.model_validate(
             {
                 "label": "bidir_without_buses",

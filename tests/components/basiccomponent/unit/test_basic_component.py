@@ -3,6 +3,7 @@ Unit tests for encodapy.components.basic_component module.
 
 Tests the BasicComponent class and its methods.
 """
+
 from datetime import datetime, timezone
 from typing import Optional
 from unittest.mock import MagicMock, patch
@@ -36,19 +37,24 @@ from encodapy.utils.units import DataUnits
 # Mock component models for testing
 class MockInputData(InputData):
     """Mock InputData model for testing."""
+
     temperature: Optional[DataPointGeneral] = Field(default=None)
     pressure: Optional[DataPointGeneral] = Field(default=None)
 
 
 class MockOutputData(OutputData):
     """Mock OutputData model for testing."""
+
     state_of_charge: Optional[DataPointGeneral] = Field(default=None)
     status: Optional[DataPointGeneral] = Field(default=None)
-    output1: Optional[DataPointGeneral] = Field(default=None)  # Optional field for test_run_success
+    output1: Optional[DataPointGeneral] = Field(
+        default=None
+    )  # Optional field for test_run_success
 
 
 class MockConfigData(ConfigData):
     """Mock ConfigData model for testing."""
+
     capacity: Optional[DataPointGeneral] = Field(default=None)
     efficiency: Optional[DataPointGeneral] = Field(default=None)
 
@@ -62,8 +68,7 @@ class TestBasicComponentInit:
         # This is tested in integration tests
         try:
             component = BasicComponent(
-                config=mock_controller_component_config,
-                component_id="test_component"
+                config=mock_controller_component_config, component_id="test_component"
             )
 
             assert component.component_config.id == "test_component"
@@ -80,8 +85,7 @@ class TestBasicComponentInit:
         # Simplified test - don't mock the complex io model loading
         try:
             component = BasicComponent(
-                config=config_list,
-                component_id="test_component"
+                config=config_list, component_id="test_component"
             )
 
             assert component.component_config.id == "test_component"
@@ -92,10 +96,7 @@ class TestBasicComponentInit:
     def test_init_with_none_config_raises(self):
         """Test that BasicComponent raises error when config is None."""
         with pytest.raises(TypeError):  # None is not iterable
-            BasicComponent(
-                config=None,
-                component_id="test_component"
-            )
+            BasicComponent(config=None, component_id="test_component")
 
     def test_init_with_invalid_component_id_raises(self):
         """Test that BasicComponent raises error when component_id not found in config list."""
@@ -110,10 +111,7 @@ class TestBasicComponentInit:
         ]
 
         with pytest.raises(KeyError):
-            BasicComponent(
-                config=config_list,
-                component_id="nonexistent_component"
-            )
+            BasicComponent(config=config_list, component_id="nonexistent_component")
 
 
 class TestGetComponentConfig:
@@ -164,7 +162,7 @@ class TestGetInputAndOutputConfigModels:
     """Tests for BasicComponent._get_input_and_output_config_models method."""
 
     def test_get_models_returns_correct_types(self):
-        """Test that _get_input_and_output_config_models returns InputData 
+        """Test that _get_input_and_output_config_models returns InputData
         and OutputData subclasses."""
         component = BasicComponent.__new__(BasicComponent)
         component.component_config = ControllerComponentModel(
@@ -176,7 +174,7 @@ class TestGetInputAndOutputConfigModels:
         )
 
         with patch(
-            'encodapy.components.basic_component.get_component_io_model'
+            "encodapy.components.basic_component.get_component_io_model"
         ) as mock_get_io_model:
             mock_get_io_model.side_effect = [MockInputData, MockOutputData]
 
@@ -198,7 +196,7 @@ class TestGetInputAndOutputConfigModels:
         )
 
         with patch(
-            'encodapy.components.basic_component.get_component_io_model'
+            "encodapy.components.basic_component.get_component_io_model"
         ) as mock_get_io_model:
             # Return a non-BaseModel class
             mock_get_io_model.side_effect = [str, str]  # This should cause TypeError
@@ -217,20 +215,26 @@ class TestPrepareIOConfig:
             id="test",
             type="test_type",
             active=True,
-            inputs=IOModell({
-                "temperature": IOAllocationModel(entity="input_entity", attribute="temperature"),
-            }),
-            outputs=IOModell({
-                "soc": IOAllocationModel(entity="output_entity", attribute="soc"),
-            }),
+            inputs=IOModell(
+                {
+                    "temperature": IOAllocationModel(
+                        entity="input_entity", attribute="temperature"
+                    ),
+                }
+            ),
+            outputs=IOModell(
+                {
+                    "soc": IOAllocationModel(entity="output_entity", attribute="soc"),
+                }
+            ),
         )
 
         # This test is complex due to model validation, simplify it
         # The actual functionality is tested in integration tests
         try:
             with patch(
-            'encodapy.components.basic_component.get_component_io_model'
-        ) as mock_get_io_model:
+                "encodapy.components.basic_component.get_component_io_model"
+            ) as mock_get_io_model:
                 # Mock to return classes that can be instantiated
                 class SimpleInputData(InputData):
                     temperature: Optional[DataPointGeneral] = Field(default=None)
@@ -272,10 +276,12 @@ class TestSetComponentConfigData:
             active=True,
             inputs=IOModell({}),
             outputs=IOModell({}),
-            config=ConfigDataPoints({
-                "capacity": DataPointGeneral(value=1000.0, unit=DataUnits.LITER),
-                "efficiency": DataPointGeneral(value=0.95, unit=DataUnits.PERCENT),
-            })
+            config=ConfigDataPoints(
+                {
+                    "capacity": DataPointGeneral(value=1000.0, unit=DataUnits.LITER),
+                    "efficiency": DataPointGeneral(value=0.95, unit=DataUnits.PERCENT),
+                }
+            ),
         )
 
         static_data = [
@@ -288,20 +294,19 @@ class TestSetComponentConfigData:
                         unit=DataUnits.LITER,
                         latest_timestamp_input=datetime.now(timezone.utc),
                         data_available=True,
-                        data_type=AttributeTypes.VALUE
+                        data_type=AttributeTypes.VALUE,
                     )
-                ]
+                ],
             )
         ]
 
         with patch(
-            'encodapy.components.basic_component.get_component_config_data_model'
+            "encodapy.components.basic_component.get_component_config_data_model"
         ) as mock_get_config_model:
             mock_get_config_model.return_value = MockConfigData
 
             component.set_component_config_data(
-                static_data=static_data,
-                static_config=component.component_config.config
+                static_data=static_data, static_config=component.component_config.config
             )
 
             assert component.config_data is not None
@@ -315,14 +320,11 @@ class TestSetComponentConfigData:
             active=True,
             inputs=IOModell({}),
             outputs=IOModell({}),
-            config=None
+            config=None,
         )
 
         with pytest.raises(ComponentValidationError):
-            component.set_component_config_data(
-                static_data=None,
-                static_config=None
-            )
+            component.set_component_config_data(static_data=None, static_config=None)
 
     def test_set_component_config_data_invalid_static_config(self):
         """Test set_component_config_data with invalid static config type."""
@@ -333,15 +335,12 @@ class TestSetComponentConfigData:
             active=True,
             inputs=IOModell({}),
             outputs=IOModell({}),
-            config=None  # No config
+            config=None,  # No config
         )
 
         # This should handle None config gracefully
         try:
-            component.set_component_config_data(
-                static_data=None,
-                static_config=None
-            )
+            component.set_component_config_data(static_data=None, static_config=None)
             assert False  # Should raise
         except (ComponentValidationError, AssertionError):
             assert True  # Expected exception
@@ -364,17 +363,16 @@ class TestGetComponentInput:
                         unit=DataUnits.DEGREECELSIUS,
                         latest_timestamp_input=datetime.now(timezone.utc),
                         data_available=True,
-                        data_type=AttributeTypes.VALUE
+                        data_type=AttributeTypes.VALUE,
                     )
-                ]
+                ],
             )
         ]
 
         input_config = IOAllocationModel(entity="input_entity", attribute="temperature")
 
         result = component.get_component_input(
-            input_entities=input_entities,
-            input_config=input_config
+            input_entities=input_entities, input_config=input_config
         )
 
         assert result.value == 25.5
@@ -395,18 +393,19 @@ class TestGetComponentInput:
                         unit=DataUnits.DEGREECELSIUS,
                         latest_timestamp_input=datetime.now(timezone.utc),
                         data_available=True,
-                        data_type=AttributeTypes.VALUE
+                        data_type=AttributeTypes.VALUE,
                     )
-                ]
+                ],
             )
         ]
 
-        input_config = IOAllocationModel(entity="nonexistent_entity", attribute="temperature")
+        input_config = IOAllocationModel(
+            entity="nonexistent_entity", attribute="temperature"
+        )
 
         with pytest.raises(KeyError):
             component.get_component_input(
-                input_entities=input_entities,
-                input_config=input_config
+                input_entities=input_entities, input_config=input_config
             )
 
 
@@ -420,9 +419,13 @@ class TestSetInputData:
             id="test",
             type="test_type",
             active=True,
-            inputs=IOModell({
-                "temperature": IOAllocationModel(entity="input_entity", attribute="temperature"),
-            }),
+            inputs=IOModell(
+                {
+                    "temperature": IOAllocationModel(
+                        entity="input_entity", attribute="temperature"
+                    ),
+                }
+            ),
             outputs=IOModell({}),
         )
 
@@ -431,7 +434,7 @@ class TestSetInputData:
             input=MockInputData(
                 temperature=DataPointGeneral(value=25.0, unit=DataUnits.DEGREECELSIUS)
             ),
-            output=MockOutputData()
+            output=MockOutputData(),
         )
 
         input_data_model = InputDataModel(
@@ -445,17 +448,17 @@ class TestSetInputData:
                             unit=DataUnits.DEGREECELSIUS,
                             latest_timestamp_input=datetime.now(timezone.utc),
                             data_available=True,
-                            data_type=AttributeTypes.VALUE
+                            data_type=AttributeTypes.VALUE,
                         )
-                    ]
+                    ],
                 )
             ],
             output_entities=[],
-            static_entities=[]
+            static_entities=[],
         )
 
         with patch(
-            'encodapy.components.basic_component.get_component_input_data_model'
+            "encodapy.components.basic_component.get_component_input_data_model"
         ) as mock_get_input_model:
             mock_get_input_model.return_value = MockInputData
 
@@ -476,15 +479,13 @@ class TestSetInputData:
         component.io_model = None
 
         input_data_model = InputDataModel(
-            input_entities=[],
-            output_entities=[],
-            static_entities=[]
+            input_entities=[], output_entities=[], static_entities=[]
         )
 
         # Should not raise, just return early
         component.set_input_data(input_data=input_data_model)
         # input_data should not be set (returns early when io_model is None)
-        assert not hasattr(component, 'input_data') or component.input_data is None
+        assert not hasattr(component, "input_data") or component.input_data is None
 
 
 class TestPrepareComponent:
@@ -536,9 +537,13 @@ class TestRun:
             type="test_type",
             active=True,
             inputs=IOModell({}),
-            outputs=IOModell({
-                "output1": IOAllocationModel(entity="output_entity", attribute="output_attr"),
-            }),
+            outputs=IOModell(
+                {
+                    "output1": IOAllocationModel(
+                        entity="output_entity", attribute="output_attr"
+                    ),
+                }
+            ),
         )
 
         # Mock the IO model - use the same field names throughout
@@ -546,7 +551,7 @@ class TestRun:
             input=MockInputData(),
             output=MockOutputData(
                 output1=DataPointGeneral(value=80.0, unit=DataUnits.PERCENT)
-            )
+            ),
         )
 
         # Mock the calculate method
@@ -558,17 +563,15 @@ class TestRun:
         )
 
         input_data_model = InputDataModel(
-            input_entities=[],
-            output_entities=[],
-            static_entities=[]
+            input_entities=[], output_entities=[], static_entities=[]
         )
 
         with patch(
-            'encodapy.components.basic_component.get_component_input_data_model'
+            "encodapy.components.basic_component.get_component_input_data_model"
         ) as mock_get_input_model:
             with patch(
-            'encodapy.components.basic_component.get_component_output_data_model'
-        ) as mock_get_output_model:
+                "encodapy.components.basic_component.get_component_output_data_model"
+            ) as mock_get_output_model:
                 mock_get_input_model.return_value = MockInputData
                 mock_get_output_model.return_value = MockOutputData
 
@@ -590,9 +593,7 @@ class TestRun:
         component.io_model = None
 
         input_data_model = InputDataModel(
-            input_entities=[],
-            output_entities=[],
-            static_entities=[]
+            input_entities=[], output_entities=[], static_entities=[]
         )
 
         results = component.run(data=input_data_model)
@@ -613,21 +614,20 @@ class TestRun:
 
         # Mock IO model
         component.io_model = ComponentIOModel(
-            input=MockInputData(),
-            output=MockOutputData()
+            input=MockInputData(), output=MockOutputData()
         )
 
         # Mock calculate to raise an exception
-        component.calculate = MagicMock(side_effect=ValueError("Test calculation error"))
+        component.calculate = MagicMock(
+            side_effect=ValueError("Test calculation error")
+        )
 
         input_data_model = InputDataModel(
-            input_entities=[],
-            output_entities=[],
-            static_entities=[]
+            input_entities=[], output_entities=[], static_entities=[]
         )
 
         with patch(
-            'encodapy.components.basic_component.get_component_input_data_model'
+            "encodapy.components.basic_component.get_component_input_data_model"
         ) as mock_get_input_model:
             mock_get_input_model.return_value = MockInputData
 
@@ -649,9 +649,11 @@ class TestCalibrate:
             active=True,
             inputs=IOModell({}),
             outputs=IOModell({}),
-            config=ConfigDataPoints({
-                "capacity": DataPointGeneral(value=1000.0, unit=DataUnits.LITER),
-            })
+            config=ConfigDataPoints(
+                {
+                    "capacity": DataPointGeneral(value=1000.0, unit=DataUnits.LITER),
+                }
+            ),
         )
 
         static_data = [
@@ -664,9 +666,9 @@ class TestCalibrate:
                         unit=DataUnits.LITER,
                         latest_timestamp_input=datetime.now(timezone.utc),
                         data_available=True,
-                        data_type=AttributeTypes.VALUE
+                        data_type=AttributeTypes.VALUE,
                     )
-                ]
+                ],
             )
         ]
 
@@ -689,7 +691,7 @@ class TestCalibrate:
             active=True,
             inputs=IOModell({}),
             outputs=IOModell({}),
-            config=ConfigDataPoints({})
+            config=ConfigDataPoints({}),
         )
 
         component.calibrate(static_data=None)
@@ -705,7 +707,7 @@ class TestCalibrate:
             active=True,
             inputs=IOModell({}),
             outputs=IOModell({}),
-            config=ConfigDataPoints({})
+            config=ConfigDataPoints({}),
         )
 
         # Mock set_component_config_data to raise an error
@@ -713,12 +715,7 @@ class TestCalibrate:
             side_effect=ComponentValidationError("Test calibration error")
         )
 
-        static_data = [
-            StaticDataEntityModel(
-                id="static_entity",
-                attributes=[]
-            )
-        ]
+        static_data = [StaticDataEntityModel(id="static_entity", attributes=[])]
 
         with caplog.at_level("ERROR"):
             with pytest.raises(ComponentValidationError):
@@ -730,6 +727,7 @@ class TestNormalizeValueForOutput:
 
     def test_normalize_base_model(self):
         """Test normalizing a BaseModel value."""
+
         class TestModel(InputData):
             value: Optional[float] = None
 
@@ -741,6 +739,7 @@ class TestNormalizeValueForOutput:
 
     def test_normalize_dict(self):
         """Test normalizing a dictionary with nested BaseModel values."""
+
         class TestModel(InputData):
             nested_value: Optional[float] = None
 
@@ -755,13 +754,16 @@ class TestNormalizeValueForOutput:
 
     def test_normalize_list(self):
         """Test normalizing a list with BaseModel values."""
+
         class TestModel(InputData):
             item_value: Optional[float] = None
 
         test_instance1 = TestModel(item_value=1.0)
         test_instance2 = TestModel(item_value=2.0)
 
-        result = BasicComponent._normalize_value_for_output([test_instance1, test_instance2])
+        result = BasicComponent._normalize_value_for_output(
+            [test_instance1, test_instance2]
+        )
 
         assert isinstance(result, list)
         assert len(result) == 2

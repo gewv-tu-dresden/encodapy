@@ -5,12 +5,14 @@ Pytest for docker compose config
 This module provides a fixture to start and stop the docker environment for integration tests.
 
 """
+
 import time
 import requests
 import pytest
 from testcontainers.compose import DockerCompose
 from filip.clients.ngsi_v2 import ContextBrokerClient
 from filip.models.base import FiwareHeader
+
 
 def _wait_for(url: str, timeout: float = 60.0, interval: float = 1.0) -> None:
     """
@@ -29,6 +31,7 @@ def _wait_for(url: str, timeout: float = 60.0, interval: float = 1.0) -> None:
         time.sleep(interval)
     raise RuntimeError(f"{url} not ready within {timeout}s: {last_err}")
 
+
 @pytest.fixture(scope="session")
 def fiware_environment():
     """
@@ -40,15 +43,14 @@ def fiware_environment():
     """
 
     compose = DockerCompose(
-        context="./tests/docker",
-        compose_file_name="docker-compose.fiware.yml"
-        )
+        context="./tests/docker", compose_file_name="docker-compose.fiware.yml"
+    )
     try:
         compose.start()
 
         # Wait for Containers
-        _wait_for("http://127.0.0.1:1026/version")   # Orion
-        _wait_for("http://127.0.0.1:4200")           # CrateDB
+        _wait_for("http://127.0.0.1:1026/version")  # Orion
+        _wait_for("http://127.0.0.1:4200")  # CrateDB
 
         yield {
             "orion": "http://127.0.0.1:1026",
@@ -65,10 +67,10 @@ def fiware_environment():
 def fiware_cb_client(fiware_environment) -> ContextBrokerClient:
     """
     Fixture providing a real ContextBrokerClient connected to the Docker Orion instance.
-    
+
     Args:
         fiware_environment: Fixture that provides the FIWARE service URLs
-        
+
     Returns:
         ContextBrokerClient: Configured client for the test Orion instance.
     """
@@ -79,6 +81,7 @@ def fiware_cb_client(fiware_environment) -> ContextBrokerClient:
             service_path="/",
         ),
     )
+
 
 @pytest.fixture
 def fiware_envs(fiware_environment) -> dict:
@@ -97,7 +100,4 @@ def fiware_envs(fiware_environment) -> dict:
 @pytest.fixture
 def test_entity() -> dict[str, str]:
     """Test entity ID and type used across tests."""
-    return {
-        "id": "urn:test:entity:integration",
-        "type": "TestEntity"
-    }
+    return {"id": "urn:test:entity:integration", "type": "TestEntity"}

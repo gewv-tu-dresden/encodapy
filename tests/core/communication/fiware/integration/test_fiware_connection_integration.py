@@ -63,10 +63,6 @@ from encodapy.utils.units import DataUnits, TimeUnits
 # pylint: disable=unused-import
 from .conftest import (
     create_fiware_entity_from_model,
-    cratedb_client,
-    example_input_entity,
-    example_output_entity,
-    fiware_conn_params,
 )
 
 pytestmark = [
@@ -75,9 +71,10 @@ pytestmark = [
     pytest.mark.slow,
 ]
 
+
 def create_mock_config():
     """Creates a minimal ConfigModel instance for testing.
-    
+
     Returns:
         ConfigModel: Minimal configuration with FIWARE interface enabled
             and default time settings for testing.
@@ -132,13 +129,13 @@ class TestFiwareConnectionSetup:
 
     def test_prepare_fiware_connection(self, fiware_conn_params):
         """Test that prepare_fiware_connection() sets up clients correctly with Docker.
-        
+
         Verifies that the FiwareConnection can create real clients
         using the Docker environment parameters.
-        
+
         Args:
             fiware_conn_params: Fixture providing Docker FIWARE connection parameters
-        
+
         Asserts:
             - cb_client is created and not None
             - crate_db_client is created and not None
@@ -154,24 +151,24 @@ class TestFiwareConnectionSetup:
 
     def test_load_fiware_params_from_env(self, fiware_envs, monkeypatch):
         """Test load_fiware_params() with real environment variables from Docker.
-        
+
         Verifies that FIWARE parameters can be loaded from the Docker
         environment variables.
-        
+
         Args:
             fiware_envs: Fixture providing FIWARE service URLs from Docker
             monkeypatch: pytest fixture for modifying environment variables
-        
+
         Asserts:
             - fiware_conn_params is created
             - cb_url matches Docker environment
             - service and service_path are correctly loaded
         """
-        monkeypatch.setenv("FIWARE_CB_URL", fiware_envs["cb_url"].rstrip('/'))
+        monkeypatch.setenv("FIWARE_CB_URL", fiware_envs["cb_url"].rstrip("/"))
         monkeypatch.setenv("FIWARE_SERVICE", fiware_envs["fiware_service"])
         monkeypatch.setenv("FIWARE_SERVICE_PATH", fiware_envs["fiware_service_path"])
         monkeypatch.setenv("FIWARE_AUTH", "false")
-        monkeypatch.setenv("CRATE_DB_URL", fiware_envs["crate_db_url"].rstrip('/'))
+        monkeypatch.setenv("CRATE_DB_URL", fiware_envs["crate_db_url"].rstrip("/"))
         monkeypatch.setenv("CRATE_DB_USER", fiware_envs["crate_db_user"])
         monkeypatch.setenv("CRATE_DB_PW", fiware_envs["crate_db_pw"])
         monkeypatch.setenv("CRATE_DB_SSL", str(fiware_envs["crate_db_ssl"]).lower())
@@ -180,22 +177,30 @@ class TestFiwareConnectionSetup:
         conn.load_fiware_params()
 
         assert conn.fiware_conn_params is not None
-        assert conn.fiware_conn_params.fiware_params.cb_url.rstrip('/') \
-            == fiware_envs["cb_url"].rstrip('/')
-        assert conn.fiware_conn_params.fiware_params.service == fiware_envs["fiware_service"]
-        assert conn.fiware_conn_params.fiware_params.service_path \
+        assert conn.fiware_conn_params.fiware_params.cb_url.rstrip("/") == fiware_envs[
+            "cb_url"
+        ].rstrip("/")
+        assert (
+            conn.fiware_conn_params.fiware_params.service
+            == fiware_envs["fiware_service"]
+        )
+        assert (
+            conn.fiware_conn_params.fiware_params.service_path
             == fiware_envs["fiware_service_path"]
+        )
 
-    def test_check_fiware_connection_with_entities(self, fiware_cb_client, example_input_entity):
+    def test_check_fiware_connection_with_entities(
+        self, fiware_cb_client, example_input_entity
+    ):
         """Test check_fiware_connection() when entities exist in Docker FIWARE.
-        
+
         Verifies that the connection check works with real entities
         in the Docker FIWARE Context Broker.
-        
+
         Args:
             fiware_cb_client: ContextBrokerClient connected to Docker FIWARE
             example_input_entity: Test input entity
-        
+
         Asserts:
             - Entity is created in FIWARE
             - Entity list contains at least one entity
@@ -210,7 +215,9 @@ class TestFiwareConnectionSetup:
         assert len(entity_list) > 0
 
         try:
-            fiware_cb_client.delete_entity(example_input_entity.id_interface, "TestEntity")
+            fiware_cb_client.delete_entity(
+                example_input_entity.id_interface, "TestEntity"
+            )
         except Exception:
             pass
 
@@ -218,17 +225,19 @@ class TestFiwareConnectionSetup:
 class TestFiwareConnectionDataRetrieval:
     """Integration tests for data retrieval from FIWARE Docker containers."""
 
-    def test_get_data_from_fiware(self, fiware_cb_client, example_input_entity, fiware_conn_params):
+    def test_get_data_from_fiware(
+        self, fiware_cb_client, example_input_entity, fiware_conn_params
+    ):
         """Test get_data_from_fiware() with example input entity against Docker FIWARE.
-        
+
         Verifies end-to-end data retrieval from the real FIWARE Context Broker
         running in Docker.
-        
+
         Args:
             fiware_cb_client: ContextBrokerClient connected to Docker FIWARE
             example_input_entity: Test input entity
             fiware_conn_params: Docker FIWARE connection parameters
-        
+
         Asserts:
             - Result is not None
             - Result is an InputDataEntityModel
@@ -256,26 +265,25 @@ class TestFiwareConnectionDataRetrieval:
         assert result.attributes[0].unit == DataUnits.DEGREECELSIUS
 
         try:
-            fiware_cb_client.delete_entity(example_input_entity.id_interface, "TestEntity")
+            fiware_cb_client.delete_entity(
+                example_input_entity.id_interface, "TestEntity"
+            )
         except Exception:
             pass
 
     def test_get_last_timestamp_for_fiware_output(
-        self,
-        fiware_cb_client,
-        example_output_entity,
-        fiware_conn_params
+        self, fiware_cb_client, example_output_entity, fiware_conn_params
     ):
         """Test _get_last_timestamp_for_fiware_output() with example output entity.
-        
+
         Verifies that the method can retrieve the latest timestamp from
         FIWARE entities in Docker.
-        
+
         Args:
             fiware_cb_client: ContextBrokerClient connected to Docker FIWARE
             example_output_entity: Test output entity
             fiware_conn_params: Docker FIWARE connection parameters
-        
+
         Asserts:
             - Result is a tuple
             - First element is OutputDataEntityModel
@@ -296,7 +304,9 @@ class TestFiwareConnectionDataRetrieval:
         assert isinstance(result[1], datetime) or result[1] is None
 
         try:
-            fiware_cb_client.delete_entity(example_output_entity.id_interface, "TestEntity")
+            fiware_cb_client.delete_entity(
+                example_output_entity.id_interface, "TestEntity"
+            )
         except Exception:
             pass
 
@@ -306,21 +316,18 @@ class TestFiwareConnectionDataSending:
 
     @pytest.mark.asyncio
     async def test_send_data_to_fiware(
-        self,
-        fiware_cb_client,
-        example_output_entity,
-        fiware_conn_params
+        self, fiware_cb_client, example_output_entity, fiware_conn_params
     ):
         """Test _send_data_to_fiware() with example output entity against Docker FIWARE.
-        
+
         Verifies end-to-end data sending to the real FIWARE Context Broker
         running in Docker.
-        
+
         Args:
             fiware_cb_client: ContextBrokerClient connected to Docker FIWARE
             example_output_entity: Test output entity
             fiware_conn_params: Docker FIWARE connection parameters
-        
+
         Asserts:
             - Data is sent successfully
             - Entity attributes are updated in FIWARE
@@ -372,7 +379,9 @@ class TestFiwareConnectionDataSending:
         assert retrieved["temperature"].value == 42.0
 
         try:
-            fiware_cb_client.delete_entity(example_output_entity.id_interface, "TestEntity")
+            fiware_cb_client.delete_entity(
+                example_output_entity.id_interface, "TestEntity"
+            )
         except Exception:
             pass
 
@@ -386,27 +395,29 @@ class TestCrateDBConnection:
         cratedb_client,
         example_output_entity,
         fiware_conn_params,
-        fiware_envs
+        fiware_envs,
     ):
         """Test get_data_from_database() with example output entity against Docker CrateDB.
-        
+
         Verifies end-to-end data retrieval from CrateDB running in Docker,
         including direct database writes and reads.
-        
+
         Args:
             fiware_cb_client: ContextBrokerClient connected to Docker FIWARE
             cratedb_client: CrateDBConnection to Docker CrateDB
             example_output_entity: Test output entity
             fiware_conn_params: Docker FIWARE connection parameters
             fiware_envs: Docker FIWARE environment variables
-        
+
         Asserts:
             - Result is not None
             - Result is a list of InputDataAttributeModel
             - Data from CrateDB is correctly retrieved
         """
         # First create the entity in FIWARE
-        entity = create_fiware_entity_from_model(fiware_cb_client, example_output_entity)
+        entity = create_fiware_entity_from_model(
+            fiware_cb_client, example_output_entity
+        )
 
         # Write test data directly to CrateDB
         service = fiware_envs["fiware_service"]
@@ -467,7 +478,7 @@ class TestCrateDBConnection:
         for attr in example_output_entity.attributes:
             entity_attributes[attr.id] = {
                 "id_interface": attr.id_interface,
-                "metadata": MetaDataModel()
+                "metadata": MetaDataModel(),
             }
 
         # Call the method with correct parameters
@@ -495,7 +506,8 @@ class TestCrateDBConnection:
             cursor = connection.cursor()
             cursor.execute(
                 f"DELETE FROM mt{service}.et{entity_type.lower()} "
-                f"WHERE entity_id = %s", (entity_id,)
+                f"WHERE entity_id = %s",
+                (entity_id,),
             )
             connection.commit()
             cursor.close()

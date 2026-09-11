@@ -41,6 +41,7 @@ from encodapy.utils.models import (
 # Fixtures
 # =============================================================================
 
+
 @pytest.fixture
 def mock_fiware_env_no_auth():
     """Create a mock FiwareEnvVariables with authentication disabled.
@@ -51,7 +52,9 @@ def mock_fiware_env_no_auth():
     Yields:
         FiwareEnvVariables: Mocked environment with auth=False and test service config.
     """
-    with patch.dict(os.environ, {"FIWARE_AUTH": "false", "FIWARE_SERVICE": "test_service"}):
+    with patch.dict(
+        os.environ, {"FIWARE_AUTH": "false", "FIWARE_SERVICE": "test_service"}
+    ):
         env = FiwareEnvVariables()
         env.auth = False
         env.service = "test_service"
@@ -352,7 +355,9 @@ def test_prepare_fiware_connection_no_auth(
     """Test preparing FIWARE connection without authentication."""
     mock_fiware_connection.fiware_conn_params.fiware_params.authentication = None
 
-    with patch("encodapy.service.communication.fiware_connection.ContextBrokerClient") as mock_cbc:
+    with patch(
+        "encodapy.service.communication.fiware_connection.ContextBrokerClient"
+    ) as mock_cbc:
         mock_instance = MagicMock()
         mock_cbc.return_value = mock_instance
         mock_instance.get_entity_list.return_value = ["entity1"]
@@ -371,12 +376,16 @@ def test_prepare_fiware_connection_no_auth(
     assert mock_fiware_connection.fiware_header is not None
 
 
-def test_prepare_fiware_connection_with_bearer_token(mock_fiware_connection, mock_cb_client):
+def test_prepare_fiware_connection_with_bearer_token(
+    mock_fiware_connection, mock_cb_client
+):
     """Test preparing FIWARE connection with bearer token authentication."""
     auth = FiwareAuth(bearer_token="test_token")
     mock_fiware_connection.fiware_conn_params.fiware_params.authentication = auth
 
-    with patch("encodapy.service.communication.fiware_connection.BearerToken") as mock_bearer:
+    with patch(
+        "encodapy.service.communication.fiware_connection.BearerToken"
+    ) as mock_bearer:
         mock_bearer_instance = MagicMock()
         mock_bearer_instance.bearer_token = "test_token"
         mock_bearer.return_value = mock_bearer_instance
@@ -395,7 +404,9 @@ def test_prepare_fiware_connection_with_bearer_token(mock_fiware_connection, moc
 
     assert mock_fiware_connection.fiware_token_client is not None
     assert mock_fiware_connection.fiware_header is not None
-    assert mock_fiware_connection.fiware_header.__dict__["authorization"] == "test_token"
+    assert (
+        mock_fiware_connection.fiware_header.__dict__["authorization"] == "test_token"
+    )
     assert mock_fiware_connection.cb_client is not None
 
 
@@ -408,7 +419,9 @@ def test_prepare_fiware_connection_with_client_credentials(mock_fiware_connectio
     )
     mock_fiware_connection.fiware_conn_params.fiware_params.authentication = auth
 
-    with patch("encodapy.service.communication.fiware_connection.BearerToken") as mock_bearer:
+    with patch(
+        "encodapy.service.communication.fiware_connection.BearerToken"
+    ) as mock_bearer:
         mock_bearer_instance = MagicMock()
         mock_bearer_instance.bearer_token = "generated_token"
         mock_bearer.return_value = mock_bearer_instance
@@ -420,7 +433,9 @@ def test_prepare_fiware_connection_with_client_credentials(mock_fiware_connectio
             mock_cbc.return_value = mock_instance
             mock_instance.get_entity_list.return_value = ["entity1"]
 
-            with patch("encodapy.service.communication.fiware_connection.CrateDBConnection"):
+            with patch(
+                "encodapy.service.communication.fiware_connection.CrateDBConnection"
+            ):
                 mock_fiware_connection.prepare_fiware_connection()
 
     assert mock_fiware_connection.fiware_token_client is not None

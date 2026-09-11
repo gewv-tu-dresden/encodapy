@@ -3,6 +3,7 @@ Description: This file contains the class FiwareConnections,
 which is used to store the connection parameters for the Fiware and CrateDB connections.
 Author: Martin Altenburger
 """
+
 import asyncio
 from asyncio import sleep
 from datetime import datetime, timedelta, timezone
@@ -52,12 +53,13 @@ from encodapy.utils.models import (
 )
 from encodapy.utils.units import DataUnits, adjust_units, get_time_unit_seconds
 
+
 def _format_datetime_iso8601(dt: datetime) -> str:
     """Format datetime to ISO 8601 with Z for UTC timezone.
-    
+
     Args:
         dt: datetime object (aware or naive)
-        
+
     Returns:
         ISO 8601 formatted string with Z suffix for UTC
     """
@@ -65,6 +67,7 @@ def _format_datetime_iso8601(dt: datetime) -> str:
         dt = dt.replace(tzinfo=timezone.utc)
     formatted = dt.strftime("%Y-%m-%dT%H:%M:%S%z")
     return formatted[:-5] + "Z" if formatted.endswith("+0000") else formatted
+
 
 class FiwareConnection:
     """
@@ -274,7 +277,9 @@ class FiwareConnection:
         }
         metadata_model = MetaDataModel()
 
-        timeinstant_value = getattr(metadata_lowercase.get("timeinstant"), "value", None)
+        timeinstant_value = getattr(
+            metadata_lowercase.get("timeinstant"), "value", None
+        )
         if timeinstant_value is not None:
             try:
                 metadata_model.timestamp = datetime.strptime(
@@ -315,7 +320,6 @@ class FiwareConnection:
                 f"{unitcode_value}: {err}"
             )
         return metadata_model
-
 
     def get_data_from_fiware(
         self,
@@ -447,22 +451,30 @@ class FiwareConnection:
             tuple[str, Optional[str]]: Timestamps for the input data query (from_date, to_date)
         """
         if timerange_type is TimerangeTypes.ABSOLUTE or last_timestamp is None:
-            from_date = _format_datetime_iso8601(time_now - timedelta(seconds=timerange_value))
+            from_date = _format_datetime_iso8601(
+                time_now - timedelta(seconds=timerange_value)
+            )
             return from_date, None
 
         timeframe = (time_now - last_timestamp).total_seconds()
 
         if timerange_type is TimerangeTypes.RELATIVE:
             if timeframe < timerange_value:
-                from_date = _format_datetime_iso8601(time_now - timedelta(seconds=timerange_value))
+                from_date = _format_datetime_iso8601(
+                    time_now - timedelta(seconds=timerange_value)
+                )
                 return from_date, None
 
             from_date = _format_datetime_iso8601(last_timestamp)
-            to_date = _format_datetime_iso8601(last_timestamp + timedelta(seconds=timerange_value))
+            to_date = _format_datetime_iso8601(
+                last_timestamp + timedelta(seconds=timerange_value)
+            )
             return from_date, to_date
 
         # Fallback to absolute if no type is specified
-        from_date = _format_datetime_iso8601(time_now - timedelta(seconds=timerange_value))
+        from_date = _format_datetime_iso8601(
+            time_now - timedelta(seconds=timerange_value)
+        )
         return from_date, None
 
     def _calculate_timerange_min_max(
@@ -488,13 +500,17 @@ class FiwareConnection:
             tuple[str, str]: Timestamps for the input data query (from_date, to_date)
         """
         if last_timestamp is None:
-            from_date = _format_datetime_iso8601(time_now - timedelta(seconds=timerange_max))
+            from_date = _format_datetime_iso8601(
+                time_now - timedelta(seconds=timerange_max)
+            )
             return from_date, None
 
         timeframe = (time_now - last_timestamp).total_seconds()
 
         if timeframe < timerange_min:
-            from_date = _format_datetime_iso8601(time_now - timedelta(seconds=timerange_min))
+            from_date = _format_datetime_iso8601(
+                time_now - timedelta(seconds=timerange_min)
+            )
             return from_date, None
 
         if timeframe < timerange_max:
@@ -502,7 +518,9 @@ class FiwareConnection:
             return from_date, None
 
         from_date = _format_datetime_iso8601(last_timestamp)
-        to_date = _format_datetime_iso8601(last_timestamp + timedelta(seconds=timerange_max))
+        to_date = _format_datetime_iso8601(
+            last_timestamp + timedelta(seconds=timerange_max)
+        )
         return from_date, to_date
 
     def _handle_calculation_method(
@@ -617,7 +635,9 @@ class FiwareConnection:
             is TimerangeTypes.RELATIVE
             and last_timestamp is not None
         ):
-            from_date = _format_datetime_iso8601(last_timestamp - timedelta(seconds=timerange))
+            from_date = _format_datetime_iso8601(
+                last_timestamp - timedelta(seconds=timerange)
+            )
             to_date = last_timestamp
 
             return from_date, None
@@ -786,9 +806,9 @@ class FiwareConnection:
             list: List with the attributes (NamedContextAttribute) for the FIWARE platform
         """
         try:
-            assert isinstance(fiware_datapoint.attribute.value, pd.DataFrame), (
-                f"Expected pandas DataFrame, got {type(fiware_datapoint.attribute.value)}"
-            )
+            assert isinstance(
+                fiware_datapoint.attribute.value, pd.DataFrame
+            ), f"Expected pandas DataFrame, got {type(fiware_datapoint.attribute.value)}"
         except AssertionError as exc:
             logger.error("Assertion error: %s", exc)
             raise ValueError("Invalid data type for FiwareDatapointParameter") from exc
@@ -1049,7 +1069,10 @@ class FiwareConnection:
                         logger.error(
                             "Timeout while sending attributes to FIWARE platform."
                         )
-                except (requests.exceptions.RequestException, BaseHttpClientException) as err:
+                except (
+                    requests.exceptions.RequestException,
+                    BaseHttpClientException,
+                ) as err:
                     if i < 2:
                         await sleep(0.1)
                     else:
@@ -1086,13 +1109,15 @@ class FiwareConnection:
                         logger.error(
                             "Timeout while sending commands to FIWARE platform."
                         )
-                except (requests.exceptions.RequestException, BaseHttpClientException) as err:
+                except (
+                    requests.exceptions.RequestException,
+                    BaseHttpClientException,
+                ) as err:
                     if i < 2:
                         await sleep(0.1)
                     else:
                         logger.error(
-                            "Error while sending commands to FIWARE platform: "
-                            f"{err}"
+                            "Error while sending commands to FIWARE platform: " f"{err}"
                         )
 
                 i += 1

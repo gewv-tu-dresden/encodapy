@@ -30,13 +30,13 @@ def test_get_data_from_mqtt_success():
         id_interface="TestInput:001",
         attributes=[
             AttributeModel(
-                id="temperature",
-                id_interface="temperature",
-                type=AttributeTypes.VALUE
+                id="temperature", id_interface="temperature", type=AttributeTypes.VALUE
             )
         ],
     )
-    result = connection.get_data_from_mqtt(method=DataQueryTypes.CALCULATION, entity=entity)
+    result = connection.get_data_from_mqtt(
+        method=DataQueryTypes.CALCULATION, entity=entity
+    )
     assert isinstance(result, InputDataEntityModel)
     assert result.id == "test_input"
     assert len(result.attributes) == 1
@@ -56,13 +56,13 @@ def test_get_data_from_mqtt_missing_topic():
         id_interface="TestInput:001",
         attributes=[
             AttributeModel(
-                id="temperature",
-                id_interface="temperature",
-                type=AttributeTypes.VALUE
+                id="temperature", id_interface="temperature", type=AttributeTypes.VALUE
             )
         ],
     )
-    result = connection.get_data_from_mqtt(method=DataQueryTypes.CALCULATION, entity=entity)
+    result = connection.get_data_from_mqtt(
+        method=DataQueryTypes.CALCULATION, entity=entity
+    )
     assert isinstance(result, InputDataEntityModel)
     assert result.id == "test_input"
     assert len(result.attributes) == 1

@@ -4,17 +4,17 @@
 codecov:
   # Require CI to pass before updating coverage status
   require_ci_to_pass: true
-  
+
   # Branch coverage settings
   branch: main
 
 coverage:
   # Precision of coverage percentages
   precision: 2
-  
+
   # Round coverage to nearest whole number
   round: nearest
-  
+
   # Coverage range to consider as "success" (optional)
   range: "70..100"
 
@@ -28,7 +28,7 @@ coverage:
         base: auto
         paths:
           - "encodapy/"
-        
+
     patch:
       default:
         # Patch coverage threshold

@@ -16,10 +16,7 @@ from encodapy.utils.models import (
     DataTransferComponentModel,
     AttributeTypes,
 )
-from encodapy.components.basic_component import (
-    BasicComponent,
-    ComponentValidationError
-)
+from encodapy.components.basic_component import BasicComponent, ComponentValidationError
 from encodapy.components.component_loader import get_component_class_model
 
 
@@ -46,7 +43,6 @@ class ComponentRunnerService(ControllerBasicService):
             and initializes the component.
         """
         for component in self.config.controller_components:
-
             if component.active is False:
                 continue
             component_type = get_component_class_model(component.type)
@@ -115,7 +111,6 @@ class ComponentRunnerService(ControllerBasicService):
         """
 
         for result in results:
-
             entity_found = False
             for input_entity in data.input_entities:
                 if input_entity.id == result.entity_id:
@@ -149,7 +144,13 @@ class ComponentRunnerService(ControllerBasicService):
             try:
                 component_results = component.run(data)
 
-            except (ValueError, AttributeError, KeyError, TypeError, ComponentValidationError) as e:
+            except (
+                ValueError,
+                AttributeError,
+                KeyError,
+                TypeError,
+                ComponentValidationError,
+            ) as e:
                 logger.error(
                     f"Error occurred while running component "
                     f"{component.component_config.id}: {e}"

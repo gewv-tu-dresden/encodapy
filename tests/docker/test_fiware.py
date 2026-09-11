@@ -33,6 +33,7 @@ def test_orion_connection(fiware_environment):
     assert response.status_code == 200
     assert "orion" in response.json()
 
+
 @pytest.mark.order(2)
 def test_cratedb_connection(fiware_environment):
     """
@@ -48,17 +49,19 @@ def test_cratedb_connection(fiware_environment):
 # Helper Functions
 # ============================================================================
 
-def create_test_entity(cb_client: ContextBrokerClient, entity_id: str, entity_type: str,
-                      attributes: list) -> ContextEntity:
+
+def create_test_entity(
+    cb_client: ContextBrokerClient, entity_id: str, entity_type: str, attributes: list
+) -> ContextEntity:
     """
     Helper function to create a test entity in FIWARE.
-    
+
     Args:
         cb_client: ContextBrokerClient instance
         entity_id: ID of the entity to create
         entity_type: Type of the entity
         attributes: List of NamedContextAttribute to add to the entity
-        
+
     Returns:
         The created ContextEntity
     """

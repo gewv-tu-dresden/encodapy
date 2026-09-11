@@ -43,7 +43,9 @@ pytestmark = [
 # =============================================================================
 
 
-def test_extract_payload_from_plain_numeric(mqtt_connection_connected, mqtt_test_topics):
+def test_extract_payload_from_plain_numeric(
+    mqtt_connection_connected, mqtt_test_topics
+):
     """Test extracting payload from plain numeric string."""
     test_topic = mqtt_test_topics["temperature"]
 
@@ -220,12 +222,8 @@ def test_get_data_from_mqtt_multiple_attributes(
     )
 
     assert len(result.attributes) == 2
-    temp_attr = next(
-        (a for a in result.attributes if a.id == "temperature"), None
-    )
-    hum_attr = next(
-        (a for a in result.attributes if a.id == "humidity"), None
-    )
+    temp_attr = next((a for a in result.attributes if a.id == "temperature"), None)
+    hum_attr = next((a for a in result.attributes if a.id == "humidity"), None)
 
     assert temp_attr is not None
     assert temp_attr.data == 22.5
@@ -244,9 +242,7 @@ def test_get_data_from_mqtt_multiple_attributes(
 def test_message_store_updated_on_receive(mqtt_connection_connected, mqtt_test_topics):
     """Test that message store is updated when messages are received."""
     test_topic = mqtt_test_topics["temperature"]
-    initial_value = mqtt_connection_connected.mqtt_message_store[test_topic][
-        "value"
-    ]
+    initial_value = mqtt_connection_connected.mqtt_message_store[test_topic]["value"]
 
     # Publish new value
     new_value = 99.9
@@ -309,9 +305,7 @@ def test_fiware_attr_format_message_processing(
     assert store_item is not None
 
 
-def test_fiware_cmdexe_format_message(
-    mqtt_connection_connected, mqtt_test_topics
-):
+def test_fiware_cmdexe_format_message(mqtt_connection_connected, mqtt_test_topics):
     """Test publishing and receiving FIWARE CMDEXE format messages."""
     command_topic = mqtt_test_topics["command"]
     payload = '{"command": "ON", "status": "pending"}'
@@ -412,9 +406,7 @@ def test_rapid_message_publishing(mqtt_connection_connected, mqtt_test_topics):
 
     # Publish many messages rapidly
     for i in range(10):
-        mqtt_connection_connected.publish(
-            topic=test_topic, payload=str(20.0 + i)
-        )
+        mqtt_connection_connected.publish(topic=test_topic, payload=str(20.0 + i))
         time.sleep(0.01)  # Very short delay
 
     time.sleep(0.5)

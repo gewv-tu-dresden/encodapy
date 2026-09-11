@@ -3,6 +3,7 @@ Description: This file contains the class FiwareConnections,
 which is used to store the connection parameters for the Fiware and CrateDB connections.
 Author: Paul Seidel
 """
+
 import os
 import json
 import pathlib
@@ -23,7 +24,7 @@ from encodapy.config import (
     DataFile,
     FileEnvVariables,
     ConfigModel,
-    DataFileEntity
+    DataFileEntity,
 )
 from encodapy.config.models import FileStorageMethod
 from encodapy.utils.models import (
@@ -44,7 +45,7 @@ class FileConnection:
     """
 
     def __init__(self) -> None:
-        self.file_params : FileEnvVariables
+        self.file_params: FileEnvVariables
         self.config: ConfigModel
 
     def load_file_params(self) -> None:
@@ -143,16 +144,18 @@ class FileConnection:
         """
         match method:
             case DataQueryTypes.CALCULATION:
-                timestep = self.config.controller_settings.time_settings.calculation.timestep
-                timestep_unit = \
-                    self.config.controller_settings.time_settings.calculation.timestep_unit
+                timestep = (
+                    self.config.controller_settings.time_settings.calculation.timestep
+                )
+                timestep_unit = self.config.controller_settings.time_settings.calculation.timestep_unit
             case DataQueryTypes.CALIBRATION:
                 if self.config.controller_settings.time_settings.calibration is None:
                     logger.warning("No calibration time settings found in config.")
                     return None
-                timestep = self.config.controller_settings.time_settings.calibration.timestep
-                timestep_unit = \
-                    self.config.controller_settings.time_settings.calibration.timestep_unit
+                timestep = (
+                    self.config.controller_settings.time_settings.calibration.timestep
+                )
+                timestep_unit = self.config.controller_settings.time_settings.calibration.timestep_unit
             case _:
                 logger.warning(f"Method {method} not supported for file interface.")
                 return None
@@ -183,21 +186,20 @@ class FileConnection:
                     resample_unit = ""
 
             if resample_unit != "":
-                data = data.resample(
-                    f"{timestep}"
-                    f"{resample_unit}").asfreq()
+                data = data.resample(f"{timestep}" f"{resample_unit}").asfreq()
 
         except (FileNotFoundError, PermissionError) as e:
             logger.error(f"Could not open file ({path_of_file}): {e}")
             return None
-        except (pd.errors.EmptyDataError,
-                pd.errors.ParserError,
-                ValueError,
-                UnicodeDecodeError) as e:
+        except (
+            pd.errors.EmptyDataError,
+            pd.errors.ParserError,
+            ValueError,
+            UnicodeDecodeError,
+        ) as e:
             logger.error(f"Error reading CSV file ({path_of_file}): {e}")
             return None
         for attribute in entity.attributes:
-
             if attribute.type == AttributeTypes.TIMESERIES:
                 attributes_values.append(
                     InputDataAttributeModel(
@@ -206,7 +208,7 @@ class FileConnection:
                         data_type=AttributeTypes.TIMESERIES,
                         data_available=True,
                         latest_timestamp_input=data.index[0],
-                        unit=attribute.unit
+                        unit=attribute.unit,
                     )
                 )
             elif attribute.type == AttributeTypes.VALUE:
@@ -217,7 +219,7 @@ class FileConnection:
                         data_type=AttributeTypes.VALUE,
                         data_available=True,
                         latest_timestamp_input=data.index[0],
-                        unit=attribute.unit
+                        unit=attribute.unit,
                     )
                 )
             else:
@@ -228,7 +230,9 @@ class FileConnection:
 
         return InputDataEntityModel(id=entity.id, attributes=attributes_values)
 
-    def _read_time_from_string(self, time_string: Union[str, datetime, None]) -> Optional[datetime]:
+    def _read_time_from_string(
+        self, time_string: Union[str, datetime, None]
+    ) -> Optional[datetime]:
         """
         Helper function to read a time from a string based on the configured time format.
         Args:
@@ -267,7 +271,7 @@ class FileConnection:
         self,
         file_entity: DataFileEntity,
         attribute: AttributeModel,
-        ) -> Optional[InputDataAttributeModel]:
+    ) -> Optional[InputDataAttributeModel]:
         """
         Helper function to extract an attribute from a DataFileEntity
         Args:
@@ -280,16 +284,16 @@ class FileConnection:
         try:
             for file_attribute in file_entity.attributes:
                 if file_attribute.id == attribute.id_interface:
-
                     return InputDataAttributeModel(
-                            id=attribute.id,
-                            data=file_attribute.value,
-                            unit=file_attribute.unit,
-                            data_type=attribute.type,
-                            data_available=True,
-                            latest_timestamp_input=
-                            self._read_time_from_string(file_attribute.time),
-                        )
+                        id=attribute.id,
+                        data=file_attribute.value,
+                        unit=file_attribute.unit,
+                        data_type=attribute.type,
+                        data_available=True,
+                        latest_timestamp_input=self._read_time_from_string(
+                            file_attribute.time
+                        ),
+                    )
             logger.warning(
                 f"Attribute {attribute.id} not found in file entity {file_entity.id}"
             )
@@ -306,19 +310,23 @@ class FileConnection:
         self,
         entity: Union[StaticDataModel, InputModel],
         path_of_file: str,
-        data_type: str
-        ) -> Union[InputDataEntityModel, StaticDataEntityModel, None]:
+        data_type: str,
+    ) -> Union[InputDataEntityModel, StaticDataEntityModel, None]:
         try:
             # read data from json file and timestamp
             with open(path_of_file, encoding="utf-8") as f:
                 data_file = json.load(f)
         except (FileNotFoundError, PermissionError) as e:
-            logger.error(f"File not found / not readable ({path_of_file}) "
-                         f"for {data_type}: {e}")
+            logger.error(
+                f"File not found / not readable ({path_of_file}) "
+                f"for {data_type}: {e}"
+            )
             return None
         except (json.JSONDecodeError, UnicodeDecodeError, TypeError, ValueError) as e:
-            logger.error(f"Error decoding JSON from file ({path_of_file})"
-                         f"for {data_type}: {e}")
+            logger.error(
+                f"Error decoding JSON from file ({path_of_file})"
+                f"for {data_type}: {e}"
+            )
             return None
 
         if isinstance(data_file, list):
@@ -332,7 +340,9 @@ class FileConnection:
         try:
             data = DataFile.model_validate(data_file)
         except ValidationError as e:
-            logger.error(f"Validation error for file ({path_of_file}) for {data_type}: {e}")
+            logger.error(
+                f"Validation error for file ({path_of_file}) for {data_type}: {e}"
+            )
             return None
 
         attributes_values = []
@@ -340,8 +350,7 @@ class FileConnection:
             for file_entity in data.data:
                 if file_entity.id == entity.id_interface:
                     file_attribute = self._get_attribute_from_entity(
-                        file_entity=file_entity,
-                        attribute=attribute
+                        file_entity=file_entity, attribute=attribute
                     )
                     if file_attribute is not None:
                         attributes_values.append(file_attribute)
@@ -383,7 +392,7 @@ class FileConnection:
         data = self._get_data_from_json_file(
             entity=entity,
             path_of_file=self.file_params.path_of_input_file,
-            data_type="inputdata"
+            data_type="inputdata",
         )
         if not isinstance(data, InputDataEntityModel):
             return None
@@ -408,16 +417,13 @@ class FileConnection:
         data = self._get_data_from_json_file(
             entity=entity,
             path_of_file=self.file_params.path_of_static_data,
-            data_type="staticdata"
+            data_type="staticdata",
         )
         if not isinstance(data, StaticDataEntityModel):
             return None
         return data
 
-    def _write_json_file(self,
-                         output_name: str,
-                         data: list
-                         ) -> None:
+    def _write_json_file(self, output_name: str, data: list) -> None:
         """
         Function to write output in a json file
 
@@ -470,8 +476,10 @@ class FileConnection:
             timestamp = datetime.now().strftime("%Y%m%d_%H-%M-%S")
             path = os.path.join(path_to_results, f"{output_name}_{timestamp}.json")
         else:
-            logger.error(f"Invalid file storage method: {file_storage_method}. "
-                         f"Using 'overwrite' as method to store data in json-file.")
+            logger.error(
+                f"Invalid file storage method: {file_storage_method}. "
+                f"Using 'overwrite' as method to store data in json-file."
+            )
             file_data = data
 
         # Write combined data back to the file
@@ -482,7 +490,6 @@ class FileConnection:
                 logger.debug(f"Output data written to file: {path}")
         except (FileNotFoundError, PermissionError) as e:
             logger.error(f"Error writing output file: {e}")
-
 
     def send_data_to_json_file(
         self,
@@ -513,30 +520,18 @@ class FileConnection:
                     "id": output.id_interface,
                     "value": output.value,
                     "unit": None if output.unit is None else output.unit.value,
-                    "time": None if output.timestamp is None else output.timestamp.isoformat(" ")
+                    "time": None
+                    if output.timestamp is None
+                    else output.timestamp.isoformat(" "),
                 }
             )
-        outputs.append(
-            {
-                "id": output_entity.id,
-                "attributes" : output_attr
-            }
-        )
+        outputs.append({"id": output_entity.id, "attributes": output_attr})
 
-        self._write_json_file(
-            output_name=f"outputs_{output_entity.id}",
-            data=outputs
-        )
+        self._write_json_file(output_name=f"outputs_{output_entity.id}", data=outputs)
 
         for command in output_commands:
             commands.append(
-                {
-                    "id_interface": command.id_interface,
-                    "value": command.value
-                }
+                {"id_interface": command.id_interface, "value": command.value}
             )
 
-        self._write_json_file(
-            output_name=f"commands_{output_entity.id}",
-            data=commands
-        )
+        self._write_json_file(output_name=f"commands_{output_entity.id}", data=commands)
