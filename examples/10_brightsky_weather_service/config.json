@@ -1,0 +1,166 @@
+{
+    "name": "WeatherService",
+    "interfaces":{
+        "mqtt": false,
+        "fiware": false,
+        "file": true
+    },
+    "inputs": [],
+    "outputs": [
+        {
+            "id": "weatherdata",
+            "interface": "file",
+            "id_interface": "weatherdata",
+            "attributes": [
+                {"id": "temperature", 
+                "id_interface":"outside_temperature",
+                "type": "timeseries",
+                "unit" : "CEL"
+                },
+                {"id": "relative_humidity", 
+                "id_interface":"relative_humidity",
+                "type": "value",
+                "unit" : "P1"
+                },
+                {"id": "dew_point", 
+                "id_interface":"dew_point_temperature",
+                "type": "value",
+                "unit" : "CEL"
+                },
+                {"id": "pressure_msl",
+                "id_interface":"air_pressure",
+                "type": "value",
+                "unit" : "A97"
+                },
+                {"id": "solar_60",
+                "id_interface":"solar_irradiation_60min",
+                "type": "value",
+                "unit" : "KWM"
+                },
+                {"id": "forecast_temperature",
+                "id_interface":"forecast_temperature", 
+                "type" : "timeseries",
+                "datatype" : "StructuredValue",
+                "unit" : "CEL"
+                },
+                {"id": "forecast_solar",
+                "id_interface":"forecast_solar",
+                "type" : "timeseries",
+                "datatype" : "StructuredValue",
+                "unit" : "KWM"
+                }
+            ],
+            "commands":[
+            ]
+        }
+    ],
+    "staticdata": [
+       {
+        "id" : "weatherdata",
+        "interface": "file",
+        "id_interface": "weatherdata",
+        "attributes": [
+               {"id": "longitude", 
+                "id_interface":"longitude",
+                "type": "value"
+                },
+                {"id": "latitude", 
+                "id_interface":"latitude",
+                "type": "value"
+                },
+                {"id": "forecast_time_range", 
+                "id_interface":"forecast_time_range",
+                "type": "value"
+                },
+                {"id": "time_interval_current_weather", 
+                "id_interface":"time_interval_current_weather",
+                "type": "value"
+                },
+                {"id": "time_interval_forecast_weather",
+                "id_interface":"time_interval_forecast_weather",
+                "type": "value"
+                }
+            ]
+        }
+    ],
+    "controller_components": [
+        {
+            "id": "weatherdata",
+            "type": "weather_data",
+            "inputs":{},
+            "outputs":{
+                "temperature": {
+                    "entity" : "weatherdata",
+                    "attribute": "temperature"
+                    },
+                "relative_humidity": {
+                    "entity" : "weatherdata",
+                    "attribute": "relative_humidity"
+                    },
+                "dew_point": {
+                    "entity" : "weatherdata",
+                    "attribute": "dew_point"
+                    },
+                "pressure_msl": {
+                    "entity" : "weatherdata",   
+                    "attribute": "pressure_msl"
+                        },
+                "solar_60": {
+                    "entity" : "weatherdata",
+                    "attribute": "solar_60"
+                        },
+                "forecast_temperature" : {
+                    "entity" : "weatherdata",
+                    "attribute": "forecast_temperature"
+                },
+                "forecast_solar" : {
+                    "entity" : "weatherdata",
+                    "attribute": "forecast_solar"
+                }
+                },
+            "config": {
+                "longitude": {
+                    "entity" : "weatherdata",
+                    "attribute": "longitude"
+                },
+                "latitude" : {
+                    "entity" : "weatherdata",
+                    "attribute": "latitude"
+                },
+                "forecast_time_range" : {
+                    "entity" : "weatherdata",
+                    "attribute": "forecast_time_range"
+                },
+                "time_interval_current_weather" : {
+                    "entity" : "weatherdata",
+                    "attribute": "time_interval_current_weather"
+                },
+                "time_interval_forecast_weather" : {
+                    "entity" : "weatherdata",
+                    "attribute": "time_interval_forecast_weather"
+                }
+            }
+        }
+    ],
+    "controller_settings": {
+        "time_settings":
+        {
+            "calculation":
+            {
+                "timerange":24,
+                "timerange_unit":"hour",
+                "timerange_type" : "absolute",
+                "timestep":15,
+                "timestep_unit" : "minute",
+                "sampling_time" : 10,
+                "sampling_time_unit" : "second"
+            },
+            "results":
+            {
+                "timestep":1
+            }
+        }
+    }
+}
+
+
