@@ -87,6 +87,7 @@
 <span class="sd">Description: This file contains the models for the configuration of the system controller.</span>
 <span class="sd">Authors: Martin Altenburger</span>
 <span class="sd">"""</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
@@ -101,24 +102,28 @@
     <span class="n">AttributeTypes</span><span class="p">,</span>
     <span class="n">Interfaces</span><span class="p">,</span>
     <span class="n">TimerangeTypes</span><span class="p">,</span>
-    <span class="n">MQTTFormatTypes</span>
+    <span class="n">MQTTFormatTypes</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.error_handling</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigError</span><span class="p">,</span> <span class="n">InterfaceNotActive</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataUnits</span><span class="p">,</span> <span class="n">TimeUnits</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.basic_component_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ControllerComponentModel</span>
+
 <span class="c1"># Import MQTTTemplateConfigDoc for sphinx documentation generation</span>
 <span class="n">IS_BUILDING_DOCS</span> <span class="o">=</span> <span class="s2">"BUILDING_DOCS"</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">IS_BUILDING_DOCS</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.mqtt_messages_template</span><span class="w"> </span><span class="kn">import</span> <span class="n">MQTTTemplateConfig</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.mqtt_messages_template</span><span class="w"> </span><span class="kn">import</span> <span class="n">MQTTTemplateConfigDoc</span> <span class="k">as</span> <span class="n">MQTTTemplateConfig</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.mqtt_messages_template</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">MQTTTemplateConfigDoc</span> <span class="k">as</span> <span class="n">MQTTTemplateConfig</span><span class="p">,</span>
+    <span class="p">)</span>
+
 
 <div class="viewcode-block" id="InterfaceModel">
 <a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.InterfaceModel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">InterfaceModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base class for the interfaces</span>
-<span class="sd">    </span>
+
 <span class="sd">    Attributes:</span>
 <span class="sd">        mqtt (bool): Whether the MQTT interface is active. Defaults to False.</span>
 <span class="sd">        fiware (bool): Whether the FIWARE interface is active. Defaults to False.</span>
@@ -128,6 +133,7 @@
     <span class="n">mqtt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">fiware</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+
 
 
 <div class="viewcode-block" id="AttributeModel">
@@ -160,7 +166,9 @@
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">id_interface</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
     <span class="nb">type</span><span class="p">:</span> <span class="n">AttributeTypes</span> <span class="o">=</span> <span class="n">AttributeTypes</span><span class="o">.</span><span class="n">VALUE</span>
-    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="kc">None</span>
+    <span class="p">)</span>
     <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataUnits</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">datatype</span><span class="p">:</span> <span class="n">DataType</span> <span class="o">=</span> <span class="n">DataType</span><span class="p">(</span><span class="s2">"Number"</span><span class="p">)</span>
     <span class="n">timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -478,7 +486,6 @@
 <span class="sd">        controller_settings (ControllerSettingModel): Settings for the controller.</span>
 <span class="sd">    """</span>
 
-
     <span class="n">interfaces</span><span class="p">:</span> <span class="n">InterfaceModel</span>
     <span class="n">inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">InputModel</span><span class="p">]</span>
     <span class="n">outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">OutputModel</span><span class="p">]</span>
@@ -586,7 +593,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">DataFileAttribute</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model for data file attributes.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Attributes:</span>
 <span class="sd">        id (str): The unique identifier for the attribute.</span>
 <span class="sd">        value (Union[str, float, int, bool, Dict, List, DataFrame, None]): \</span>

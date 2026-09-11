@@ -211,7 +211,7 @@
 <span class="sd">    and also handles the case when the value is None or not a number.</span>
 
 <span class="sd">    This function is still available for backward compatibility, \</span>
-<span class="sd">        but will be removed in future versions. </span>
+<span class="sd">        but will be removed in future versions.</span>
 <span class="sd">    It is recommended to switch to adjust_units, which is more robust and handles more cases.</span>
 
 <span class="sd">    Args:</span>
@@ -225,12 +225,12 @@
 <span class="sd">    """</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="n">unit_actual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
-            <span class="s2">"Actual unit is None, cannot determine adjustment factor"</span>
-        <span class="p">)</span>
-        <span class="k">assert</span> <span class="n">unit_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
-            <span class="s2">"Target unit is None, cannot determine adjustment factor"</span>
-        <span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">unit_actual</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">),</span> <span class="s2">"Actual unit is None, cannot determine adjustment factor"</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">unit_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">),</span> <span class="s2">"Target unit is None, cannot determine adjustment factor"</span>
     <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Cannot determine adjustment factor: "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -246,9 +246,10 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">actual</span> <span class="o">=</span> <span class="n">_UNIT_MAP</span><span class="p">[</span><span class="n">unit_actual</span><span class="p">]</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">_UNIT_MAP</span><span class="p">[</span><span class="n">unit_target</span><span class="p">]</span>
-        <span class="k">assert</span> <span class="n">unit_actual</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">DataUnits</span><span class="o">.</span><span class="n">KELVIN</span><span class="p">,</span> <span class="n">DataUnits</span><span class="o">.</span><span class="n">DEGREECELSIUS</span><span class="p">],</span> <span class="p">(</span>
-            <span class="s2">"Temperature units are not supported for adjustment factor calculation"</span>
-        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">unit_actual</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">DataUnits</span><span class="o">.</span><span class="n">KELVIN</span><span class="p">,</span>
+            <span class="n">DataUnits</span><span class="o">.</span><span class="n">DEGREECELSIUS</span><span class="p">,</span>
+        <span class="p">],</span> <span class="s2">"Temperature units are not supported for adjustment factor calculation"</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">"Could not map the unit for </span><span class="si">{</span><span class="n">unit_actual</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">unit_target</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span>
