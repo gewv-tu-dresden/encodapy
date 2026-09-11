@@ -118,7 +118,7 @@ def get_unit_adjustment_factor(
     and also handles the case when the value is None or not a number.
 
     This function is still available for backward compatibility, \
-        but will be removed in future versions. 
+        but will be removed in future versions.
     It is recommended to switch to adjust_units, which is more robust and handles more cases.
 
     Args:
@@ -132,12 +132,12 @@ def get_unit_adjustment_factor(
     """
 
     try:
-        assert unit_actual is not None, (
-            "Actual unit is None, cannot determine adjustment factor"
-        )
-        assert unit_target is not None, (
-            "Target unit is None, cannot determine adjustment factor"
-        )
+        assert (
+            unit_actual is not None
+        ), "Actual unit is None, cannot determine adjustment factor"
+        assert (
+            unit_target is not None
+        ), "Target unit is None, cannot determine adjustment factor"
     except AssertionError as exc:
         logger.warning("Cannot determine adjustment factor: " + str(exc))
         return None
@@ -153,9 +153,10 @@ def get_unit_adjustment_factor(
     try:
         actual = _UNIT_MAP[unit_actual]
         target = _UNIT_MAP[unit_target]
-        assert unit_actual not in [DataUnits.KELVIN, DataUnits.DEGREECELSIUS], (
-            "Temperature units are not supported for adjustment factor calculation"
-        )
+        assert unit_actual not in [
+            DataUnits.KELVIN,
+            DataUnits.DEGREECELSIUS,
+        ], "Temperature units are not supported for adjustment factor calculation"
     except (KeyError, AssertionError) as exc:
         logger.warning(
             f"Could not map the unit for {unit_actual} or {unit_target}: {exc}"

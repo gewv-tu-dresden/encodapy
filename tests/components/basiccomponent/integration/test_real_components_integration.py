@@ -13,7 +13,9 @@ import pytest
 from encodapy.components.basic_component import BasicComponent
 from encodapy.components.component_loader import get_component_class_model
 from encodapy.components.thermal_storage.thermal_storage import ThermalStorage
-from encodapy.components.two_point_controller.two_point_controller import TwoPointController
+from encodapy.components.two_point_controller.two_point_controller import (
+    TwoPointController,
+)
 from encodapy.config import ConfigModel
 from encodapy.service.component_runner_service import ComponentRunnerService
 from encodapy.components.thermal_storage import thermal_storage
@@ -71,7 +73,9 @@ class TestRealComponentsIntegration:
 
         assert thermal_storage_config is not None
         assert thermal_storage_config.id == "thermal_storage"
-        assert len(thermal_storage_config.inputs.root) == 5  # temperature_1 to temperature_5
+        assert (
+            len(thermal_storage_config.inputs.root) == 5
+        )  # temperature_1 to temperature_5
         assert len(thermal_storage_config.outputs.root) == 1  # storage__level
         assert "storage__level" in thermal_storage_config.outputs.root
 
@@ -144,9 +148,12 @@ class TestRealComponentsIntegration:
         assert hasattr(component_runner_config_model, "controller_settings")
 
         # Check time settings
-        assert hasattr(component_runner_config_model.controller_settings, "time_settings")
         assert hasattr(
-            component_runner_config_model.controller_settings.time_settings, "calculation"
+            component_runner_config_model.controller_settings, "time_settings"
+        )
+        assert hasattr(
+            component_runner_config_model.controller_settings.time_settings,
+            "calculation",
         )
 
     def test_component_inputs_outputs_consistency(self, component_runner_config_model):

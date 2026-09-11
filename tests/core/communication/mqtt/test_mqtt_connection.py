@@ -64,7 +64,9 @@ def test_prepare_mqtt_message_store_success():
             interface=Interfaces.MQTT,
             id_interface="TestInput:001",
             attributes=[
-                AttributeModel(id="temp", id_interface="temperature", type=AttributeTypes.VALUE),
+                AttributeModel(
+                    id="temp", id_interface="temperature", type=AttributeTypes.VALUE
+                ),
             ],
         )
     ]

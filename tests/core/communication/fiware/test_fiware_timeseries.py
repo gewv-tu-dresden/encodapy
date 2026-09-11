@@ -79,9 +79,12 @@ def mock_fiware_datapoint():
     Returns:
         FiwareDatapointParameter: Parameter with timeseries data.
     """
-    df = pd.DataFrame({
-        "temperature_ts": [20.0, 21.0, 22.0],
-    }, index=pd.date_range("2024-01-15 10:00:00", periods=3, freq="10min"))
+    df = pd.DataFrame(
+        {
+            "temperature_ts": [20.0, 21.0, 22.0],
+        },
+        index=pd.date_range("2024-01-15 10:00:00", periods=3, freq="10min"),
+    )
 
     entity = ContextEntity(id="TestOutputTS:001", type="TestOutputTS")
     attribute = AttributeModel(
@@ -125,9 +128,12 @@ async def test_prepare_timeseries_for_fiware_valid_dataframe():
     connection.crate_db_client = MagicMock()
     connection.config = MagicMock()
 
-    df = pd.DataFrame({
-        "temperature_ts": [20.0, 21.0, 22.0],
-    }, index=pd.date_range("2024-01-15 10:00:00", periods=3, freq="10min"))
+    df = pd.DataFrame(
+        {
+            "temperature_ts": [20.0, 21.0, 22.0],
+        },
+        index=pd.date_range("2024-01-15 10:00:00", periods=3, freq="10min"),
+    )
 
     entity = ContextEntity(id="TestOutputTS:001", type="TestOutputTS")
     attribute = AttributeModel(
@@ -155,7 +161,7 @@ async def test_prepare_timeseries_for_fiware_valid_dataframe():
     assert result.value == 22.0
     assert result.type == DataType.NUMBER
     # The method returns the last attribute with TimeInstant metadata
-    assert hasattr(result, 'metadata')
+    assert hasattr(result, "metadata")
     assert len(result.metadata) > 0
 
 
@@ -218,9 +224,11 @@ async def test_prepare_timeseries_for_fiware_missing_column():
     connection.crate_db_client = MagicMock()
     connection.config = MagicMock()
 
-    df = pd.DataFrame({
-        "wrong_column": [20.0, 21.0, 22.0],
-    })
+    df = pd.DataFrame(
+        {
+            "wrong_column": [20.0, 21.0, 22.0],
+        }
+    )
 
     entity = ContextEntity(id="TestOutputTS:001", type="TestOutputTS")
     attribute = AttributeModel(
@@ -278,7 +286,9 @@ async def test_prepare_timeseries_for_fiware_non_dataframe():
         metadata=[],
     )
 
-    with pytest.raises(ValueError, match="Invalid data type for FiwareDatapointParameter"):
+    with pytest.raises(
+        ValueError, match="Invalid data type for FiwareDatapointParameter"
+    ):
         await connection.prepare_timeseries_for_fiware(
             fiware_datapoint=datapoint,
             datatype=DataType.NUMBER,
@@ -315,7 +325,9 @@ async def test_send_timeseries_to_fiware_success():
             type=DataType.NUMBER,
             metadata=[
                 NamedMetadata(
-                    name="TimeInstant", type=DataType.DATETIME, value="2024-01-15T10:00:00Z"
+                    name="TimeInstant",
+                    type=DataType.DATETIME,
+                    value="2024-01-15T10:00:00Z",
                 )
             ],
         ),
@@ -325,7 +337,9 @@ async def test_send_timeseries_to_fiware_success():
             type=DataType.NUMBER,
             metadata=[
                 NamedMetadata(
-                    name="TimeInstant", type=DataType.DATETIME, value="2024-01-15T10:10:00Z"
+                    name="TimeInstant",
+                    type=DataType.DATETIME,
+                    value="2024-01-15T10:10:00Z",
                 )
             ],
         ),
@@ -338,8 +352,8 @@ async def test_send_timeseries_to_fiware_success():
     )
 
     # Verify that update_or_append_entity_attributes was called for each attribute
-    assert (
-        connection.cb_client.update_or_append_entity_attributes.call_count == len(attrs_timeseries)
+    assert connection.cb_client.update_or_append_entity_attributes.call_count == len(
+        attrs_timeseries
     )
 
 

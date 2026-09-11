@@ -37,7 +37,11 @@ from encodapy.utils.models import (
     OutputDataModel,
 )
 from encodapy.utils.units import DataUnits, TimeUnits
-from encodapy.config.env_values import FiwareEnvVariables, FileEnvVariables, MQTTEnvVariables
+from encodapy.config.env_values import (
+    FiwareEnvVariables,
+    FileEnvVariables,
+    MQTTEnvVariables,
+)
 import json
 from pathlib import Path
 
@@ -75,10 +79,10 @@ def create_service_without_init():
     """
     Helper function to create a ControllerBasicService instance without
     calling __init__ to avoid the automatic prepare_basic_start call.
-    
+
     This is useful for tests that need to test individual methods without
     the full initialization process.
-    
+
     Returns:
         ControllerBasicService: Partially initialized service instance.
     """
@@ -109,7 +113,7 @@ def create_service_for_config_tests():
     """
     Helper function to create a ControllerBasicService instance for testing
     _load_config and related methods.
-    
+
     Returns:
         ControllerBasicService: Partially initialized service instance with config support.
     """
@@ -139,15 +143,15 @@ def patch_prepare_basic_start():
     """
     Session-wide auto-used fixture that patches ControllerBasicService.prepare_basic_start
     to prevent it from trying to load configuration from a file that doesn't exist in tests.
-    
+
     This fixture allows all tests to create service instances and manually
     configure them as needed without the automatic initialization failing.
-    
+
     Tests that need to test prepare_basic_start itself should create the service
     using create_service_without_init() and then call prepare_basic_start manually.
     """
     # Patch at the class level so all instances use the patched version
-    with patch.object(ControllerBasicService, 'prepare_basic_start', lambda self: None):
+    with patch.object(ControllerBasicService, "prepare_basic_start", lambda self: None):
         yield
 
 
@@ -155,7 +159,7 @@ def patch_prepare_basic_start():
 def mock_basic_env():
     """
     Fixture providing a mock BasicEnvVariables instance with default test values.
-    
+
     Returns:
         BasicEnvVariables: Configured environment variables for testing.
     """
@@ -174,7 +178,7 @@ def mock_basic_env():
 def mock_fiware_entity():
     """
     Fixture providing a mock FIWARE entity configuration.
-    
+
     Returns:
         OutputModel: Configured FIWARE output entity.
     """
@@ -192,11 +196,9 @@ def mock_fiware_entity():
                 id="status",
                 type=AttributeTypes.VALUE,
                 datatype=DataType.TEXT,
-            )
+            ),
         ],
-        commands=[
-            CommandModel(id="reset", value=None)
-        ]
+        commands=[CommandModel(id="reset", value=None)],
     )
 
 
@@ -204,7 +206,7 @@ def mock_fiware_entity():
 def mock_file_entity():
     """
     Fixture providing a mock FILE entity configuration.
-    
+
     Returns:
         OutputModel: Configured FILE output entity.
     """
@@ -218,7 +220,7 @@ def mock_file_entity():
                 type=AttributeTypes.VALUE,
                 datatype=DataType.NUMBER,
             )
-        ]
+        ],
     )
 
 
@@ -226,7 +228,7 @@ def mock_file_entity():
 def mock_mqtt_entity():
     """
     Fixture providing a mock MQTT entity configuration.
-    
+
     Returns:
         OutputModel: Configured MQTT output entity.
     """
@@ -240,7 +242,7 @@ def mock_mqtt_entity():
                 type=AttributeTypes.VALUE,
                 datatype=DataType.NUMBER,
             )
-        ]
+        ],
     )
 
 
@@ -248,7 +250,7 @@ def mock_mqtt_entity():
 def mock_static_data_entity():
     """
     Fixture providing a mock static data entity configuration.
-    
+
     Returns:
         StaticDataModel: Configured static data entity.
     """
@@ -260,9 +262,9 @@ def mock_static_data_entity():
             AttributeModel(
                 id="calibration_factor",
                 type=AttributeTypes.VALUE,
-                datatype=DataType.NUMBER
+                datatype=DataType.NUMBER,
             )
-        ]
+        ],
     )
 
 
@@ -270,7 +272,7 @@ def mock_static_data_entity():
 def mock_input_entity_fiware():
     """
     Fixture providing a mock input entity with FIWARE interface.
-    
+
     Returns:
         InputModel: Configured input entity with FIWARE interface.
     """
@@ -280,11 +282,9 @@ def mock_input_entity_fiware():
         id_interface="input_fiware_1",
         attributes=[
             AttributeModel(
-                id="input_attr",
-                type=AttributeTypes.VALUE,
-                datatype=DataType.NUMBER
+                id="input_attr", type=AttributeTypes.VALUE, datatype=DataType.NUMBER
             )
-        ]
+        ],
     )
 
 
@@ -292,7 +292,7 @@ def mock_input_entity_fiware():
 def mock_input_entity_file():
     """
     Fixture providing a mock input entity with FILE interface.
-    
+
     Returns:
         InputModel: Configured input entity with FILE interface.
     """
@@ -302,11 +302,9 @@ def mock_input_entity_file():
         id_interface="input_file_1",
         attributes=[
             AttributeModel(
-                id="input_attr",
-                type=AttributeTypes.VALUE,
-                datatype=DataType.NUMBER
+                id="input_attr", type=AttributeTypes.VALUE, datatype=DataType.NUMBER
             )
-        ]
+        ],
     )
 
 
@@ -314,7 +312,7 @@ def mock_input_entity_file():
 def mock_input_entity_mqtt():
     """
     Fixture providing a mock input entity with MQTT interface.
-    
+
     Returns:
         InputModel: Configured input entity with MQTT interface.
     """
@@ -324,11 +322,9 @@ def mock_input_entity_mqtt():
         id_interface="input_mqtt_1",
         attributes=[
             AttributeModel(
-                id="input_attr",
-                type=AttributeTypes.VALUE,
-                datatype=DataType.NUMBER
+                id="input_attr", type=AttributeTypes.VALUE, datatype=DataType.NUMBER
             )
-        ]
+        ],
     )
 
 
@@ -340,11 +336,11 @@ def mock_config_all_interfaces(
     mock_static_data_entity,
     mock_input_entity_fiware,
     mock_input_entity_file,
-    mock_input_entity_mqtt
+    mock_input_entity_mqtt,
 ):
     """
     Fixture providing a complete ConfigModel with all interfaces enabled.
-    
+
     Args:
         mock_fiware_entity: Injected FIWARE output entity.
         mock_file_entity: Injected FILE output entity.
@@ -353,7 +349,7 @@ def mock_config_all_interfaces(
         mock_input_entity_fiware: Injected FIWARE input entity.
         mock_input_entity_file: Injected FILE input entity.
         mock_input_entity_mqtt: Injected MQTT input entity.
-        
+
     Returns:
         ConfigModel: Complete configuration with all interfaces.
     """
@@ -362,13 +358,9 @@ def mock_config_all_interfaces(
         inputs=[
             mock_input_entity_fiware,
             mock_input_entity_file,
-            mock_input_entity_mqtt
+            mock_input_entity_mqtt,
         ],
-        outputs=[
-            mock_fiware_entity,
-            mock_file_entity,
-            mock_mqtt_entity
-        ],
+        outputs=[mock_fiware_entity, mock_file_entity, mock_mqtt_entity],
         staticdata=[mock_static_data_entity],
         controller_settings=ControllerSettingModel(
             time_settings=TimeSettingsModel(
@@ -376,24 +368,24 @@ def mock_config_all_interfaces(
                     timerange=1.0,
                     timerange_unit=TimeUnits.SECOND,
                     sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND
+                    sampling_time_unit=TimeUnits.SECOND,
                 ),
                 calibration=TimeSettingsCalibrationModel(
                     timerange=5.0,
                     timerange_unit=TimeUnits.MINUTE,
                     sampling_time=5,
-                    sampling_time_unit=TimeUnits.MINUTE
+                    sampling_time_unit=TimeUnits.MINUTE,
                 ),
                 results=TimeSettingsResultsModel(
                     timerange=1.0,
                     timerange_unit=TimeUnits.SECOND,
                     sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND
-                )
+                    sampling_time_unit=TimeUnits.SECOND,
+                ),
             ),
-            specific_settings={}
+            specific_settings={},
         ),
-        controller_components=[]
+        controller_components=[],
     )
 
 
@@ -401,10 +393,10 @@ def mock_config_all_interfaces(
 def mock_config_no_interfaces():
     """
     Fixture providing a ConfigModel with only FIWARE interface enabled.
-    
+
     Note: ConfigModel requires at least one interface to be active,
     so this fixture sets FIWARE to True as minimum.
-    
+
     Returns:
         ConfigModel: Configuration with minimal interfaces (FIWARE only).
     """
@@ -419,39 +411,36 @@ def mock_config_no_interfaces():
                     timerange=1.0,
                     timerange_unit=TimeUnits.SECOND,
                     sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND
+                    sampling_time_unit=TimeUnits.SECOND,
                 ),
                 calibration=TimeSettingsCalibrationModel(
                     timerange=5.0,
                     timerange_unit=TimeUnits.MINUTE,
                     sampling_time=5,
-                    sampling_time_unit=TimeUnits.MINUTE
+                    sampling_time_unit=TimeUnits.MINUTE,
                 ),
                 results=TimeSettingsResultsModel(
                     timerange=1.0,
                     timerange_unit=TimeUnits.SECOND,
                     sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND
-                )
+                    sampling_time_unit=TimeUnits.SECOND,
+                ),
             ),
-            specific_settings={}
+            specific_settings={},
         ),
-        controller_components=[]
+        controller_components=[],
     )
 
 
 @pytest.fixture
-def mock_config_only_fiware(
-    mock_fiware_entity,
-    mock_input_entity_fiware
-):
+def mock_config_only_fiware(mock_fiware_entity, mock_input_entity_fiware):
     """
     Fixture providing a ConfigModel with only FIWARE interface enabled.
-    
+
     Args:
         mock_fiware_entity: Injected FIWARE output entity.
         mock_input_entity_fiware: Injected FIWARE input entity.
-        
+
     Returns:
         ConfigModel: Configuration with only FIWARE active.
     """
@@ -466,24 +455,24 @@ def mock_config_only_fiware(
                     timerange=1.0,
                     timerange_unit=TimeUnits.SECOND,
                     sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND
+                    sampling_time_unit=TimeUnits.SECOND,
                 ),
                 calibration=TimeSettingsCalibrationModel(
                     timerange=5.0,
                     timerange_unit=TimeUnits.MINUTE,
                     sampling_time=5,
-                    sampling_time_unit=TimeUnits.MINUTE
+                    sampling_time_unit=TimeUnits.MINUTE,
                 ),
                 results=TimeSettingsResultsModel(
                     timerange=1.0,
                     timerange_unit=TimeUnits.SECOND,
                     sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND
-                )
+                    sampling_time_unit=TimeUnits.SECOND,
+                ),
             ),
-            specific_settings={}
+            specific_settings={},
         ),
-        controller_components=[]
+        controller_components=[],
     )
 
 
@@ -491,9 +480,9 @@ def mock_config_only_fiware(
 def basic_service():
     """
     Fixture providing a ControllerBasicService instance with minimal configuration.
-    
+
     This is the legacy fixture from the original test file, kept for compatibility.
-    
+
     Returns:
         ControllerBasicService: Service instance with basic configuration.
     """
@@ -510,12 +499,12 @@ def basic_service():
                     timerange=1.0,
                     timerange_unit=TimeUnits.SECOND,
                     sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND
+                    sampling_time_unit=TimeUnits.SECOND,
                 ),
                 calibration=None,
-                results=None
+                results=None,
             ),
-            specific_settings={}
+            specific_settings={},
         ),
         controller_components=[],
     )
@@ -535,11 +524,11 @@ def basic_service():
 def service_with_full_config(mock_config_all_interfaces, mock_basic_env):
     """
     Fixture providing a fully configured ControllerBasicService instance.
-    
+
     Args:
         mock_config_all_interfaces: Injected complete configuration.
         mock_basic_env: Injected environment variables.
-        
+
     Returns:
         ControllerBasicService: Service with full configuration.
     """
@@ -553,7 +542,7 @@ def service_with_full_config(mock_config_all_interfaces, mock_basic_env):
 def service_with_no_config():
     """
     Fixture providing a ControllerBasicService instance with no configuration.
-    
+
     Returns:
         ControllerBasicService: Service with None configuration.
     """
@@ -573,7 +562,7 @@ def service_with_no_config():
 def mock_data_transfer_model():
     """
     Fixture providing a mock DataTransferModel for testing.
-    
+
     Returns:
         DataTransferModel: Model with test components.
     """
@@ -584,22 +573,22 @@ def mock_data_transfer_model():
                 attribute_id="test_attr_1",
                 value=42.5,
                 unit=None,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
             ),
             DataTransferComponentModel(
                 entity_id="test_entity",
                 attribute_id="test_attr_2",
                 value="active",
                 unit=None,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
             ),
             DataTransferComponentModel(
                 entity_id="test_entity_2",
                 attribute_id="test_attr_3",
                 value=True,
                 unit=None,
-                timestamp=datetime.now()
-            )
+                timestamp=datetime.now(),
+            ),
         ]
     )
 
@@ -608,7 +597,7 @@ def mock_data_transfer_model():
 def mock_output_data_model():
     """
     Fixture providing a mock OutputDataModel for testing.
-    
+
     Returns:
         OutputDataModel: Model with test entities.
     """
@@ -623,12 +612,10 @@ def mock_output_data_model():
                         value=42.5,
                         unit=DataUnits.DEGREECELSIUS,
                         timestamp=datetime.now(),
-                        datatype=DataType.NUMBER
+                        datatype=DataType.NUMBER,
                     )
                 ],
-                commands=[
-                    CommandModel(id="cmd_1", value="reset")
-                ]
+                commands=[CommandModel(id="cmd_1", value="reset")],
             )
         ]
     )
@@ -638,22 +625,18 @@ def mock_output_data_model():
 def mock_input_data_model():
     """
     Fixture providing a mock InputDataModel for testing.
-    
+
     Returns:
         InputDataModel: Model with empty entities (standard for many tests).
     """
-    return InputDataModel(
-        input_entities=[],
-        output_entities=[],
-        static_entities=[]
-    )
+    return InputDataModel(input_entities=[], output_entities=[], static_entities=[])
 
 
 @pytest.fixture
 def shutdown_event():
     """
     Fixture providing a pre-set shutdown event for testing service loops.
-    
+
     Returns:
         asyncio.Event: Event that is already set to trigger shutdown.
     """
@@ -666,7 +649,7 @@ def shutdown_event():
 def unset_shutdown_event():
     """
     Fixture providing an unset shutdown event for testing service loops.
-    
+
     Returns:
         asyncio.Event: Event that is not set.
     """
@@ -678,7 +661,12 @@ def _load_config_from_example_01():
     # Path from tests/core/basicservice/conftest.py to examples/01_config/config.json
     # __file__ -> tests/core/basicservice/conftest.py
     # parent.parent.parent.parent -> encodapy (root)
-    config_path = Path(__file__).parent.parent.parent.parent / "examples" / "01_config" / "config.json"
+    config_path = (
+        Path(__file__).parent.parent.parent.parent
+        / "examples"
+        / "01_config"
+        / "config.json"
+    )
     with open(config_path, encoding="utf-8") as f:
         config_dict = json.load(f)
     return ConfigModel(**config_dict)
@@ -688,9 +676,9 @@ def _load_config_from_example_01():
 def config_from_example_01():
     """
     Fixture that loads the example configuration from examples/01_config/config.json.
-    
+
     Useful for integration tests that require a real, complete configuration file.
-    
+
     Returns:
         ConfigModel: Configuration loaded from the example file.
     """

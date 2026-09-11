@@ -25,8 +25,6 @@ from encodapy.config.types import AttributeTypes
 from encodapy.service.communication.mqtt_connection import MqttConnection
 from encodapy.config.env_values import MQTTEnvVariables
 
-from tests.docker.conftest import fiware_environment
-
 
 pytestmark = [
     pytest.mark.integration,
@@ -57,8 +55,9 @@ def mqtt_environment(fiware_environment):  # pylint: disable=unused-argument
             # Try to connect to MQTT port
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(1)
-            result = sock.connect_ex((fiware_environment["mqtt_host"],
-                                      int(fiware_environment["mqtt_port"])))
+            result = sock.connect_ex(
+                (fiware_environment["mqtt_host"], int(fiware_environment["mqtt_port"]))
+            )
             sock.close()
             if result == 0:
                 break

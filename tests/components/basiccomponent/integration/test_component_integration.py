@@ -52,7 +52,9 @@ pytestmark = pytest.mark.filterwarnings("ignore::pydantic.PydanticDeprecatedSinc
 def mock_component_loading_and_logs():
     """Mock component loader to prevent import errors and reduce debug logging."""
     # Mock component loader to prevent import errors
-    with patch("encodapy.components.component_loader.get_component_model") as mock_get_model:
+    with patch(
+        "encodapy.components.component_loader.get_component_model"
+    ) as mock_get_model:
         mock_get_model.return_value = None
 
         # Mock component data model to prevent "No data model found" debug logs
@@ -84,18 +86,14 @@ class _TestStorageControllerOutputData(OutputData):
     state_of_charge: Optional[DataPointGeneral] = Field(
         default=None, title="State of Charge"
     )
-    charge_cmd: Optional[DataPointGeneral] = Field(
-        default=None, title="Charge Command"
-    )
+    charge_cmd: Optional[DataPointGeneral] = Field(default=None, title="Charge Command")
 
 
 class _TestStorageControllerConfigData(ConfigData):
     """Test config data model for storage controller."""
 
     capacity: Optional[DataPointGeneral] = Field(default=None, title="Capacity")
-    efficiency: Optional[DataPointGeneral] = Field(
-        default=None, title="Efficiency"
-    )
+    efficiency: Optional[DataPointGeneral] = Field(default=None, title="Efficiency")
 
 
 class _TestStorageControllerComponent(BasicComponent):
@@ -187,9 +185,7 @@ class TestComponentIntegration:
             ),
             outputs=IOModell(
                 {
-                    "soc": IOAllocationModel(
-                        entity="output_entity", attribute="soc"
-                    ),
+                    "soc": IOAllocationModel(entity="output_entity", attribute="soc"),
                 }
             ),
             config=ConfigDataPoints(

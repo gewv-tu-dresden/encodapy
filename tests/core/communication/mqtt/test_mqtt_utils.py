@@ -39,6 +39,7 @@ from encodapy.config import AttributeTypes
 # Fixtures for Advanced MQTT Tests
 # =============================================================================
 
+
 @pytest.fixture
 def mock_mqtt_connection():
     """Create a mock MqttConnection instance with basic setup."""
@@ -693,10 +694,12 @@ def test_subscribe_to_message_store_topics_success(mock_mqtt_connection_connecte
 
     mock_mqtt_connection_connected.subscribe_to_message_store_topics()
 
-    mock_mqtt_connection_connected.mqtt_client.subscribe.assert_has_calls([
-        (("topic1",), {}),
-        (("topic2",), {}),
-    ])
+    mock_mqtt_connection_connected.mqtt_client.subscribe.assert_has_calls(
+        [
+            (("topic1",), {}),
+            (("topic2",), {}),
+        ]
+    )
 
 
 # =============================================================================

@@ -34,10 +34,10 @@ from encodapy.utils.units import TimeUnits
 
 def test_handle_calibration_method_relative_with_last_timestamp():
     """Test _handle_calibration_method with RELATIVE timerange and last_timestamp.
-    
+
     When calibration timerange_type is RELATIVE and last_timestamp is available,
     from_date should be last_timestamp - timerange, to_date should be None.
-    
+
     Asserts:
         - from_date is calculated as last_timestamp - calibration.timerange
         - to_date is None (RELATIVE type uses open-ended range)
@@ -95,16 +95,18 @@ def test_handle_calibration_method_relative_with_last_timestamp():
 
     assert from_date is not None
     # For RELATIVE type with last_timestamp, returns from_date (string), None
-    expected_from = (last_timestamp - timedelta(seconds=7200)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    expected_from = (last_timestamp - timedelta(seconds=7200)).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
     assert from_date == expected_from
     assert to_date is None
 
 
 def test_handle_calibration_method_relative_without_last_timestamp():
     """Test _handle_calibration_method with RELATIVE timerange but no last_timestamp.
-    
+
     When last_timestamp is None, should fall back to time_now - timerange.
-    
+
     Asserts:
         - from_date is calculated as time_now - calibration.timerange
         - to_date is time_now
@@ -168,9 +170,9 @@ def test_handle_calibration_method_relative_without_last_timestamp():
 
 def test_handle_calibration_method_absolute_with_last_timestamp():
     """Test _handle_calibration_method with ABSOLUTE timerange and last_timestamp.
-    
+
     For ABSOLUTE timerange, should use time_now - timerange regardless of last_timestamp.
-    
+
     Asserts:
         - from_date is calculated as time_now - calibration.timerange
         - to_date is time_now
@@ -235,9 +237,9 @@ def test_handle_calibration_method_absolute_with_last_timestamp():
 
 def test_handle_calibration_method_absolute_without_last_timestamp():
     """Test _handle_calibration_method with ABSOLUTE timerange and no last_timestamp.
-    
+
     For ABSOLUTE without last_timestamp, should use time_now - timerange.
-    
+
     Asserts:
         - from_date is calculated as time_now - calibration.timerange
         - to_date is time_now
@@ -306,10 +308,10 @@ def test_handle_calibration_method_absolute_without_last_timestamp():
 
 def test_calculate_dates_calibration_method():
     """Test _calculate_dates() with CALIBRATION method.
-    
+
     Verifies that _calculate_dates correctly delegates to _handle_calibration_method
     for CALIBRATION DataQueryTypes.
-    
+
     Asserts:
         - from_date and to_date are calculated via _handle_calibration_method
         - to_date is set to time_now if None from calibration method

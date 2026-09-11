@@ -315,7 +315,7 @@ class TestGetData:
         with patch.object(
             basic_service, "reload_static_data", return_value=[]
         ) as mock_reload:
-            result = await basic_service.get_data(method=DataQueryTypes.CALCULATION)
+            _result = await basic_service.get_data(method=DataQueryTypes.CALCULATION)
 
         # reload_static_data should be called
         mock_reload.assert_called_once()
@@ -456,7 +456,7 @@ class TestSendOutputs:
 
         with patch.object(
             basic_service, "_get_output_entity_config", return_value=None
-        ) as mock_get_config:
+        ) as _mock_get_config:
             # Patch logger at the module level where it's used
             with patch("encodapy.service.basic_service.logger") as mock_logger:
                 await basic_service.send_outputs(data_output=output_data)

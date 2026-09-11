@@ -30,8 +30,7 @@ def test_extract_payload_value_and_timestamp_json_with_timestamp_key():
     connection.mqtt_params = MQTTEnvVariables(timestamp_key="TimeInstant")
     fallback_timestamp = datetime(2024, 1, 15, 10, 30, 0, tzinfo=timezone.utc)
     value, timestamp = connection._extract_payload_value_and_timestamp(
-        '{"value": 42.5, "TimeInstant": "2024-01-15T12:00:00+0000"}',
-        fallback_timestamp
+        '{"value": 42.5, "TimeInstant": "2024-01-15T12:00:00+0000"}', fallback_timestamp
     )
     assert value == 42.5
     assert timestamp == datetime(2024, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
@@ -41,7 +40,9 @@ def test_extract_payload_value_and_timestamp_numeric_string():
     """Test _extract_payload_value_and_timestamp with numeric string payload."""
     connection = MqttConnection()
     fallback_timestamp = datetime(2024, 1, 15, 10, 30, 0, tzinfo=timezone.utc)
-    value, _ = connection._extract_payload_value_and_timestamp("22.5", fallback_timestamp)
+    value, _ = connection._extract_payload_value_and_timestamp(
+        "22.5", fallback_timestamp
+    )
     assert value == 22.5
     assert isinstance(value, float)
 
@@ -54,14 +55,21 @@ def test_sanitize_embedded_payload_value_none():
 
 def test_sanitize_embedded_payload_value_complex_type():
     """Test _sanitize_embedded_payload_value with complex type."""
-    assert MqttConnection._sanitize_embedded_payload_value({"key": "value"}, "__TEST__") == ""
+    assert (
+        MqttConnection._sanitize_embedded_payload_value({"key": "value"}, "__TEST__")
+        == ""
+    )
     assert MqttConnection._sanitize_embedded_payload_value([1, 2, 3], "__TEST__") == ""
 
 
 def test_sanitize_embedded_payload_value_string_with_special_chars():
     """Test _sanitize_embedded_payload_value with string containing special characters."""
-    assert MqttConnection._sanitize_embedded_payload_value('test"value', "__TEST__") == ""
-    assert MqttConnection._sanitize_embedded_payload_value('test\\value', "__TEST__") == ""
+    assert (
+        MqttConnection._sanitize_embedded_payload_value('test"value', "__TEST__") == ""
+    )
+    assert (
+        MqttConnection._sanitize_embedded_payload_value("test\\value", "__TEST__") == ""
+    )
 
 
 def test_sanitize_embedded_payload_value_valid_string():

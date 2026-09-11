@@ -26,6 +26,7 @@ from encodapy.service.communication.file_connection import FileConnection
 # Fixtures
 # =============================================================================
 
+
 @pytest.fixture
 def mock_file_connection():
     """Create a FileConnection instance for time parsing tests.
@@ -241,7 +242,7 @@ def test_read_time_from_string_invalid_format(mock_file_connection):
         "invalid-time-format",
         "not-a-date",
         "2024-13-40",  # Invalid date
-        "25:61:00",    # Invalid time
+        "25:61:00",  # Invalid time
         "2024/01/15",  # Wrong separator
         "15.01.2024",  # European format (not supported)
     ]
@@ -273,10 +274,12 @@ def test_read_time_from_string_various_valid_formats(mock_file_connection):
 
     for time_string in valid_formats:
         result = mock_file_connection._read_time_from_string(time_string)
-        assert result is not None, f"Expected valid datetime for '{time_string}', got None"
-        assert isinstance(result, datetime), (
-            f"Expected datetime for '{time_string}', got {type(result)}"
-        )
+        assert (
+            result is not None
+        ), f"Expected valid datetime for '{time_string}', got None"
+        assert isinstance(
+            result, datetime
+        ), f"Expected datetime for '{time_string}', got {type(result)}"
 
 
 def test_read_time_from_string_edge_cases(mock_file_connection):

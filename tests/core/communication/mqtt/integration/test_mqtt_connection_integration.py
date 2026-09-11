@@ -52,14 +52,17 @@ def test_mqtt_connection_parameters(mqtt_environment, mqtt_connection_connected)
     """Test that connection parameters are correctly set."""
     assert mqtt_connection_connected.mqtt_params.host == mqtt_environment.get("host")
     assert mqtt_connection_connected.mqtt_params.port == mqtt_environment.get("port")
-    assert mqtt_connection_connected.mqtt_params.topic_prefix == \
-        mqtt_environment.get("topic_prefix")
+    assert mqtt_connection_connected.mqtt_params.topic_prefix == mqtt_environment.get(
+        "topic_prefix"
+    )
 
 
 def test_mqtt_connection_message_store_initialized(mqtt_connection_connected):
     """Test that message store is initialized with input entities."""
     assert len(mqtt_connection_connected.mqtt_message_store) > 0
-    assert "encodapy/test/TestEntity:001" in mqtt_connection_connected.mqtt_message_store
+    assert (
+        "encodapy/test/TestEntity:001" in mqtt_connection_connected.mqtt_message_store
+    )
     assert (
         "encodapy/test/TestEntity:001/temperature"
         in mqtt_connection_connected.mqtt_message_store
@@ -78,7 +81,9 @@ def test_mqtt_subscribe_to_message_store_topics(mqtt_connection_connected):
 # =============================================================================
 
 
-def test_mqtt_publish_and_receive_simple_message(mqtt_connection_connected, mqtt_test_topics):
+def test_mqtt_publish_and_receive_simple_message(
+    mqtt_connection_connected, mqtt_test_topics
+):
     """Test publishing a simple message and receiving it."""
     test_topic = mqtt_test_topics["temperature"]
     test_payload = "25.5"

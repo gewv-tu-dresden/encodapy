@@ -40,6 +40,7 @@ from encodapy.utils.units import DataUnits
 # Fixtures
 # =============================================================================
 
+
 @pytest.fixture
 def mock_file_connection_full():
     """Create a fully mocked FileConnection instance for data sending tests.
@@ -218,7 +219,9 @@ def test_write_json_file_append_new_file(mock_file_connection_full, temp_results
     assert content == test_data
 
 
-def test_write_json_file_append_existing_file(mock_file_connection_full, temp_results_dir):
+def test_write_json_file_append_existing_file(
+    mock_file_connection_full, temp_results_dir
+):
     """Test _write_json_file with APPEND method on existing file.
 
     Verifies that data is appended to existing JSON file.
@@ -242,7 +245,7 @@ def test_write_json_file_append_existing_file(mock_file_connection_full, temp_re
 
     # Write initial data
     os.makedirs(temp_results_dir, exist_ok=True)
-    with open(expected_path, 'w', encoding="utf-8") as f:
+    with open(expected_path, "w", encoding="utf-8") as f:
         json.dump(initial_data, f)
 
     # Call the method with new data
@@ -258,7 +261,9 @@ def test_write_json_file_append_existing_file(mock_file_connection_full, temp_re
     assert {"id": "new", "value": 2} in content
 
 
-def test_write_json_file_append_invalid_existing_data(mock_file_connection_full, temp_results_dir):
+def test_write_json_file_append_invalid_existing_data(
+    mock_file_connection_full, temp_results_dir
+):
     """Test _write_json_file with APPEND method when existing file has invalid data.
 
     Verifies that invalid existing data is handled by overwriting.
@@ -279,7 +284,7 @@ def test_write_json_file_append_invalid_existing_data(mock_file_connection_full,
     expected_path = os.path.join(temp_results_dir, "test_output.json")
 
     os.makedirs(temp_results_dir, exist_ok=True)
-    with open(expected_path, 'w', encoding="utf-8") as f:
+    with open(expected_path, "w", encoding="utf-8") as f:
         f.write("invalid json content")
 
     # Call the method with new data
@@ -298,7 +303,9 @@ def test_write_json_file_append_invalid_existing_data(mock_file_connection_full,
 # =============================================================================
 
 
-def test_write_json_file_overwrite_new_file(mock_file_connection_full, temp_results_dir):
+def test_write_json_file_overwrite_new_file(
+    mock_file_connection_full, temp_results_dir
+):
     """Test _write_json_file with OVERWRITE method on new file.
 
     Verifies that JSON file is created when it doesn't exist with OVERWRITE method.
@@ -332,7 +339,9 @@ def test_write_json_file_overwrite_new_file(mock_file_connection_full, temp_resu
     assert content == test_data
 
 
-def test_write_json_file_overwrite_existing_file(mock_file_connection_full, temp_results_dir):
+def test_write_json_file_overwrite_existing_file(
+    mock_file_connection_full, temp_results_dir
+):
     """Test _write_json_file with OVERWRITE method on existing file.
 
     Verifies that existing data is overwritten.
@@ -355,7 +364,7 @@ def test_write_json_file_overwrite_existing_file(mock_file_connection_full, temp
     expected_path = os.path.join(temp_results_dir, "test_output.json")
 
     os.makedirs(temp_results_dir, exist_ok=True)
-    with open(expected_path, 'w', encoding="utf-8") as f:
+    with open(expected_path, "w", encoding="utf-8") as f:
         json.dump(initial_data, f)
 
     # Call the method with new data
@@ -525,8 +534,12 @@ def test_send_data_to_json_file_success(
 
     # Check that files were created
     # Note: The implementation uses output_entity.id for filename, not id_interface
-    output_file = os.path.join(temp_results_dir, "outputs_test_output_with_commands.json")
-    commands_file = os.path.join(temp_results_dir, "commands_test_output_with_commands.json")
+    output_file = os.path.join(
+        temp_results_dir, "outputs_test_output_with_commands.json"
+    )
+    commands_file = os.path.join(
+        temp_results_dir, "commands_test_output_with_commands.json"
+    )
 
     assert os.path.exists(output_file)
     assert os.path.exists(commands_file)
@@ -594,7 +607,9 @@ def test_send_data_to_json_file_no_attributes_no_commands(
     assert not any("commands_" in f for f in files)
 
 
-def test_send_data_to_json_file_null_values(mock_file_connection_full, temp_results_dir):
+def test_send_data_to_json_file_null_values(
+    mock_file_connection_full, temp_results_dir
+):
     """Test send_data_to_json_file with None values in attributes.
 
     Verifies that None values are handled correctly in the output.
