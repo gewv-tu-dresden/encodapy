@@ -6,7 +6,7 @@ Author: Paul Seidel
 from typing import Optional, Union
 
 from loguru import logger
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import re
 import pytz
 import requests
@@ -37,6 +37,7 @@ class WeatherData(BasicComponent):
     ) -> None:
         # Add the necessary instance variables here
         self.unique_weather_types: list[str] = []
+        self.berlin_tz = pytz.timezone("Europe/Berlin")
 
         # Add the type declaration for the following variables so that autofill works properly
         self.config_data: WeatherDataConfigData
@@ -50,6 +51,12 @@ class WeatherData(BasicComponent):
 
         # Component-specific initialization logic
 
+        self.time_interval_current_weather: str = self.config_data.time_interval_current_weather.value
+        self.time_interval_forecast_weather: str = self.config_data.time_interval_forecast_weather.value  
+        #self.next_time_step_current_weather: datetime = None
+        #self.next_time_step_forecast_weather: datetime = None
+      
+
     def prepare_component(self) -> None:
         """
         Prepare the component (e.g., initialize resources)
@@ -58,6 +65,8 @@ class WeatherData(BasicComponent):
         outputs_allowed_datatypes =  WeatherDataOutputData.get_weather_types()
         outputs_configured = self.io_model.output
 
+        # check which weather types are configured/used in the config and which are allowed
+        # just use the ones which are configured for the api-calls (current and/or forecast) 
         matched_weather_types = {
             key: value
             for key, value in outputs_allowed_datatypes.items()
@@ -71,6 +80,10 @@ class WeatherData(BasicComponent):
         
         self.unique_weather_types = list(dict.fromkeys(available_weather_types.values()))
 
+        
+        actual_time = datetime.now(self.berlin_tz).replace(second=0) 
+        self.next_time_step_current_weather = actual_time
+        self.next_time_step_forecast_weather = actual_time
 
 
     def get_current_weather_data(self) -> DataPointDict:
@@ -80,12 +93,12 @@ class WeatherData(BasicComponent):
         # logic to retrieve current weather data from https://brightsky.dev/
         # https://api.brightsky.dev/current_weather?lat=51.3&lon=13.44&tz=Europe/Berlin
 
-        berlin_tz = pytz.timezone("Europe/Berlin")
+        
         # parameter as dict for the api-call
         params = {
             "lat": self.config_data.latitude.value,
             "lon": self.config_data.longitude.value,
-            "tz": berlin_tz 
+            "tz": self.berlin_tz 
         }
 
         url = "https://api.brightsky.dev/current_weather"
@@ -116,24 +129,27 @@ class WeatherData(BasicComponent):
 
         return DataPointDict(value=output_dict)
 
-    def get_forecast_time_string(self, base_date, time_str):
+    def get_future_time_string(self, base_date, time_str):
         '''
         Uses regex to separate the number and the letter (unit)
-        Input: base_date (datetime), time_str (str) e.g. "2d" or "4h"
-        Output: datetime object with the calculated date and time (end of forecast)  
+        Input: base_date (datetime), time_str (str) e.g. "15M", "2d" or "4h"
+        Output: datetime object with the calculated date and time with the timedelta added to the base_date  
         '''
-        match = re.match(r"(\d+)([dh])", time_str.strip().lower())
+        match = re.match(r"(\d+)([dhM])", time_str.strip())
         if not match:
-            raise ValueError(f"Invalid format: {time_str}. Use e.g., '2d' or '4h'.")
+            raise ValueError(f"Invalid format: {time_str}. Use e.g., '15M', '2d' or '4h'.")
         
         value = int(match.group(1))
         unit = match.group(2)
+        logger.debug(f"Calculating future time from base_date: {base_date} with value: {value} and unit: {unit}")
     
         # calculating matching timedelta 
         if unit == 'd':
             return base_date + timedelta(days=value)
         elif unit == 'h':
             return base_date + timedelta(hours=value)
+        elif unit == 'M':
+            return base_date + timedelta(minutes=value)
 
     def get_forecast_weather_data(self) -> DataPointDict:
         """
@@ -142,17 +158,16 @@ class WeatherData(BasicComponent):
         # logic to retrieve current weather data from https://brightsky.dev/
         # https://api.brightsky.dev/weather?lat=51.3&lon=13.44&tz=Europe/Berlin
                 
-        berlin_tz = pytz.timezone("Europe/Berlin")
-        actual_time = datetime.now(berlin_tz).strftime("%Y-%m-%dT%H:%M")
+        actual_time = datetime.now(self.berlin_tz).strftime("%Y-%m-%dT%H:%M")
         forecast_start_time = datetime.fromisoformat(actual_time).replace(minute=(datetime.fromisoformat(actual_time).minute // 15) * 15, second=0, microsecond=0)
         forecast_time_delta = self.config_data.forecast_time_range.value
-        forecast_end_time = self.get_forecast_time_string(forecast_start_time, forecast_time_delta)
+        forecast_end_time = self.get_future_time_string(forecast_start_time, forecast_time_delta)
         
         # parameter as dict for the api-call
         params = {
             "lat": self.config_data.latitude.value,
             "lon": self.config_data.longitude.value,
-            "tz": berlin_tz ,
+            "tz": self.berlin_tz ,
             "date": forecast_start_time,
             "last_date": forecast_end_time
             }
@@ -190,38 +205,65 @@ class WeatherData(BasicComponent):
         """
         Perform the calculations for the WeatherData component
         """
-
         output = WeatherDataOutputData()
 
+        # check time intervals for current and forecast weather data retrieval
+        time_of_timestep = datetime.now(self.berlin_tz).replace(microsecond=0)
+        time_of_timestep_utc = time_of_timestep.astimezone(timezone.utc)
+        logger.debug(f"Current time of timestep: {time_of_timestep}")
+        logger.debug(f"Next time step for current weather data retrieval: {self.next_time_step_current_weather}")
+
         if WeatherApiCallMethod.CURRENT.value in self.unique_weather_types:
-            
-            logger.debug("Get Current Data from Brightsky...")
+            if time_of_timestep >= self.next_time_step_current_weather:
+                logger.debug("Get Current Data from Brightsky...")
 
-            current_data = self.get_current_weather_data()
+                current_data = self.get_current_weather_data()
 
-            output = WeatherDataOutputData(
-                temperature=DataPointNumber(value=current_data.value.get("temperature"), unit=DataUnits.DEGREECELSIUS),
-                relative_humidity=DataPointNumber(value=current_data.value.get("relative_humidity"), unit=DataUnits.PERCENT),
-                pressure_msl=DataPointNumber(value=current_data.value.get("pressure_msl"), unit=DataUnits.HPA),
-                dew_point=DataPointNumber(value=current_data.value.get("dew_point"), unit=DataUnits.DEGREECELSIUS),
-                solar_60=DataPointNumber(value=current_data.value.get("solar_60"), unit=DataUnits.KWM)
-            )
+                output = WeatherDataOutputData(
+                    temperature=DataPointNumber(value=current_data.value.get("temperature"), unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc),
+                    relative_humidity=DataPointNumber(value=current_data.value.get("relative_humidity"), unit=DataUnits.PERCENT, time=time_of_timestep_utc),
+                    pressure_msl=DataPointNumber(value=current_data.value.get("pressure_msl"), unit=DataUnits.HPA, time=time_of_timestep_utc),
+                    dew_point=DataPointNumber(value=current_data.value.get("dew_point"), unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc),
+                    solar_60=DataPointNumber(value=current_data.value.get("solar_60"), unit=DataUnits.KWM, time=time_of_timestep_utc)
+                )
+                
+                # update next time step for current weather data retrieval
+                self.next_time_step_current_weather = self.get_future_time_string(time_of_timestep, self.time_interval_current_weather)
+                
+            else: 
+                logger.debug("Use Weather data of last API_call")
+                output = WeatherDataOutputData(
+                    temperature = self.output_data.temperature,
+                    relative_humidity=self.output_data.relative_humidity,
+                    pressure_msl=self.output_data.pressure_msl,
+                    dew_point= self.output_data.dew_point,
+                    solar_60=self.output_data.solar_60
+                )
                 
         if WeatherApiCallMethod.FORECAST.value in self.unique_weather_types:
-            logger.debug("Get Forecast Data from Brightsky...")
- 
-            forecast_data = WeatherData.get_forecast_weather_data(self)
-                
-            temperature_dict = forecast_data.value.get('forecast_temperature', {})
-            solar_dict = forecast_data.value.get('forecast_solar', {})
-           
-            output.forecast_temperature = DataPointDict(
-                    value={str(index): value for index, value in temperature_dict.items()}, unit=DataUnits.DEGREECELSIUS
-                    )
-            output.forecast_solar = DataPointDict(
-                    value={str(index): value for index, value in solar_dict.items()}, unit=DataUnits.KWM
-                    )
+            if time_of_timestep >= self.next_time_step_forecast_weather:
+                logger.debug("Get Forecast Data from Brightsky...")
+    
+                forecast_data = WeatherData.get_forecast_weather_data(self)
+                    
+                temperature_dict = forecast_data.value.get('forecast_temperature', {})
+                solar_dict = forecast_data.value.get('forecast_solar', {})
             
+                output.forecast_temperature = DataPointDict(
+                        value={str(index): value for index, value in temperature_dict.items()}, unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc
+                        )
+                output.forecast_solar = DataPointDict(
+                        value={str(index): value for index, value in solar_dict.items()}, unit=DataUnits.KWM, time=time_of_timestep_utc
+                        )
+
+                # update next time step for current weather data retrieval
+                self.next_time_step_forecast_weather = self.get_future_time_string(time_of_timestep, self.time_interval_forecast_weather)
+                
+            else:
+                logger.debug("Use Weather data of last API_call")
+                output.forecast_temperature = self.output_data.forecast_temperature
+                output.forecast_solar = self.output_data.forecast_solar
+                
 
         if not any(weather_type in self.unique_weather_types for weather_type in [WeatherApiCallMethod.CURRENT.value, WeatherApiCallMethod.FORECAST.value]):
            logger.error(
