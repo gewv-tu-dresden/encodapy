@@ -21,7 +21,12 @@ import pytest
 
 from encodapy.config import Interfaces, AttributeTypes, DataQueryTypes
 from encodapy.config.env_values import FileEnvVariables
-from encodapy.config.models import FileStorageMethod, InputModel, AttributeModel, OutputModel
+from encodapy.config.models import (
+    FileStorageMethod,
+    InputModel,
+    AttributeModel,
+    OutputModel,
+)
 from encodapy.config import (
     ConfigModel,
     ControllerSettingModel,
@@ -38,6 +43,7 @@ from encodapy.utils.models import OutputDataEntityModel
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest.fixture
 def mock_file_connection():
@@ -291,8 +297,8 @@ def test_get_last_timestamp_for_file_output_empty(mock_file_connection):
         commands=[],
     )
 
-    result_model, result_timestamp = mock_file_connection._get_last_timestamp_for_file_output(
-        output_entity
+    result_model, result_timestamp = (
+        mock_file_connection._get_last_timestamp_for_file_output(output_entity)
     )
 
     assert isinstance(result_model, OutputDataEntityModel)
@@ -327,8 +333,7 @@ def test_get_data_from_file_csv_extension(mock_file_connection, mock_input_entit
     mock_file_connection.get_data_from_csv_file = MagicMock(return_value=mock_result)
 
     result = mock_file_connection.get_data_from_file(
-        method=DataQueryTypes.CALCULATION,
-        entity=mock_input_entity_csv
+        method=DataQueryTypes.CALCULATION, entity=mock_input_entity_csv
     )
 
     # Should have called the CSV handler
@@ -336,7 +341,9 @@ def test_get_data_from_file_csv_extension(mock_file_connection, mock_input_entit
     assert result == mock_result
 
 
-def test_get_data_from_file_json_extension(mock_file_connection, mock_input_entity_json):
+def test_get_data_from_file_json_extension(
+    mock_file_connection, mock_input_entity_json
+):
     """Test that get_data_from_file detects JSON extension correctly.
 
     Verifies that the method correctly identifies JSON files and calls
@@ -357,8 +364,7 @@ def test_get_data_from_file_json_extension(mock_file_connection, mock_input_enti
     mock_file_connection.get_data_from_json_file = MagicMock(return_value=mock_result)
 
     result = mock_file_connection.get_data_from_file(
-        method=DataQueryTypes.CALCULATION,
-        entity=mock_input_entity_json
+        method=DataQueryTypes.CALCULATION, entity=mock_input_entity_json
     )
 
     # Should have called the JSON handler
@@ -395,8 +401,7 @@ def test_get_data_from_file_unsupported_extension_raises_error(mock_file_connect
 
     with pytest.raises(NotSupportedError):
         mock_file_connection.get_data_from_file(
-            method=DataQueryTypes.CALCULATION,
-            entity=entity
+            method=DataQueryTypes.CALCULATION, entity=entity
         )
 
 
@@ -424,8 +429,7 @@ def test_get_data_from_file_case_insensitive_extension(mock_file_connection):
     mock_file_connection.get_data_from_csv_file = MagicMock(return_value=MagicMock())
 
     mock_file_connection.get_data_from_file(
-        method=DataQueryTypes.CALCULATION,
-        entity=entity
+        method=DataQueryTypes.CALCULATION, entity=entity
     )
 
     mock_file_connection.get_data_from_csv_file.assert_called_once()
@@ -435,8 +439,7 @@ def test_get_data_from_file_case_insensitive_extension(mock_file_connection):
     mock_file_connection.get_data_from_json_file = MagicMock(return_value=MagicMock())
 
     mock_file_connection.get_data_from_file(
-        method=DataQueryTypes.CALCULATION,
-        entity=entity
+        method=DataQueryTypes.CALCULATION, entity=entity
     )
 
     mock_file_connection.get_data_from_json_file.assert_called_once()

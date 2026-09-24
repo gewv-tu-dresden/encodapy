@@ -8,4 +8,4 @@ import os
 
 # Prevent loading of global conftest that imports Docker fixtures
 # when running service tests
-os.environ['SKIP_DOCKER_FIXTURES'] = '1'
+os.environ["SKIP_DOCKER_FIXTURES"] = "1"

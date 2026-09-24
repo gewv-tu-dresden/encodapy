@@ -3,6 +3,7 @@ Unit tests for encodapy.components.basic_component_config module.
 
 Tests the configuration models and data structures used by components.
 """
+
 from typing import Optional
 import pytest
 
@@ -26,10 +27,7 @@ class TestIOAllocationModel:
 
     def test_io_allocation_creation(self):
         """Test creating an IOAllocationModel with valid data."""
-        model = IOAllocationModel(
-            entity="test_entity",
-            attribute="test_attribute"
-        )
+        model = IOAllocationModel(entity="test_entity", attribute="test_attribute")
         assert model.entity == "test_entity"
         assert model.attribute == "test_attribute"
 
@@ -88,15 +86,27 @@ class TestControllerComponentModel:
             id="test_component",
             type="test_type",
             active=True,
-            inputs=IOModell({
-                "input1": IOAllocationModel(entity="input_entity", attribute="input_attr"),
-            }),
-            outputs=IOModell({
-                "output1": IOAllocationModel(entity="output_entity", attribute="output_attr"),
-            }),
-            config=ConfigDataPoints({
-                "static_param": IOAllocationModel(entity="static_entity", attribute="static_attr"),
-            })
+            inputs=IOModell(
+                {
+                    "input1": IOAllocationModel(
+                        entity="input_entity", attribute="input_attr"
+                    ),
+                }
+            ),
+            outputs=IOModell(
+                {
+                    "output1": IOAllocationModel(
+                        entity="output_entity", attribute="output_attr"
+                    ),
+                }
+            ),
+            config=ConfigDataPoints(
+                {
+                    "static_param": IOAllocationModel(
+                        entity="static_entity", attribute="static_attr"
+                    ),
+                }
+            ),
         )
         assert component.id == "test_component"
         assert component.type == "test_type"
@@ -136,6 +146,7 @@ class TestComponentData:
 
     def test_input_data_creation(self):
         """Test creating InputData with DataPointGeneral fields."""
+
         # InputData is a base class, we need to create a subclass
         class TestInputData(InputData):
             temperature: Optional[DataPointGeneral] = None
@@ -143,7 +154,7 @@ class TestComponentData:
 
         data = TestInputData(
             temperature=DataPointGeneral(value=25.0, unit=DataUnits.DEGREECELSIUS),
-            pressure=DataPointGeneral(value=1013.0, unit=None)
+            pressure=DataPointGeneral(value=1013.0, unit=None),
         )
         assert data.temperature.value == 25.0
         assert data.temperature.unit == DataUnits.DEGREECELSIUS
@@ -152,13 +163,14 @@ class TestComponentData:
 
     def test_output_data_creation(self):
         """Test creating OutputData with DataPointGeneral fields."""
+
         class TestOutputData(OutputData):
             state_of_charge: Optional[DataPointGeneral] = None
             status: Optional[DataPointGeneral] = None
 
         data = TestOutputData(
             state_of_charge=DataPointGeneral(value=80.0, unit=DataUnits.PERCENT),
-            status=DataPointGeneral(value="active", unit=None)
+            status=DataPointGeneral(value="active", unit=None),
         )
         assert data.state_of_charge.value == 80.0
         assert data.state_of_charge.unit == DataUnits.PERCENT
@@ -167,13 +179,14 @@ class TestComponentData:
 
     def test_config_data_creation(self):
         """Test creating ConfigData with DataPointGeneral fields."""
+
         class TestConfigData(ConfigData):
             capacity: Optional[DataPointGeneral] = None
             efficiency: Optional[DataPointGeneral] = None
 
         data = TestConfigData(
             capacity=DataPointGeneral(value=1000.0, unit=DataUnits.LITER),
-            efficiency=DataPointGeneral(value=0.95, unit=DataUnits.PERCENT)
+            efficiency=DataPointGeneral(value=0.95, unit=DataUnits.PERCENT),
         )
         assert data.capacity.value == 1000.0
         assert data.capacity.unit == DataUnits.LITER
@@ -186,16 +199,14 @@ class TestComponentIOModel:
 
     def test_component_io_model_creation(self):
         """Test creating a ComponentIOModel with InputData and OutputData."""
+
         class TestInputData(InputData):
             input_field: Optional[DataPointGeneral] = None
 
         class TestOutputData(OutputData):
             output_field: Optional[DataPointGeneral] = None
 
-        io_model = ComponentIOModel(
-            input=TestInputData(),
-            output=TestOutputData()
-        )
+        io_model = ComponentIOModel(input=TestInputData(), output=TestOutputData())
         assert isinstance(io_model.input, TestInputData)
         assert isinstance(io_model.output, TestOutputData)
 
@@ -215,6 +226,7 @@ class TestUnitConversion:
 
     def test_input_data_unit_conversion(self):
         """Test that InputData performs unit conversion when needed."""
+
         class TestInputDataWithUnits(InputData):
             temperature: Optional[DataPointGeneral] = None
 
@@ -228,6 +240,7 @@ class TestUnitConversion:
 
     def test_config_data_unit_inheritance(self):
         """Test that ConfigData properly inherits unit conversion from ComponentData."""
+
         class TestConfigDataWithUnits(ConfigData):
             volume: Optional[DataPointGeneral] = None
 

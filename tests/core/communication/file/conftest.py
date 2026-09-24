@@ -10,7 +10,7 @@ import os
 import json
 import shutil
 import tempfile
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -186,7 +186,7 @@ def temp_csv_file():
 2024-01-15 10:45:00;22.0;68.0
 """
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
         f.write(csv_data)
         temp_path = f.name
 
@@ -215,20 +215,20 @@ def temp_json_file():
                         "id": "temperature",
                         "value": 20.5,
                         "unit": "CEL",
-                        "time": "2024-01-15T10:00:00Z"
+                        "time": "2024-01-15T10:00:00Z",
                     },
                     {
                         "id": "humidity",
                         "value": 65.0,
                         "unit": "P1",
-                        "time": "2024-01-15T10:00:00Z"
-                    }
-                ]
+                        "time": "2024-01-15T10:00:00Z",
+                    },
+                ],
             }
         ]
     }
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         json.dump(json_data, f, indent=2)
         temp_path = f.name
 
@@ -392,16 +392,18 @@ def sample_csv_dataframe():
     Returns:
         pd.DataFrame: Sample DataFrame with time index and temperature data.
     """
-    df = pd.DataFrame({
-        "Time": [
-            "2024-01-15 10:00:00",
-            "2024-01-15 10:15:00",
-            "2024-01-15 10:30:00",
-            "2024-01-15 10:45:00",
-        ],
-        "temperature": [20.5, 21.0, 21.5, 22.0],
-        "humidity": [65.0, 66.0, 67.0, 68.0],
-    })
+    df = pd.DataFrame(
+        {
+            "Time": [
+                "2024-01-15 10:00:00",
+                "2024-01-15 10:15:00",
+                "2024-01-15 10:30:00",
+                "2024-01-15 10:45:00",
+            ],
+            "temperature": [20.5, 21.0, 21.5, 22.0],
+            "humidity": [65.0, 66.0, 67.0, 68.0],
+        }
+    )
     df["Time"] = pd.to_datetime(df["Time"])
     df.set_index("Time", inplace=True)
     return df

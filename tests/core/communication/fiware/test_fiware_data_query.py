@@ -41,6 +41,7 @@ from encodapy.utils.units import DataUnits
 # Fixtures
 # =============================================================================
 
+
 @pytest.fixture
 def mock_fiware_connection_with_client():
     """Create a FiwareConnection instance with fully mocked dependencies for testing.
@@ -73,7 +74,9 @@ def mock_fiware_connection_with_client():
     connection.config.controller_settings.time_settings = MagicMock()
     connection.config.controller_settings.time_settings.calculation = MagicMock()
     connection.config.controller_settings.time_settings.calculation.timestep = 60
-    connection.config.controller_settings.time_settings.calculation.timestep_unit = "minute"
+    connection.config.controller_settings.time_settings.calculation.timestep_unit = (
+        "minute"
+    )
     connection.config.controller_settings.time_settings.calibration = None
 
     return connection
@@ -338,8 +341,8 @@ def test_get_data_from_fiware_connection_error():
     """
     connection = FiwareConnection()
     connection.cb_client = MagicMock()
-    connection.cb_client.get_entity.side_effect = (
-        requests.exceptions.ConnectionError("Connection failed")
+    connection.cb_client.get_entity.side_effect = requests.exceptions.ConnectionError(
+        "Connection failed"
     )
     connection.config = MagicMock(spec=ConfigModel)
 
@@ -379,8 +382,8 @@ def test_get_data_from_fiware_http_client_exception():
     connection.cb_client = MagicMock()
     # BaseHttpClientException requires a response parameter
     mock_response = MagicMock(spec=FiwareHeader)
-    connection.cb_client.get_entity.side_effect = (
-        BaseHttpClientException("HTTP error", mock_response)
+    connection.cb_client.get_entity.side_effect = BaseHttpClientException(
+        "HTTP error", mock_response
     )
     connection.config = MagicMock(spec=ConfigModel)
 

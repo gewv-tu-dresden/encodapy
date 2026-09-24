@@ -2,6 +2,7 @@
 Description: This file contains the models for the configuration of the system controller.
 Authors: Martin Altenburger
 """
+
 import os
 import json
 from datetime import datetime
@@ -16,22 +17,26 @@ from encodapy.config.types import (
     AttributeTypes,
     Interfaces,
     TimerangeTypes,
-    MQTTFormatTypes
+    MQTTFormatTypes,
 )
 from encodapy.utils.error_handling import ConfigError, InterfaceNotActive
 from encodapy.utils.units import DataUnits, TimeUnits
 from encodapy.components.basic_component_config import ControllerComponentModel
+
 # Import MQTTTemplateConfigDoc for sphinx documentation generation
 IS_BUILDING_DOCS = "BUILDING_DOCS" in os.environ
 if TYPE_CHECKING or not IS_BUILDING_DOCS:
     from encodapy.config.mqtt_messages_template import MQTTTemplateConfig
 else:
-    from encodapy.config.mqtt_messages_template import MQTTTemplateConfigDoc as MQTTTemplateConfig
+    from encodapy.config.mqtt_messages_template import (
+        MQTTTemplateConfigDoc as MQTTTemplateConfig,
+    )
+
 
 class InterfaceModel(BaseModel):
     """
     Base class for the interfaces
-    
+
     Attributes:
         mqtt (bool): Whether the MQTT interface is active. Defaults to False.
         fiware (bool): Whether the FIWARE interface is active. Defaults to False.
@@ -41,6 +46,7 @@ class InterfaceModel(BaseModel):
     mqtt: bool = False
     fiware: bool = False
     file: bool = False
+
 
 class AttributeModel(BaseModel):
     """
@@ -70,7 +76,9 @@ class AttributeModel(BaseModel):
     id: str
     id_interface: str = Field(default="")
     type: AttributeTypes = AttributeTypes.VALUE
-    value: Union[str, float, int, bool, Dict, List, pd.DataFrame, pd.Series, None] = None
+    value: Union[str, float, int, bool, Dict, List, pd.DataFrame, pd.Series, None] = (
+        None
+    )
     unit: Optional[DataUnits] = None
     datatype: DataType = DataType("Number")
     timestamp: Optional[datetime] = None
@@ -358,7 +366,6 @@ class ConfigModel(BaseModel):
         controller_settings (ControllerSettingModel): Settings for the controller.
     """
 
-
     interfaces: InterfaceModel
     inputs: list[InputModel]
     outputs: list[OutputModel]
@@ -460,7 +467,7 @@ class ConfigModel(BaseModel):
 class DataFileAttribute(BaseModel):
     """
     Model for data file attributes.
-    
+
     Attributes:
         id (str): The unique identifier for the attribute.
         value (Union[str, float, int, bool, Dict, List, DataFrame, None]): \

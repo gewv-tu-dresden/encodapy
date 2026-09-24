@@ -148,7 +148,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             Fuction is called by the function for the basic preparing
 
         This function can be overwritten in the specific service.
-        
+
         The function should not be do anything time consuming, \
             because the health check is not running yet.
 
@@ -194,7 +194,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
                     logger.warning("interface MQTT for staticdata not supported")
 
             except Exception as e:
-                logger.error(f"Error loading static data for entity {static_entity.id}: {e}")
+                logger.error(
+                    f"Error loading static data for entity {static_entity.id}: {e}"
+                )
                 continue
 
         return staticdata
@@ -600,8 +602,12 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         return (
             isinstance(value.get("type"), str)
             and value["type"] in geojson_types
-            and ("coordinates" in value or "geometry" in value \
-                or "features" in value or "geometries" in value)
+            and (
+                "coordinates" in value
+                or "geometry" in value
+                or "features" in value
+                or "geometries" in value
+            )
         )
 
     def _validate_datatype_against_value(

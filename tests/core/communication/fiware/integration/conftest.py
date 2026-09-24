@@ -51,7 +51,7 @@ pytestmark = [
 
 
 @pytest.fixture
-def fiware_conn_params(fiware_envs) -> FiwareConnectionParameter:
+def fiware_conn_params(fiware_envs) -> FiwareConnectionParameter:  # noqa: F811
     """Create a fully configured FiwareConnectionParameter object from Docker environment.
 
     Args:
@@ -63,13 +63,13 @@ def fiware_conn_params(fiware_envs) -> FiwareConnectionParameter:
     """
     return FiwareConnectionParameter(
         fiware_params=FiwareParameter(
-            cb_url=fiware_envs["cb_url"].rstrip('/'),
+            cb_url=fiware_envs["cb_url"].rstrip("/"),
             service=fiware_envs["fiware_service"],
             service_path=fiware_envs["fiware_service_path"],
             authentication=None,
         ),
         database_params=DatabaseParameter(
-            crate_db_url=fiware_envs["crate_db_url"].rstrip('/'),
+            crate_db_url=fiware_envs["crate_db_url"].rstrip("/"),
             crate_db_user=fiware_envs["crate_db_user"],
             crate_db_pw=fiware_envs["crate_db_pw"],
             crate_db_ssl=fiware_envs["crate_db_ssl"],
@@ -78,7 +78,7 @@ def fiware_conn_params(fiware_envs) -> FiwareConnectionParameter:
 
 
 @pytest.fixture
-def cratedb_client(fiware_envs) -> CrateDBConnection:
+def cratedb_client(fiware_envs) -> CrateDBConnection:  # noqa: F811
     """Create a CrateDB client for testing against Docker container.
 
     Args:
@@ -88,7 +88,7 @@ def cratedb_client(fiware_envs) -> CrateDBConnection:
         CrateDBConnection: Real client connected to Docker CrateDB instance.
     """
     return CrateDBConnection(
-        crate_db_url=fiware_envs["crate_db_url"].rstrip('/'),
+        crate_db_url=fiware_envs["crate_db_url"].rstrip("/"),
         crate_db_user=fiware_envs["crate_db_user"],
         crate_db_pw=fiware_envs["crate_db_pw"],
         crate_db_ssl=fiware_envs["crate_db_ssl"],
@@ -144,9 +144,9 @@ def example_output_entity() -> OutputModel:
 
 # Helper function for integration tests
 def create_fiware_entity_from_model(
-    fiware_cb_client,
+    fiware_cb_client,  # noqa: F811
     entity_model,
-    entity_type: str = "TestEntity"
+    entity_type: str = "TestEntity",
 ) -> "ContextEntity":
     """Create a FIWARE entity based on an EnCoDaPy input/output model.
 

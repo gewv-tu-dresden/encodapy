@@ -3,6 +3,7 @@ Unit tests for encodapy.service.service_main module.
 
 Tests the service_main function and related functionality.
 """
+
 # pylint: disable=protected-access
 import asyncio
 import inspect
@@ -47,6 +48,7 @@ class TestServiceMain:
     @pytest.mark.asyncio
     async def test_service_main_default_service(self):
         """Test service_main with default ComponentRunnerService."""
+
         # Create a minimal service that supports shutdown_event
         class MinimalService(ControllerBasicService):
             """Minimal service exposing a shutdown_event."""
@@ -58,13 +60,15 @@ class TestServiceMain:
 
         # Run service_main with our mock service class
         # The service_main will create its own shutdown_event and pass it to the service
-        with patch("encodapy.service.service_main.ComponentRunnerService", MinimalService):
+        with patch(
+            "encodapy.service.service_main.ComponentRunnerService", MinimalService
+        ):
             # Run with a short timeout to avoid long execution
             # service_main creates its own shutdown_event internally
             try:
                 await asyncio.wait_for(
                     service_main(service_class=MinimalService),
-                    timeout=0.5  # Short timeout to prevent hanging
+                    timeout=0.5,  # Short timeout to prevent hanging
                 )
             except asyncio.TimeoutError:
                 # Expected - the service runs indefinitely without shutdown
@@ -112,7 +116,7 @@ class TestServiceMain:
             """Service stub without a shutdown_event parameter."""
 
             def __init__(  # pylint: disable=super-init-not-called
-                self
+                self,
             ):
                 pass  # No shutdown_event parameter
 
@@ -125,7 +129,9 @@ class TestServiceMain:
             async def start_service(self):
                 await asyncio.sleep(0.1)
 
-        with patch('encodapy.service.service_main.ComponentRunnerService') as mock_service_class:
+        with patch(
+            "encodapy.service.service_main.ComponentRunnerService"
+        ) as mock_service_class:
             mock_service = OldStyleService()
             mock_service_class.return_value = mock_service
 
@@ -142,7 +148,7 @@ class TestServiceMain:
     @pytest.mark.asyncio
     async def test_service_main_signal_handlers(self):
         """Test that service_main registers SIGINT and SIGTERM signal handlers."""
-        with patch('encodapy.service.service_main.signal.signal') as mock_signal:
+        with patch("encodapy.service.service_main.signal.signal") as mock_signal:
             mock_signal.return_value = None
 
             class MinimalSignalService(ControllerBasicService):
@@ -166,7 +172,7 @@ class TestServiceMain:
                     await asyncio.Event().wait()
 
             with patch(
-                'encodapy.service.service_main.ComponentRunnerService',
+                "encodapy.service.service_main.ComponentRunnerService",
                 MinimalSignalService,
             ):
                 task = asyncio.create_task(
@@ -186,6 +192,7 @@ class TestServiceMain:
     @pytest.mark.asyncio
     async def test_service_main_clean_shutdown(self):
         """Test service_main performs clean shutdown."""
+
         # Create a minimal service that supports shutdown_event
         class MinimalService(ControllerBasicService):
             """Minimal service exposing a shutdown_event."""
@@ -197,7 +204,9 @@ class TestServiceMain:
 
         # Mock the service class in the service_main module
         # Also mock the signal module to prevent actual signal registration
-        with patch("encodapy.service.service_main.ComponentRunnerService", MinimalService):
+        with patch(
+            "encodapy.service.service_main.ComponentRunnerService", MinimalService
+        ):
             with patch("encodapy.service.service_main.signal.signal"):
                 # Trigger shutdown immediately by setting the event
                 # The service_main function creates its own shutdown_event
@@ -205,8 +214,7 @@ class TestServiceMain:
                 # However, for this test we just verify the function can be called
                 try:
                     await asyncio.wait_for(
-                        service_main(service_class=MinimalService),
-                        timeout=0.5
+                        service_main(service_class=MinimalService), timeout=0.5
                     )
                 except asyncio.TimeoutError:
                     # Expected - service runs until shutdown

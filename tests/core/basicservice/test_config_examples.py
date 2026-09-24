@@ -2,8 +2,6 @@
 Tests for loading configuration from example files.
 """
 
-import pytest
-
 
 class TestConfigFromExamples:
     """Test configuration loading from example files."""
@@ -19,15 +17,21 @@ class TestConfigFromExamples:
         assert len(config_from_example_01.staticdata) == 1
         assert len(config_from_example_01.controller_components) == 1
 
-
-    def test_config_from_example_01_has_correct_entity_ids(self, config_from_example_01):
+    def test_config_from_example_01_has_correct_entity_ids(
+        self, config_from_example_01
+    ):
         """Test that the example config has the expected entity IDs."""
         assert config_from_example_01.inputs[0].id == "input_fiware_01"
         assert config_from_example_01.inputs[0].id_interface == "urn:input_fiware:01"
         assert config_from_example_01.outputs[0].id == "storage_calculation"
-        assert config_from_example_01.outputs[0].id_interface == "urn:storage_calculation:01"
+        assert (
+            config_from_example_01.outputs[0].id_interface
+            == "urn:storage_calculation:01"
+        )
 
-    def test_config_from_example_01_has_correct_attributes(self, config_from_example_01):
+    def test_config_from_example_01_has_correct_attributes(
+        self, config_from_example_01
+    ):
         """Test that the example config has the expected attributes."""
         input_entity = config_from_example_01.inputs[0]
         assert len(input_entity.attributes) == 2
@@ -37,7 +41,7 @@ class TestConfigFromExamples:
     def test_config_from_example_01_time_settings(self, config_from_example_01):
         """Test that the example config has the expected time settings."""
         from encodapy.utils.units import TimeUnits
-        
+
         time_settings = config_from_example_01.controller_settings.time_settings
         assert time_settings is not None
         assert time_settings.calculation is not None

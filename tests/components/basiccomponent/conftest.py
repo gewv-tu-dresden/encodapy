@@ -56,7 +56,7 @@ def suppress_debug_logs():
     loguru.logger.add(
         sys.stderr,
         level="DEBUG",
-        format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level} | {name}:{function}:{line} - {message}"
+        format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level} | {name}:{function}:{line} - {message}",
     )
     logging.getLogger().setLevel(logging.NOTSET)
 
@@ -64,28 +64,29 @@ def suppress_debug_logs():
 @pytest.fixture
 def mock_io_allocation():
     """Fixture providing a mock IOAllocationModel."""
-    return IOAllocationModel(
-        entity="test_entity",
-        attribute="test_attribute"
-    )
+    return IOAllocationModel(entity="test_entity", attribute="test_attribute")
 
 
 @pytest.fixture
 def mock_io_model():
     """Fixture providing a mock IOModell."""
-    return IOModell({
-        "input1": IOAllocationModel(entity="entity1", attribute="attr1"),
-        "input2": IOAllocationModel(entity="entity2", attribute="attr2"),
-    })
+    return IOModell(
+        {
+            "input1": IOAllocationModel(entity="entity1", attribute="attr1"),
+            "input2": IOAllocationModel(entity="entity2", attribute="attr2"),
+        }
+    )
 
 
 @pytest.fixture
 def mock_config_data_points():
     """Fixture providing a mock ConfigDataPoints."""
-    return ConfigDataPoints({
-        "param1": IOAllocationModel(entity="static_entity", attribute="param1"),
-        "param2": DataPointGeneral(value=42.0, unit=DataUnits.DEGREECELSIUS),
-    })
+    return ConfigDataPoints(
+        {
+            "param1": IOAllocationModel(entity="static_entity", attribute="param1"),
+            "param2": DataPointGeneral(value=42.0, unit=DataUnits.DEGREECELSIUS),
+        }
+    )
 
 
 @pytest.fixture
@@ -95,43 +96,53 @@ def mock_controller_component_config():
         id="test_component",
         type="test_type",
         active=True,
-        inputs=IOModell({
-            "input1": IOAllocationModel(entity="input_entity", attribute="input_attr"),
-        }),
-        outputs=IOModell({
-            "output1": IOAllocationModel(entity="output_entity", attribute="output_attr"),
-        }),
-        config=ConfigDataPoints({
-            "static_param": IOAllocationModel(entity="static_entity", attribute="static_attr"),
-        })
+        inputs=IOModell(
+            {
+                "input1": IOAllocationModel(
+                    entity="input_entity", attribute="input_attr"
+                ),
+            }
+        ),
+        outputs=IOModell(
+            {
+                "output1": IOAllocationModel(
+                    entity="output_entity", attribute="output_attr"
+                ),
+            }
+        ),
+        config=ConfigDataPoints(
+            {
+                "static_param": IOAllocationModel(
+                    entity="static_entity", attribute="static_attr"
+                ),
+            }
+        ),
     )
 
 
 @pytest.fixture
 def mock_component_io_model():
     """Fixture providing a mock ComponentIOModel."""
+
     # Create a simple ComponentIOModel for testing
     class MockInputData(InputData):
         """Mock input data for testing."""
+
         input1: Optional[None] = None
 
     class MockOutputData(OutputData):
         """Mock output data for testing."""
+
         output1: Optional[None] = None
 
-    return ComponentIOModel(
-        input=MockInputData(),
-        output=MockOutputData()
-    )
+    return ComponentIOModel(input=MockInputData(), output=MockOutputData())
 
 
 @pytest.fixture
 def mock_data_point():
     """Fixture providing a mock DataPointGeneral."""
     return DataPointGeneral(
-        value=25.5,
-        unit=DataUnits.DEGREECELSIUS,
-        time=datetime.now(timezone.utc)
+        value=25.5, unit=DataUnits.DEGREECELSIUS, time=datetime.now(timezone.utc)
     )
 
 
@@ -147,9 +158,9 @@ def mock_input_data_entity():
                 unit=DataUnits.DEGREECELSIUS,
                 latest_timestamp_input=datetime.now(timezone.utc),
                 data_available=True,
-                data_type=AttributeTypes.VALUE
+                data_type=AttributeTypes.VALUE,
             )
-        ]
+        ],
     )
 
 
@@ -165,9 +176,9 @@ def mock_static_data_entity():
                 unit=DataUnits.LITER,
                 latest_timestamp_input=datetime.now(timezone.utc),
                 data_available=True,
-                data_type=AttributeTypes.VALUE
+                data_type=AttributeTypes.VALUE,
             )
-        ]
+        ],
     )
 
 
@@ -177,7 +188,7 @@ def mock_input_data_model(mock_input_data_entity, mock_static_data_entity):
     return InputDataModel(
         input_entities=[mock_input_data_entity],
         output_entities=[],
-        static_entities=[mock_static_data_entity]
+        static_entities=[mock_static_data_entity],
     )
 
 
@@ -186,8 +197,9 @@ def mock_basic_component(mock_controller_component_config):
     """Fixture providing a BasicComponent instance for testing."""
     # We need to mock the component loading and model validation
     with patch.object(
-        BasicComponent, '_get_input_and_output_config_models',
-        return_value=(InputData, OutputData)
+        BasicComponent,
+        "_get_input_and_output_config_models",
+        return_value=(InputData, OutputData),
     ):
         component = BasicComponent.__new__(BasicComponent)
         component.component_config = mock_controller_component_config
@@ -207,5 +219,5 @@ def mock_component_config_without_io():
         active=True,
         inputs=IOModell({}),
         outputs=IOModell({}),
-        config=None
+        config=None,
     )

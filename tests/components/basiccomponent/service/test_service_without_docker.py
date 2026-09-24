@@ -4,6 +4,7 @@ Service tests that can run without Docker by mocking os._exit and other system c
 These are simplified versions of the service tests that use mocking instead of
 requiring actual service execution.
 """
+
 import asyncio
 from unittest.mock import MagicMock, patch
 import pytest
@@ -63,7 +64,9 @@ class TestComponentRunnerServiceWithoutDocker:
         from encodapy.service.component_runner_service import ComponentRunnerService
 
         # Mock the config loading to avoid sys.exit
-        with patch('encodapy.service.basic_service.ControllerBasicService._load_config'):
+        with patch(
+            "encodapy.service.basic_service.ControllerBasicService._load_config"
+        ):
             service = ComponentRunnerService.__new__(ComponentRunnerService)
             service.components = []
             assert service.components == []
@@ -73,7 +76,9 @@ class TestComponentRunnerServiceWithoutDocker:
         from encodapy.service.component_runner_service import ComponentRunnerService
 
         # Mock the config loading to avoid sys.exit
-        with patch('encodapy.service.basic_service.ControllerBasicService._load_config'):
+        with patch(
+            "encodapy.service.basic_service.ControllerBasicService._load_config"
+        ):
             service = ComponentRunnerService.__new__(ComponentRunnerService)
             service.components = []
             assert service.components == []
@@ -90,7 +95,9 @@ class TestServiceHelperMethods:
         from datetime import datetime, timezone
 
         # Create service without triggering config loading
-        with patch('encodapy.service.basic_service.ControllerBasicService._load_config'):
+        with patch(
+            "encodapy.service.basic_service.ControllerBasicService._load_config"
+        ):
             service = ComponentRunnerService.__new__(ComponentRunnerService)
 
             result = DataTransferComponentModel(
@@ -98,7 +105,7 @@ class TestServiceHelperMethods:
                 attribute_id="test_attr",
                 value=42.0,
                 unit=DataUnits.DEGREECELSIUS,
-                timestamp=datetime.now(timezone.utc)
+                timestamp=datetime.now(timezone.utc),
             )
 
             attribute = service._result_to_input_data_attribute(result)
@@ -125,7 +132,9 @@ class TestServiceDataFlow:
         from datetime import datetime, timezone
 
         # Create service without triggering config loading
-        with patch('encodapy.service.basic_service.ControllerBasicService._load_config'):
+        with patch(
+            "encodapy.service.basic_service.ControllerBasicService._load_config"
+        ):
             service = ComponentRunnerService.__new__(ComponentRunnerService)
 
             result = DataTransferComponentModel(
@@ -133,7 +142,7 @@ class TestServiceDataFlow:
                 attribute_id="new_attr",
                 value=75.0,
                 unit=DataUnits.DEGREECELSIUS,
-                timestamp=datetime.now(timezone.utc)
+                timestamp=datetime.now(timezone.utc),
             )
 
             input_entity = InputDataEntityModel(
@@ -145,15 +154,17 @@ class TestServiceDataFlow:
                         unit=DataUnits.PERCENT,
                         latest_timestamp_input=datetime.now(timezone.utc),
                         data_available=True,
-                        data_type=AttributeTypes.VALUE
+                        data_type=AttributeTypes.VALUE,
                     )
-                ]
+                ],
             )
 
             updated_entity = service._add_result_to_input_entity(result, input_entity)
 
             # Should add a new attribute
             assert len(updated_entity.attributes) == 2
-            new_attr = next(attr for attr in updated_entity.attributes if attr.id == "new_attr")
+            new_attr = next(
+                attr for attr in updated_entity.attributes if attr.id == "new_attr"
+            )
             assert new_attr.data == 75.0
             assert new_attr.unit == DataUnits.DEGREECELSIUS

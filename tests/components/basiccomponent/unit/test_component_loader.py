@@ -3,6 +3,7 @@ Unit tests for encodapy.components.component_loader module.
 
 Tests the component loading and model retrieval functions.
 """
+
 from unittest.mock import MagicMock, patch
 from typing import Optional
 import pytest
@@ -38,14 +39,18 @@ class TestCheckComponentType:
 
     def test_check_component_type_qualified(self):
         """Test checking a fully qualified component type."""
-        component_type, module_path = check_component_type("encodapy.components.storage.storage")
+        component_type, module_path = check_component_type(
+            "encodapy.components.storage.storage"
+        )
         assert component_type == "storage"
         # The current implementation returns the path with the component name appended
         assert module_path == "encodapy.components.storage.storage.storage"
 
     def test_check_component_type_with_submodule(self):
         """Test checking a component type with submodules."""
-        component_type, module_path = check_component_type("custom.module.component_name")
+        component_type, module_path = check_component_type(
+            "custom.module.component_name"
+        )
         assert component_type == "component_name"
         # The current implementation returns "custom.module.component_name.component_name"
         # This appears to be the actual behavior, so we'll test for it
@@ -62,7 +67,7 @@ class TestGetComponentModel:
         result = get_component_model(
             component_type="basic_component",
             model_type=ModelTypes.COMPONENT,
-            none_allowed=True
+            none_allowed=True,
         )
 
         # Should return BasicComponent class or None
@@ -76,7 +81,7 @@ class TestGetComponentModel:
             component_type="basic_component",
             model_type=ModelTypes.COMPONENT_CONFIG,
             model_subname="ConfigData",
-            none_allowed=True
+            none_allowed=True,
         )
 
         # Should return a class or None
@@ -84,20 +89,24 @@ class TestGetComponentModel:
 
     def test_get_component_model_none_allowed(self):
         """Test get_component_model with none_allowed=True returns None on failure."""
-        with patch('encodapy.components.component_loader.importlib.import_module') as mock_import:
+        with patch(
+            "encodapy.components.component_loader.importlib.import_module"
+        ) as mock_import:
             mock_import.side_effect = ImportError("Module not found")
 
             result = get_component_model(
                 component_type="nonexistent",
                 model_type=ModelTypes.COMPONENT,
-                none_allowed=True
+                none_allowed=True,
             )
 
             assert result is None
 
     def test_get_component_model_none_not_allowed(self):
         """Test get_component_model with none_allowed=False returns None on failure."""
-        with patch('encodapy.components.component_loader.importlib.import_module') as mock_import:
+        with patch(
+            "encodapy.components.component_loader.importlib.import_module"
+        ) as mock_import:
             mock_import.side_effect = ImportError("Module not found")
 
             # Note: The current implementation always returns None on import error
@@ -105,7 +114,7 @@ class TestGetComponentModel:
             result = get_component_model(
                 component_type="nonexistent",
                 model_type=ModelTypes.COMPONENT,
-                none_allowed=False
+                none_allowed=False,
             )
             # Currently it returns None even when none_allowed=False
             assert result is None
@@ -116,7 +125,9 @@ class TestGetComponentClassModel:
 
     def test_get_component_class_model_success(self):
         """Test getting a component class model successfully."""
-        with patch('encodapy.components.component_loader.importlib.import_module') as mock_import:
+        with patch(
+            "encodapy.components.component_loader.importlib.import_module"
+        ) as mock_import:
             # Mock the basic component module
             mock_basic_module = MagicMock()
             mock_basic_module.BasicComponent = BasicComponent
@@ -166,7 +177,9 @@ class TestGetComponentIOModel:
 
     def test_get_component_io_model_input(self):
         """Test getting a component IO model for InputData."""
-        with patch('encodapy.components.component_loader.get_component_model') as mock_get_model:
+        with patch(
+            "encodapy.components.component_loader.get_component_model"
+        ) as mock_get_model:
             # Create a mock InputData subclass
             class MockInputData(InputData):
                 temperature: Optional[float] = None
@@ -174,8 +187,7 @@ class TestGetComponentIOModel:
             mock_get_model.return_value = MockInputData
 
             result = get_component_io_model(
-                component_type="test_component",
-                model_subname="InputData"
+                component_type="test_component", model_subname="InputData"
             )
 
             assert result is not None
@@ -183,7 +195,9 @@ class TestGetComponentIOModel:
 
     def test_get_component_io_model_output(self):
         """Test getting a component IO model for OutputData."""
-        with patch('encodapy.components.component_loader.get_component_model') as mock_get_model:
+        with patch(
+            "encodapy.components.component_loader.get_component_model"
+        ) as mock_get_model:
             # Create a mock OutputData subclass
             class MockOutputData(OutputData):
                 state_of_charge: Optional[float] = None
@@ -191,8 +205,7 @@ class TestGetComponentIOModel:
             mock_get_model.return_value = MockOutputData
 
             result = get_component_io_model(
-                component_type="test_component",
-                model_subname="OutputData"
+                component_type="test_component", model_subname="OutputData"
             )
 
             assert result is not None
@@ -200,24 +213,26 @@ class TestGetComponentIOModel:
 
     def test_get_component_io_model_not_found(self):
         """Test get_component_io_model when component model not found."""
-        with patch('encodapy.components.component_loader.get_component_model') as mock_get_model:
+        with patch(
+            "encodapy.components.component_loader.get_component_model"
+        ) as mock_get_model:
             mock_get_model.return_value = None
 
             with pytest.raises(KeyError):
                 get_component_io_model(
-                    component_type="nonexistent",
-                    model_subname="InputData"
+                    component_type="nonexistent", model_subname="InputData"
                 )
 
     def test_get_component_io_model_not_basemodel_subclass(self):
         """Test get_component_io_model when model is not BaseModel subclass."""
-        with patch('encodapy.components.component_loader.get_component_model') as mock_get_model:
+        with patch(
+            "encodapy.components.component_loader.get_component_model"
+        ) as mock_get_model:
             mock_get_model.return_value = str  # Not a BaseModel subclass
 
             with pytest.raises(TypeError):
                 get_component_io_model(
-                    component_type="test_component",
-                    model_subname="InputData"
+                    component_type="test_component", model_subname="InputData"
                 )
 
 
@@ -226,7 +241,10 @@ class TestGetComponentDataModel:
 
     def test_get_component_data_model_input_data(self):
         """Test getting a component data model for InputData."""
-        with patch('encodapy.components.component_loader.get_component_model') as mock_get_model:
+        with patch(
+            "encodapy.components.component_loader.get_component_model"
+        ) as mock_get_model:
+
             class MockInputData(InputData):
                 temperature: Optional[float] = None
 
@@ -236,7 +254,7 @@ class TestGetComponentDataModel:
                 component_type="test_component",
                 model_subname="InputData",
                 data_model_type=InputData,
-                none_allowed=True
+                none_allowed=True,
             )
 
             assert result is not None
@@ -244,7 +262,10 @@ class TestGetComponentDataModel:
 
     def test_get_component_data_model_output_data(self):
         """Test getting a component data model for OutputData."""
-        with patch('encodapy.components.component_loader.get_component_model') as mock_get_model:
+        with patch(
+            "encodapy.components.component_loader.get_component_model"
+        ) as mock_get_model:
+
             class MockOutputData(OutputData):
                 state_of_charge: Optional[float] = None
 
@@ -254,7 +275,7 @@ class TestGetComponentDataModel:
                 component_type="test_component",
                 model_subname="OutputData",
                 data_model_type=OutputData,
-                none_allowed=True
+                none_allowed=True,
             )
 
             assert result is not None
@@ -262,7 +283,10 @@ class TestGetComponentDataModel:
 
     def test_get_component_data_model_config_data(self):
         """Test getting a component data model for ConfigData."""
-        with patch('encodapy.components.component_loader.get_component_model') as mock_get_model:
+        with patch(
+            "encodapy.components.component_loader.get_component_model"
+        ) as mock_get_model:
+
             class MockConfigData(ConfigData):
                 capacity: Optional[float] = None
 
@@ -272,7 +296,7 @@ class TestGetComponentDataModel:
                 component_type="test_component",
                 model_subname="ConfigData",
                 data_model_type=ConfigData,
-                none_allowed=True
+                none_allowed=True,
             )
 
             assert result is not None
@@ -280,21 +304,25 @@ class TestGetComponentDataModel:
 
     def test_get_component_data_model_not_found_none_allowed(self):
         """Test get_component_data_model returns None when not found and none_allowed=True."""
-        with patch('encodapy.components.component_loader.get_component_model') as mock_get_model:
+        with patch(
+            "encodapy.components.component_loader.get_component_model"
+        ) as mock_get_model:
             mock_get_model.return_value = None
 
             result = get_component_data_model(
                 component_type="nonexistent",
                 model_subname="InputData",
                 data_model_type=InputData,
-                none_allowed=True
+                none_allowed=True,
             )
 
             assert result is None
 
     def test_get_component_data_model_not_found_none_not_allowed(self):
         """Test get_component_data_model raises when not found and none_allowed=False."""
-        with patch('encodapy.components.component_loader.get_component_model') as mock_get_model:
+        with patch(
+            "encodapy.components.component_loader.get_component_model"
+        ) as mock_get_model:
             mock_get_model.return_value = None
 
             with pytest.raises(KeyError):
@@ -302,12 +330,14 @@ class TestGetComponentDataModel:
                     component_type="nonexistent",
                     model_subname="InputData",
                     data_model_type=InputData,
-                    none_allowed=False
+                    none_allowed=False,
                 )
 
     def test_get_component_data_model_wrong_type(self):
         """Test get_component_data_model raises when model is wrong type."""
-        with patch('encodapy.components.component_loader.get_component_model') as mock_get_model:
+        with patch(
+            "encodapy.components.component_loader.get_component_model"
+        ) as mock_get_model:
             # Return a class that's not a subclass of the expected type
             mock_get_model.return_value = OutputData  # Not InputData
 
@@ -316,7 +346,7 @@ class TestGetComponentDataModel:
                     component_type="test_component",
                     model_subname="InputData",
                     data_model_type=InputData,
-                    none_allowed=False
+                    none_allowed=False,
                 )
 
 
@@ -326,16 +356,16 @@ class TestGetComponentConfigDataModel:
     def test_get_component_config_data_model_success(self):
         """Test getting a component config data model successfully."""
         with patch(
-            'encodapy.components.component_loader.get_component_data_model'
+            "encodapy.components.component_loader.get_component_data_model"
         ) as mock_get_data_model:
+
             class MockConfigData(ConfigData):
                 capacity: Optional[float] = None
 
             mock_get_data_model.return_value = MockConfigData
 
             result = get_component_config_data_model(
-                component_type="test_component",
-                model_subname="ConfigData"
+                component_type="test_component", model_subname="ConfigData"
             )
 
             assert result is not None
@@ -344,13 +374,12 @@ class TestGetComponentConfigDataModel:
     def test_get_component_config_data_model_not_found(self):
         """Test get_component_config_data_model returns None when not found."""
         with patch(
-            'encodapy.components.component_loader.get_component_data_model'
+            "encodapy.components.component_loader.get_component_data_model"
         ) as mock_get_data_model:
             mock_get_data_model.return_value = None
 
             result = get_component_config_data_model(
-                component_type="nonexistent",
-                model_subname="ConfigData"
+                component_type="nonexistent", model_subname="ConfigData"
             )
 
             assert result is None
@@ -362,8 +391,9 @@ class TestGetComponentInputDataModel:
     def test_get_component_input_data_model_success(self):
         """Test getting a component input data model successfully."""
         with patch(
-            'encodapy.components.component_loader.get_component_data_model'
+            "encodapy.components.component_loader.get_component_data_model"
         ) as mock_get_data_model:
+
             class MockInputData(InputData):
                 temperature: Optional[float] = None
 
@@ -381,8 +411,9 @@ class TestGetComponentOutputDataModel:
     def test_get_component_output_data_model_success(self):
         """Test getting a component output data model successfully."""
         with patch(
-            'encodapy.components.component_loader.get_component_data_model'
+            "encodapy.components.component_loader.get_component_data_model"
         ) as mock_get_data_model:
+
             class MockOutputData(OutputData):
                 state_of_charge: Optional[float] = None
 

@@ -37,6 +37,7 @@ from encodapy.utils.units import DataUnits, TimeUnits
 # Fixtures
 # =============================================================================
 
+
 @pytest.fixture
 def mock_file_connection_with_config():
     """Create a FileConnection instance with fully mocked dependencies for testing.
@@ -62,10 +63,14 @@ def mock_file_connection_with_config():
     connection.config.controller_settings.time_settings = MagicMock()
     connection.config.controller_settings.time_settings.calculation = MagicMock()
     connection.config.controller_settings.time_settings.calculation.timestep = 60
-    connection.config.controller_settings.time_settings.calculation.timestep_unit = TimeUnits.MINUTE
+    connection.config.controller_settings.time_settings.calculation.timestep_unit = (
+        TimeUnits.MINUTE
+    )
     connection.config.controller_settings.time_settings.calibration = MagicMock()
     connection.config.controller_settings.time_settings.calibration.timestep = 1
-    connection.config.controller_settings.time_settings.calibration.timestep_unit = TimeUnits.SECOND
+    connection.config.controller_settings.time_settings.calibration.timestep_unit = (
+        TimeUnits.SECOND
+    )
 
     return connection
 
@@ -92,27 +97,30 @@ def sample_json_content():
     Returns:
         str: JSON content as string.
     """
-    return json.dumps({
-        "data": [
-            {
-                "id": "TestEntity:001",
-                "attributes": [
-                    {
-                        "id": "temperature",
-                        "value": 20.5,
-                        "unit": "CEL",
-                        "time": "2024-01-15T10:00:00Z"
-                    },
-                    {
-                        "id": "humidity",
-                        "value": 65.0,
-                        "unit": "P1",
-                        "time": "2024-01-15T10:00:00Z"
-                    }
-                ]
-            }
-        ]
-    }, indent=2)
+    return json.dumps(
+        {
+            "data": [
+                {
+                    "id": "TestEntity:001",
+                    "attributes": [
+                        {
+                            "id": "temperature",
+                            "value": 20.5,
+                            "unit": "CEL",
+                            "time": "2024-01-15T10:00:00Z",
+                        },
+                        {
+                            "id": "humidity",
+                            "value": 65.0,
+                            "unit": "P1",
+                            "time": "2024-01-15T10:00:00Z",
+                        },
+                    ],
+                }
+            ]
+        },
+        indent=2,
+    )
 
 
 @pytest.fixture
@@ -285,7 +293,9 @@ def test_read_time_from_string_invalid_format():
 # =============================================================================
 
 
-def test_get_data_from_csv_file_success_with_example_data(mock_file_connection_with_config):
+def test_get_data_from_csv_file_success_with_example_data(
+    mock_file_connection_with_config,
+):
     """Test get_data_from_csv_file with real example CSV data.
 
     Verifies successful CSV data retrieval and processing using the actual example
@@ -301,8 +311,6 @@ def test_get_data_from_csv_file_success_with_example_data(mock_file_connection_w
         - Entity ID is correct
         - Attributes are populated with real data
     """
-
-
 
     # Use the real example CSV file
     example_csv_path = (
@@ -340,8 +348,7 @@ def test_get_data_from_csv_file_success_with_example_data(mock_file_connection_w
     mock_file_connection_with_config.file_params.path_of_input_file = example_csv_path
 
     result = mock_file_connection_with_config.get_data_from_csv_file(
-        method=DataQueryTypes.CALCULATION,
-        entity=entity
+        method=DataQueryTypes.CALCULATION, entity=entity
     )
 
     # Note: This might fail due to pandas timestamp handling issues in the current implementation
@@ -377,9 +384,10 @@ def test_get_data_from_csv_file_file_not_found(mock_file_connection_with_config)
         - No exception is raised
     """
 
-
     # Set non-existent file path
-    mock_file_connection_with_config.file_params.path_of_input_file = "/non/existent/file.csv"
+    mock_file_connection_with_config.file_params.path_of_input_file = (
+        "/non/existent/file.csv"
+    )
 
     entity = InputModel(
         id="test_entity",
@@ -395,8 +403,7 @@ def test_get_data_from_csv_file_file_not_found(mock_file_connection_with_config)
     )
 
     result = mock_file_connection_with_config.get_data_from_csv_file(
-        method=DataQueryTypes.CALCULATION,
-        entity=entity
+        method=DataQueryTypes.CALCULATION, entity=entity
     )
 
     assert result is None
@@ -414,9 +421,8 @@ def test_get_data_from_csv_file_empty_file(mock_file_connection_with_config):
         - Result is None
     """
 
-
     # Create empty CSV file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
         f.write("")  # Empty file
         temp_path = f.name
 
@@ -437,8 +443,7 @@ def test_get_data_from_csv_file_empty_file(mock_file_connection_with_config):
         )
 
         result = mock_file_connection_with_config.get_data_from_csv_file(
-            method=DataQueryTypes.CALCULATION,
-            entity=entity
+            method=DataQueryTypes.CALCULATION, entity=entity
         )
 
         assert result is None
@@ -448,7 +453,9 @@ def test_get_data_from_csv_file_empty_file(mock_file_connection_with_config):
             os.unlink(temp_path)
 
 
-def test_get_data_from_json_file_success_with_example_data(mock_file_connection_with_config):
+def test_get_data_from_json_file_success_with_example_data(
+    mock_file_connection_with_config,
+):
     """Test _get_data_from_json_file with real example JSON data.
 
     Verifies successful JSON data retrieval and processing using the actual example
@@ -464,8 +471,6 @@ def test_get_data_from_json_file_success_with_example_data(mock_file_connection_
         - Entity ID is correct
         - Attributes are populated with real data
     """
-
-
 
     # Use the real example JSON file
     example_json_path = (
@@ -503,8 +508,7 @@ def test_get_data_from_json_file_success_with_example_data(mock_file_connection_
     mock_file_connection_with_config.file_params.path_of_input_file = example_json_path
 
     result = mock_file_connection_with_config.get_data_from_json_file(
-        method=DataQueryTypes.CALCULATION,
-        entity=entity
+        method=DataQueryTypes.CALCULATION, entity=entity
     )
 
     # Note: This might fail due to data structure issues, but we're testing with real data
@@ -546,8 +550,6 @@ def test_get_static_data_from_file_with_example_data(mock_file_connection_with_c
         - Attributes are populated with real data
     """
 
-
-
     # Use the real example static data JSON file
     example_static_path = (
         "C:\\Users\\marti\\Downloads\\encodapy\\examples\\03_interfaces\\"
@@ -581,7 +583,9 @@ def test_get_static_data_from_file_with_example_data(mock_file_connection_with_c
     )
 
     # Update the file path in the connection
-    mock_file_connection_with_config.file_params.path_of_static_data = example_static_path
+    mock_file_connection_with_config.file_params.path_of_static_data = (
+        example_static_path
+    )
 
     result = mock_file_connection_with_config.get_staticdata_from_file(entity=entity)
 
@@ -613,7 +617,6 @@ def test_get_data_from_json_file_not_found(mock_file_connection_with_config):
         - Result is None
     """
 
-
     entity = StaticDataModel(
         id="test_static",
         interface=Interfaces.FILE,
@@ -628,9 +631,7 @@ def test_get_data_from_json_file_not_found(mock_file_connection_with_config):
     )
 
     result = mock_file_connection_with_config._get_data_from_json_file(
-        entity=entity,
-        path_of_file="/non/existent/file.json",
-        data_type="staticdata"
+        entity=entity, path_of_file="/non/existent/file.json", data_type="staticdata"
     )
 
     assert result is None
@@ -648,9 +649,8 @@ def test_get_data_from_json_file_invalid_json(mock_file_connection_with_config):
         - Result is None
     """
 
-
     # Create file with invalid JSON
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         f.write("{ invalid json content }")
         temp_path = f.name
 
@@ -669,9 +669,7 @@ def test_get_data_from_json_file_invalid_json(mock_file_connection_with_config):
         )
 
         result = mock_file_connection_with_config._get_data_from_json_file(
-            entity=entity,
-            path_of_file=temp_path,
-            data_type="staticdata"
+            entity=entity, path_of_file=temp_path, data_type="staticdata"
         )
 
         assert result is None

@@ -2,11 +2,13 @@
 Description: Class to connect to a CrateDB and query data from it
 Author: Martin Altenburger
 """
+
 from typing import Optional
-import crate.client # type: ignore[import-untyped]
+import crate.client  # type: ignore[import-untyped]
 import pandas as pd
 from filip.models.ngsi_v2.context import ContextEntity
 from loguru import logger
+
 
 class CrateDBConnection:
     """
@@ -119,7 +121,7 @@ class CrateDBConnection:
             logger.warning(
                 f"No attributes found in CrateDB for entity {entity.id} of type {entity.type} "
                 f"in service {service}."
-                )
+            )
             return pd.DataFrame()
 
         connection = self.get_database_connection()
@@ -154,7 +156,7 @@ class CrateDBConnection:
 
             df.columns = pd.Index([desc[0] for desc in cursor.description])
 
-            df['time_index'] = pd.to_datetime(df.time_index, unit="ms").dt.tz_localize(
+            df["time_index"] = pd.to_datetime(df.time_index, unit="ms").dt.tz_localize(
                 "UTC"
             )
             df.rename(columns={"time_index": "datetime"}, inplace=True)

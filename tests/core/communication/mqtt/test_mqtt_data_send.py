@@ -41,16 +41,13 @@ def test_prepare_mqtt_payload_plain_format():
     """Test _prepare_mqtt_payload with PLAIN MQTT format."""
     connection = MqttConnection()
     output_entity = OutputModel(
-        id="test",
-        interface=Interfaces.MQTT,
-        id_interface="Test:001",
-        attributes=[]
+        id="test", interface=Interfaces.MQTT, id_interface="Test:001", attributes=[]
     )
     output_attribute = AttributeModel(
         id="temp",
         id_interface="temperature",
         value=22.5,
-        mqtt_format=MQTTFormatTypes.PLAIN
+        mqtt_format=MQTTFormatTypes.PLAIN,
     )
     payload = connection._prepare_mqtt_payload(
         output_entity=output_entity, output_attribute=output_attribute
@@ -62,10 +59,7 @@ def test_prepare_mqtt_payload_fiware_attr_format():
     """Test _prepare_mqtt_payload with FIWARE_ATTR MQTT format."""
     connection = MqttConnection()
     output_entity = OutputModel(
-        id="test",
-        interface=Interfaces.MQTT,
-        id_interface="Test:001",
-        attributes=[]
+        id="test", interface=Interfaces.MQTT, id_interface="Test:001", attributes=[]
     )
     output_attribute = AttributeModel(
         id="temp",
@@ -89,20 +83,19 @@ def test_send_data_to_mqtt_not_connected():
     connection.config = MagicMock()
     connection.publish = MagicMock()
     output_entity = OutputModel(
-        id="test",
-        interface=Interfaces.MQTT,
-        id_interface="Test:001",
-        attributes=[]
+        id="test", interface=Interfaces.MQTT, id_interface="Test:001", attributes=[]
     )
     output_attributes = [
         AttributeModel(
             id="temp",
             id_interface="temperature",
             value=22.5,
-            mqtt_format=MQTTFormatTypes.PLAIN
+            mqtt_format=MQTTFormatTypes.PLAIN,
         )
     ]
-    connection.send_data_to_mqtt(output_entity=output_entity, output_attributes=output_attributes)
+    connection.send_data_to_mqtt(
+        output_entity=output_entity, output_attributes=output_attributes
+    )
     connection.publish.assert_not_called()
 
 
@@ -114,17 +107,14 @@ def test_send_data_to_mqtt_no_client():
     connection._mqtt_connected = True
     connection.config = MagicMock()
     output_entity = OutputModel(
-        id="test",
-        interface=Interfaces.MQTT,
-        id_interface="Test:001",
-        attributes=[]
+        id="test", interface=Interfaces.MQTT, id_interface="Test:001", attributes=[]
     )
     output_attributes = [
         AttributeModel(
             id="temp",
             id_interface="temperature",
             value=22.5,
-            mqtt_format=MQTTFormatTypes.PLAIN
+            mqtt_format=MQTTFormatTypes.PLAIN,
         )
     ]
     with pytest.raises(NotSupportedError):
@@ -141,17 +131,14 @@ def test_send_data_to_mqtt_no_config():
     connection._mqtt_connected = True
     connection.config = None
     output_entity = OutputModel(
-        id="test",
-        interface=Interfaces.MQTT,
-        id_interface="Test:001",
-        attributes=[]
+        id="test", interface=Interfaces.MQTT, id_interface="Test:001", attributes=[]
     )
     output_attributes = [
         AttributeModel(
             id="temp",
             id_interface="temperature",
             value=22.5,
-            mqtt_format=MQTTFormatTypes.PLAIN
+            mqtt_format=MQTTFormatTypes.PLAIN,
         )
     ]
     with pytest.raises(ConfigError):

@@ -94,9 +94,15 @@ def test_get_converters_skips_invalid_chp_entry() -> None:
 def test_add_bidirectional_constraints_raises_when_coords_missing() -> None:
     """Raise when bidirectional constraints cannot access model coordinates."""
     component = _create_component()
-    forward = SimpleNamespace(inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1))])
-    reverse = SimpleNamespace(inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1))])
-    setattr(component, "_bidirectional_substations", {"sub_a": (forward, reverse, 1.0, 1.0)})
+    forward = SimpleNamespace(
+        inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1))]
+    )
+    reverse = SimpleNamespace(
+        inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1))]
+    )
+    setattr(
+        component, "_bidirectional_substations", {"sub_a": (forward, reverse, 1.0, 1.0)}
+    )
 
     optimization = SimpleNamespace(model=SimpleNamespace(get_coords=lambda: None))
 
@@ -107,15 +113,25 @@ def test_add_bidirectional_constraints_raises_when_coords_missing() -> None:
 def test_add_bidirectional_constraints_raises_when_model_missing() -> None:
     """Raise when bidirectional constraints cannot access model object."""
     component = _create_component()
-    forward = SimpleNamespace(inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1))])
-    reverse = SimpleNamespace(inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1))])
-    setattr(component, "_bidirectional_substations", {"sub_a": (forward, reverse, 1.0, 1.0)})
+    forward = SimpleNamespace(
+        inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1))]
+    )
+    reverse = SimpleNamespace(
+        inputs=[SimpleNamespace(submodel=SimpleNamespace(flow_rate=1))]
+    )
+    setattr(
+        component, "_bidirectional_substations", {"sub_a": (forward, reverse, 1.0, 1.0)}
+    )
 
     with pytest.raises(ValueError, match="coordinates are not available"):
-        getattr(component, "_add_bidirectional_substation_constraints")(SimpleNamespace())
+        getattr(component, "_add_bidirectional_substation_constraints")(
+            SimpleNamespace()
+        )
 
 
-def test_run_optimization_returns_none_on_modeling_error(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_run_optimization_returns_none_on_modeling_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Return None when the modeling step fails."""
     component = _create_component()
     del monkeypatch
@@ -132,7 +148,11 @@ def test_run_optimization_returns_none_on_modeling_error(monkeypatch: pytest.Mon
     setattr(component, "_get_converters", lambda: [])
     setattr(component, "_get_storages", lambda: [])
     setattr(component, "_get_sinks_and_sources", lambda: [])
-    setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
+    setattr(
+        component,
+        "_add_bidirectional_substation_constraints",
+        lambda optimization: None,
+    )
     setattr(component, "flixopt_model", SimpleNamespace())
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
 
@@ -156,7 +176,11 @@ def test_run_optimization_returns_none_when_model_missing_after_build() -> None:
     setattr(component, "_get_converters", lambda: [])
     setattr(component, "_get_storages", lambda: [])
     setattr(component, "_get_sinks_and_sources", lambda: [])
-    setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
+    setattr(
+        component,
+        "_add_bidirectional_substation_constraints",
+        lambda optimization: None,
+    )
     setattr(component, "flixopt_model", SimpleNamespace())
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
 
@@ -174,7 +198,9 @@ def test_run_optimization_returns_none_on_solver_runtime_error(
     flow_system = SimpleNamespace(
         add_elements=lambda element: None,
         build_model=lambda: None,
-        solve=lambda _solver, **_kwargs: (_ for _ in ()).throw(RuntimeError("solver failed")),
+        solve=lambda _solver, **_kwargs: (_ for _ in ()).throw(
+            RuntimeError("solver failed")
+        ),
         solution=SimpleNamespace(summary={"Main Results": {"Objective": 0}}),
         durations={"modeling": 0.1, "solving": 0.2},
         model=SimpleNamespace(get_coords=lambda: []),
@@ -184,7 +210,11 @@ def test_run_optimization_returns_none_on_solver_runtime_error(
     setattr(component, "_get_converters", lambda: [])
     setattr(component, "_get_storages", lambda: [])
     setattr(component, "_get_sinks_and_sources", lambda: [])
-    setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
+    setattr(
+        component,
+        "_add_bidirectional_substation_constraints",
+        lambda optimization: None,
+    )
     setattr(component, "flixopt_model", SimpleNamespace())
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
 
@@ -193,7 +223,9 @@ def test_run_optimization_returns_none_on_solver_runtime_error(
     assert result is None
 
 
-def test_run_optimization_returns_results_on_success(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_run_optimization_returns_results_on_success(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Return the results object after a successful optimization run."""
     component = _create_component()
     del monkeypatch
@@ -211,7 +243,11 @@ def test_run_optimization_returns_results_on_success(monkeypatch: pytest.MonkeyP
     setattr(component, "_get_converters", lambda: [])
     setattr(component, "_get_storages", lambda: [])
     setattr(component, "_get_sinks_and_sources", lambda: [])
-    setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
+    setattr(
+        component,
+        "_add_bidirectional_substation_constraints",
+        lambda optimization: None,
+    )
     setattr(component, "flixopt_model", SimpleNamespace())
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
 
@@ -235,7 +271,11 @@ def test_run_optimization_returns_none_when_solution_missing() -> None:
     setattr(component, "_get_converters", lambda: [])
     setattr(component, "_get_storages", lambda: [])
     setattr(component, "_get_sinks_and_sources", lambda: [])
-    setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
+    setattr(
+        component,
+        "_add_bidirectional_substation_constraints",
+        lambda optimization: None,
+    )
     setattr(component, "flixopt_model", SimpleNamespace())
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
 
@@ -260,7 +300,11 @@ def test_run_optimization_reads_objective_from_solution_attrs() -> None:
     setattr(component, "_get_converters", lambda: [])
     setattr(component, "_get_storages", lambda: [])
     setattr(component, "_get_sinks_and_sources", lambda: [])
-    setattr(component, "_add_bidirectional_substation_constraints", lambda optimization: None)
+    setattr(
+        component,
+        "_add_bidirectional_substation_constraints",
+        lambda optimization: None,
+    )
     setattr(component, "flixopt_model", SimpleNamespace())
     setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
 
@@ -273,7 +317,9 @@ def test_get_converters_dispatches_all_supported_types() -> None:
     """Dispatch all supported converter types in the expected order."""
     component = _create_component()
 
-    boiler = SimpleNamespace(label="boiler", converter_type=FlixOptConverterTypes.BOILER)
+    boiler = SimpleNamespace(
+        label="boiler", converter_type=FlixOptConverterTypes.BOILER
+    )
     p2h = SimpleNamespace(label="p2h", converter_type=FlixOptConverterTypes.POWER2HEAT)
     chp_invalid = FlixOptConverter.model_validate(
         {
@@ -285,7 +331,9 @@ def test_get_converters_dispatches_all_supported_types() -> None:
             "thermal_nominal_power": 10,
         }
     )
-    substation = SimpleNamespace(label="sub", converter_type=FlixOptConverterTypes.SUBSTATION)
+    substation = SimpleNamespace(
+        label="sub", converter_type=FlixOptConverterTypes.SUBSTATION
+    )
     bidir = SimpleNamespace(
         label="bidir", converter_type=FlixOptConverterTypes.BIDIRECTIONAL_SUBSTATION
     )
@@ -294,7 +342,9 @@ def test_get_converters_dispatches_all_supported_types() -> None:
     setattr(
         component,
         "flixopt_model",
-        SimpleNamespace(converters=[boiler, p2h, chp_invalid, substation, bidir, unknown]),
+        SimpleNamespace(
+            converters=[boiler, p2h, chp_invalid, substation, bidir, unknown]
+        ),
     )
     setattr(component, "_add_boiler_converter", lambda conv: f"boiler:{conv.label}")
     setattr(component, "_add_p2h_converter", lambda conv: f"p2h:{conv.label}")

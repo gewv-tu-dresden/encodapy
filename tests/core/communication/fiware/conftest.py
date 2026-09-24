@@ -24,7 +24,7 @@ from encodapy.utils.units import TimeUnits
 @pytest.fixture
 def mock_config() -> ConfigModel:
     """Create a minimal ConfigModel instance for unit testing.
-    
+
     Returns:
         ConfigModel: Minimal configuration with FIWARE interface enabled
             and default time settings for testing.
@@ -72,10 +72,10 @@ def mock_config() -> ConfigModel:
 @pytest.fixture
 def mock_controller_settings() -> ControllerSettingModel:
     """Create a minimal ControllerSettingModel for unit testing.
-    
+
     This fixture provides just the controller settings part for tests
     that need to set conn.controller_settings directly.
-    
+
     Returns:
         ControllerSettingModel: Configuration with time settings.
     """

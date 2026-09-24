@@ -36,6 +36,7 @@ from encodapy.utils.units import DataUnits
 # Fixtures for Priority 1 Tests
 # =============================================================================
 
+
 @pytest.fixture
 def mock_mqtt_connection_with_config():
     """Create a mock MqttConnection instance with minimal valid config."""
@@ -232,7 +233,9 @@ def test_send_data_to_mqtt_error_handling_value_error(mock_mqtt_connection_with_
     )
 
     # Mock publish to raise ValueError
-    mock_mqtt_connection_with_config.mqtt_client.publish.side_effect = ValueError("Test error")
+    mock_mqtt_connection_with_config.mqtt_client.publish.side_effect = ValueError(
+        "Test error"
+    )
 
     # Should not raise, but log error and continue
     mock_mqtt_connection_with_config.send_data_to_mqtt(
@@ -257,7 +260,9 @@ def test_send_data_to_mqtt_error_handling_key_error(mock_mqtt_connection_with_co
     )
 
     # Mock publish to raise KeyError
-    mock_mqtt_connection_with_config.mqtt_client.publish.side_effect = KeyError("test_key")
+    mock_mqtt_connection_with_config.mqtt_client.publish.side_effect = KeyError(
+        "test_key"
+    )
 
     # Should not raise, but log error and continue
     mock_mqtt_connection_with_config.send_data_to_mqtt(
@@ -268,7 +273,9 @@ def test_send_data_to_mqtt_error_handling_key_error(mock_mqtt_connection_with_co
     assert mock_mqtt_connection_with_config.mqtt_client.publish.call_count == 1
 
 
-def test_send_data_to_mqtt_error_handling_not_supported_error(mock_mqtt_connection_with_config):
+def test_send_data_to_mqtt_error_handling_not_supported_error(
+    mock_mqtt_connection_with_config,
+):
     """Test send_data_to_mqtt handles NotSupportedError during publish."""
     output_entity = OutputModel(
         id="test_output",
@@ -318,11 +325,17 @@ def test_prepare_mqtt_payload_template_config():
 
     # Create a template config
     template_config = MQTTTemplateConfig(
-        payload=("Entity: {{output_entity}}, Attribute: {{output_attribute}}, "
-                   "Value: {{output_value}}"),
+        payload=(
+            "Entity: {{output_entity}}, Attribute: {{output_attribute}}, "
+            "Value: {{output_value}}"
+        ),
         topic="test/{{output_entity}}/{{output_attribute}}",
         time_format="%Y-%m-%dT%H:%M:%S%z",
-        payload_embedded_placeholders=["output_entity", "output_attribute", "output_value"],
+        payload_embedded_placeholders=[
+            "output_entity",
+            "output_attribute",
+            "output_value",
+        ],
     )
 
     output_entity = OutputModel(

@@ -3,6 +3,7 @@ Unit tests for encodapy.service.component_runner_service module.
 
 Tests the ComponentRunnerService class and its methods.
 """
+
 # pylint: disable=protected-access
 import asyncio
 from datetime import datetime, timezone
@@ -41,8 +42,9 @@ class MockComponent(BasicComponent):
         component_id: str,
         static_data: Optional[list[StaticDataEntityModel]] = None,
     ) -> None:
-        self.component_config = config if isinstance(config, ControllerComponentModel) \
-            else config[0]
+        self.component_config = (
+            config if isinstance(config, ControllerComponentModel) else config[0]
+        )
         self.config_data = None
         self.io_model = MagicMock()
         self.input_data = None
@@ -51,12 +53,18 @@ class MockComponent(BasicComponent):
         # Mock the io_model to have the expected structure
         self.io_model.output = MagicMock()
         self.io_model.output.model_dump.return_value = {
-            "output_attr": IOAllocationModel(entity="output_entity", attribute="output_attr")
+            "output_attr": IOAllocationModel(
+                entity="output_entity", attribute="output_attr"
+            )
         }
 
         # Mock output_data to have expected attributes
-        self.output_data.state_of_charge = DataPointGeneral(value=80.0, unit=DataUnits.PERCENT)
-        self.output_data.temperature = DataPointGeneral(value=25.0, unit=DataUnits.DEGREECELSIUS)
+        self.output_data.state_of_charge = DataPointGeneral(
+            value=80.0, unit=DataUnits.PERCENT
+        )
+        self.output_data.temperature = DataPointGeneral(
+            value=25.0, unit=DataUnits.DEGREECELSIUS
+        )
 
     def run(self, data):
         """Mock run method that returns test results."""
@@ -66,7 +74,7 @@ class MockComponent(BasicComponent):
                 attribute_id="output_attr",
                 value=42.0,
                 unit=DataUnits.DEGREECELSIUS,
-                timestamp=datetime.now(timezone.utc)
+                timestamp=datetime.now(timezone.utc),
             )
         ]
 
@@ -80,7 +88,7 @@ class TestComponentRunnerServiceInit:
     def test_init_without_shutdown_event(self):
         """Test initializing ComponentRunnerService without shutdown_event."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
         assert not service.components
 
@@ -88,7 +96,7 @@ class TestComponentRunnerServiceInit:
         """Test initializing ComponentRunnerService with shutdown_event."""
         shutdown_event = asyncio.Event()
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService(shutdown_event=shutdown_event)
         assert not service.components
 
@@ -99,7 +107,7 @@ class TestComponentRunnerServicePrepareStart:
     def test_prepare_start_no_components(self):
         """Test prepare_start when there are no components in config."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         # Mock the config to have empty controller_components
@@ -115,7 +123,7 @@ class TestComponentRunnerServicePrepareStart:
     def test_prepare_start_with_components(self):
         """Test prepare_start when there are components in config."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         # Create mock components config
@@ -149,7 +157,7 @@ class TestComponentRunnerServicePrepareStart:
         service.env = MagicMock()
 
         with patch(
-            'encodapy.service.component_runner_service.get_component_class_model'
+            "encodapy.service.component_runner_service.get_component_class_model"
         ) as mock_get_class:
             mock_get_class.return_value = MockComponent
 
@@ -163,7 +171,7 @@ class TestComponentRunnerServicePrepareStart:
     def test_prepare_start_with_static_data(self):
         """Test prepare_start with static data for components."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         component_configs = [
@@ -173,9 +181,13 @@ class TestComponentRunnerServicePrepareStart:
                 active=True,
                 inputs=IOModell({}),
                 outputs=IOModell({}),
-                config=ConfigDataPoints({
-                    "param1": IOAllocationModel(entity="static_entity", attribute="param1")
-                })
+                config=ConfigDataPoints(
+                    {
+                        "param1": IOAllocationModel(
+                            entity="static_entity", attribute="param1"
+                        )
+                    }
+                ),
             ),
         ]
 
@@ -191,15 +203,15 @@ class TestComponentRunnerServicePrepareStart:
                         unit=DataUnits.LITER,
                         latest_timestamp_input=datetime.now(timezone.utc),
                         data_available=True,
-                        data_type=AttributeTypes.VALUE
+                        data_type=AttributeTypes.VALUE,
                     )
-                ]
+                ],
             )
         ]
         service.env = MagicMock()
 
         with patch(
-            'encodapy.service.component_runner_service.get_component_class_model'
+            "encodapy.service.component_runner_service.get_component_class_model"
         ) as mock_get_class:
             mock_get_class.return_value = MockComponent
 
@@ -214,7 +226,7 @@ class TestComponentRunnerServiceHelperMethods:
     def test_result_to_input_data_attribute(self):
         """Test _result_to_input_data_attribute method."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         result = DataTransferComponentModel(
@@ -222,7 +234,7 @@ class TestComponentRunnerServiceHelperMethods:
             attribute_id="test_attr",
             value=42.0,
             unit=DataUnits.DEGREECELSIUS,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
 
         attribute = service._result_to_input_data_attribute(result)
@@ -236,7 +248,7 @@ class TestComponentRunnerServiceHelperMethods:
     def test_add_result_to_input_entity_existing_attribute(self):
         """Test _add_result_to_input_entity when attribute already exists."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         result = DataTransferComponentModel(
@@ -244,7 +256,7 @@ class TestComponentRunnerServiceHelperMethods:
             attribute_id="existing_attr",
             value=50.0,
             unit=DataUnits.PERCENT,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
 
         input_entity = InputDataEntityModel(
@@ -256,9 +268,9 @@ class TestComponentRunnerServiceHelperMethods:
                     unit=DataUnits.PERCENT,
                     latest_timestamp_input=datetime.now(timezone.utc),
                     data_available=True,
-                    data_type=AttributeTypes.VALUE
+                    data_type=AttributeTypes.VALUE,
                 )
-            ]
+            ],
         )
 
         updated_entity = service._add_result_to_input_entity(result, input_entity)
@@ -271,7 +283,7 @@ class TestComponentRunnerServiceHelperMethods:
     def test_add_result_to_input_entity_new_attribute(self):
         """Test _add_result_to_input_entity when attribute doesn't exist."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         result = DataTransferComponentModel(
@@ -279,7 +291,7 @@ class TestComponentRunnerServiceHelperMethods:
             attribute_id="new_attr",
             value=75.0,
             unit=DataUnits.DEGREECELSIUS,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
 
         input_entity = InputDataEntityModel(
@@ -291,16 +303,18 @@ class TestComponentRunnerServiceHelperMethods:
                     unit=DataUnits.PERCENT,
                     latest_timestamp_input=datetime.now(timezone.utc),
                     data_available=True,
-                    data_type=AttributeTypes.VALUE
+                    data_type=AttributeTypes.VALUE,
                 )
-            ]
+            ],
         )
 
         updated_entity = service._add_result_to_input_entity(result, input_entity)
 
         # Should add a new attribute
         assert len(updated_entity.attributes) == 2
-        new_attr = next(attr for attr in updated_entity.attributes if attr.id == "new_attr")
+        new_attr = next(
+            attr for attr in updated_entity.attributes if attr.id == "new_attr"
+        )
         assert new_attr.data == 75.0
         assert new_attr.unit == DataUnits.DEGREECELSIUS
 
@@ -311,7 +325,7 @@ class TestComponentRunnerServiceAddResultsToInput:
     def test_add_results_to_input_existing_entity(self):
         """Test add_results_to_input when entity already exists."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         result = DataTransferComponentModel(
@@ -319,7 +333,7 @@ class TestComponentRunnerServiceAddResultsToInput:
             attribute_id="new_attr",
             value=100.0,
             unit=DataUnits.WTT,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
 
         input_data = InputDataModel(
@@ -333,13 +347,13 @@ class TestComponentRunnerServiceAddResultsToInput:
                             unit=DataUnits.PERCENT,
                             latest_timestamp_input=datetime.now(timezone.utc),
                             data_available=True,
-                            data_type=AttributeTypes.VALUE
+                            data_type=AttributeTypes.VALUE,
                         )
-                    ]
+                    ],
                 )
             ],
             output_entities=[],
-            static_entities=[]
+            static_entities=[],
         )
 
         updated_data = service.add_results_to_input(input_data, [result])
@@ -351,7 +365,7 @@ class TestComponentRunnerServiceAddResultsToInput:
     def test_add_results_to_input_new_entity(self):
         """Test add_results_to_input when entity doesn't exist."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         result = DataTransferComponentModel(
@@ -359,13 +373,11 @@ class TestComponentRunnerServiceAddResultsToInput:
             attribute_id="new_attr",
             value=200.0,
             unit=DataUnits.WTT,
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(timezone.utc),
         )
 
         input_data = InputDataModel(
-            input_entities=[],
-            output_entities=[],
-            static_entities=[]
+            input_entities=[], output_entities=[], static_entities=[]
         )
 
         updated_data = service.add_results_to_input(input_data, [result])
@@ -379,7 +391,7 @@ class TestComponentRunnerServiceAddResultsToInput:
     def test_add_results_to_input_multiple_results(self):
         """Test add_results_to_input with multiple results."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         results = [
@@ -388,21 +400,19 @@ class TestComponentRunnerServiceAddResultsToInput:
                 attribute_id="attr_1",
                 value=100.0,
                 unit=DataUnits.WTT,
-                timestamp=datetime.now(timezone.utc)
+                timestamp=datetime.now(timezone.utc),
             ),
             DataTransferComponentModel(
                 entity_id="entity_2",
                 attribute_id="attr_2",
                 value=200.0,
                 unit=DataUnits.VLT,
-                timestamp=datetime.now(timezone.utc)
+                timestamp=datetime.now(timezone.utc),
             ),
         ]
 
         input_data = InputDataModel(
-            input_entities=[],
-            output_entities=[],
-            static_entities=[]
+            input_entities=[], output_entities=[], static_entities=[]
         )
 
         updated_data = service.add_results_to_input(input_data, results)
@@ -418,7 +428,7 @@ class TestComponentRunnerServiceCalculation:
     async def test_calculation_success(self):
         """Test calculation method with successful component execution."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         # Create mock components
@@ -428,9 +438,9 @@ class TestComponentRunnerServiceCalculation:
                 type="test",
                 active=True,
                 inputs=IOModell({}),
-                outputs=IOModell({})
+                outputs=IOModell({}),
             ),
-            component_id="component_1"
+            component_id="component_1",
         )
 
         mock_component_2 = MockComponent(
@@ -439,9 +449,9 @@ class TestComponentRunnerServiceCalculation:
                 type="test",
                 active=True,
                 inputs=IOModell({}),
-                outputs=IOModell({})
+                outputs=IOModell({}),
             ),
-            component_id="component_2"
+            component_id="component_2",
         )
 
         service.components = [mock_component_1, mock_component_2]
@@ -449,21 +459,21 @@ class TestComponentRunnerServiceCalculation:
         service.env.reload_staticdata = False
 
         input_data = InputDataModel(
-            input_entities=[],
-            output_entities=[],
-            static_entities=[]
+            input_entities=[], output_entities=[], static_entities=[]
         )
 
         result = await service.calculation(input_data)
 
         assert isinstance(result, DataTransferModel)
-        assert len(result.components) == 2  # 2 components * 1 result each (from MockComponent.run)
+        assert (
+            len(result.components) == 2
+        )  # 2 components * 1 result each (from MockComponent.run)
 
     @pytest.mark.asyncio
     async def test_calculation_with_component_error(self):
         """Test calculation method when a component raises an error."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         # Create a mock component that raises an error
@@ -476,8 +486,11 @@ class TestComponentRunnerServiceCalculation:
                 component_id: str,
                 static_data: Optional[list[StaticDataEntityModel]] = None,
             ) -> None:
-                self.component_config = config if isinstance(config, ControllerComponentModel) \
+                self.component_config = (
+                    config
+                    if isinstance(config, ControllerComponentModel)
                     else config[0]
+                )
 
             def run(self, data):
                 """Raise an error to simulate a failing component."""
@@ -489,9 +502,9 @@ class TestComponentRunnerServiceCalculation:
                 type="test",
                 active=True,
                 inputs=IOModell({}),
-                outputs=IOModell({})
+                outputs=IOModell({}),
             ),
-            component_id="failing_component"
+            component_id="failing_component",
         )
 
         service.components = [mock_component]
@@ -499,9 +512,7 @@ class TestComponentRunnerServiceCalculation:
         service.env.reload_staticdata = False
 
         input_data = InputDataModel(
-            input_entities=[],
-            output_entities=[],
-            static_entities=[]
+            input_entities=[], output_entities=[], static_entities=[]
         )
 
         result = await service.calculation(input_data)
@@ -514,7 +525,7 @@ class TestComponentRunnerServiceCalculation:
     async def test_calculation_results_added_to_input(self):
         """Test that calculation adds results to input for subsequent components."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         mock_component_1 = MockComponent(
@@ -523,9 +534,9 @@ class TestComponentRunnerServiceCalculation:
                 type="test",
                 active=True,
                 inputs=IOModell({}),
-                outputs=IOModell({})
+                outputs=IOModell({}),
             ),
-            component_id="component_1"
+            component_id="component_1",
         )
 
         mock_component_2 = MockComponent(
@@ -534,9 +545,9 @@ class TestComponentRunnerServiceCalculation:
                 type="test",
                 active=True,
                 inputs=IOModell({}),
-                outputs=IOModell({})
+                outputs=IOModell({}),
             ),
-            component_id="component_2"
+            component_id="component_2",
         )
 
         service.components = [mock_component_1, mock_component_2]
@@ -544,9 +555,7 @@ class TestComponentRunnerServiceCalculation:
         service.env.reload_staticdata = False
 
         input_data = InputDataModel(
-            input_entities=[],
-            output_entities=[],
-            static_entities=[]
+            input_entities=[], output_entities=[], static_entities=[]
         )
 
         result = await service.calculation(input_data)
@@ -563,7 +572,7 @@ class TestComponentRunnerServiceCalibration:
     async def test_calibration_success(self):
         """Test calibration method with successful execution."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         mock_component = MockComponent(
@@ -572,9 +581,9 @@ class TestComponentRunnerServiceCalibration:
                 type="test",
                 active=True,
                 inputs=IOModell({}),
-                outputs=IOModell({})
+                outputs=IOModell({}),
             ),
-            component_id="test_component"
+            component_id="test_component",
         )
 
         # Mock the calibrate method to verify it's called
@@ -597,11 +606,11 @@ class TestComponentRunnerServiceCalibration:
                             unit=DataUnits.LITER,
                             latest_timestamp_input=datetime.now(timezone.utc),
                             data_available=True,
-                            data_type=AttributeTypes.VALUE
+                            data_type=AttributeTypes.VALUE,
                         )
-                    ]
+                    ],
                 )
-            ]
+            ],
         )
 
         await service.calibration(input_data)
@@ -613,7 +622,7 @@ class TestComponentRunnerServiceCalibration:
     async def test_calibration_reload_staticdata_disabled(self):
         """Test calibration when reload_staticdata is disabled."""
         # Mock the service to avoid loading config during init
-        with patch.object(ComponentRunnerService, 'prepare_basic_start'):
+        with patch.object(ComponentRunnerService, "prepare_basic_start"):
             service = ComponentRunnerService()
 
         mock_component = MockComponent(
@@ -622,9 +631,9 @@ class TestComponentRunnerServiceCalibration:
                 type="test",
                 active=True,
                 inputs=IOModell({}),
-                outputs=IOModell({})
+                outputs=IOModell({}),
             ),
-            component_id="test_component"
+            component_id="test_component",
         )
 
         # Mock the calibrate method to verify it's called with None
@@ -635,9 +644,7 @@ class TestComponentRunnerServiceCalibration:
         service.env.reload_staticdata = False  # Disabled
 
         input_data = InputDataModel(
-            input_entities=[],
-            output_entities=[],
-            static_entities=[]
+            input_entities=[], output_entities=[], static_entities=[]
         )
 
         await service.calibration(input_data)
