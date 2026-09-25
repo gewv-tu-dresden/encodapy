@@ -21,7 +21,9 @@ from .weather_data_config import (
     WeatherDataInputData,
     WeatherDataOutputData,
     WeatherApiCallMethod,
+    WEATHER_DATA_URL
 )
+
 
 
 class WeatherData(BasicComponent):
@@ -101,7 +103,7 @@ class WeatherData(BasicComponent):
             "tz": self.berlin_tz 
         }
 
-        url = "https://api.brightsky.dev/current_weather"
+        url = f"{WEATHER_DATA_URL}/current_weather"
 
         try:
             response = requests.get(url, params=params, timeout=5.0)
@@ -183,7 +185,7 @@ class WeatherData(BasicComponent):
             "last_date": forecast_end_time
             }
         
-        url = "https://api.brightsky.dev/weather"
+        url = f"{WEATHER_DATA_URL}/weather"
         
         try:
             response = requests.get(url, params=params, timeout=5.0)

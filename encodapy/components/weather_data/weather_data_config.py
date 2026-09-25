@@ -16,6 +16,8 @@ from encodapy.components.basic_component_config import (
 from encodapy.utils.datapoints import DataPointGeneral, DataPointNumber, DataPointDict, DataPointString
 from encodapy.utils.units import DataUnits
 
+WEATHER_DATA_URL = "https://api.brightsky.dev/"
+
 
 class WeatherApiCallMethod(Enum):
     """
