@@ -1,5 +1,5 @@
 """
-Defines the OpenWeatherMapData class.
+Defines the WeatherData for Brightsky class.
 Author: Paul Seidel
 """
 
@@ -107,10 +107,10 @@ class WeatherData(BasicComponent):
             response = requests.get(url, params=params, timeout=5.0)
             if response.status_code >= 400:
                 error_text = response.json()["message"]
-                logger.debug(f"Failed read data of brightsky: {error_text}")
+                logger.debug(f"Getting data of brightsky failed, Client Error Codes {error_text}")
                 raise Exception(error_text)
 
-            if response.status_code == 200:
+            elif response.status_code == 200:
                 data = response.json()
                 weather = data["weather"]
 
@@ -121,6 +121,12 @@ class WeatherData(BasicComponent):
                     "dew_point": float(weather["dew_point"]),
                     "solar_60": float(weather["solar_60"]),
                 }
+
+            else:
+                error_text = response.json()["message"]
+                logger.debug(f"Getting data of brightsky failed, Status Code: {error_text}")
+                raise Exception(error_text)
+
 
         except requests.exceptions.Timeout:
             logger.error("error: The API did not respond quickly enough (timeout exceeded).")
@@ -158,8 +164,13 @@ class WeatherData(BasicComponent):
         # logic to retrieve current weather data from https://brightsky.dev/
         # https://api.brightsky.dev/weather?lat=51.3&lon=13.44&tz=Europe/Berlin
                 
-        actual_time = datetime.now(self.berlin_tz).strftime("%Y-%m-%dT%H:%M")
-        forecast_start_time = datetime.fromisoformat(actual_time).replace(minute=(datetime.fromisoformat(actual_time).minute // 15) * 15, second=0, microsecond=0)
+        #actual_time = datetime.now(self.berlin_tz).strftime("%Y-%m-%dT%H:%M")
+        #forecast_start_time = datetime.fromisoformat(actual_time).replace(minute=(datetime.fromisoformat(actual_time).minute // 15) * 15, second=0, microsecond=0)
+        actual_time = datetime.now(self.berlin_tz)
+        forecast_start_time = actual_time.replace(
+            minute=(actual_time.minute // 15) * 15, second=0, microsecond=0
+        )
+
         forecast_time_delta = self.config_data.forecast_time_range.value
         forecast_end_time = self.get_future_time_string(forecast_start_time, forecast_time_delta)
         
@@ -244,7 +255,7 @@ class WeatherData(BasicComponent):
             if time_of_timestep >= self.next_time_step_forecast_weather:
                 logger.debug("Get Forecast Data from Brightsky...")
     
-                forecast_data = WeatherData.get_forecast_weather_data(self)
+                forecast_data = self.get_forecast_weather_data()
                     
                 temperature_dict = forecast_data.value.get('forecast_temperature', {})
                 solar_dict = forecast_data.value.get('forecast_solar', {})

@@ -166,7 +166,7 @@ class WeatherDataConfigData(ConfigData):
         description="Forecast time range (for the of last weather forecast) to retrieve. Default value is set to 1d ",
     )
     time_interval_current_weather: Optional[DataPointGeneral] = Field(
-        DataPointString(value="0M"),
+        DataPointString(value="15M"),
         description="Time interval for current weather data retrieval. Default value is set to 15M (legal format codes of datetime, possible: %M, %H, %d) ",
     )
     time_interval_forecast_weather: Optional[DataPointGeneral] = Field(

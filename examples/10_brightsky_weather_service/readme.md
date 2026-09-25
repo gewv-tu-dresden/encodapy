@@ -5,7 +5,8 @@
 Example of the use of the weather data component in EnCoDaPy. 
 
 - [config.json](./config.json): Configuration for the service - see [01_config](./../01_config/)
-- [run_weatherdata_service.ipynb](./run_weatherdata_service.ipynb): Notebook to run the service (you can also run [encodapy.service.service_main](./../../encodapy/service/service_main.py))
+- [static_data.json](./static_datag.json): Static date service - see [03_interfaces](./../03_interfaces/)
+- [run_weatherdata_service.ipynb](./run_weatherdata_service.ipynb): Notebook to run the service (you can also run [encodapy.service.service_main](./../../encodapy/service/service_main.py))                 
 
 ## Usage
 
