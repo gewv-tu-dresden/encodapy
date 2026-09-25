@@ -95,7 +95,7 @@ class WeatherData(BasicComponent):
         # logic to retrieve current weather data from https://brightsky.dev/
         # https://api.brightsky.dev/current_weather?lat=51.3&lon=13.44&tz=Europe/Berlin
 
-        
+        output_dict = {}
         # parameter as dict for the api-call
         params = {
             "lat": self.config_data.latitude.value,
@@ -175,6 +175,8 @@ class WeatherData(BasicComponent):
 
         forecast_time_delta = self.config_data.forecast_time_range.value
         forecast_end_time = self.get_future_time_string(forecast_start_time, forecast_time_delta)
+
+        output_dict = {}
         
         # parameter as dict for the api-call
         params = {
@@ -231,17 +233,29 @@ class WeatherData(BasicComponent):
                 logger.debug("Get Current Data from Brightsky...")
 
                 current_data = self.get_current_weather_data()
+                current_data = {}
+                if current_data:
 
-                output = WeatherDataOutputData(
-                    temperature=DataPointNumber(value=current_data.value.get("temperature"), unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc),
-                    relative_humidity=DataPointNumber(value=current_data.value.get("relative_humidity"), unit=DataUnits.PERCENT, time=time_of_timestep_utc),
-                    pressure_msl=DataPointNumber(value=current_data.value.get("pressure_msl"), unit=DataUnits.HPA, time=time_of_timestep_utc),
-                    dew_point=DataPointNumber(value=current_data.value.get("dew_point"), unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc),
-                    solar_60=DataPointNumber(value=current_data.value.get("solar_60"), unit=DataUnits.B13, time=time_of_timestep_utc)
-                )
-                
-                # update next time step for current weather data retrieval
-                self.next_time_step_current_weather = self.get_future_time_string(time_of_timestep, self.time_interval_current_weather)
+                    output = WeatherDataOutputData(
+                        temperature=DataPointNumber(value=current_data.value.get("temperature"), unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc),
+                        relative_humidity=DataPointNumber(value=current_data.value.get("relative_humidity"), unit=DataUnits.PERCENT, time=time_of_timestep_utc),
+                        pressure_msl=DataPointNumber(value=current_data.value.get("pressure_msl"), unit=DataUnits.HPA, time=time_of_timestep_utc),
+                        dew_point=DataPointNumber(value=current_data.value.get("dew_point"), unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc),
+                        solar_60=DataPointNumber(value=current_data.value.get("solar_60"), unit=DataUnits.B13, time=time_of_timestep_utc)
+                    )
+
+                else:
+                    logger.error("Current Weather Data Output is None!")
+                    output = WeatherDataOutputData(
+                        temperature=DataPointNumber(value=None, unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc),
+                        relative_humidity=DataPointNumber(None, unit=DataUnits.PERCENT, time=time_of_timestep_utc),
+                        pressure_msl=DataPointNumber(value=None, unit=DataUnits.HPA, time=time_of_timestep_utc),
+                        dew_point=DataPointNumber(value=None, unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc),
+                        solar_60=DataPointNumber(value=None, unit=DataUnits.B13, time=time_of_timestep_utc)
+                    )
+
+                    # update next time step for current weather data retrieval
+                    self.next_time_step_current_weather = self.get_future_time_string(time_of_timestep, self.time_interval_current_weather)
                 
             else: 
                 logger.debug("Use Weather data of last API_call")
@@ -252,22 +266,33 @@ class WeatherData(BasicComponent):
                     dew_point= self.output_data.dew_point,
                     solar_60=self.output_data.solar_60
                 )
-                
+
+        logger.debug(output)        
         if WeatherApiCallMethod.FORECAST.value in self.unique_weather_types:
             if time_of_timestep >= self.next_time_step_forecast_weather:
                 logger.debug("Get Forecast Data from Brightsky...")
     
                 forecast_data = self.get_forecast_weather_data()
+                if forecast_data:
                     
-                temperature_dict = forecast_data.value.get('forecast_temperature', {})
-                solar_dict = forecast_data.value.get('forecast_solar', {})
-            
-                output.forecast_temperature = DataPointDict(
-                        value={str(index): value for index, value in temperature_dict.items()}, unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc
-                        )
-                output.forecast_solar = DataPointDict(
-                        value={str(index): value for index, value in solar_dict.items()}, unit=DataUnits.B13, time=time_of_timestep_utc
-                        )
+                    temperature_dict = forecast_data.value.get('forecast_temperature', {})
+                    solar_dict = forecast_data.value.get('forecast_solar', {})
+                
+                    output.forecast_temperature = DataPointDict(
+                            value={str(index): value for index, value in temperature_dict.items()}, unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc
+                            )
+                    output.forecast_solar = DataPointDict(
+                            value={str(index): value for index, value in solar_dict.items()}, unit=DataUnits.B13, time=time_of_timestep_utc
+                            )
+                else:
+                    logger.error("Forecast Weather Data Output is None!")
+                    output.forecast_temperature = DataPointDict(
+                            value=None, unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc
+                            )
+                    output.forecast_solar = DataPointDict(
+                            value=None, unit=DataUnits.B13, time=time_of_timestep_utc
+                            )
+
 
                 # update next time step for current weather data retrieval
                 self.next_time_step_forecast_weather = self.get_future_time_string(time_of_timestep, self.time_interval_forecast_weather)
