@@ -55,6 +55,15 @@ intersphinx_mapping = {
     "pydantic": ("https://docs.pydantic.dev/latest/", None),
 }
 exclude_patterns = []
+# sphinx-autodoc-typehints resolves type hints for every name in a module
+# namespace, including imported pydantic symbols (e.g. Field). Their JsonValue
+# alias only exists inside pydantic, so resolution warnings are expected.
+suppress_warnings = ["sphinx_autodoc_typehints.forward_reference"]
+# Sphinx 9 replaced the class-based autodoc pipeline, which bypasses
+# autodoc-pydantic documenters for members found by automodule. Legacy mode
+# restores the previous pydantic model rendering (no model_config,
+# model_fields, model_computed_fields as members).
+autodoc_use_legacy_class_based = True
 templates_path = ["_templates"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -84,6 +93,7 @@ html_js_files = [
 ]
 # Cross-Referencing for local class
 autodoc_typehints_format = "short"
+autodoc_use_type_comments = False
 typehints_use_rtype = True
 typehints_document_rtype = True
 # Settings for type hints: output types in the description (clear fields)
