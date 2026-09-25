@@ -105,7 +105,7 @@ class DataUnits(Enum):
     HPA = ("A97", "hectopascal")
 
     # radiation
-    KWM = ("KWM", "kilowatt_hour / meter**2")
+    B13 = ("B13", "J / meter**2")
 
 
 # Map the units to the unit registry of pint for conversion

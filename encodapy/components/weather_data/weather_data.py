@@ -237,7 +237,7 @@ class WeatherData(BasicComponent):
                     relative_humidity=DataPointNumber(value=current_data.value.get("relative_humidity"), unit=DataUnits.PERCENT, time=time_of_timestep_utc),
                     pressure_msl=DataPointNumber(value=current_data.value.get("pressure_msl"), unit=DataUnits.HPA, time=time_of_timestep_utc),
                     dew_point=DataPointNumber(value=current_data.value.get("dew_point"), unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc),
-                    solar_60=DataPointNumber(value=current_data.value.get("solar_60"), unit=DataUnits.KWM, time=time_of_timestep_utc)
+                    solar_60=DataPointNumber(value=current_data.value.get("solar_60"), unit=DataUnits.B13, time=time_of_timestep_utc)
                 )
                 
                 # update next time step for current weather data retrieval
@@ -266,7 +266,7 @@ class WeatherData(BasicComponent):
                         value={str(index): value for index, value in temperature_dict.items()}, unit=DataUnits.DEGREECELSIUS, time=time_of_timestep_utc
                         )
                 output.forecast_solar = DataPointDict(
-                        value={str(index): value for index, value in solar_dict.items()}, unit=DataUnits.KWM, time=time_of_timestep_utc
+                        value={str(index): value for index, value in solar_dict.items()}, unit=DataUnits.B13, time=time_of_timestep_utc
                         )
 
                 # update next time step for current weather data retrieval

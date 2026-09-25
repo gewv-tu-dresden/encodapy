@@ -109,9 +109,9 @@ class WeatherDataOutputData(OutputData):
         )
     solar_60: Optional[DataPointNumber] = Field(
         None,
-        description="Solar irradiation during previous 60 minutes in kWh / m²",
+        description="Solar irradiation during previous 60 minutes in J / m²",
         json_schema_extra={
-            "unit": "KWM",
+            "unit": "B13",
             "weather_type": "current"
             },
         )
@@ -125,9 +125,9 @@ class WeatherDataOutputData(OutputData):
         )
     forecast_solar: Optional[DataPointDict] = Field(
         None,
-        description="Forecast solar irradiation data during previous 60 minutes",
+        description="Forecast solar irradiation data during previous 60 minutes in J/m²",
         json_schema_extra={
-            "unit": "KWM",
+            "unit": "B13",
             "weather_type": "forecast"
             },
         )

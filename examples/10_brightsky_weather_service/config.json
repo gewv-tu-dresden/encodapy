@@ -35,7 +35,7 @@
                 {"id": "solar_60",
                 "id_interface":"solar_irradiation_60min",
                 "type": "value",
-                "unit" : "KWM"
+                "unit" : "B13"
                 },
                 {"id": "forecast_temperature",
                 "id_interface":"forecast_temperature", 
@@ -47,7 +47,7 @@
                 "id_interface":"forecast_solar",
                 "type" : "timeseries",
                 "datatype" : "StructuredValue",
-                "unit" : "KWM"
+                "unit" : "B13"
                 }
             ],
             "commands":[
