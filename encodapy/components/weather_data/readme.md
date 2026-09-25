@@ -29,9 +29,9 @@ time settings:
 Forecast period:
 - forecast_time_range [optional] (default value: 1d)
 Time interval for retrieving current weather data: (independent of the sampling_time in the config)
-- time_interval_current_weather [optional] (default value 0M)
+- time_interval_current_weather [optional] (default value 15M)
 Time interval for retrieving forecast weather data: (independent of the sampling_time in the config)
-- time_interval_forecast_weather [optional] (default value 0h)
+- time_interval_forecast_weather [optional] (default value 3h)
 
 
 ### Outputs
