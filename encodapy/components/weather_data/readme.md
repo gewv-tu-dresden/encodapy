@@ -50,3 +50,6 @@ all implemented outputs are optional
 - "solar_60": Sunshine duration during previous 60 minutes in kWh / m²
 - "forecast_temperature" : dict of outside temperature in °C
 - "forecast_solar" : dict of solar_60 kWh / m²
+
+
+For more informations look into the example [examples/10_brightsky_weather_service](./../../../examples/10_brightsky_weather_service/) 
