@@ -88,6 +88,7 @@ class DataUnits(Enum):
     CMT = ("CMT", "centimeter")
     MTR = ("MTR", "meter")
     MTK = ("MTK", "meter**2")
+    DD = ("DD", "degree")
 
     # speed
     MTS = ("MTS", "meter / second")
@@ -95,9 +96,16 @@ class DataUnits(Enum):
     # unitless
     PERCENT = ("P1", "percent")
 
+
     # Electrical
     OHM = ("OHM", "ohm")
     VLT = ("VLT", "volt")
+
+    # pressure
+    HPA = ("A97", "hectopascal")
+
+    # radiation
+    B13 = ("B13", "J / meter**2")
 
 
 # Map the units to the unit registry of pint for conversion
