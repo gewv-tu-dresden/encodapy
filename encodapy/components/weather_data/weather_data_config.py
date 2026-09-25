@@ -32,19 +32,6 @@ class WeatherApiCallMethod(Enum):
     FORECAST = "forecast"
 
 
-class DataPointWeatherApiCallMethod(DataPointGeneral):
-    """
-    Model for datapoints of the controller component which define the API call method.
-
-    Attributes:
-        value: The value of the datapoint, which is a string representing the API call method
-        unit: Optional unit of the datapoint, if applicable
-        time: Optional timestamp of the datapoint, if applicable
-    """
-
-    value: WeatherApiCallMethod
-
-
 class WeatherDataInputData(InputData):
     """
     Input model for the WeatherData component
