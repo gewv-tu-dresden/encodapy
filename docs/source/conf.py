@@ -8,6 +8,7 @@ import os
 import sys
 import subprocess
 from pathlib import Path
+import json
 
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../../.."))
@@ -168,18 +169,11 @@ def suppress_pydantic_parameters(app, what, name, obj, options, lines):
 
 
 def _generate_readme(app):
-    readmes: dict(str, str) = {
-        "README.md": "README_FOR_DOCS.md",
-        "encodapy/components/readme.md": "COMPONENTS_README_FOR_DOCS.md",
-        "encodapy/components/thermal_storage/readme.md": "COMPONENT_Thermal_Storage_README_FOR_DOCS.md",
-        "encodapy/components/two_point_controller/readme.md": "COMPONENT_Two_Point_Controller_README_FOR_DOCS.md",
-        "encodapy/components/flixopt_model_component/readme.md": "COMPONENT_flixopt_model_README_FOR_DOCS.md",
-        "examples/readme.md": "COMPONENT_Examples_README_FOR_DOCS.md",
-    }
+    with open(Path(__file__).parent / "doc_readme_mapping.json", "r") as f:
+        readmes = json.load(f)
     # script is under docs/scripts relative to repo root
     repo_root = Path(__file__).resolve().parents[2]
     script = repo_root / "docs" / "scripts" / "generate_readme_for_docs.py"
-    print("Generating README for docs using script:", str(script))
     if not script.exists():
         # if the script is missing: only log, do not crash
         logger.warning("README generator script not found: %s", str(script))
