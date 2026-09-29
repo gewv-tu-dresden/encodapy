@@ -3,6 +3,7 @@ Description: This module contains models for various types \
     of datapoints used in the controller component.
 Author: Martin Altenburger
 """
+
 import os
 from datetime import datetime
 from typing import Any, Optional, TYPE_CHECKING, TypeAlias
@@ -25,11 +26,12 @@ else:
     # Echter Runtime-Typ
     SeriesValue: TypeAlias = pd.Series
 
+
 # Models to hold the data
 class DataPointGeneral(BaseModel):
     """
-    Model for datapoints of the controller component.
-    
+    Model for datapoints with a general value.
+
     Attributes:
         value (Any): The value of the datapoint, which can be of various types \
             (string, float, int, boolean, dictionary, list, DataFrame, or None).
@@ -38,8 +40,7 @@ class DataPointGeneral(BaseModel):
     """
 
     model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        protected_namespaces=("field_", "validator_")
+        arbitrary_types_allowed=True, protected_namespaces=("field_", "validator_")
     )
 
     value: Any
@@ -49,7 +50,7 @@ class DataPointGeneral(BaseModel):
 
 class DataPointNumber(DataPointGeneral):
     """
-    Model for datapoints of the controller component.
+    Model for datapoints with a numeric value.
 
     Attributes:
         value (float | int): The value of the datapoint, which is a number (float, int).
@@ -62,7 +63,7 @@ class DataPointNumber(DataPointGeneral):
 
 class DataPointString(DataPointGeneral):
     """
-    Model for datapoints of the controller component.
+    Model for datapoints with a string value.
 
     Attributes:
         value (str): The value of the datapoint, which is a string.
@@ -75,7 +76,7 @@ class DataPointString(DataPointGeneral):
 
 class DataPointDict(DataPointGeneral):
     """
-    Model for datapoints of the controller component.
+    Model for datapoints with a dictionary value.
 
     Attributes:
         value (dict): The value of the datapoint, which is a dictionary.
@@ -88,7 +89,7 @@ class DataPointDict(DataPointGeneral):
 
 class DataPointBool(DataPointGeneral):
     """
-    Model for datapoints of the controller component.
+    Model for datapoints with a boolean value.
 
     Attributes:
         value (bool): The value of the datapoint, which is a boolean.
@@ -101,7 +102,7 @@ class DataPointBool(DataPointGeneral):
 
 class DataPointMedium(DataPointGeneral):
     """
-    Model for datapoints of the controller component which define the medium.
+    Model for datapoints which define a medium.
 
     Attributes:
         value (Medium): The value of the datapoint, which is a Medium representing the medium.
@@ -111,25 +112,28 @@ class DataPointMedium(DataPointGeneral):
 
     value: Medium
 
+
 class DataPointTimeSeries(DataPointGeneral):
     """
-    DataPoint for time series. The value is expected to be a pandas Series 
+    DataPoint for time series. The value is expected to be a pandas Series
     with a DatetimeIndex and float or integer values.
     """
+
     value: SeriesValue = Field(
         ...,
         description="A time series of number data points as :class:`pd.Series`",
     )
-    @model_validator(mode='before')
+
+    @model_validator(mode="before")
     @classmethod
     def convert_dataframe_to_series(cls, data):
         """Convert DataFrame to Series before model validation"""
-        if isinstance(data, dict) and 'value' in data:
-            if isinstance(data['value'], pd.DataFrame):
-                data['value'] = data['value'].squeeze()
+        if isinstance(data, dict) and "value" in data:
+            if isinstance(data["value"], pd.DataFrame):
+                data["value"] = data["value"].squeeze()
         return data
 
-    @field_validator('value')
+    @field_validator("value")
     @classmethod
     def validate_time_series(cls, v: pd.Series) -> pd.Series:
         """
@@ -148,9 +152,10 @@ class DataPointTimeSeries(DataPointGeneral):
             raise ValueError("Series values must be float or integer")
         return v
 
+
 class DataPointDatetime(DataPointGeneral):
     """
-    Model for datapoints of the controller component which define a datetime value.
+    Model for datapoints which defines a datetime value.
 
     Attributes:
         value (datetime): The value of the datapoint, which is a datetime.
@@ -163,7 +168,7 @@ class DataPointDatetime(DataPointGeneral):
         description="A datetime value for the datapoint",
     )
 
-    @field_validator('value')
+    @field_validator("value")
     @classmethod
     def validate_datetime(cls, v: datetime) -> datetime:
         """Validate that the value is a datetime object or a string in ISO format
@@ -174,5 +179,21 @@ class DataPointDatetime(DataPointGeneral):
             try:
                 return datetime.fromisoformat(v)
             except ValueError as err:
-                raise ValueError("String value must be in ISO format for datetime") from err
+                raise ValueError(
+                    "String value must be in ISO format for datetime"
+                ) from err
         raise ValueError("Value must be a datetime object or a string in ISO format")
+
+
+class DataPointTimestep(DataPointNumber):
+    """
+    Model for datapoint for a timestep
+
+    Attributes:
+        value (float | int): The value of the datapoint, which is a number (float, int).
+        unit (DataUnits): Unit of the timestep
+        time (Optional[datetime]): Optional timestamp of the datapoint, if applicable.
+    """
+
+    value: float | int
+    unit: DataUnits

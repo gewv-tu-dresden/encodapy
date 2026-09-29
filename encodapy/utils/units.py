@@ -60,8 +60,8 @@ class DataUnits(Enum):
 
     # Time
     SECOND = ("SEC", "second")
-    HOUR = ("HUR", "hour")
     MINUTE = ("MIN", "minute")
+    HOUR = ("HUR", "hour")
     DAY = ("DAY", "day")
     MONTH = ("MON", "month")
     YEAR = ("ANN", "year")
@@ -95,7 +95,6 @@ class DataUnits(Enum):
 
     # unitless
     PERCENT = ("P1", "percent")
-
 
     # Electrical
     OHM = ("OHM", "ohm")

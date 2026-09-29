@@ -2,6 +2,7 @@
 Description: This module provides basic components for the encodapy package.
 Author: Martin Altenburger
 """
+
 from datetime import datetime, timezone
 from typing import Any, Optional, Type, Union, TypeVar, Generic, cast
 from loguru import logger
@@ -33,15 +34,10 @@ from encodapy.utils.models import (
 
 # Type variables for component data models
 # - these are used for type hinting in the BasicComponent class
-TypeConfigData = TypeVar(
-    "TypeConfigData", bound=ConfigData
-)  # pylint: disable=invalid-name
-TypeInputData = TypeVar(
-    "TypeInputData", bound=InputData
-)  # pylint: disable=invalid-name
-TypeOutputData = TypeVar(
-    "TypeOutputData", bound=OutputData
-)  # pylint: disable=invalid-name
+TypeConfigData = TypeVar("TypeConfigData", bound=ConfigData)  # pylint: disable=invalid-name
+TypeInputData = TypeVar("TypeInputData", bound=InputData)  # pylint: disable=invalid-name
+TypeOutputData = TypeVar("TypeOutputData", bound=OutputData)  # pylint: disable=invalid-name
+
 
 class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
     """
@@ -177,7 +173,7 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
             config_data (Union[list[StaticDataEntityModel], None]): Data of static entities
             static_config (Optional[ConfigDataPoints]): \
                 Configuration of the static data, if available
-                
+
         Raises:
             ComponentValidationError: If the static data configuration is invalid.
 
@@ -216,7 +212,6 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
                 static_config_data[datapoint_name] = datapoint
 
             if isinstance(datapoint, IOAllocationModel):
-
                 if static_data is None:
                     error_msg = (
                         f"Config entry '{datapoint_name}' needs static data but its not provided "
@@ -316,7 +311,9 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
         input_fields = self.io_model.input.model_dump()  # pylint: disable=no-member
 
         for datapoint_name, datapoint_config in input_fields.items():
-            logger.debug(f"Processing input configuration for {datapoint_name}: {datapoint_config}")
+            logger.debug(
+                f"Processing input configuration for {datapoint_name}: {datapoint_config}"
+            )
             if datapoint_config is None:
                 continue
             try:
@@ -340,14 +337,11 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
                 datapoint = None
 
             # Skip datapoints that are not defined in the input data model of the component \
-                # (only for variable inputs, which are not configured)
-            if datapoint_name in input_data_model.model_fields \
-                and datapoint is None:
+            # (only for variable inputs, which are not configured)
+            if datapoint_name in input_data_model.model_fields and datapoint is None:
                 # raise an error if the datapoint is required, otherwise skip it
                 if input_data_model.model_fields[datapoint_name].is_required():
-                    error_msg = (
-                        f"Required input {datapoint_name} is missing for {self.component_config.id}"
-                    )
+                    error_msg = f"Required input {datapoint_name} is missing for {self.component_config.id}"
                     logger.error(error_msg)
                     raise ValueError(error_msg)
                 # Skip optional datapoints if datapoint is not provided
@@ -401,7 +395,7 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
     def run(self, data: InputDataModel) -> list[DataTransferComponentModel]:
         """
         Run the component.
-        
+
         Args:
             data (InputDataModel): Input data for the component, \
                 including all necessary entities.
@@ -432,7 +426,13 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
         except (ValueError, KeyError, RuntimeError) as e:
             logger.error(f"Calculation failed for {self.component_config.id}: {e}")
             return components
-        except (AttributeError, TypeError, IndexError, ZeroDivisionError, NameError) as e:
+        except (
+            AttributeError,
+            TypeError,
+            IndexError,
+            ZeroDivisionError,
+            NameError,
+        ) as e:
             logger.error(
                 f"Data error during calculation for {self.component_config.id}: {e}"
             )
@@ -472,16 +472,21 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
         for datapoint_name, datapoint_config in output_config.items():
             if datapoint_config is None:
                 continue
+            datapoint_component = getattr(self.output_data, datapoint_name, None)
             try:
                 datapoint_config = IOAllocationModel.model_validate(datapoint_config)
-                datapoint = DataPointGeneral.model_validate(
-                    getattr(self.output_data, datapoint_name, None)
-                )
+                datapoint = DataPointGeneral.model_validate(datapoint_component)
             except ValidationError as e:
-                logger.error(
-                    f"Validating datapoint config failed for {datapoint_name} "
-                    f"of {self.component_config.id}: {e}"
-                )
+                if datapoint_component is None:
+                    logger.error(
+                        f"Output datapoint {datapoint_name} is set to None in the output data"
+                        f" for {self.component_config.id}, Validation error: {e}"
+                    )
+                else:
+                    logger.error(
+                        f"Validating datapoint config failed for {datapoint_name} "
+                        f"of {self.component_config.id}: {e}"
+                    )
                 continue
             # Normalize value to ensure nested BaseModels are converted to dicts
             normalized_value = self._normalize_value_for_output(datapoint.value)
@@ -519,7 +524,10 @@ class BasicComponent(Generic[TypeConfigData, TypeInputData, TypeOutputData]):
             return value.model_dump(mode="json")
         if isinstance(value, dict):
             # Recursively normalize all values in the dict
-            return {k: BasicComponent._normalize_value_for_output(v) for k, v in value.items()}
+            return {
+                k: BasicComponent._normalize_value_for_output(v)
+                for k, v in value.items()
+            }
         if isinstance(value, (list, tuple)):
             # Recursively normalize all items in the list/tuple
             return [BasicComponent._normalize_value_for_output(item) for item in value]

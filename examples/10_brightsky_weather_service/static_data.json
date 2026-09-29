@@ -1,16 +1,16 @@
 {
-"staticdata": 
+"staticdata":
 [
   {
     "id": "weatherdata",
     "attributes":
-    [ 
+    [
       {
           "id": "longitude",
           "value": "13.74",
           "unit":"DD",
           "time" : null
-        },  
+        },
         {
           "id": "latitude",
           "value": "51.05",
@@ -19,19 +19,19 @@
         },
         {
           "id": "forecast_time_range",
-          "value": "2d",
-          "time" : null
+          "value": 2,
+          "unit": "DAY"
         },
         {
           "id": "time_interval_current_weather",
-          "value": "1M",
-          "time" : null
+          "value": 1,
+          "unit": "MIN"
         },
         {
           "id": "time_interval_forecast_weather",
-          "value": "3h",
-          "time" : null
-        }            
+          "value": 3,
+          "unit": "HUR"
+        }
     ]
   }
 ]
