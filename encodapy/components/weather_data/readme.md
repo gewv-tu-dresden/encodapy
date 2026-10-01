@@ -102,11 +102,24 @@ Forecast weather:
 - `forecast_temperature`: dict of forecast outside temperature in °C
 - `forecast_solar`: dict of forecast solar irradiation during the previous 60 minutes in J / m²
 
-The forecast outputs are dicts with the timestamp of each forecast step as key (string) and the forecast value as value. The covered period is defined by `forecast_time_range`.
+The forecast outputs are dicts with the timestamp of each forecast step as key (string) and the forecast value as value. The covered period is defined by `forecast_time_range`. The keys are ISO-8601 timestamps (including the UTC offset of the retrieval timezone, see [Timezone](#timezone)) and follow the hourly grid of the Brightsky weather endpoint. Since every key contains the full UTC offset, the timestamps can be converted to any other timezone downstream.
+
+## Timezone
+
+The timezone for the API retrieval is defined by the constant `WEATHER_DATA_TZ_NAME` in [weather_data_config.py](./weather_data_config.py) (default: `Europe/Berlin`). It is used for the component clock (interval checks) and passed to Brightsky as the `tz` parameter, so the API returns timestamps with the matching UTC offset. All output timestamps are therefore complete datetime information: the `time` field of the current weather datapoints is given in UTC, the forecast keys carry the offset of the retrieval timezone. Both can be converted to any other timezone by the receiving component.
 
 ## Error Handling
 
-If the API request to Brightsky fails, a `WeatherDataApiError` is raised internally, the error is logged, and the component keeps the last known output data. The next API call is retried at the next time interval.
+The component follows a "last known data" strategy: if an API request to Brightsky fails, the error is logged and the component keeps the last known output data. A failed request does not interrupt the calculation and no error code or error state is propagated to the framework or to connected components; the error is only visible in the log.
+
+The following error cases are handled the same way, for current and forecast calls:
+
+- HTTP status codes other than 200 (client and server errors)
+- a response body that is no valid JSON (e.g. an HTML error page of a gateway)
+- timeouts and connection/request errors
+- incomplete or invalid weather data that fails the validation of the output model
+
+The retry time step of an interval is only advanced after a successful API call. A failed call is therefore retried at the next calculation step (the next `sampling_time` of the service), not after the full configured interval. Until the first successful call, the outputs stay `None`.
 
 ## Example
 

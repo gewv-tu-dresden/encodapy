@@ -5,16 +5,13 @@ Author: Paul Seidel, Martin Altenburger
 
 from typing import Optional, Dict
 from enum import Enum
-
 from pydantic import Field
-
 from encodapy.components.basic_component_config import (
     ConfigData,
     InputData,
     OutputData,
 )
 from encodapy.utils.datapoints import (
-    DataPointGeneral,
     DataPointNumber,
     DataPointDict,
     DataPointTimestep,
@@ -23,6 +20,7 @@ from encodapy.utils.units import DataUnits
 
 WEATHER_DATA_URL = "https://api.brightsky.dev"
 WEATHER_DATA_UNITS = "dwd"  # use "dwd" for Brightsky/DWD data
+WEATHER_DATA_TZ_NAME = "Europe/Berlin"  # use "Europe/Berlin" for Brightsky/DWD data
 
 
 class WeatherApiCallMethod(Enum):
@@ -114,13 +112,13 @@ class WeatherDataConfigData(ConfigData):
         :class:`~encodapy.components.basic_component_config.ComponentData`
     """
 
-    longitude: DataPointGeneral = Field(
+    longitude: DataPointNumber = Field(
         DataPointNumber(value=13.4),
         description="""Value of longitude of the chosen location in degree
         (default value for Berlin)""",
         json_schema_extra={"unit": "DD"},
     )
-    latitude: DataPointGeneral = Field(
+    latitude: DataPointNumber = Field(
         DataPointNumber(value=52.5),
         description="Value of latitude of the chosen location in degree (default value for Berlin)",
         json_schema_extra={"unit": "DD"},

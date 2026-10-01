@@ -13,8 +13,6 @@ from typing import Any
 import pytest
 import requests
 
-from encodapy.components.basic_component_config import ControllerComponentModel
-from encodapy.components.weather_data import weather_data as weather_module
 from encodapy.components.weather_data.weather_data import (
     WeatherData,
     WeatherDataApiError,
@@ -23,162 +21,19 @@ from encodapy.components.weather_data.weather_data_config import (
     WeatherDataConfigData,
     WeatherDataOutputData,
 )
-from encodapy.config.types import AttributeTypes
 from encodapy.utils.datapoints import DataPointNumber, DataPointTimestep
-from encodapy.utils.models import InputDataAttributeModel, StaticDataEntityModel
 from encodapy.utils.units import DataUnits
 
-CURRENT_WEATHER_PAYLOAD = {
-    "weather": {
-        "temperature": 21.5,
-        "relative_humidity": 45.0,
-        "pressure_msl": 1024.2,
-        "dew_point": 9.7,
-        "solar_60": 0.608,
-    }
-}
+from tests.components.weather_data.unit import helpers
 
-FORECAST_WEATHER_PAYLOAD = {
-    "weather": [
-        {
-            "timestamp": "2026-09-29T14:00:00+02:00",
-            "temperature": 22.3,
-            "solar": 0.644,
-        },
-        {
-            "timestamp": "2026-09-29T15:00:00+02:00",
-            "temperature": 22.8,
-            "solar": 0.625,
-        },
-    ]
-}
+CURRENT_WEATHER_PAYLOAD = helpers.CURRENT_WEATHER_PAYLOAD
+FORECAST_WEATHER_PAYLOAD = helpers.FORECAST_WEATHER_PAYLOAD
+ALL_OUTPUTS = helpers.ALL_OUTPUTS
+CURRENT_OUTPUTS = helpers.CURRENT_OUTPUTS
 
-ALL_OUTPUTS = {
-    "temperature": {"entity": "weatherdata", "attribute": "temperature"},
-    "relative_humidity": {"entity": "weatherdata", "attribute": "relative_humidity"},
-    "pressure_msl": {"entity": "weatherdata", "attribute": "pressure_msl"},
-    "dew_point": {"entity": "weatherdata", "attribute": "dew_point"},
-    "solar_60": {"entity": "weatherdata", "attribute": "solar_60"},
-    "forecast_temperature": {
-        "entity": "weatherdata",
-        "attribute": "forecast_temperature",
-    },
-    "forecast_solar": {"entity": "weatherdata", "attribute": "forecast_solar"},
-}
-
-_CURRENT_OUTPUT_KEYS = (
-    "temperature",
-    "relative_humidity",
-    "pressure_msl",
-    "dew_point",
-    "solar_60",
-)
-
-CURRENT_OUTPUTS = {key: ALL_OUTPUTS[key] for key in _CURRENT_OUTPUT_KEYS}
-
-
-class _FakeResponse:  # pylint: disable=too-few-public-methods
-    """Minimal stand-in for a requests.Response object."""
-
-    def __init__(self, status_code: int, payload: dict[str, Any]) -> None:
-        self.status_code = status_code
-        self._payload = payload
-        self.text = str(payload)
-
-    def json(self) -> dict[str, Any]:
-        """Return the payload of the fake api response."""
-        return self._payload
-
-
-def _static_entities() -> list[StaticDataEntityModel]:
-    """Create the static data entities with the component configuration."""
-
-    def _attribute(
-        attribute_id: str, value: Any, unit: DataUnits
-    ) -> InputDataAttributeModel:
-        return InputDataAttributeModel(
-            id=attribute_id,
-            data=value,
-            unit=unit,
-            data_type=AttributeTypes.VALUE,
-            data_available=True,
-            latest_timestamp_input=None,
-        )
-
-    return [
-        StaticDataEntityModel(
-            id="weatherdata",
-            attributes=[
-                _attribute("longitude", 13.74, DataUnits.DD),
-                _attribute("latitude", 51.05, DataUnits.DD),
-                _attribute("forecast_time_range", 2, DataUnits.DAY),
-                _attribute("time_interval_current_weather", 15, DataUnits.MINUTE),
-                _attribute("time_interval_forecast_weather", 3, DataUnits.HOUR),
-            ],
-        )
-    ]
-
-
-def _component_config(outputs: dict[str, dict[str, str]]) -> ControllerComponentModel:
-    """Create a valid component configuration for the WeatherData component."""
-    return ControllerComponentModel.model_validate(
-        {
-            "id": "weatherdata",
-            "type": "weather_data",
-            "inputs": {},
-            "outputs": outputs,
-            "config": {
-                "longitude": {"entity": "weatherdata", "attribute": "longitude"},
-                "latitude": {"entity": "weatherdata", "attribute": "latitude"},
-                "forecast_time_range": {
-                    "entity": "weatherdata",
-                    "attribute": "forecast_time_range",
-                },
-                "time_interval_current_weather": {
-                    "entity": "weatherdata",
-                    "attribute": "time_interval_current_weather",
-                },
-                "time_interval_forecast_weather": {
-                    "entity": "weatherdata",
-                    "attribute": "time_interval_forecast_weather",
-                },
-            },
-        }
-    )
-
-
-def _make_component(
-    outputs: dict[str, dict[str, str]] | None = None,
-) -> WeatherData:
-    """Create a fully initialized WeatherData component without API calls."""
-    return WeatherData(
-        config=_component_config(outputs or ALL_OUTPUTS),
-        component_id="weatherdata",
-        static_data=_static_entities(),
-    )
-
-
-def _patch_requests_get(
-    monkeypatch: pytest.MonkeyPatch,
-    responses: dict[str, _FakeResponse],
-    error: Exception | None = None,
-) -> list[dict[str, Any]]:
-    """Replace requests.get of the weather module and record all calls."""
-    calls: list[dict[str, Any]] = []
-
-    def fake_get(
-        url: str, params: dict | None = None, timeout: float | None = None
-    ) -> _FakeResponse:
-        calls.append({"url": url, "params": dict(params or {}), "timeout": timeout})
-        if error is not None:
-            raise error
-        for suffix, response in responses.items():
-            if url.endswith(suffix):
-                return response
-        return _FakeResponse(404, {"message": f"unexpected url: {url}"})
-
-    monkeypatch.setattr(weather_module.requests, "get", fake_get)
-    return calls
+_FakeResponse = helpers.FakeResponse
+_make_component = helpers.make_component
+_patch_requests_get = helpers.patch_requests_get
 
 
 def test_config_data_defaults_are_set_to_berlin() -> None:
@@ -376,6 +231,25 @@ def test_get_current_weather_data_returns_empty_dict_on_connection_error(
     assert current_data.value == {}
 
 
+def test_get_current_weather_data_returns_empty_dict_on_non_json_error_body(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A non-json error body (e.g. a gateway html page) results in an empty dict.
+
+    The error body of the failed request is no valid JSON, so the response
+    cannot be parsed and the component falls back to an empty dict.
+    """
+    component = _make_component()
+    _patch_requests_get(
+        monkeypatch,
+        {"/current_weather": _FakeResponse(502, None, body="<html>Bad Gateway</html>")},
+    )
+
+    current_data = component.get_current_weather_data()
+
+    assert current_data.value == {}
+
+
 def test_get_forecast_weather_data_returns_forecast_dicts(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -439,6 +313,25 @@ def test_get_forecast_weather_data_returns_empty_dict_on_timeout(
         monkeypatch,
         {"/weather": _FakeResponse(200, FORECAST_WEATHER_PAYLOAD)},
         error=requests.Timeout("timeout exceeded"),
+    )
+
+    forecast_data = component.get_forecast_weather_data()
+
+    assert forecast_data.value == {}
+
+
+def test_get_forecast_weather_data_returns_empty_dict_on_non_json_error_body(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A non-json error body (e.g. a gateway html page) results in an empty dict.
+
+    The error body of the failed request is no valid JSON, so the response
+    cannot be parsed and the component falls back to an empty dict.
+    """
+    component = _make_component()
+    _patch_requests_get(
+        monkeypatch,
+        {"/weather": _FakeResponse(502, None, body="<html>Bad Gateway</html>")},
     )
 
     forecast_data = component.get_forecast_weather_data()

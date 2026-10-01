@@ -176,7 +176,7 @@ def test_example_config_smoke_runs_weather_data_component(
         assert call["params"]["lon"] == pytest.approx(13.74)
         # check date for forecast api call is within the last 15 minutes (to avoid stale data)
         if call["url"].endswith("/weather"):
-            date = call["params"]["date"]
+            date = datetime.fromisoformat(call["params"]["date"])
             assert isinstance(date, datetime)
             now = datetime.now(pytz.timezone("Europe/Berlin"))
             assert now - timedelta(minutes=15) <= date <= now

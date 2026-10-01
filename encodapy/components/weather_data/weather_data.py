@@ -4,9 +4,10 @@ Author: Paul Seidel, Martin Altenburger
 """
 
 from typing import Optional, Union
+from json.decoder import JSONDecodeError
 from datetime import datetime, timedelta, timezone
-import pytz
 import requests
+import pytz
 from loguru import logger
 from pydantic import ValidationError
 from encodapy.components.basic_component import BasicComponent, StaticDataEntityModel
@@ -21,7 +22,10 @@ from .weather_data_config import (
     WeatherApiCallMethod,
     WEATHER_DATA_URL,
     WEATHER_DATA_UNITS,
+    WEATHER_DATA_TZ_NAME,
 )
+
+WEATHER_DATA_TZ = pytz.timezone(WEATHER_DATA_TZ_NAME)
 
 
 class WeatherDataApiError(RuntimeError):
@@ -43,7 +47,6 @@ class WeatherData(BasicComponent):
     ) -> None:
         # Add the necessary instance variables here
         self.unique_weather_types: list[str] = []
-        self.berlin_tz = pytz.timezone("Europe/Berlin")
 
         # Add the type declaration for the following variables so that autofill works properly
         self.config_data: WeatherDataConfigData
@@ -99,7 +102,7 @@ class WeatherData(BasicComponent):
                 "Configure at least one output field (current and/or forecast)."
             )
 
-        actual_time = datetime.now(self.berlin_tz).replace(second=0)
+        actual_time = datetime.now(WEATHER_DATA_TZ).replace(second=0)
         self.next_time_step_current_weather = actual_time
         self.next_time_step_forecast_weather = actual_time
 
@@ -115,7 +118,7 @@ class WeatherData(BasicComponent):
         params = {
             "lat": self.config_data.latitude.value,
             "lon": self.config_data.longitude.value,
-            "tz": self.berlin_tz,
+            "tz": WEATHER_DATA_TZ_NAME,
             "units": WEATHER_DATA_UNITS,
         }
 
@@ -123,33 +126,25 @@ class WeatherData(BasicComponent):
 
         try:
             response = requests.get(url, params=params, timeout=5.0)
-            if response.status_code >= 400:
+            if response.status_code != 200:
                 error_text = response.json().get("message", response.text[:200])
                 logger.error(
                     f"Getting data of brightsky failed, Client Error Codes {error_text}"
                 )
                 raise WeatherDataApiError(error_text)
 
-            if response.status_code == 200:
-                data = response.json()
-                weather = data["weather"]
+            data = response.json()
+            weather = data["weather"]
 
-                output_dict = {
-                    "temperature": float(weather["temperature"]),
-                    "relative_humidity": float(weather["relative_humidity"]),
-                    "pressure_msl": float(weather["pressure_msl"]),
-                    "dew_point": float(weather["dew_point"]),
-                    "solar_60": adjust_units(
-                        float(weather["solar_60"]), DataUnits.KWH_MQ, DataUnits.B13
-                    ),
-                }
-
-            else:
-                error_text = response.json().get("message", response.text[:200])
-                logger.error(
-                    f"Getting data of brightsky failed, Status Code: {error_text}"
-                )
-                raise WeatherDataApiError(error_text)
+            output_dict = {
+                "temperature": float(weather["temperature"]),
+                "relative_humidity": float(weather["relative_humidity"]),
+                "pressure_msl": float(weather["pressure_msl"]),
+                "dew_point": float(weather["dew_point"]),
+                "solar_60": adjust_units(
+                    float(weather["solar_60"]), DataUnits.KWH_MQ, DataUnits.B13
+                ),
+            }
 
         except requests.exceptions.Timeout:
             logger.error(
@@ -157,6 +152,8 @@ class WeatherData(BasicComponent):
             )
         except requests.exceptions.RequestException as e:
             logger.error(f"Connection- or API-error: {e}")
+        except JSONDecodeError as e:
+            logger.error(f"Error decoding JSON response: {e}")
 
         return DataPointDict(value=output_dict)
 
@@ -199,7 +196,7 @@ class WeatherData(BasicComponent):
         """
 
         logger.debug("Get Forecast Data from Brightsky...")
-        actual_time = datetime.now(self.berlin_tz)
+        actual_time = datetime.now(WEATHER_DATA_TZ)
         forecast_start_time = actual_time.replace(
             minute=(actual_time.minute // 15) * 15, second=0, microsecond=0
         )
@@ -214,9 +211,9 @@ class WeatherData(BasicComponent):
         params = {
             "lat": self.config_data.latitude.value,
             "lon": self.config_data.longitude.value,
-            "tz": self.berlin_tz,
-            "date": forecast_start_time,
-            "last_date": forecast_end_time,
+            "tz": WEATHER_DATA_TZ_NAME,
+            "date": forecast_start_time.isoformat(),
+            "last_date": forecast_end_time.isoformat(),
             "units": WEATHER_DATA_UNITS,
         }
 
@@ -224,29 +221,24 @@ class WeatherData(BasicComponent):
 
         try:
             response = requests.get(url, params=params, timeout=5.0)
-            if response.status_code >= 400:
+            if response.status_code != 200:
                 error_text = response.json().get("message", response.text[:200])
                 logger.error(f"Failed read data of brightsky: {error_text}")
                 raise WeatherDataApiError(error_text)
 
-            if response.status_code == 200:
-                data = response.json()
+            data = response.json()
 
-                weather = data["weather"]
+            weather = data["weather"]
 
-                temp_dict = {hour["timestamp"]: hour["temperature"] for hour in weather}
-                solar_dict = {hour["timestamp"]: hour["solar"] for hour in weather}
+            temp_dict = {hour["timestamp"]: hour["temperature"] for hour in weather}
+            solar_dict = {hour["timestamp"]: hour["solar"] for hour in weather}
 
-                output_dict = {
-                    "forecast_temperature": temp_dict,
-                    "forecast_solar": adjust_units(
-                        solar_dict, DataUnits.KWH_MQ, DataUnits.B13
-                    ),
-                }
-            else:
-                error_text = response.json().get("message", response.text[:200])
-                logger.error(f"Failed read data of brightsky: {error_text}")
-                raise WeatherDataApiError(error_text)
+            output_dict = {
+                "forecast_temperature": temp_dict,
+                "forecast_solar": adjust_units(
+                    solar_dict, DataUnits.KWH_MQ, DataUnits.B13
+                ),
+            }
 
         except requests.exceptions.Timeout:
             logger.error(
@@ -254,6 +246,8 @@ class WeatherData(BasicComponent):
             )
         except requests.exceptions.RequestException as e:
             logger.error(f"Connection- or API-error: {e}")
+        except JSONDecodeError as e:
+            logger.error(f"Error decoding JSON response: {e}")
 
         return DataPointDict(value=output_dict)
 
@@ -269,14 +263,148 @@ class WeatherData(BasicComponent):
         fields.update(overrides)
         return WeatherDataOutputData(**fields)
 
+    def _update_current_weather(
+        self,
+        time_of_timestep: datetime,
+        time_of_timestep_utc: datetime,
+    ) -> WeatherDataOutputData:
+        """
+        Update the current weather data of the last known output.
+        Falls back to the last known data on API, data or validation errors.
+
+        Returns the updated output data.
+        """
+        # base: last known current weather data
+        output = self._copy_output(self.output_data)
+
+        if time_of_timestep < self.next_time_step_current_weather:
+            logger.debug("Use Weather data of last API_call")
+            return output
+
+        logger.debug("Get Current Data from Brightsky...")
+
+        try:
+            current_data = self.get_current_weather_data()
+        except WeatherDataApiError as e:
+            logger.error(f"Error occurred while fetching current weather data: {e}")
+            current_data = None
+
+        if current_data is None or not current_data.value:
+            logger.error("Current Weather Data Output is None! Using last data.")
+            return output
+
+        try:
+            output = self._copy_output(
+                self.output_data,
+                temperature=DataPointNumber(
+                    value=current_data.value.get("temperature"),
+                    unit=DataUnits.DEGREECELSIUS,
+                    time=time_of_timestep_utc,
+                ),
+                relative_humidity=DataPointNumber(
+                    value=current_data.value.get("relative_humidity"),
+                    unit=DataUnits.PERCENT,
+                    time=time_of_timestep_utc,
+                ),
+                pressure_msl=DataPointNumber(
+                    value=current_data.value.get("pressure_msl"),
+                    unit=DataUnits.HPA,
+                    time=time_of_timestep_utc,
+                ),
+                dew_point=DataPointNumber(
+                    value=current_data.value.get("dew_point"),
+                    unit=DataUnits.DEGREECELSIUS,
+                    time=time_of_timestep_utc,
+                ),
+                solar_60=DataPointNumber(
+                    value=current_data.value.get("solar_60"),
+                    unit=DataUnits.B13,
+                    time=time_of_timestep_utc,
+                ),
+            )
+        except ValidationError as e:
+            logger.error(f"Validation error while creating WeatherDataOutputData: {e}")
+            return output
+
+        # update next time step for current weather data retrieval
+        self.next_time_step_current_weather = self.get_future_time(
+            time_of_timestep, self.config_data.time_interval_current_weather
+        )
+        return output
+
+    def _update_forecast_weather(
+        self,
+        base: WeatherDataOutputData,
+        time_of_timestep: datetime,
+        time_of_timestep_utc: datetime,
+    ) -> WeatherDataOutputData:
+        """
+        Update the forecast weather data on the given base output.
+        Falls back to the last known data on API, data or validation errors.
+
+        Returns the updated output data.
+        """
+        # base: current data of this timestep + last known forecast data
+        output = self._copy_output(
+            base,
+            forecast_temperature=self.output_data.forecast_temperature,
+            forecast_solar=self.output_data.forecast_solar,
+        )
+
+        if time_of_timestep < self.next_time_step_forecast_weather:
+            logger.debug("Use Weather data of last API_call")
+            return output
+
+        logger.debug("Get Forecast Data from Brightsky...")
+
+        try:
+            forecast_data = self.get_forecast_weather_data()
+        except WeatherDataApiError as e:
+            logger.error(f"Error occurred while fetching forecast weather data: {e}")
+            forecast_data = None
+
+        if forecast_data is None or not forecast_data.value:
+            logger.error("Forecast Weather Data Output is None! Using last data.")
+            return output
+
+        temperature_dict = forecast_data.value.get("forecast_temperature", {})
+        solar_dict = forecast_data.value.get("forecast_solar", {})
+
+        try:
+            output = self._copy_output(
+                output,
+                forecast_temperature=DataPointDict(
+                    value={
+                        str(index): value for index, value in temperature_dict.items()
+                    },
+                    unit=DataUnits.DEGREECELSIUS,
+                    time=time_of_timestep_utc,
+                ),
+                forecast_solar=DataPointDict(
+                    value={str(index): value for index, value in solar_dict.items()},
+                    unit=DataUnits.B13,
+                    time=time_of_timestep_utc,
+                ),
+            )
+        except ValidationError as e:
+            logger.error(
+                "Validation error while creating WeatherDataOutputData for forecast: "
+                f"{e}"
+            )
+            return output
+
+        # update next time step for forecast weather data retrieval
+        self.next_time_step_forecast_weather = self.get_future_time(
+            time_of_timestep, self.config_data.time_interval_forecast_weather
+        )
+        return output
+
     def calculate(self) -> None:
         """
         Perform the calculations for the WeatherData component
         """
-        output = WeatherDataOutputData()
-
         # check time intervals for current and forecast weather data retrieval
-        time_of_timestep = datetime.now(self.berlin_tz).replace(microsecond=0)
+        time_of_timestep = datetime.now(WEATHER_DATA_TZ).replace(microsecond=0)
         time_of_timestep_utc = time_of_timestep.astimezone(timezone.utc)
         logger.debug(f"Current time of timestep: {time_of_timestep}")
         logger.debug(
@@ -284,128 +412,15 @@ class WeatherData(BasicComponent):
             f"{self.next_time_step_current_weather}"
         )
 
+        output = WeatherDataOutputData()
+
         if WeatherApiCallMethod.CURRENT.value in self.unique_weather_types:
-            # base: last known current weather data
-            output = self._copy_output(self.output_data)
-
-            if time_of_timestep >= self.next_time_step_current_weather:
-                logger.debug("Get Current Data from Brightsky...")
-
-                try:
-                    current_data = self.get_current_weather_data()
-                except WeatherDataApiError as e:
-                    logger.error(
-                        f"Error occurred while fetching current weather data: {e}"
-                    )
-                    current_data = None
-
-                if current_data is not None and current_data.value:
-                    try:
-                        output = WeatherDataOutputData(
-                            temperature=DataPointNumber(
-                                value=current_data.value.get("temperature"),
-                                unit=DataUnits.DEGREECELSIUS,
-                                time=time_of_timestep_utc,
-                            ),
-                            relative_humidity=DataPointNumber(
-                                value=current_data.value.get("relative_humidity"),
-                                unit=DataUnits.PERCENT,
-                                time=time_of_timestep_utc,
-                            ),
-                            pressure_msl=DataPointNumber(
-                                value=current_data.value.get("pressure_msl"),
-                                unit=DataUnits.HPA,
-                                time=time_of_timestep_utc,
-                            ),
-                            dew_point=DataPointNumber(
-                                value=current_data.value.get("dew_point"),
-                                unit=DataUnits.DEGREECELSIUS,
-                                time=time_of_timestep_utc,
-                            ),
-                            solar_60=DataPointNumber(
-                                value=current_data.value.get("solar_60"),
-                                unit=DataUnits.B13,
-                                time=time_of_timestep_utc,
-                            ),
-                        )
-                    except ValidationError as e:
-                        logger.error(
-                            f"Validation error while creating WeatherDataOutputData: {e}"
-                        )
-                else:
-                    logger.error(
-                        "Current Weather Data Output is None! Using last data."
-                    )
-
-                # update next time step for current weather data retrieval
-                self.next_time_step_current_weather = self.get_future_time(
-                    time_of_timestep, self.config_data.time_interval_current_weather
-                )
-
-            else:
-                logger.debug("Use Weather data of last API_call")
-
-        if WeatherApiCallMethod.FORECAST.value in self.unique_weather_types:
-            # base: current data of this timestep + last known forecast data
-            output = self._copy_output(
-                output,
-                forecast_temperature=self.output_data.forecast_temperature,
-                forecast_solar=self.output_data.forecast_solar,
+            output = self._update_current_weather(
+                time_of_timestep, time_of_timestep_utc
             )
-
-            if time_of_timestep >= self.next_time_step_forecast_weather:
-                logger.debug("Get Forecast Data from Brightsky...")
-
-                try:
-                    forecast_data = self.get_forecast_weather_data()
-                except WeatherDataApiError as e:
-                    logger.error(
-                        f"Error occurred while fetching forecast weather data: {e}"
-                    )
-                    forecast_data = None
-
-                if forecast_data is not None and forecast_data.value:
-                    temperature_dict = forecast_data.value.get(
-                        "forecast_temperature", {}
-                    )
-                    solar_dict = forecast_data.value.get("forecast_solar", {})
-
-                    try:
-                        output = self._copy_output(
-                            output,
-                            forecast_temperature=DataPointDict(
-                                value={
-                                    str(index): value
-                                    for index, value in temperature_dict.items()
-                                },
-                                unit=DataUnits.DEGREECELSIUS,
-                                time=time_of_timestep_utc,
-                            ),
-                            forecast_solar=DataPointDict(
-                                value={
-                                    str(index): value
-                                    for index, value in solar_dict.items()
-                                },
-                                unit=DataUnits.B13,
-                                time=time_of_timestep_utc,
-                            ),
-                        )
-                    except ValidationError as e:
-                        logger.error(
-                            "Validation error while creating WeatherDataOutputData "
-                            f"for forecast: {e}"
-                        )
-                else:
-                    logger.error(
-                        "Forecast Weather Data Output is None! Using last data."
-                    )
-
-                # update next time step for forecast weather data retrieval
-                self.next_time_step_forecast_weather = self.get_future_time(
-                    time_of_timestep, self.config_data.time_interval_forecast_weather
-                )
-
-            else:
-                logger.debug("Use Weather data of last API_call")
+        if WeatherApiCallMethod.FORECAST.value in self.unique_weather_types:
+            output = self._update_forecast_weather(
+                output, time_of_timestep, time_of_timestep_utc
+            )
 
         self.output_data = output
