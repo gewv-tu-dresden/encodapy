@@ -9,7 +9,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
-
+from datetime import datetime, timedelta
+import pytz
 import pytest
 
 from encodapy.components.basic_component_config import ControllerComponentModel
@@ -173,7 +174,12 @@ def test_example_config_smoke_runs_weather_data_component(
     for call in api_calls:
         assert call["params"]["lat"] == pytest.approx(51.05)
         assert call["params"]["lon"] == pytest.approx(13.74)
-        assert call["params"]["date"] == "2026-09-29T14:00:00+02:00"
+        # check date for forecast api call is within the last 15 minutes (to avoid stale data)
+        if call["url"].endswith("/weather"):
+            date = call["params"]["date"]
+            assert isinstance(date, datetime)
+            now = datetime.now(pytz.timezone("Europe/Berlin"))
+            assert now - timedelta(minutes=15) <= date <= now
 
     output = component.output_data.model_dump()
     assert output["temperature"]["value"] == pytest.approx(21.5)
