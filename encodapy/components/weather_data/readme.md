@@ -1,54 +1,121 @@
 # Weather Data
 
-This is a component to get current and forecast weather data from Brightsky.
+This is a component to get current and forecast weather data from [Brightsky](https://brightsky.dev/).
 
 ## Functionality
 
-The component uses coordination values to get located weather data from [Brightsky](https://brightsky.dev/).
+The component uses coordinates to get located weather data from [Brightsky](https://brightsky.dev/).
 Bright Sky is a free and open-source weather API. It aims to provide an easy-to-use gateway to weather data that the DWD – Germany's meteorological service – publishes on their open data server.
 
 The public instance at [api.brightsky.dev](https://api.brightsky.dev/) is free-to-use for all purposes, no API key required! Please note that the [DWD's Terms of Use](https://www.dwd.de/EN/service/legal_notice/legal_notice.html) apply to all data you retrieve through the API.
 
-implemented Data:
+Implemented data:
 
 - current weather
 - forecast weather
 
-## Description
+Depending on the selected outputs, the component determines which API calls (current and/or forecast) are necessary, executes the respective requests, and outputs the corresponding values. At least one output must be configured, otherwise the component raises an error during preparation.
 
-Depending on the selected outputs (current/forecast), the respective requests are executed and the corresponding values ​​are output.
+The retrieval of the weather data is controlled by its own time intervals (see [Component Configuration](#component-configuration)), independent of the `sampling_time` in the service config. Until the next interval is reached, the data of the last API call is used.
 
-### Inputs
+## Component Configuration
 
-No inputs are requiered
+The configuration model is {py:class}`~encodapy.components.weather_data.weather_data_config.WeatherDataConfigData` in [weather_data_config.py](./weather_data_config.py).
 
-### Static Data
+Coordinates of the location:
 
-coordinates of the building:
+- `longitude`: longitude of the chosen location in degree (default value: 13.4, Berlin)
+- `latitude`: latitude of the chosen location in degree (default value: 52.5, Berlin)
 
-- longitude
-- latitude
+Time settings:
 
-time settings:
+- `forecast_time_range` (optional): forecast time range to retrieve (default value: 1 day)
+- `time_interval_current_weather` (optional): time interval for retrieving current weather data, independent of the `sampling_time` in the config (default value: 15 minutes)
+- `time_interval_forecast_weather` (optional): time interval for retrieving forecast weather data, independent of the `sampling_time` in the config (default value: 3 hours)
 
-Forecast period:
+Configuration parameters must be set as datapoints or connections to static data in the config file.
 
-- forecast_time_range [optional] (default value: 1d)
-Time interval for retrieving current weather data: (independent of the sampling_time in the config)
-- time_interval_current_weather [optional] (default value 15M)
-Time interval for retrieving forecast weather data: (independent of the sampling_time in the config)
-- time_interval_forecast_weather [optional] (default value 3h)
+### Minimal Configuration Example
 
-### Outputs
+This component block illustrates the relevant part of a service configuration:
 
-all implemented outputs are optional
+```json
+{
+  "id": "weatherdata",
+  "type": "weather_data",
+  "inputs": {},
+  "outputs": {
+    "temperature": {
+      "entity": "weatherdata",
+      "attribute": "temperature"
+    },
+    "forecast_temperature": {
+      "entity": "weatherdata",
+      "attribute": "forecast_temperature"
+    }
+  },
+  "config": {
+    "longitude": {
+      "entity": "weatherdata",
+      "attribute": "longitude"
+    },
+    "latitude": {
+      "entity": "weatherdata",
+      "attribute": "latitude"
+    },
+    "forecast_time_range": {
+      "entity": "weatherdata",
+      "attribute": "forecast_time_range"
+    },
+    "time_interval_current_weather": {
+      "entity": "weatherdata",
+      "attribute": "time_interval_current_weather"
+    },
+    "time_interval_forecast_weather": {
+      "entity": "weatherdata",
+      "attribute": "time_interval_forecast_weather"
+    }
+  }
+}
+```
 
-- "temperature": outside temperature in °C
-- "relative_humidity": relative humidity in %
-- "dew_point": dew point of air in °C
-- "pressure_msl": Atmospheric pressure at timestamp, reduced to mean sea level hPa
-- "solar_60": Sunshine duration during previous 60 minutes in kWh / m²
-- "forecast_temperature" : dict of outside temperature in °C
-- "forecast_solar" : dict of solar_60 kWh / m²
+For a full working configuration, see the [example](#example).
 
-For more informations look into the example [examples/10_brightsky_weather_service](./../../../examples/10_brightsky_weather_service/)
+## Inputs
+
+No inputs are required. The input model is {py:class}`~encodapy.components.weather_data.weather_data_config.WeatherDataInputData`.
+
+## Outputs
+
+All implemented outputs are optional, but at least one output must be configured. The output model is {py:class}`~encodapy.components.weather_data.weather_data_config.WeatherDataOutputData` in [weather_data_config.py](./weather_data_config.py).
+
+Current weather:
+
+- `temperature`: air temperature at timestamp, 2 m above the ground in °C
+- `relative_humidity`: relative humidity at timestamp in %
+- `dew_point`: dew point at timestamp, 2 m above ground in °C
+- `pressure_msl`: atmospheric pressure at timestamp, reduced to mean sea level in hPa
+- `solar_60`: solar irradiation during the previous 60 minutes in J / m²
+
+Forecast weather:
+
+- `forecast_temperature`: dict of forecast outside temperature in °C
+- `forecast_solar`: dict of forecast solar irradiation during the previous 60 minutes in J / m²
+
+The forecast outputs are dicts with the timestamp of each forecast step as key (string) and the forecast value as value. The covered period is defined by `forecast_time_range`.
+
+## Error Handling
+
+If the API request to Brightsky fails, a `WeatherDataApiError` is raised internally, the error is logged, and the component keeps the last known output data. The next API call is retried at the next time interval.
+
+## Example
+
+A full working example is available in:
+
+- [examples/10_brightsky_weather_service](./../../../examples/10_brightsky_weather_service/)
+
+Relevant files:
+
+- Example service configuration: [examples/10_brightsky_weather_service/config.json](./../../../examples/10_brightsky_weather_service/config.json)
+- Example static data: [examples/10_brightsky_weather_service/static_data.json](./../../../examples/10_brightsky_weather_service/static_data.json)
+- Notebook to run the example: [examples/10_brightsky_weather_service/run_weatherdata_service.ipynb](./../../../examples/10_brightsky_weather_service/run_weatherdata_service.ipynb)

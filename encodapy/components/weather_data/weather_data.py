@@ -1,6 +1,6 @@
 """
-Defines the WeatherData for Brightsky class.
-Author: Paul Seidel
+Defines the WeatherData via Brightsky component.
+Author: Paul Seidel, Martin Altenburger
 """
 
 from typing import Optional, Union
@@ -20,6 +20,7 @@ from .weather_data_config import (
     WeatherDataOutputData,
     WeatherApiCallMethod,
     WEATHER_DATA_URL,
+    WEATHER_DATA_UNITS,
 )
 
 
@@ -31,7 +32,7 @@ class WeatherDataApiError(RuntimeError):
 
 class WeatherData(BasicComponent):
     """
-    Class for the OpenWeatherMap component
+    Class for the WeatherData via Brightsky component
     """
 
     def __init__(
@@ -115,6 +116,7 @@ class WeatherData(BasicComponent):
             "lat": self.config_data.latitude.value,
             "lon": self.config_data.longitude.value,
             "tz": self.berlin_tz,
+            "units": WEATHER_DATA_UNITS,
         }
 
         url = f"{WEATHER_DATA_URL}/current_weather"
@@ -137,7 +139,9 @@ class WeatherData(BasicComponent):
                     "relative_humidity": float(weather["relative_humidity"]),
                     "pressure_msl": float(weather["pressure_msl"]),
                     "dew_point": float(weather["dew_point"]),
-                    "solar_60": float(weather["solar_60"]),
+                    "solar_60": adjust_units(
+                        float(weather["solar_60"]), DataUnits.KWH_MQ, DataUnits.B13
+                    ),
                 }
 
             else:
@@ -213,6 +217,7 @@ class WeatherData(BasicComponent):
             "tz": self.berlin_tz,
             "date": forecast_start_time,
             "last_date": forecast_end_time,
+            "units": WEATHER_DATA_UNITS,
         }
 
         url = f"{WEATHER_DATA_URL}/weather"
@@ -234,7 +239,9 @@ class WeatherData(BasicComponent):
 
                 output_dict = {
                     "forecast_temperature": temp_dict,
-                    "forecast_solar": solar_dict,
+                    "forecast_solar": adjust_units(
+                        solar_dict, DataUnits.KWH_MQ, DataUnits.B13
+                    ),
                 }
             else:
                 error_text = response.json().get("message", response.text[:200])
@@ -385,7 +392,8 @@ class WeatherData(BasicComponent):
                         )
                     except ValidationError as e:
                         logger.error(
-                            f"Validation error while creating WeatherDataOutputData for forecast: {e}"
+                            "Validation error while creating WeatherDataOutputData "
+                            f"for forecast: {e}"
                         )
                 else:
                     logger.error(

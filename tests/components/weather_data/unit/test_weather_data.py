@@ -34,7 +34,7 @@ CURRENT_WEATHER_PAYLOAD = {
         "relative_humidity": 45.0,
         "pressure_msl": 1024.2,
         "dew_point": 9.7,
-        "solar_60": 608.0,
+        "solar_60": 0.608,
     }
 }
 
@@ -43,12 +43,12 @@ FORECAST_WEATHER_PAYLOAD = {
         {
             "timestamp": "2026-09-29T14:00:00+02:00",
             "temperature": 22.3,
-            "solar": 644.0,
+            "solar": 0.644,
         },
         {
             "timestamp": "2026-09-29T15:00:00+02:00",
             "temperature": 22.8,
-            "solar": 581.0,
+            "solar": 0.625,
         },
     ]
 }
@@ -314,7 +314,7 @@ def test_get_current_weather_data_returns_all_current_fields(
         "relative_humidity": 45.0,
         "pressure_msl": 1024.2,
         "dew_point": 9.7,
-        "solar_60": 608.0,
+        "solar_60": 2188800.0,
     }
 
 
@@ -398,8 +398,8 @@ def test_get_forecast_weather_data_returns_forecast_dicts(
             "2026-09-29T15:00:00+02:00": 22.8,
         },
         "forecast_solar": {
-            "2026-09-29T14:00:00+02:00": 644.0,
-            "2026-09-29T15:00:00+02:00": 581.0,
+            "2026-09-29T14:00:00+02:00": 2318400.0,
+            "2026-09-29T15:00:00+02:00": 2250000.0,
         },
     }
 

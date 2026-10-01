@@ -34,7 +34,7 @@ CURRENT_WEATHER_PAYLOAD = {
         "relative_humidity": 45.0,
         "pressure_msl": 1024.2,
         "dew_point": 9.7,
-        "solar_60": 608.0,
+        "solar_60": 0.608,
     }
 }
 
@@ -43,12 +43,12 @@ FORECAST_WEATHER_PAYLOAD = {
         {
             "timestamp": "2026-09-29T14:00:00+02:00",
             "temperature": 22.3,
-            "solar": 644.0,
+            "solar": 0.644,
         },
         {
             "timestamp": "2026-09-29T15:00:00+02:00",
             "temperature": 22.8,
-            "solar": 581.0,
+            "solar": 0.625,
         },
     ]
 }
@@ -252,14 +252,14 @@ def test_calculate_sets_all_outputs_on_first_call(
     assert output["relative_humidity"]["value"] == pytest.approx(45.0)
     assert output["pressure_msl"]["value"] == pytest.approx(1024.2)
     assert output["dew_point"]["value"] == pytest.approx(9.7)
-    assert output["solar_60"]["value"] == pytest.approx(608.0)
+    assert output["solar_60"]["value"] == pytest.approx(2188800.0)
     assert output["forecast_temperature"]["value"] == {
         "2026-09-29T14:00:00+02:00": 22.3,
         "2026-09-29T15:00:00+02:00": 22.8,
     }
     assert output["forecast_solar"]["value"] == {
-        "2026-09-29T14:00:00+02:00": 644.0,
-        "2026-09-29T15:00:00+02:00": 581.0,
+        "2026-09-29T14:00:00+02:00": 2318400.0,
+        "2026-09-29T15:00:00+02:00": 2250000.0,
     }
 
 
@@ -415,8 +415,8 @@ def test_calculate_keeps_last_output_on_invalid_forecast_data(
         "2026-09-29T15:00:00+02:00": 22.8,
     }
     assert output["forecast_solar"]["value"] == {
-        "2026-09-29T14:00:00+02:00": 644.0,
-        "2026-09-29T15:00:00+02:00": 581.0,
+        "2026-09-29T14:00:00+02:00": 2318400.0,
+        "2026-09-29T15:00:00+02:00": 2250000.0,
     }
 
 

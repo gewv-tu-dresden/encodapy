@@ -105,6 +105,10 @@ class DataUnits(Enum):
 
     # radiation
     B13 = ("B13", "J / meter**2")
+    # ZZ = "a unit of measure as agreed in common between two or more parties" (UNECE Rec 20).
+    # There is no standard unit code for kWh/m² - this unit is the one Brightsky/DWD
+    # delivers for solar irradiation (do not use it with FIWARE, as ZZ is not resolvable there)
+    KWH_MQ = ("ZZ", "kilowatt_hour / meter**2")
 
 
 # Map the units to the unit registry of pint for conversion

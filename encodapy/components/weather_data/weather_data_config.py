@@ -1,6 +1,6 @@
 """
-Defines the configuration data models for the OpenWeatherMap component.
-Author: Paul Seidel
+Defines the configuration data models for the WeatherData via Brightsky component.
+Author: Paul Seidel, Martin Altenburger
 """
 
 from typing import Optional, Dict
@@ -22,6 +22,7 @@ from encodapy.utils.datapoints import (
 from encodapy.utils.units import DataUnits
 
 WEATHER_DATA_URL = "https://api.brightsky.dev"
+WEATHER_DATA_UNITS = "dwd"  # use "dwd" for Brightsky/DWD data
 
 
 class WeatherApiCallMethod(Enum):
