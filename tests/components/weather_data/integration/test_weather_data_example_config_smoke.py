@@ -173,6 +173,7 @@ def test_example_config_smoke_runs_weather_data_component(
     for call in api_calls:
         assert call["params"]["lat"] == pytest.approx(51.05)
         assert call["params"]["lon"] == pytest.approx(13.74)
+        assert call["params"]["date"] == "2026-09-29T14:00:00+02:00"
 
     output = component.output_data.model_dump()
     assert output["temperature"]["value"] == pytest.approx(21.5)
