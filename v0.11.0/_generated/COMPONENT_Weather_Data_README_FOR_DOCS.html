@@ -1,0 +1,243 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Data &mdash; EnCoDaPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=76f00390" />
+
+  
+    <link rel="canonical" href="/encodapy/_generated/COMPONENT_Weather_Data_README_FOR_DOCS.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/version-switcher.js?v=f8facb47"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <script>
+    window.ENCODAPY_DOCS = {
+      baseUrl: "/encodapy/",
+      currentVersion: "v0.11.0",
+    };
+  </script>
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            EnCoDaPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">“EnCoDaPy” – Energy Control and Data Preparation in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_service.html">EnCoDaPy Basic Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../components.html">EnCoDaPy Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/examples.html">Examples of EnCoDaPy usage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">EnCoDaPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Weather Data</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.11.0/docs/source/_generated/COMPONENT_Weather_Data_README_FOR_DOCS.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="weather-data">
+<h1>Weather Data<a class="headerlink" href="#weather-data" title="Link to this heading"></a></h1>
+<p>This is a component to get current and forecast weather data from <a class="reference external" href="https://brightsky.dev/">Brightsky</a>.</p>
+<section id="functionality">
+<h2>Functionality<a class="headerlink" href="#functionality" title="Link to this heading"></a></h2>
+<p>The component uses coordinates to get located weather data from <a class="reference external" href="https://brightsky.dev/">Brightsky</a>.
+Bright Sky is a free and open-source weather API. It aims to provide an easy-to-use gateway to weather data that the DWD – Germany’s meteorological service – publishes on their open data server.</p>
+<p>The public instance at <a class="reference external" href="https://api.brightsky.dev/">api.brightsky.dev</a> is free-to-use for all purposes, no API key required! Please note that the <a class="reference external" href="https://www.dwd.de/EN/service/legal_notice/legal_notice.html">DWD’s Terms of Use</a> apply to all data you retrieve through the API.</p>
+<p>Implemented data:</p>
+<ul class="simple">
+<li><p>current weather</p></li>
+<li><p>forecast weather</p></li>
+</ul>
+<p>Depending on the selected outputs, the component determines which API calls (current and/or forecast) are necessary, executes the respective requests, and outputs the corresponding values. At least one output must be configured, otherwise the component raises an error during preparation.</p>
+<p>The retrieval of the weather data is controlled by its own time intervals (see <a href="#component-configuration">Component Configuration</a>), independent of the <code class="docutils literal notranslate"><span class="pre">sampling_time</span></code> in the service config. Until the next interval is reached, the data of the last API call is used.</p>
+</section>
+<section id="component-configuration">
+<h2>Component Configuration<a class="headerlink" href="#component-configuration" title="Link to this heading"></a></h2>
+<p>The configuration model is <a class="reference internal" href="../components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataConfigData" title="encodapy.components.weather_data.weather_data_config.WeatherDataConfigData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WeatherDataConfigData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.11.0/encodapy/components/weather_data/weather_data_config.py">weather_data_config.py</a>.</p>
+<p>Coordinates of the location:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">longitude</span></code>: longitude of the chosen location in degree (default value: 13.4, Berlin)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">latitude</span></code>: latitude of the chosen location in degree (default value: 52.5, Berlin)</p></li>
+</ul>
+<p>Time settings:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">forecast_time_range</span></code> (optional): forecast time range to retrieve (default value: 1 day)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_interval_current_weather</span></code> (optional): time interval for retrieving current weather data, independent of the <code class="docutils literal notranslate"><span class="pre">sampling_time</span></code> in the config (default value: 15 minutes)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_interval_forecast_weather</span></code> (optional): time interval for retrieving forecast weather data, independent of the <code class="docutils literal notranslate"><span class="pre">sampling_time</span></code> in the config (default value: 3 hours)</p></li>
+</ul>
+<p>Configuration parameters must be set as datapoints or connections to static data in the config file.</p>
+<section id="minimal-configuration-example">
+<h3>Minimal Configuration Example<a class="headerlink" href="#minimal-configuration-example" title="Link to this heading"></a></h3>
+<p>This component block illustrates the relevant part of a service configuration:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"weatherdata"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"weather_data"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="nt">"outputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"temperature"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"entity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"weatherdata"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"attribute"</span><span class="p">:</span><span class="w"> </span><span class="s2">"temperature"</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"forecast_temperature"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"entity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"weatherdata"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"attribute"</span><span class="p">:</span><span class="w"> </span><span class="s2">"forecast_temperature"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"config"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"entity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"weatherdata"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"attribute"</span><span class="p">:</span><span class="w"> </span><span class="s2">"longitude"</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"entity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"weatherdata"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"attribute"</span><span class="p">:</span><span class="w"> </span><span class="s2">"latitude"</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"forecast_time_range"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"entity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"weatherdata"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"attribute"</span><span class="p">:</span><span class="w"> </span><span class="s2">"forecast_time_range"</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"time_interval_current_weather"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"entity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"weatherdata"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"attribute"</span><span class="p">:</span><span class="w"> </span><span class="s2">"time_interval_current_weather"</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"time_interval_forecast_weather"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"entity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"weatherdata"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"attribute"</span><span class="p">:</span><span class="w"> </span><span class="s2">"time_interval_forecast_weather"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For a full working configuration, see the <a href="#example">example</a>.</p>
+</section>
+</section>
+<section id="inputs">
+<h2>Inputs<a class="headerlink" href="#inputs" title="Link to this heading"></a></h2>
+<p>No inputs are required. The input model is <a class="reference internal" href="../components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataInputData" title="encodapy.components.weather_data.weather_data_config.WeatherDataInputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WeatherDataInputData</span></code></a>.</p>
+</section>
+<section id="outputs">
+<h2>Outputs<a class="headerlink" href="#outputs" title="Link to this heading"></a></h2>
+<p>All implemented outputs are optional, but at least one output must be configured. The output model is <a class="reference internal" href="../components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataOutputData" title="encodapy.components.weather_data.weather_data_config.WeatherDataOutputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WeatherDataOutputData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.11.0/encodapy/components/weather_data/weather_data_config.py">weather_data_config.py</a>.</p>
+<p>Current weather:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature</span></code>: air temperature at timestamp, 2 m above the ground in °C</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">relative_humidity</span></code>: relative humidity at timestamp in %</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dew_point</span></code>: dew point at timestamp, 2 m above ground in °C</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pressure_msl</span></code>: atmospheric pressure at timestamp, reduced to mean sea level in Pa</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solar_60</span></code>: solar irradiation during the previous 60 minutes in J / m²</p></li>
+</ul>
+<p>Forecast weather:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">forecast_temperature</span></code>: dict of forecast outside temperature in °C</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">forecast_solar</span></code>: dict of forecast solar irradiation during the previous 60 minutes in J / m²</p></li>
+</ul>
+<p>The forecast outputs are dicts with the timestamp of each forecast step as key (string) and the forecast value as value. The covered period is defined by <code class="docutils literal notranslate"><span class="pre">forecast_time_range</span></code>. The keys are ISO-8601 timestamps (including the UTC offset of the retrieval timezone, see <a href="#timezone">Timezone</a>) and follow the hourly grid of the Brightsky weather endpoint. Since every key contains the full UTC offset, the timestamps can be converted to any other timezone downstream.</p>
+</section>
+<section id="timezone">
+<h2>Timezone<a class="headerlink" href="#timezone" title="Link to this heading"></a></h2>
+<p>The timezone for the API retrieval is defined by the constant <code class="docutils literal notranslate"><span class="pre">WEATHER_DATA_TZ_NAME</span></code> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.11.0/encodapy/components/weather_data/weather_data_config.py">weather_data_config.py</a> (default: <code class="docutils literal notranslate"><span class="pre">Europe/Berlin</span></code>). It is used for the component clock (interval checks) and passed to Brightsky as the <code class="docutils literal notranslate"><span class="pre">tz</span></code> parameter, so the API returns timestamps with the matching UTC offset. All output timestamps are therefore complete datetime information: the <code class="docutils literal notranslate"><span class="pre">time</span></code> field of the current weather datapoints is given in UTC, the forecast keys carry the offset of the retrieval timezone. Both can be converted to any other timezone by the receiving component.</p>
+</section>
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading"></a></h2>
+<p>The component follows a “last known data” strategy: if an API request to Brightsky fails, the error is logged and the component keeps the last known output data. A failed request does not interrupt the calculation and no error code or error state is propagated to the framework or to connected components; the error is only visible in the log.</p>
+<p>The following error cases are handled the same way, for current and forecast calls:</p>
+<ul class="simple">
+<li><p>HTTP status codes other than 200 (client and server errors)</p></li>
+<li><p>a response body that is no valid JSON (e.g. an HTML error page of a gateway)</p></li>
+<li><p>timeouts and connection/request errors</p></li>
+<li><p>incomplete or invalid weather data that fails the validation of the output model</p></li>
+</ul>
+<p>The retry time step of an interval is only advanced after a successful API call. A failed call is therefore retried at the next calculation step (the next <code class="docutils literal notranslate"><span class="pre">sampling_time</span></code> of the service), not after the full configured interval. Until the first successful call, the outputs stay <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
+<p>A full working example is available in:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.11.0/examples/10_brightsky_weather_service">examples/10_brightsky_weather_service</a></p></li>
+</ul>
+<p>Relevant files:</p>
+<ul class="simple">
+<li><p>Example service configuration: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.11.0/examples/10_brightsky_weather_service/config.json">examples/10_brightsky_weather_service/config.json</a></p></li>
+<li><p>Example static data: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.11.0/examples/10_brightsky_weather_service/static_data.json">examples/10_brightsky_weather_service/static_data.json</a></p></li>
+<li><p>Notebook to run the example: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.11.0/examples/10_brightsky_weather_service/run_weatherdata_service.ipynb">examples/10_brightsky_weather_service/run_weatherdata_service.ipynb</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GEWV TU Dresden.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
