@@ -11,3 +11,4 @@ This folder contains a number of examples to provide a documentation of the use 
 - [07_component_runner](./07_component_runner/): An example of how to run the service using only the configuration. **This is the suggested way to use the framework.**
 - [08_create_new_component](./08_create_new_component/): Example of how to create your own component and use it with the Component Runner.
 - [09_mpc_flixopt](./09_mpc_flixopt/): Examples of how to use [FlixOpt](https://github.com/flixopt/flixopt) as a basis for Model Predictive Control.
+- [10_brightsky_weather_service](./10_brightsky_weather_service/): A simple service as an example of how the use the weather data service for [brightsky](https://brightsky.dev/). 

@@ -1,0 +1,9 @@
+{
+        "README.md": "README_FOR_DOCS.md",
+        "encodapy/components/readme.md": "COMPONENTS_README_FOR_DOCS.md",
+        "encodapy/components/thermal_storage/readme.md": "COMPONENT_Thermal_Storage_README_FOR_DOCS.md",
+        "encodapy/components/two_point_controller/readme.md": "COMPONENT_Two_Point_Controller_README_FOR_DOCS.md",
+        "encodapy/components/flixopt_model_component/readme.md": "COMPONENT_flixopt_model_README_FOR_DOCS.md",
+        "encodapy/components/weather_data/readme.md": "COMPONENT_Weather_Data_README_FOR_DOCS.md",
+        "examples/readme.md": "COMPONENT_Examples_README_FOR_DOCS.md"
+    }

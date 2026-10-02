@@ -142,20 +142,17 @@ class FileConnection:
             to the platform is not available
 
         """
+        time_settings = self.config.controller_settings.time_settings
         match method:
             case DataQueryTypes.CALCULATION:
-                timestep = (
-                    self.config.controller_settings.time_settings.calculation.timestep
-                )
-                timestep_unit = self.config.controller_settings.time_settings.calculation.timestep_unit
+                timestep = time_settings.calculation.timestep
+                timestep_unit = time_settings.calculation.timestep_unit
             case DataQueryTypes.CALIBRATION:
-                if self.config.controller_settings.time_settings.calibration is None:
+                if time_settings.calibration is None:
                     logger.warning("No calibration time settings found in config.")
                     return None
-                timestep = (
-                    self.config.controller_settings.time_settings.calibration.timestep
-                )
-                timestep_unit = self.config.controller_settings.time_settings.calibration.timestep_unit
+                timestep = time_settings.calibration.timestep
+                timestep_unit = time_settings.calibration.timestep_unit
             case _:
                 logger.warning(f"Method {method} not supported for file interface.")
                 return None

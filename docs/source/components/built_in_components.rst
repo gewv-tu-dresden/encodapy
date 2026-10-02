@@ -25,3 +25,11 @@ MPC with FlixOpt
 
   built_in_mpc_flixopt
   built_in_mpc_flixopt_models
+
+Weather Data
+------------------------
+.. toctree::
+  :maxdepth: 2
+
+  built_in_weather_data
+  built_in_weather_data_models

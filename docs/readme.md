@@ -11,6 +11,8 @@ The [GitHub workflow](./../.github/workflows/docs.yml) is used for automated doc
 
 The version switcher reads a `versions.json` manifest from the published documentation. On GitHub Pages, this manifest is updated by the release workflow so that the dropdown only shows versions that were actually published as docs.
 
+To include additional README files, they must be added to [source/doc_readme_mapping.json](./source/doc_readme_mapping.json)
+
 ## Check a release build locally
 
 To verify how a release or tag build behaves without pushing anything, set the docs version explicitly before building:
