@@ -94,7 +94,7 @@ Current weather:
 - `temperature`: air temperature at timestamp, 2 m above the ground in °C
 - `relative_humidity`: relative humidity at timestamp in %
 - `dew_point`: dew point at timestamp, 2 m above ground in °C
-- `pressure_msl`: atmospheric pressure at timestamp, reduced to mean sea level in hPa
+- `pressure_msl`: atmospheric pressure at timestamp, reduced to mean sea level in Pa
 - `solar_60`: solar irradiation during the previous 60 minutes in J / m²
 
 Forecast weather:

@@ -64,7 +64,7 @@ class WeatherDataOutputData(OutputData):
     )
     pressure_msl: Optional[DataPointNumber] = Field(
         None,
-        description="Atmospheric pressure at timestamp, reduced to mean sea level in hPa",
+        description="Atmospheric pressure at timestamp, reduced to mean sea level in pascal",
         json_schema_extra={"unit": "PAL", "weather_type": "current"},
     )
     dew_point: Optional[DataPointNumber] = Field(
