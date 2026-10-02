@@ -106,6 +106,26 @@ class WeatherData(BasicComponent):
         self.next_time_step_current_weather = actual_time
         self.next_time_step_forecast_weather = actual_time
 
+    def _convert_temperature_to_celsius(self, temperature: float) -> float:
+        """
+        Convert temperature to degree celsius if it is in kelvin.
+        Args:
+            temperature (float): Temperature value to convert
+        Returns:
+            float: Temperature in degree celsius
+        """
+        # DWD provides temperature in degrees Celsius, so no conversion is needed for DWD units
+        if WEATHER_DATA_UNITS == "dwd":
+            return temperature
+
+        temp = adjust_units(temperature, DataUnits.KELVIN, DataUnits.DEGREECELSIUS)
+        if not isinstance(temp, (int, float)):
+            raise ValueError(
+                f"Invalid temperature value: {temperature}. "
+                "Expected a numeric value for conversion."
+            )
+        return round(temp, 3)
+
     def get_current_weather_data(self) -> DataPointDict:
         """
         Function to get current weather data for the WeatherData component
@@ -137,13 +157,15 @@ class WeatherData(BasicComponent):
             weather = data["weather"]
 
             output_dict = {
-                "temperature": float(weather["temperature"]),
+                "temperature": self._convert_temperature_to_celsius(
+                    float(weather["temperature"])
+                ),
                 "relative_humidity": float(weather["relative_humidity"]),
                 "pressure_msl": float(weather["pressure_msl"]),
-                "dew_point": float(weather["dew_point"]),
-                "solar_60": adjust_units(
-                    float(weather["solar_60"]), DataUnits.KWH_MQ, DataUnits.B13
+                "dew_point": self._convert_temperature_to_celsius(
+                    float(weather["dew_point"])
                 ),
+                "solar_60": float(weather["solar_60"]),
             }
 
         except requests.exceptions.Timeout:
@@ -154,6 +176,8 @@ class WeatherData(BasicComponent):
             logger.error(f"Connection- or API-error: {e}")
         except JSONDecodeError as e:
             logger.error(f"Error decoding JSON response: {e}")
+        except ValueError as e:
+            logger.error(f"Error converting weather data values: {e}")
 
         return DataPointDict(value=output_dict)
 
@@ -230,14 +254,17 @@ class WeatherData(BasicComponent):
 
             weather = data["weather"]
 
-            temp_dict = {hour["timestamp"]: hour["temperature"] for hour in weather}
+            temp_dict = {
+                hour["timestamp"]: self._convert_temperature_to_celsius(
+                    hour["temperature"]
+                )
+                for hour in weather
+            }
             solar_dict = {hour["timestamp"]: hour["solar"] for hour in weather}
 
             output_dict = {
                 "forecast_temperature": temp_dict,
-                "forecast_solar": adjust_units(
-                    solar_dict, DataUnits.KWH_MQ, DataUnits.B13
-                ),
+                "forecast_solar": solar_dict,
             }
 
         except requests.exceptions.Timeout:
@@ -248,6 +275,8 @@ class WeatherData(BasicComponent):
             logger.error(f"Connection- or API-error: {e}")
         except JSONDecodeError as e:
             logger.error(f"Error decoding JSON response: {e}")
+        except ValueError as e:
+            logger.error(f"Error converting weather data values: {e}")
 
         return DataPointDict(value=output_dict)
 
@@ -308,7 +337,7 @@ class WeatherData(BasicComponent):
                 ),
                 pressure_msl=DataPointNumber(
                     value=current_data.value.get("pressure_msl"),
-                    unit=DataUnits.HPA,
+                    unit=DataUnits.PAL,
                     time=time_of_timestep_utc,
                 ),
                 dew_point=DataPointNumber(

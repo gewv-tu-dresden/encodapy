@@ -77,22 +77,39 @@ def test_calculate_sets_all_outputs_on_first_call(
 
     assert len(calls) == 2
     output = _output_dump(component)
-    assert output["temperature"]["value"] == pytest.approx(21.5)
+    current_data = CURRENT_WEATHER_PAYLOAD.get("weather", {})
+    assert output["temperature"]["value"] == pytest.approx(
+        current_data.get("temperature") - 273.15
+    )
     assert output["temperature"]["unit"] == DataUnits.DEGREECELSIUS
     assert output["temperature"]["time"] is not None
     assert output["temperature"]["time"].utcoffset() == timedelta(0)
-    assert output["relative_humidity"]["value"] == pytest.approx(45.0)
-    assert output["pressure_msl"]["value"] == pytest.approx(1024.2)
-    assert output["dew_point"]["value"] == pytest.approx(9.7)
-    assert output["solar_60"]["value"] == pytest.approx(2188800.0)
-    assert output["forecast_temperature"]["value"] == {
-        "2026-09-29T14:00:00+02:00": 22.3,
-        "2026-09-29T15:00:00+02:00": 22.8,
+    assert output["relative_humidity"]["value"] == pytest.approx(
+        current_data.get("relative_humidity")
+    )
+    assert output["relative_humidity"]["unit"] == DataUnits.PERCENT
+    assert output["pressure_msl"]["value"] == pytest.approx(
+        current_data.get("pressure_msl")
+    )
+    assert output["pressure_msl"]["unit"] == DataUnits.PAL
+    assert output["dew_point"]["value"] == pytest.approx(
+        current_data.get("dew_point") - 273.15
+    )
+    assert output["dew_point"]["unit"] == DataUnits.DEGREECELSIUS
+    assert output["solar_60"]["value"] == pytest.approx(current_data.get("solar_60"))
+    assert output["solar_60"]["unit"] == DataUnits.B13
+    forecast_temperature_temps = {
+        item["timestamp"]: round(item["temperature"] - 273.15, 3)
+        for item in FORECAST_WEATHER_PAYLOAD.get("weather", [])
     }
-    assert output["forecast_solar"]["value"] == {
-        "2026-09-29T14:00:00+02:00": 2318400.0,
-        "2026-09-29T15:00:00+02:00": 2250000.0,
+    forecast_solar_values = {
+        item["timestamp"]: item["solar"]
+        for item in FORECAST_WEATHER_PAYLOAD.get("weather", [])
     }
+    assert output["forecast_temperature"]["value"] == forecast_temperature_temps
+    assert output["forecast_temperature"]["unit"] == DataUnits.DEGREECELSIUS
+    assert output["forecast_solar"]["value"] == forecast_solar_values
+    assert output["forecast_solar"]["unit"] == DataUnits.B13
 
 
 def test_calculate_reuses_last_data_within_time_intervals(
@@ -318,8 +335,8 @@ def test_calculate_keeps_last_output_on_invalid_forecast_data(
         "2026-09-29T15:00:00+02:00": 22.8,
     }
     assert output["forecast_solar"]["value"] == {
-        "2026-09-29T14:00:00+02:00": 2318400.0,
-        "2026-09-29T15:00:00+02:00": 2250000.0,
+        "2026-09-29T14:00:00+02:00": 250000,
+        "2026-09-29T15:00:00+02:00": 460000,
     }
 
 

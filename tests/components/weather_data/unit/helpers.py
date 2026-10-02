@@ -23,11 +23,11 @@ from encodapy.utils.units import DataUnits
 
 CURRENT_WEATHER_PAYLOAD = {
     "weather": {
-        "temperature": 21.5,
+        "temperature": 21.5 + 273.15,
         "relative_humidity": 45.0,
-        "pressure_msl": 1024.2,
-        "dew_point": 9.7,
-        "solar_60": 0.608,
+        "pressure_msl": 1024.2 * 100,
+        "dew_point": 9.7 + 273.15,
+        "solar_60": 94440,
     }
 }
 
@@ -35,13 +35,13 @@ FORECAST_WEATHER_PAYLOAD = {
     "weather": [
         {
             "timestamp": "2026-09-29T14:00:00+02:00",
-            "temperature": 22.3,
-            "solar": 0.644,
+            "temperature": 22.3 + 273.15,
+            "solar": 250000,
         },
         {
             "timestamp": "2026-09-29T15:00:00+02:00",
-            "temperature": 22.8,
-            "solar": 0.625,
+            "temperature": 22.8 + 273.15,
+            "solar": 460000,
         },
     ]
 }

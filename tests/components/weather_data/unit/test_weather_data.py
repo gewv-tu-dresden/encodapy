@@ -164,13 +164,16 @@ def test_get_current_weather_data_returns_all_current_fields(
     assert calls[0]["timeout"] == pytest.approx(5.0)
     assert calls[0]["params"]["lat"] == pytest.approx(51.05)
     assert calls[0]["params"]["lon"] == pytest.approx(13.74)
-    assert current_data.value == {
-        "temperature": 21.5,
-        "relative_humidity": 45.0,
-        "pressure_msl": 1024.2,
-        "dew_point": 9.7,
-        "solar_60": 2188800.0,
+    # The function converts temperature and dew_point from Kelvin to Celsius and rounds to 3 decimals
+    current_weather = CURRENT_WEATHER_PAYLOAD.get("weather", {})
+    expected_data = {
+        "temperature": round(current_weather.get("temperature") - 273.15, 3),
+        "relative_humidity": current_weather.get("relative_humidity"),
+        "pressure_msl": current_weather.get("pressure_msl"),
+        "dew_point": round(current_weather.get("dew_point") - 273.15, 3),
+        "solar_60": current_weather.get("solar_60"),
     }
+    assert current_data.value == expected_data
 
 
 def test_get_current_weather_data_raises_on_client_error(
@@ -266,15 +269,16 @@ def test_get_forecast_weather_data_returns_forecast_dicts(
     assert calls[0]["params"]["lon"] == pytest.approx(13.74)
     assert "date" in calls[0]["params"]
     assert "last_date" in calls[0]["params"]
+    # The function returns a dict with forecast_temperature and forecast_solar keys
+    forecast_weather = FORECAST_WEATHER_PAYLOAD.get("weather", [])
+    expected_temperature = {
+        item["timestamp"]: round(item["temperature"] - 273.15, 3)
+        for item in forecast_weather
+    }
+    expected_solar = {item["timestamp"]: item["solar"] for item in forecast_weather}
     assert forecast_data.value == {
-        "forecast_temperature": {
-            "2026-09-29T14:00:00+02:00": 22.3,
-            "2026-09-29T15:00:00+02:00": 22.8,
-        },
-        "forecast_solar": {
-            "2026-09-29T14:00:00+02:00": 2318400.0,
-            "2026-09-29T15:00:00+02:00": 2250000.0,
-        },
+        "forecast_temperature": expected_temperature,
+        "forecast_solar": expected_solar,
     }
 
 

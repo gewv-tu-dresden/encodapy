@@ -19,7 +19,7 @@ from encodapy.utils.datapoints import (
 from encodapy.utils.units import DataUnits
 
 WEATHER_DATA_URL = "https://api.brightsky.dev"
-WEATHER_DATA_UNITS = "dwd"  # use "dwd" for Brightsky/DWD data
+WEATHER_DATA_UNITS = "si"  # use "si" for Brightsky data
 WEATHER_DATA_TZ_NAME = "Europe/Berlin"  # use "Europe/Berlin" for Brightsky/DWD data
 
 
@@ -65,7 +65,7 @@ class WeatherDataOutputData(OutputData):
     pressure_msl: Optional[DataPointNumber] = Field(
         None,
         description="Atmospheric pressure at timestamp, reduced to mean sea level in hPa",
-        json_schema_extra={"unit": "A97", "weather_type": "current"},
+        json_schema_extra={"unit": "PAL", "weather_type": "current"},
     )
     dew_point: Optional[DataPointNumber] = Field(
         None,

@@ -27,33 +27,30 @@ from encodapy.utils.units import DataUnits
 # The following payloads are used to simulate responses from the brightsky API.
 CURRENT_WEATHER_PAYLOAD = {
     "weather": {
-        "temperature": 21.5,
+        "temperature": 21.5 + 273.15,
         "relative_humidity": 45.0,
-        "pressure_msl": 1024.2,
-        "dew_point": 9.7,
-        "solar_60": 0.608,
+        "pressure_msl": 1024.2 * 100,
+        "dew_point": 9.7 + 273.15,
+        "solar_60": 94440,
     }
 }
+current_data: dict[str, Any] = CURRENT_WEATHER_PAYLOAD.get("weather", {})
 
 FORECAST_WEATHER_PAYLOAD = {
     "weather": [
         {
             "timestamp": "2026-09-29T14:00:00+02:00",
-            "temperature": 22.3,
-            "solar": 0.644,
+            "temperature": 22.3 + 273.15,
+            "solar": 250000,
         },
         {
             "timestamp": "2026-09-29T15:00:00+02:00",
-            "temperature": 22.8,
-            "solar": 0.625,
-        },
-        {
-            "timestamp": "2026-09-29T16:00:00+02:00",
-            "temperature": 22.7,
-            "solar": 0.472,
+            "temperature": 22.8 + 273.15,
+            "solar": 460000,
         },
     ]
 }
+forecast_data: list[dict[str, Any]] = FORECAST_WEATHER_PAYLOAD.get("weather", [])
 
 
 class _FakeResponse:  # pylint: disable=too-few-public-methods
@@ -185,19 +182,23 @@ def test_example_config_smoke_runs_weather_data_component(
     assert output["temperature"]["value"] == pytest.approx(21.5)
     assert output["temperature"]["unit"] == DataUnits.DEGREECELSIUS
     assert output["relative_humidity"]["value"] == pytest.approx(45.0)
-    assert output["pressure_msl"]["value"] == pytest.approx(1024.2)
+    assert output["relative_humidity"]["unit"] == DataUnits.PERCENT
+    assert output["pressure_msl"]["value"] == pytest.approx(1024.2 * 100)
+    assert output["pressure_msl"]["unit"] == DataUnits.PAL
     assert output["dew_point"]["value"] == pytest.approx(9.7)
-    assert output["solar_60"]["value"] == pytest.approx(2188800.0)
+    assert output["dew_point"]["unit"] == DataUnits.DEGREECELSIUS
+    assert output["solar_60"]["value"] == pytest.approx(94440)
+    assert output["solar_60"]["unit"] == DataUnits.B13
     assert output["forecast_temperature"]["value"] == {
         "2026-09-29T14:00:00+02:00": 22.3,
         "2026-09-29T15:00:00+02:00": 22.8,
-        "2026-09-29T16:00:00+02:00": 22.7,
     }
+    assert output["forecast_temperature"]["unit"] == DataUnits.DEGREECELSIUS
     assert output["forecast_solar"]["value"] == {
-        "2026-09-29T14:00:00+02:00": 2318400.0,
-        "2026-09-29T15:00:00+02:00": 2250000.0,
-        "2026-09-29T16:00:00+02:00": 1699200.0,
+        "2026-09-29T14:00:00+02:00": 250000,
+        "2026-09-29T15:00:00+02:00": 460000,
     }
+    assert output["forecast_solar"]["unit"] == DataUnits.B13
 
     # a second calculation within the configured time intervals
     # (1 minute current / 3 hours forecast) must reuse the data of the last api call
