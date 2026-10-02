@@ -78,6 +78,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointMedium"><code class="docutils literal notranslate"><span class="pre">DataPointMedium</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointTimeSeries"><code class="docutils literal notranslate"><span class="pre">DataPointTimeSeries</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointDatetime"><code class="docutils literal notranslate"><span class="pre">DataPointDatetime</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#encodapy.utils.datapoints.DataPointTimestep"><code class="docutils literal notranslate"><span class="pre">DataPointTimestep</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-encodapy.utils.units">Units</a><ul>
@@ -333,7 +334,7 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointGeneral">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointGeneral</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointGeneral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointGeneral" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
-<p>Model for datapoints of the controller component.</p>
+<p>Model for datapoints with a general value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -346,7 +347,7 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPointGeneral"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints of the controller component.\n\nAttributes:\n    value (Any): The value of the datapoint, which can be of various types             (string, float, int, boolean, dictionary, list, DataFrame, or None).\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints with a general value.\n\nAttributes:\n    value (Any): The value of the datapoint, which can be of various types             (string, float, int, boolean, dictionary, list, DataFrame, or None).\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -382,8 +383,8 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -402,10 +403,14 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -438,7 +443,7 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointNumber">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointNumber</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointNumber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointNumber" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
-<p>Model for datapoints of the controller component.</p>
+<p>Model for datapoints with a numeric value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -451,7 +456,7 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPointNumber"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints of the controller component.\n\nAttributes:\n    value (float | int): The value of the datapoint, which is a number (float, int).\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints with a numeric value.\n\nAttributes:\n    value (float | int): The value of the datapoint, which is a number (float, int).\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -495,8 +500,8 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -515,10 +520,14 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -541,7 +550,7 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointString">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointString</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointString" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
-<p>Model for datapoints of the controller component.</p>
+<p>Model for datapoints with a string value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -554,7 +563,7 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPointString"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints of the controller component.\n\nAttributes:\n    value (str): The value of the datapoint, which is a string.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints with a string value.\n\nAttributes:\n    value (str): The value of the datapoint, which is a string.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -591,8 +600,8 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -611,10 +620,14 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -637,7 +650,7 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointDict">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointDict</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointDict" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
-<p>Model for datapoints of the controller component.</p>
+<p>Model for datapoints with a dictionary value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -650,7 +663,7 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPointDict"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints of the controller component.\n\nAttributes:\n    value (dict): The value of the datapoint, which is a dictionary.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints with a dictionary value.\n\nAttributes:\n    value (dict): The value of the datapoint, which is a dictionary.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -687,8 +700,8 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -707,10 +720,14 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -733,7 +750,7 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointBool">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointBool</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointBool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointBool" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
-<p>Model for datapoints of the controller component.</p>
+<p>Model for datapoints with a boolean value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -746,7 +763,7 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPointBool"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints of the controller component.\n\nAttributes:\n    value (bool): The value of the datapoint, which is a boolean.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints with a boolean value.\n\nAttributes:\n    value (bool): The value of the datapoint, which is a boolean.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -783,8 +800,8 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -803,10 +820,14 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -829,7 +850,7 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointMedium">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointMedium</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointMedium"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointMedium" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
-<p>Model for datapoints of the controller component which define the medium.</p>
+<p>Model for datapoints which define a medium.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -842,7 +863,7 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPointMedium"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints of the controller component which define the medium.\n\nAttributes:\n    value (Medium): The value of the datapoint, which is a Medium representing the medium.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints which define a medium.\n\nAttributes:\n    value (Medium): The value of the datapoint, which is a Medium representing the medium.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -878,8 +899,8 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -898,10 +919,14 @@ This mock uses <cite>dict</cite> to avoid import issues during documentation gen
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -938,7 +963,7 @@ with a DatetimeIndex and float or integer values.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPointTimeSeries"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPoint for time series. The value is expected to be a pandas Series \nwith a DatetimeIndex and float or integer values."</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPoint for time series. The value is expected to be a pandas Series\nwith a DatetimeIndex and float or integer values."</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -975,8 +1000,8 @@ with a DatetimeIndex and float or integer values.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -995,10 +1020,14 @@ with a DatetimeIndex and float or integer values.</p>
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -1022,7 +1051,7 @@ with a DatetimeIndex and float or integer values.</p>
 <dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointDatetime">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointDatetime</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointDatetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointDatetime" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
-<p>Model for datapoints of the controller component which define a datetime value.</p>
+<p>Model for datapoints which defines a datetime value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1035,7 +1064,7 @@ with a DatetimeIndex and float or integer values.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPointDatetime"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints of the controller component which define a datetime value.\n\nAttributes:\n    value (datetime): The value of the datapoint, which is a datetime.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints which defines a datetime value.\n\nAttributes:\n    value (datetime): The value of the datapoint, which is a datetime.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1074,8 +1103,8 @@ with a DatetimeIndex and float or integer values.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -1094,10 +1123,14 @@ with a DatetimeIndex and float or integer values.</p>
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -1114,6 +1147,111 @@ with a DatetimeIndex and float or integer values.</p>
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">value</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime</span></a></span><span class="property"> <span class="pre">[Required]</span></span><a class="headerlink" href="#encodapy.utils.datapoints.DataPointDatetime.value" title="Link to this definition"></a></dt>
 <dd><p>A datetime value for the datapoint</p>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointTimestep">
+<span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">encodapy.utils.datapoints.</span></span><span class="sig-name descname"><span class="pre">DataPointTimestep</span></span><a class="reference internal" href="../_modules/encodapy/utils/datapoints.html#DataPointTimestep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.utils.datapoints.DataPointTimestep" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#encodapy.utils.datapoints.DataPointNumber" title="encodapy.utils.datapoints.DataPointNumber"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointNumber</span></code></a></p>
+<p>Model for datapoint for a timestep</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span> <span class="pre">|</span> <span class="pre">int</span></code>) – The value of the datapoint, which is a number (float, int).</p></li>
+<li><p><strong>unit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataUnits</span></code>) – Unit of the timestep</p></li>
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional[datetime]</span></code>) – Optional timestamp of the datapoint, if applicable.</p></li>
+</ul>
+</dd>
+</dl>
+<p><details  class="autodoc_pydantic_collapsable_json">
+<summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPointTimestep"</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoint for a timestep\n\nAttributes:\n    value (float | int): The value of the datapoint, which is a number (float, int).\n    unit (DataUnits): Unit of the timestep\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integer"</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Value"</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataUnits"</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"date-time"</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"null"</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Time"</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">"$defs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"DataUnits"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"CEL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"KEL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"LTR"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"MTQ"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"MQH"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"MQS"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"E32"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"L2"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"WTT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"KWT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"WHR"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"KWH"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">   </span><span class="p">},</span>
+<span class="w">   </span><span class="nt">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">"value"</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">"unit"</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details></p><dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointTimestep.value">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">value</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"> <span class="pre">[Required]</span></span><a class="headerlink" href="#encodapy.utils.datapoints.DataPointTimestep.value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.utils.datapoints.DataPointTimestep.unit">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">unit</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.utils.units.DataUnits" title="encodapy.utils.units.DataUnits"><span class="pre">DataUnits</span></a></span><span class="property"> <span class="pre">[Required]</span></span><a class="headerlink" href="#encodapy.utils.datapoints.DataPointTimestep.unit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -1141,6 +1279,11 @@ The _UNIT_MAP will be generated automatically from the pint_unit attributes.</p>
 </dd>
 </dl>
 <dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.B13">
+<span class="sig-name descname"><span class="pre">B13</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'B13'</span></span><a class="headerlink" href="#encodapy.utils.units.DataUnits.B13" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.CMT">
 <span class="sig-name descname"><span class="pre">CMT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'CMT'</span></span><a class="headerlink" href="#encodapy.utils.units.DataUnits.CMT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -1148,6 +1291,11 @@ The _UNIT_MAP will be generated automatically from the pint_unit attributes.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.DAY">
 <span class="sig-name descname"><span class="pre">DAY</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DAY'</span></span><a class="headerlink" href="#encodapy.utils.units.DataUnits.DAY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.DD">
+<span class="sig-name descname"><span class="pre">DD</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DD'</span></span><a class="headerlink" href="#encodapy.utils.units.DataUnits.DD" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1163,6 +1311,11 @@ The _UNIT_MAP will be generated automatically from the pint_unit attributes.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.HOUR">
 <span class="sig-name descname"><span class="pre">HOUR</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HUR'</span></span><a class="headerlink" href="#encodapy.utils.units.DataUnits.HOUR" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.HPA">
+<span class="sig-name descname"><span class="pre">HPA</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'A97'</span></span><a class="headerlink" href="#encodapy.utils.units.DataUnits.HPA" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1233,6 +1386,11 @@ The _UNIT_MAP will be generated automatically from the pint_unit attributes.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.OHM">
 <span class="sig-name descname"><span class="pre">OHM</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'OHM'</span></span><a class="headerlink" href="#encodapy.utils.units.DataUnits.OHM" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="encodapy.utils.units.DataUnits.PAL">
+<span class="sig-name descname"><span class="pre">PAL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PAL'</span></span><a class="headerlink" href="#encodapy.utils.units.DataUnits.PAL" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">

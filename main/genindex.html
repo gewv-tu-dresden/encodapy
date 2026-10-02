@@ -162,6 +162,8 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="basic_service/utils_models.html#encodapy.utils.units.DataUnits.B13">B13 (encodapy.utils.units.DataUnits attribute)</a>
+</li>
       <li><a href="basic_service/interfaces.html#encodapy.config.env_values.FiwareEnvVariables.bearer_token">bearer_token (encodapy.config.env_values.FiwareEnvVariables attribute)</a>
 
       <ul>
@@ -287,7 +289,11 @@
       <li><a href="basic_service/utils_models.html#encodapy.config.types.FileExtensionTypes.CSV">CSV (encodapy.config.types.FileExtensionTypes attribute)</a>
 </li>
       <li><a href="components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageEnergyTypes.CURRENT">CURRENT (encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageEnergyTypes attribute)</a>
+
+      <ul>
+        <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherApiCallMethod.CURRENT">(encodapy.components.weather_data.weather_data_config.WeatherApiCallMethod attribute)</a>
 </li>
+      </ul></li>
       <li><a href="components/built_in_two_point_controller_models.html#encodapy.components.two_point_controller.two_point_controller_config.TwoPointControllerInputData.current_value">current_value (encodapy.components.two_point_controller.two_point_controller_config.TwoPointControllerInputData attribute)</a>
 </li>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixoptSolverSettings.cuts">cuts (encodapy.components.flixopt_model_component.flixopt_models.FlixoptSolverSettings attribute)</a>
@@ -314,10 +320,10 @@
 </li>
       <li><a href="basic_service/config_models.html#encodapy.config.models.AttributeModel.datatype">datatype (encodapy.config.models.AttributeModel attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="basic_service/utils_models.html#encodapy.utils.units.DataUnits">DataUnits (class in encodapy.utils.units)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="basic_service/utils_models.html#encodapy.utils.units.DataUnits.DAY">DAY (encodapy.utils.units.DataUnits attribute)</a>
 
       <ul>
@@ -326,11 +332,15 @@
       </ul></li>
       <li><a href="components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageCalibrationConfig.db_path">db_path (encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageCalibrationConfig attribute)</a>
 </li>
+      <li><a href="basic_service/utils_models.html#encodapy.utils.units.DataUnits.DD">DD (encodapy.utils.units.DataUnits attribute)</a>
+</li>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel.DEBUG">DEBUG (encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel attribute)</a>
 </li>
       <li><a href="basic_service/utils_models.html#encodapy.utils.units.DataUnits.DEGREECELSIUS">DEGREECELSIUS (encodapy.utils.units.DataUnits attribute)</a>
 </li>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptEffect.description">description (encodapy.components.flixopt_model_component.flixopt_models.FlixOptEffect attribute)</a>
+</li>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataOutputData.dew_point">dew_point (encodapy.components.weather_data.weather_data_config.WeatherDataOutputData attribute)</a>
 </li>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptSinkSource.direction">direction (encodapy.components.flixopt_model_component.flixopt_models.FlixOptSinkSource attribute)</a>
 </li>
@@ -386,12 +396,21 @@
 </li>
       </ul></li>
       <li>
+    encodapy.components.weather_data.weather_data_config
+
+      <ul>
+        <li><a href="components/built_in_weather_data_models.html#module-encodapy.components.weather_data.weather_data_config">module</a>
+</li>
+      </ul></li>
+      <li>
     encodapy.config.models
 
       <ul>
         <li><a href="basic_service/config_models.html#module-encodapy.config.models">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     encodapy.config.types
 
@@ -399,8 +418,6 @@
         <li><a href="basic_service/utils_models.html#module-encodapy.config.types">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     encodapy.utils.datapoints
 
@@ -471,12 +488,12 @@
 </li>
       <li><a href="basic_service/utils_models.html#encodapy.config.types.Interfaces.FIWARE">FIWARE (encodapy.config.types.Interfaces attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="basic_service/utils_models.html#encodapy.config.types.MQTTFormatTypes.FIWARE_ATTR">FIWARE_ATTR (encodapy.config.types.MQTTFormatTypes attribute)</a>
 </li>
       <li><a href="basic_service/utils_models.html#encodapy.config.types.MQTTFormatTypes.FIWARE_CMDEXE">FIWARE_CMDEXE (encodapy.config.types.MQTTFormatTypes attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="basic_service/internal_models.html#encodapy.utils.models.FiwareConnectionParameter.fiware_params">fiware_params (encodapy.utils.models.FiwareConnectionParameter attribute)</a>
 </li>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.flixopt_model">flixopt_model (encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData attribute)</a>
@@ -486,6 +503,14 @@
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel">FlixoptLogLevel (class in encodapy.components.flixopt_model_component.flixopt_models)</a>
 </li>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptSolverName">FlixOptSolverName (class in encodapy.components.flixopt_model_component.flixopt_models)</a>
+</li>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherApiCallMethod.FORECAST">FORECAST (encodapy.components.weather_data.weather_data_config.WeatherApiCallMethod attribute)</a>
+</li>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataOutputData.forecast_solar">forecast_solar (encodapy.components.weather_data.weather_data_config.WeatherDataOutputData attribute)</a>
+</li>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataOutputData.forecast_temperature">forecast_temperature (encodapy.components.weather_data.weather_data_config.WeatherDataOutputData attribute)</a>
+</li>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataConfigData.forecast_time_range">forecast_time_range (encodapy.components.weather_data.weather_data_config.WeatherDataConfigData attribute)</a>
 </li>
       <li><a href="basic_service/config_models.html#encodapy.config.models.ConfigModel.from_json">from_json() (encodapy.config.models.ConfigModel class method)</a>
 </li>
@@ -501,13 +526,15 @@
 </li>
       <li><a href="components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData.get_number_storage_sensors">get_number_storage_sensors() (encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.get_solver">get_solver() (encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="basic_service/utils_models.html#encodapy.utils.units.get_time_unit_seconds">get_time_unit_seconds() (in module encodapy.utils.units)</a>
 </li>
       <li><a href="basic_service/utils_models.html#encodapy.utils.units.get_unit_adjustment_factor">get_unit_adjustment_factor() (in module encodapy.utils.units)</a>
+</li>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataOutputData.get_weather_types">get_weather_types() (encodapy.components.weather_data.weather_data_config.WeatherDataOutputData class method)</a>
 </li>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptSolverName.GUROBI">GUROBI (encodapy.components.flixopt_model_component.flixopt_models.FlixOptSolverName attribute)</a>
 </li>
@@ -543,6 +570,8 @@
         <li><a href="basic_service/utils_models.html#encodapy.utils.units.TimeUnits.HOUR">(encodapy.utils.units.TimeUnits attribute)</a>
 </li>
       </ul></li>
+      <li><a href="basic_service/utils_models.html#encodapy.utils.units.DataUnits.HPA">HPA (encodapy.utils.units.DataUnits attribute)</a>
+</li>
       <li><a href="components/built_in_two_point_controller_models.html#encodapy.components.two_point_controller.two_point_controller_config.TwoPointControllerConfigData.hysteresis">hysteresis (encodapy.components.two_point_controller.two_point_controller_config.TwoPointControllerConfigData attribute)</a>
 </li>
   </ul></td>
@@ -665,6 +694,8 @@
 </li>
       <li><a href="basic_service/internal_models.html#encodapy.utils.models.OutputDataAttributeModel.latest_timestamp_output">latest_timestamp_output (encodapy.utils.models.OutputDataAttributeModel attribute)</a>
 </li>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataConfigData.latitude">latitude (encodapy.components.weather_data.weather_data_config.WeatherDataConfigData attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.StorageSensorConfig.limits">limits (encodapy.components.thermal_storage.thermal_storage_config.StorageSensorConfig attribute)</a>
@@ -690,6 +721,8 @@
       <li><a href="basic_service/config_models.html#encodapy.config.env_values.BasicEnvVariables.log_retention">log_retention (encodapy.config.env_values.BasicEnvVariables attribute)</a>
 </li>
       <li><a href="basic_service/config_models.html#encodapy.config.env_values.BasicEnvVariables.log_rotation">log_rotation (encodapy.config.env_values.BasicEnvVariables attribute)</a>
+</li>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataConfigData.longitude">longitude (encodapy.components.weather_data.weather_data_config.WeatherDataConfigData attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -749,8 +782,6 @@
 </li>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixoptSolverSettings.mip_rel_gap">mip_rel_gap (encodapy.components.flixopt_model_component.flixopt_models.FlixoptSolverSettings attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     module
 
@@ -765,6 +796,8 @@
 </li>
         <li><a href="components/built_in_two_point_controller_models.html#module-encodapy.components.two_point_controller.two_point_controller_config">encodapy.components.two_point_controller.two_point_controller_config</a>
 </li>
+        <li><a href="components/built_in_weather_data_models.html#module-encodapy.components.weather_data.weather_data_config">encodapy.components.weather_data.weather_data_config</a>
+</li>
         <li><a href="basic_service/config_models.html#module-encodapy.config.models">encodapy.config.models</a>
 </li>
         <li><a href="basic_service/utils_models.html#module-encodapy.config.types">encodapy.config.types</a>
@@ -778,6 +811,8 @@
         <li><a href="basic_service/utils_models.html#module-encodapy.utils.units">encodapy.utils.units</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="basic_service/utils_models.html#encodapy.utils.units.DataUnits.MONTH">MONTH (encodapy.utils.units.DataUnits attribute)</a>
 
       <ul>
@@ -870,6 +905,8 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="basic_service/utils_models.html#encodapy.utils.units.DataUnits.PAL">PAL (encodapy.utils.units.DataUnits attribute)</a>
+</li>
       <li><a href="basic_service/interfaces.html#encodapy.config.env_values.MQTTEnvVariables.password">password (encodapy.config.env_values.MQTTEnvVariables attribute)</a>
 </li>
       <li><a href="basic_service/interfaces.html#encodapy.config.env_values.FileEnvVariables.path_of_input_file">path_of_input_file (encodapy.config.env_values.FileEnvVariables attribute)</a>
@@ -904,6 +941,8 @@
 </li>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixoptSolverSettings.presolve">presolve (encodapy.components.flixopt_model_component.flixopt_models.FlixoptSolverSettings attribute)</a>
 </li>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataOutputData.pressure_msl">pressure_msl (encodapy.components.weather_data.weather_data_config.WeatherDataOutputData attribute)</a>
+</li>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptConverter.previous_power">previous_power (encodapy.components.flixopt_model_component.flixopt_models.FlixOptConverter attribute)</a>
 </li>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel.PRODUCTION">PRODUCTION (encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel attribute)</a>
@@ -924,10 +963,12 @@
 </li>
       <li><a href="basic_service/utils_models.html#encodapy.config.types.TimerangeTypes.RELATIVE">RELATIVE (encodapy.config.types.TimerangeTypes attribute)</a>
 </li>
-      <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptStorage.relative_self_discharge">relative_self_discharge (encodapy.components.flixopt_model_component.flixopt_models.FlixOptStorage attribute)</a>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataOutputData.relative_humidity">relative_humidity (encodapy.components.weather_data.weather_data_config.WeatherDataOutputData attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixOptStorage.relative_self_discharge">relative_self_discharge (encodapy.components.flixopt_model_component.flixopt_models.FlixOptStorage attribute)</a>
+</li>
       <li><a href="basic_service/config_models.html#encodapy.config.env_values.BasicEnvVariables.reload_staticdata">reload_staticdata (encodapy.config.env_values.BasicEnvVariables attribute)</a>
 </li>
       <li><a href="basic_service/config_models.html#encodapy.config.models.TimeSettingsModel.results">results (encodapy.config.models.TimeSettingsModel attribute)</a>
@@ -980,12 +1021,14 @@
 </li>
       <li><a href="basic_service/interfaces.html#encodapy.config.env_values.MQTTEnvVariables.skip_none_values">skip_none_values (encodapy.config.env_values.MQTTEnvVariables attribute)</a>
 </li>
-      <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.solver_settings">solver_settings (encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData attribute)</a>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataOutputData.solar_60">solar_60 (encodapy.components.weather_data.weather_data_config.WeatherDataOutputData attribute)</a>
 </li>
-      <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.EnergyDirection.SOURCE">SOURCE (encodapy.components.flixopt_model_component.flixopt_models.EnergyDirection attribute)</a>
+      <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.solver_settings">solver_settings (encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.EnergyDirection.SOURCE">SOURCE (encodapy.components.flixopt_model_component.flixopt_models.EnergyDirection attribute)</a>
+</li>
       <li><a href="basic_service/config_models.html#encodapy.config.models.ControllerSettingModel.specific_settings">specific_settings (encodapy.config.models.ControllerSettingModel attribute)</a>
 </li>
       <li><a href="basic_service/config_models.html#encodapy.config.env_values.BasicEnvVariables.start_hold_time">start_hold_time (encodapy.config.env_values.BasicEnvVariables attribute)</a>
@@ -1026,6 +1069,8 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataOutputData.temperature">temperature (encodapy.components.weather_data.weather_data_config.WeatherDataOutputData attribute)</a>
+</li>
       <li><a href="components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData.temperature_1">temperature_1 (encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData attribute)</a>
 </li>
       <li><a href="components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData.temperature_10">temperature_10 (encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData attribute)</a>
@@ -1078,18 +1123,22 @@
         <li><a href="basic_service/utils_models.html#encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc.time_format">(encodapy.config.mqtt_messages_template.MQTTTemplateConfigDoc attribute)</a>
 </li>
       </ul></li>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataConfigData.time_interval_current_weather">time_interval_current_weather (encodapy.components.weather_data.weather_data_config.WeatherDataConfigData attribute)</a>
+</li>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataConfigData.time_interval_forecast_weather">time_interval_forecast_weather (encodapy.components.weather_data.weather_data_config.WeatherDataConfigData attribute)</a>
+</li>
       <li><a href="components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixoptSolverSettings.time_limit">time_limit (encodapy.components.flixopt_model_component.flixopt_models.FlixoptSolverSettings attribute)</a>
 </li>
       <li><a href="basic_service/config_models.html#encodapy.config.models.ControllerSettingModel.time_settings">time_settings (encodapy.config.models.ControllerSettingModel attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="basic_service/config_models.html#encodapy.config.models.TimeSettingsCalculationModel.timerange">timerange (encodapy.config.models.TimeSettingsCalculationModel attribute)</a>
 
       <ul>
         <li><a href="basic_service/config_models.html#encodapy.config.models.TimeSettingsCalibrationModel.timerange">(encodapy.config.models.TimeSettingsCalibrationModel attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="basic_service/config_models.html#encodapy.config.models.TimeSettingsCalculationModel.timerange_max">timerange_max (encodapy.config.models.TimeSettingsCalculationModel attribute)</a>
 </li>
       <li><a href="basic_service/config_models.html#encodapy.config.models.TimeSettingsCalculationModel.timerange_min">timerange_min (encodapy.config.models.TimeSettingsCalculationModel attribute)</a>
@@ -1175,6 +1224,8 @@
 </li>
         <li><a href="basic_service/utils_models.html#encodapy.utils.datapoints.DataPointGeneral.unit">(encodapy.utils.datapoints.DataPointGeneral attribute)</a>
 </li>
+        <li><a href="basic_service/utils_models.html#encodapy.utils.datapoints.DataPointTimestep.unit">(encodapy.utils.datapoints.DataPointTimestep attribute)</a>
+</li>
         <li><a href="basic_service/internal_models.html#encodapy.utils.models.DataTransferComponentModel.unit">(encodapy.utils.models.DataTransferComponentModel attribute)</a>
 </li>
         <li><a href="basic_service/internal_models.html#encodapy.utils.models.InputDataAttributeModel.unit">(encodapy.utils.models.InputDataAttributeModel attribute)</a>
@@ -1235,6 +1286,8 @@
 </li>
         <li><a href="basic_service/utils_models.html#encodapy.utils.datapoints.DataPointTimeSeries.value">(encodapy.utils.datapoints.DataPointTimeSeries attribute)</a>
 </li>
+        <li><a href="basic_service/utils_models.html#encodapy.utils.datapoints.DataPointTimestep.value">(encodapy.utils.datapoints.DataPointTimestep attribute)</a>
+</li>
         <li><a href="basic_service/internal_models.html#encodapy.utils.models.DataTransferComponentModel.value">(encodapy.utils.models.DataTransferComponentModel attribute)</a>
 </li>
       </ul></li>
@@ -1249,6 +1302,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="basic_service/utils_models.html#encodapy.utils.mediums.Medium.WATER">WATER (encodapy.utils.mediums.Medium attribute)</a>
+</li>
+      <li><a href="components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherApiCallMethod">WeatherApiCallMethod (class in encodapy.components.weather_data.weather_data_config)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>

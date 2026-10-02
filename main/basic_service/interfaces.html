@@ -848,8 +848,8 @@ see FileStorageMethod enum for details</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -868,10 +868,14 @@ see FileStorageMethod enum for details</p>
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -990,8 +994,8 @@ see FileStorageMethod enum for details</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -1010,10 +1014,14 @@ see FileStorageMethod enum for details</p>
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -1118,8 +1126,8 @@ see FileStorageMethod enum for details</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -1138,10 +1146,14 @@ see FileStorageMethod enum for details</p>
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>

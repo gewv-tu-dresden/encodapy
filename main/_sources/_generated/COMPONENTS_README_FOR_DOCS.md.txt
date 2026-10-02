@@ -26,6 +26,8 @@ This module provides a structured way to define and manage components for use wi
   An example can be found under: [`examples/07_component_runner`](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/07_component_runner)
 - Pradictiv Control model with FlixOpt [`flixopt_model_component`]: Component for optimisation within operational management with [FlixOpt](https://github.com/flixOpt/flixopt)  
   An example can be found under [`examples/09_flixopt`](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/09_flixopt).
+- WeatherData (`weather_data`): Weather data component to retrieve current and forecast weather data from [Brightsky](https://brightsky.dev/).  
+  An example can be found under [`examples/10_brightsky_weather_service`](https://github.com/gewv-tu-dresden/encodapy/blob/main/examples/10_brightsky_weather_service).
 
 ---
 

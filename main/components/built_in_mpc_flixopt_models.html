@@ -23,7 +23,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Examples of EnCoDaPy usage" href="../examples/examples.html" />
+    <link rel="next" title="Weather Data" href="built_in_weather_data.html" />
     <link rel="prev" title="FlixOpt Model Component" href="built_in_mpc_flixopt.html" />
    
   <script>
@@ -69,6 +69,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#module-encodapy.components.flixopt_model_component.flixopt_models">FlixOpt MPC Models</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="built_in_components.html#weather-data">Weather Data</a></li>
 </ul>
 </li>
 </ul>
@@ -154,8 +155,8 @@
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -174,10 +175,14 @@
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -259,8 +264,8 @@ Can be a dict or a path to a json file.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -279,10 +284,14 @@ Can be a dict or a path to a json file.</p>
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -363,8 +372,8 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -383,10 +392,14 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -758,7 +771,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"DataPointNumber"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints of the controller component.\n\nAttributes:\n    value (float | int): The value of the datapoint, which is a number (float, int).\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints with a numeric value.\n\nAttributes:\n    value (float | int): The value of the datapoint, which is a number (float, int).\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -806,8 +819,8 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Possible units for the data\nUnits which are defined by Unit Code (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\nor here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\nThe pint_unit attribute contains the corresponding pint unit string for conversion.\n\nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -&gt; \"P1\" (unit code, for serialization)\n    - DataUnits.PERCENT.pint_unit -&gt; \"percent\" (for pint conversion)\n    - DataUnits(\"P1\") -&gt; DataUnits.PERCENT (lookup by unit code)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"SEC"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MIN"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MON"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"ANN"</span><span class="p">,</span>
@@ -826,10 +839,14 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">            </span><span class="s2">"CMT"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTR"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTK"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"DD"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"MTS"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"P1"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"OHM"</span><span class="p">,</span>
-<span class="w">            </span><span class="s2">"VLT"</span>
+<span class="w">            </span><span class="s2">"VLT"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"A97"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"PAL"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"B13"</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataUnits"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
@@ -3841,7 +3858,7 @@ Only non-None values override the flixopt defaults.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="built_in_mpc_flixopt.html" class="btn btn-neutral float-left" title="FlixOpt Model Component" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../examples/examples.html" class="btn btn-neutral float-right" title="Examples of EnCoDaPy usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="built_in_weather_data.html" class="btn btn-neutral float-right" title="Weather Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
