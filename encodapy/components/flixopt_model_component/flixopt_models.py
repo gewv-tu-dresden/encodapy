@@ -2,28 +2,31 @@
 Description: Collection of configuration and data models for the FlixOpt model component.
 Authors: Martin Altenburger
 """
+
 from typing import Optional
 from enum import Enum
 from pydantic import BaseModel, Field, ConfigDict, model_validator
-import flixopt as fx # type: ignore[import-untyped]
+import flixopt as fx  # type: ignore[import-untyped]
+
 
 class FlixOptSolverName(Enum):
     """
     Names of the available Flixopt solvers
-    
+
     See flixopt.solvers for available solvers
     """
+
     GUROBI = "GurobiSolver"
     HIGHS = "HighsSolver"
+
 
 class FlixoptSolverSettings(BaseModel):
     """
     Base model for Flixopt solver settings.
     Only non-None values override the flixopt defaults.
     """
-    model_config = ConfigDict(
-        extra="forbid"
-    )
+
+    model_config = ConfigDict(extra="forbid")
     name: FlixOptSolverName = Field(
         ...,
         description="Name of the solver (e.g. 'HighsSolver' or 'GurobiSolver')",
@@ -64,18 +67,21 @@ class FlixoptSolverSettings(BaseModel):
         ),
     )
 
+
 class FlixoptLogLevel(Enum):
     """
-    Log-Levels from flixopt configuration - see: flixopt.CONFIG 
-    
+    Log-Levels from flixopt configuration - see: flixopt.CONFIG
+
     FLIXOPT_CONFIG_MAP is used to map the enum values \
         to the actual flixopt configuration functions
 
     """
+
     EXPLORING = "exploring"
     DEBUG = "debug"
     PRODUCTION = "production"
     SILENT = "silent"
+
 
 FLIXOPT_CONFIG_MAP = {
     FlixoptLogLevel.EXPLORING: fx.CONFIG.exploring,
@@ -84,15 +90,15 @@ FLIXOPT_CONFIG_MAP = {
     FlixoptLogLevel.SILENT: fx.CONFIG.silent,
 }
 
+
 class FlixOptBus(BaseModel):
     """
     Model to define a flow in the flixopt model, like it is used in the flixopt library
     https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Bus/
 
     """
-    model_config = ConfigDict(
-        extra="forbid"
-    )
+
+    model_config = ConfigDict(extra="forbid")
     label: str = Field(
         ...,
         description="Label of the flow",
@@ -102,24 +108,24 @@ class FlixOptBus(BaseModel):
         description="Penalty cost for the flow",
     )
 
+
 class FlixOptEffect(BaseModel):
     """
     Model to define a single effect in the flixopt model, like it is used in the flixopt library
     https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Effect/
 
     """
-    model_config = ConfigDict(
-        extra="forbid"
-    )
+
+    model_config = ConfigDict(extra="forbid")
     label: str = Field(
         ...,
         description="Label of the effect",
     )
-    description:str = Field(
+    description: str = Field(
         "",
         description="Description of the effect, default is empty string",
     )
-    #TODO add units from encodapy units
+    # TODO add units from encodapy units
     unit: str = Field(
         ...,
         description="Unit of the effect",
@@ -131,24 +137,26 @@ class FlixOptEffect(BaseModel):
         """,
     )
 
+
 class FlixOptConverterTypes(Enum):
     """
     Types of FlixOpt converters, supported by encodapy FlixOpt model component
     TODO: describe the converter types and add more types if needed
     """
+
     BOILER = "boiler"
     POWER2HEAT = "power2heat"
     CHP = "chp"
     SUBSTATION = "substation"
     BIDIRECTIONAL_SUBSTATION = "bidirectional_substation"
 
+
 class PowerRange(BaseModel):
     """
     Model to define the power range of a converter in the flixopt model in percentages
     """
-    model_config = ConfigDict(
-        extra="forbid"
-    )
+
+    model_config = ConfigDict(extra="forbid")
     min_power: float | int = Field(
         0,
         description="Minimum power of the converter, default is 0",
@@ -158,13 +166,13 @@ class PowerRange(BaseModel):
         description="Maximum power of the converter, default is 100",
     )
 
+
 class FlixOptStatusParameters(BaseModel):
     """
     Model to define the status parameters of a converter in the flixopt model
     """
-    model_config = ConfigDict(
-        extra="forbid"
-    )
+
+    model_config = ConfigDict(extra="forbid")
     min_up_time: Optional[float | int] = Field(
         None,
         description="Minimum up time of the converter in hours",
@@ -184,9 +192,9 @@ class FlixOptStatusParameters(BaseModel):
     startup_effects: Optional[dict[str, float | int]] = Field(
         None,
         description="""Startup effects of the converter,
-        where the key is the label of the effect 
+        where the key is the label of the effect
         and the value is the amount of the effect per startup""",
-        #TODO could we check this?
+        # TODO could we check this?
     )
 
 
@@ -195,6 +203,7 @@ class FlixOptConverter(BaseModel):
     Model to define a converter in the flixopt model, like it is used in the flixopt library
     https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Converter/
     """
+
     # The model_config is set to forbid extra fields to ensure to use submodels for
     # specific converter types (e.g. FlixOptCHPConverter).
     model_config = ConfigDict(extra="forbid")
@@ -229,11 +238,11 @@ class FlixOptConverter(BaseModel):
         description="Thermal power range of the boiler converter in percentages",
     )
     status_parameters: FlixOptStatusParameters = Field(
-        default = FlixOptStatusParameters.model_validate({}),
-        description= """
-        Optional status parameters for the converter which includes information 
-        about startup and shutdown limitations"""
-    ) # TODO: add more converter types and their specific parameters / startup costs etc.
+        default=FlixOptStatusParameters.model_validate({}),
+        description="""
+        Optional status parameters for the converter which includes information
+        about startup and shutdown limitations""",
+    )  # TODO: add more converter types and their specific parameters / startup costs etc.
     previous_power: Optional[float | int | str] = Field(
         None,
         description="""Previous power of the converter in kW
@@ -242,22 +251,22 @@ class FlixOptConverter(BaseModel):
     operation_time: Optional[float | int | str] = Field(
         None,
         description="""Operation time of the converter in hours
-        or as label of an input value, used to define the operation time for startup costs"""
+        or as label of an input value, used to define the operation time for startup costs""",
     )
+
 
 class FlixOptCHPConverter(FlixOptConverter):
     """
-    Model to define a CHP converter in the flixopt model, 
+    Model to define a CHP converter in the flixopt model,
     which inherits from the FlixOptConverter model
     and adds specific parameters for the CHP converter type
-    
-    Keep in mind, the `nominal_power` parameter in the FlixOptConverter model is the 
-    nominal thermal power of the CHP converter, while the nominal electrical power can be 
+
+    Keep in mind, the `nominal_power` parameter in the FlixOptConverter model is the
+    nominal thermal power of the CHP converter, while the nominal electrical power can be
     calculated from the thermal efficiency and the electrical efficiency of the CHP converter.
     """
-    model_config = ConfigDict(
-        extra="forbid"
-    )
+
+    model_config = ConfigDict(extra="forbid")
     electrical_efficiency: float | int = Field(
         ...,
         description="Electrical efficiency of the CHP converter",
@@ -273,9 +282,8 @@ class FlixOptStorage(BaseModel):
     Model to define a storage in the flixopt model, like it is used in the flixopt library
     https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Storage/
     """
-    model_config = ConfigDict(
-        extra="forbid"
-    )
+
+    model_config = ConfigDict(extra="forbid")
     label: str
     bus: str = Field(
         ...,
@@ -307,7 +315,7 @@ class FlixOptStorage(BaseModel):
         description="""
         Starting state of charge (SOC) of the storage at the beginning of the optimization period,
         can be defined as a percentage of the nominal capacity (e.g. 50) or as an label
-        of a input value (e.g. `initial_soc`) which is then used to read the starting SOC 
+        of a input value (e.g. `initial_soc`) which is then used to read the starting SOC
         from the input data and is required there in Percentage of the nominal capacity as well
         """,
     )
@@ -332,22 +340,24 @@ class FlixOptStorage(BaseModel):
         of the optimization period (final_soc = start_soc * final_soc_percentage / 100)""",
     )
 
+
 class EnergyDirection(Enum):
     """
     Enum to define the energy direction for a sink or source in the flixopt model
     """
+
     SINK = "sink"
     SOURCE = "source"
     BIDIRECTIONAL = "bidirectional"
+
 
 class FlixOptSinkSource(BaseModel):
     """
     Model to define a sink or source in the flixopt model, like it is used in the flixopt library
     https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Element/
     """
-    model_config = ConfigDict(
-        extra="forbid"
-    )
+
+    model_config = ConfigDict(extra="forbid")
     label: str = Field(
         ...,
         description="Label of the sink/source",
@@ -367,7 +377,7 @@ class FlixOptSinkSource(BaseModel):
     input_label: Optional[str] = Field(
         None,
         description="""
-        Label of the input time series for the sink (heat demand ...), 
+        Label of the input time series for the sink (heat demand ...),
         if the sink has a time series input""",
     )
     input_effects: Optional[dict[str, float | int | str]] = Field(
@@ -386,7 +396,7 @@ class FlixOptSinkSource(BaseModel):
             }
 
         The value can also be defined as a label of an input value, \
-            which is then used to read the effect from the input data 
+            which is then used to read the effect from the input data
             (for timeseries or a variable value).
         """,
     )
@@ -417,12 +427,12 @@ class FlixOptSinkSource(BaseModel):
             }
 
         The value can also be defined as a label of an input value, \
-            which is then used to read the effect from the input data 
+            which is then used to read the effect from the input data
             (for timeseries or a variable value).
         """,
     )
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def _check_the_required_fields(self):
         """
         Validator to check, if the required fields for the sink/source are defined
@@ -440,12 +450,16 @@ class FlixOptSinkSource(BaseModel):
                 raise ValueError("For a source, output_bus must be defined")
         elif self.direction == EnergyDirection.BIDIRECTIONAL:
             if self.input_bus is None and self.output_bus is None:
-                raise ValueError("For a bidirectional sink/source, "
-                                 "input_bus and output_bus (optional) must be defined")
+                raise ValueError(
+                    "For a bidirectional sink/source, "
+                    "input_bus and output_bus (optional) must be defined"
+                )
             if self.output_bus is None:
                 self.output_bus = self.input_bus
             if self.nominal_power is None:
-                raise ValueError("For a bidirectional sink/source, nominal_power must be defined")
+                raise ValueError(
+                    "For a bidirectional sink/source, nominal_power must be defined"
+                )
         return self
 
 
@@ -453,18 +467,18 @@ class FlixOptModel(BaseModel):
     """
     Model to hold the flixopt Model used in the component
 
-    # Specific constraints
+    Specific constraints
+    --------------------
     To add constraints to the FlixOpt model, a Python file or module can be defined in the
-    'constraints_function' field. This needs to include a function called 
-    'add_constraints(optimization: fx.Optimization, config: FlixOptModel)' 
+    `constraints_function` field. This needs to include a function called
+    `add_constraints(optimization: fx.Optimization, config: FlixOptModel)`
     that adds additional constraints to the FlixOpt optimization model.
     This function is then called in the component after the FlixOpt model has been built.
     You can add more subfunctions to this function to add constraints.
     """
+
     model_config = ConfigDict(
-        extra="allow",
-        populate_by_name=True,
-        arbitrary_types_allowed=True
+        extra="allow", populate_by_name=True, arbitrary_types_allowed=True
     )
 
     buses: list[FlixOptBus] = Field(
@@ -477,7 +491,7 @@ class FlixOptModel(BaseModel):
     effects: list[FlixOptEffect] = Field(
         ...,
         description="""
-        List of effects in in the model, which are required to build the flixopt optimization model 
+        List of effects in in the model, which are required to build the flixopt optimization model
         (https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Effect/)
         """,
     )
@@ -497,7 +511,7 @@ class FlixOptModel(BaseModel):
     storages: list[FlixOptStorage] = Field(
         ...,
         description="""
-        List of storages in in the model, which are required to build the flixopt model 
+        List of storages in in the model, which are required to build the flixopt model
         (https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Storage/)
         """,
     )
@@ -517,11 +531,11 @@ class FlixOptModel(BaseModel):
         description="""
         Path to a python file or python module which includes a function `add_constraints`
         used to add additional constraints to the flixopt optimization model
-    
+
         The function needs to have the following signature: `add_constraints(optimization:
         fx.Optimization, config: FlixOptModel)` and needs to add constraints to the optimization
         model based on the configuration of the FlixOptModel.
-    
+
         For an example for such a function, see `add_constraints.py`
         in the same folder as this file.
         """,
