@@ -16,13 +16,14 @@ from encodapy.utils.models import (
     DataTransferComponentModel,
     DataTransferModel,
     InputDataEntityModel,
-    InputDataModel
+    InputDataModel,
 )
 from encodapy.components.basic_component_config import (
     ControllerComponentModel,
     IOAllocationModel,
-    DataPointGeneral
+    DataPointGeneral,
 )
+
 
 class ExampleService(ControllerBasicService):
     """
@@ -115,11 +116,8 @@ class ExampleService(ControllerBasicService):
             "Union[str | float | int | dict | list | DataFrame | None]: The value of the input data
         """
         for input_data in input_entities:
-
             if input_data.id == input_config.entity:
-
                 for attribute in input_data.attributes:
-
                     if attribute.id == input_config.attribute:
                         return attribute.data
 
@@ -147,26 +145,24 @@ class ExampleService(ControllerBasicService):
 
         temperature_hysteresis = config.root["temperature_hysteresis"]
         try:
-            assert temperature_hysteresis is not None, \
-                "No value found for temperature_hysteresis in the configuration"
-            assert isinstance(temperature_hysteresis, DataPointGeneral), \
-                (
-                    "Value for temperature_hysteresis is not of type DataPointGeneral "
-                    f"(got type={type(temperature_hysteresis).__name__!r}, "
-                    f"value={temperature_hysteresis!r})"
-                )
-            assert isinstance(inputs["temperature_setpoint"], (float, int)), \
-                (
-                    "Value for temperature_setpoint is not a number "
-                    f"(got type={type(inputs['temperature_setpoint']).__name__!r}, "
-                    f"value={inputs['temperature_setpoint']!r})"
-                )
-            assert isinstance(inputs["temperature_measured"], (float, int)), \
-                (
-                    "Value for temperature_measured is not a number "
-                    f"(got type={type(inputs['temperature_measured']).__name__!r}, "
-                    f"value={inputs['temperature_measured']!r})"
-                )
+            assert (
+                temperature_hysteresis is not None
+            ), "No value found for temperature_hysteresis in the configuration"
+            assert isinstance(temperature_hysteresis, DataPointGeneral), (
+                "Value for temperature_hysteresis is not of type DataPointGeneral "
+                f"(got type={type(temperature_hysteresis).__name__!r}, "
+                f"value={temperature_hysteresis!r})"
+            )
+            assert isinstance(inputs["temperature_setpoint"], (float, int)), (
+                "Value for temperature_setpoint is not a number "
+                f"(got type={type(inputs['temperature_setpoint']).__name__!r}, "
+                f"value={inputs['temperature_setpoint']!r})"
+            )
+            assert isinstance(inputs["temperature_measured"], (float, int)), (
+                "Value for temperature_measured is not a number "
+                f"(got type={type(inputs['temperature_measured']).__name__!r}, "
+                f"value={inputs['temperature_measured']!r})"
+            )
         except AssertionError as exc:
             logger.error("Assertion error: %s", exc)
             raise ValueError("Configuration error") from exc

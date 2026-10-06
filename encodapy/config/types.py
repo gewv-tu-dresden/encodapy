@@ -24,7 +24,7 @@ class Interfaces(Enum):
 class AttributeTypes(Enum):
     """
     Enum class for the attribute types
-    
+
     Attributes:
         TIMESERIES (str): Timeseries data "timeseries"
         VALUE (str): Single value data "value"
@@ -72,6 +72,7 @@ class FileExtensionTypes(Enum):
 
     CSV = ".csv"
     JSON = ".json"
+
 
 class MQTTFormatTypes(Enum):
     """

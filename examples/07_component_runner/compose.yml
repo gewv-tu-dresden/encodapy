@@ -8,4 +8,3 @@ services:
       - ./config.json:/app/config.json:ro
     env_file:
       - .env
-      

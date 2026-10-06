@@ -10,6 +10,7 @@ from pydantic import AnyHttpUrl, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from encodapy.config.models import FileStorageMethod
 
+
 class BasicEnvVariables(BaseSettings):
     """
     Basic environment variables for the service.
@@ -176,7 +177,7 @@ class MQTTEnvVariables(BaseSettings):
             "If True, attributes with None values will not be published to MQTT. "
             "This can help reduce message size and avoid sending irrelevant data. "
             "Default is True, meaning None values will not be published."
-        )
+        ),
     )
 
 

@@ -17,7 +17,7 @@ from encodapy.utils.units import adjust_unit_of_value
 class TwoPointControllerInputData(InputData):
     """
     Model for the input of the two-point controller component.
-    
+
     Attributes:
         current_value (DataPointNumber): The current value of the input.
         latest_control_signal (DataPointNumber): The latest control signal output \
@@ -30,6 +30,7 @@ class TwoPointControllerInputData(InputData):
     latest_control_signal: DataPointNumber = Field(
         ..., description="Latest control signal output from the two-point controller"
     )
+
 
 class TwoPointControllerOutputData(OutputData):
     """
@@ -71,7 +72,7 @@ class TwoPointControllerConfigData(ConfigData):
         """
         Validator to check if the units of hysteresis and setpoint are the same.
         If not, it tries to convert the hysteresis to the unit of the setpoint.
-        
+
         """
         hysteresis = DataPointNumber.model_validate(self.hysteresis)
         setpoint = DataPointNumber.model_validate(self.setpoint)
@@ -86,7 +87,9 @@ class TwoPointControllerConfigData(ConfigData):
             )
             try:
                 hysteresis.value = adjust_unit_of_value(
-                    value=hysteresis.value, unit_actual=hysteresis.unit, unit_target=setpoint.unit
+                    value=hysteresis.value,
+                    unit_actual=hysteresis.unit,
+                    unit_target=setpoint.unit,
                 )
                 hysteresis.unit = setpoint.unit
             except ValueError as exc:

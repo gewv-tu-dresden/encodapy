@@ -12,17 +12,17 @@
             "interface": "file",
             "id_interface": "weatherdata",
             "attributes": [
-                {"id": "temperature", 
+                {"id": "temperature",
                 "id_interface":"outside_temperature",
                 "type": "timeseries",
                 "unit" : "CEL"
                 },
-                {"id": "relative_humidity", 
+                {"id": "relative_humidity",
                 "id_interface":"relative_humidity",
                 "type": "value",
                 "unit" : "P1"
                 },
-                {"id": "dew_point", 
+                {"id": "dew_point",
                 "id_interface":"dew_point_temperature",
                 "type": "value",
                 "unit" : "CEL"
@@ -38,7 +38,7 @@
                 "unit" : "B13"
                 },
                 {"id": "forecast_temperature",
-                "id_interface":"forecast_temperature", 
+                "id_interface":"forecast_temperature",
                 "type" : "timeseries",
                 "datatype" : "StructuredValue",
                 "unit" : "CEL"
@@ -60,19 +60,19 @@
         "interface": "file",
         "id_interface": "weatherdata",
         "attributes": [
-               {"id": "longitude", 
+               {"id": "longitude",
                 "id_interface":"longitude",
                 "type": "value"
                 },
-                {"id": "latitude", 
+                {"id": "latitude",
                 "id_interface":"latitude",
                 "type": "value"
                 },
-                {"id": "forecast_time_range", 
+                {"id": "forecast_time_range",
                 "id_interface":"forecast_time_range",
                 "type": "value"
                 },
-                {"id": "time_interval_current_weather", 
+                {"id": "time_interval_current_weather",
                 "id_interface":"time_interval_current_weather",
                 "type": "value"
                 },
@@ -102,7 +102,7 @@
                     "attribute": "dew_point"
                     },
                 "pressure_msl": {
-                    "entity" : "weatherdata",   
+                    "entity" : "weatherdata",
                     "attribute": "pressure_msl"
                         },
                 "solar_60": {
@@ -162,5 +162,3 @@
         }
     }
 }
-
-

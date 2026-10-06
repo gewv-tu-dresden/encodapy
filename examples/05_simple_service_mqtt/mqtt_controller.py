@@ -26,6 +26,7 @@ from encodapy.utils.models import (
 )
 from encodapy.utils.units import DataUnits
 
+
 class MQTTController(ControllerBasicService):
     """
     Class for a small example service

@@ -49,7 +49,7 @@ class ThermalStorageService(ControllerBasicService):
 
     async def calibration(self, data: InputDataModel) -> None:
         """
-        Function to do the calibration of the thermal storage service. 
+        Function to do the calibration of the thermal storage service.
         This function prepares the thermal storage component with the static data, \
             if this is reloaded.
         It is possible to update the static data of the thermal storage component with \

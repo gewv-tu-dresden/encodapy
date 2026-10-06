@@ -98,7 +98,9 @@ def _load_input_entity(example_dir: Path) -> InputDataEntityModel:
 
 
 @pytest.mark.integration
-def test_example_config_smoke_runs_flixopt_component(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_example_config_smoke_runs_flixopt_component(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Run the real flixopt example configuration once on component level."""
     if not _highs_solver_available():
         pytest.skip("Optional dependency highspy is not installed.")

@@ -30,15 +30,13 @@ class IOAllocationModel(BaseModel):
     )
 
 
-class IOModell(
-    (RootModel[Dict[str, IOAllocationModel]])
-):  # pylint: disable=too-few-public-methods
+class IOModell((RootModel[Dict[str, IOAllocationModel]])):  # pylint: disable=too-few-public-methods
     """
     Model for the input, staticdata and output of a component.
 
     It contains a dictionary with the key as the ID of the input, output or static data
     and the value as the allocation model
-    
+
     See also :class:`~encodapy.components.basic_component_config.IOAllocationModel`.
 
     There is no validation for this.
@@ -46,12 +44,10 @@ class IOModell(
     """
 
 
-class ConfigDataPoints(
-    (RootModel[Dict[str, IOAllocationModel | DataPointGeneral]])
-):  # pylint: disable=too-few-public-methods
+class ConfigDataPoints((RootModel[Dict[str, IOAllocationModel | DataPointGeneral]])):  # pylint: disable=too-few-public-methods
     """
     Model for the configuration of config data points.
-    
+
     See also :class:`~encodapy.components.basic_component_config.IOAllocationModel` and
     :class:`~encodapy.utils.datapoints.DataPointGeneral`.
     """
@@ -60,7 +56,7 @@ class ConfigDataPoints(
 class ControllerComponentModel(BaseModel):
     """
     Model for the configuration of the controller components.
-    
+
     Attributes:
         active (bool): Whether the component is active or not
         id (str): The id of the component
@@ -149,10 +145,10 @@ class ComponentData(BaseModel):
                     and value.unit != DataUnits(unit)
                 ):
                     new_value = adjust_units(
-                            value=value.value,
-                            unit_actual=value.unit,
-                            unit_target=DataUnits(unit)
-                        )
+                        value=value.value,
+                        unit_actual=value.unit,
+                        unit_target=DataUnits(unit),
+                    )
                     if new_value is not None:
                         value.value = new_value
                         value.unit = DataUnits(unit)
@@ -187,9 +183,10 @@ class InputData(ComponentData):
 
     Fields should be instances of :class:`~encodapy.utils.datapoints.DataPointGeneral`
     (or subclasses thereof) so the validator can handle unit and value conversion.
-    
+
     Needs to be implemented for the specific component.
     """
+
 
 class ConfigData(ComponentData):
     """
@@ -205,6 +202,7 @@ class ConfigData(ComponentData):
 
     Needs to be implemented by the user if static configuration is required.
     """
+
 
 class ComponentIOModel(BaseModel):
     """
