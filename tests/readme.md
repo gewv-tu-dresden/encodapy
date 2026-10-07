@@ -11,9 +11,9 @@
   - `slow`: tests that take a long time to run
 - To run the tests locally, execute the following command in the root directory of the repository:
 
-    ```bash
-    poetry run pytest --cov=encodapy --cov-report=term-missing
-    ```
+  ```bash
+  poetry run pytest --cov=encodapy --cov-report=term-missing
+  ```
 
 ## Running with and without integration tests
 
