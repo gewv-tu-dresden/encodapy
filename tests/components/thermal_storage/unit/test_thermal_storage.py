@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import math
 from typing import cast
+from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -227,13 +228,21 @@ class TestStateOfCharge:
         assert state_of_charge.unit is DataUnits.PERCENT
 
     def test_state_of_charge_is_cached(self) -> None:
-        """The state of charge is only recalculated after the check interval."""
+        """The state of charge uses cached energy values on subsequent calls."""
         component = helpers.make_component(temperatures=TEMPERATURES)
 
-        first_call = component.get_state_of_charge()
-        cached_call = component.get_state_of_charge()
+        # Erstaufruf: Cache wird befüllt
+        component.get_state_of_charge()
 
-        assert first_call.value == cached_call.value
+        # Zweitaufruf: Sollte Cache nutzen, nicht neu berechnen
+        with patch.object(
+            component,
+            "get_storage_energy_content",
+            wraps=component.get_storage_energy_content,
+        ) as mock_energy:
+            component.get_state_of_charge()
+
+        mock_energy.assert_not_called()
         assert component.state_of_charge_information.check_status is True
 
     def test_state_of_charge_limited_to_bounds(self) -> None:
@@ -361,8 +370,8 @@ class TestStateOfChargeAdjustment:
 
         assert checked == 42.0
 
-    def test_sensor_with_equal_limits_is_skipped(self) -> None:
-        """A sensor with equal temperature limits does not break the check."""
+    def test_equal_temperature_limits_do_not_reduce_state_of_charge(self) -> None:
+        """A sensor with equal temperature limits does not reduce the state of charge."""
         sensor_config = {
             "storage_sensors": [
                 {
@@ -391,7 +400,7 @@ class TestStateOfChargeAdjustment:
 
         checked = component._check_temperature_of_required_sensors(state_of_charge=42.0)
 
-        assert checked >= 0.0
+        assert checked == 42.0
 
 
 class TestCalculationMethods:
