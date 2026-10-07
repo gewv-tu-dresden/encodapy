@@ -44,7 +44,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install Poetry
-        run: pip install poetry
+        run: pip install poetry==2.5.1
 
       - name: Configure Poetry
         run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
@@ -88,6 +88,8 @@ jobs:
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
+        with:
+          version: 2.5.1
 
       - name: Install dependencies
         run: poetry install
