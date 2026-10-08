@@ -156,16 +156,17 @@ class DataTransferComponentModel(ComponentModel):
     unit: Union[DataUnits, None] = None
     timestamp: Optional[Union[datetime, None]] = None
 
-    @field_validator('value', mode='before')
+    @field_validator("value", mode="before")
     @classmethod
     def convert_value_to_dict(cls, val):
         """
         Convert a Pydantic BaseModel value to a dictionary.
         """
         if isinstance(val, BaseModel):
-            return val.model_dump(mode='json')
+            return val.model_dump(mode="json")
         return val
-    @field_validator('value', mode='before')
+
+    @field_validator("value", mode="before")
     @classmethod
     def convert_value_to_dataframe(cls, val):
         """

@@ -39,7 +39,7 @@ class MQTTTemplateConfig(BaseModel):
 
     The evironment variable `MQTT_TEMPLATE_<NAME>` (or variables for multiple templates) \
         must be set, where `<NAME>` is the name of the template to load.\
-            It isn't loaded automatically from a `.env` file. 
+            It isn't loaded automatically from a `.env` file.
     The dictionary must contain the keys `topic` and `payload`, and could look like this:
 
     .. code-block:: json
@@ -323,12 +323,12 @@ class MQTTTemplateConfigDoc(BaseModel):
     Model for MQTT template configuration.
 
     **Mock class for documentation purposes.**
-    
+
     Note:
         In the actual implementation, `topic` and `payload` are `jinja2.Template` objects,
         `time_format` is a `str` as time format for the timestamp in the payload.
         This mock uses `dict` to avoid import issues during documentation generation.
-        
+
         For more information,\
             see :class:`~encodapy.config.mqtt_messages_template.MQTTTemplateConfig`.
     """

@@ -13,7 +13,9 @@ from encodapy.service.basic_service import ControllerBasicService
 from encodapy.service.component_runner_service import ComponentRunnerService
 
 
-async def service_main(service_class: Type[ControllerBasicService] = ComponentRunnerService):
+async def service_main(
+    service_class: Type[ControllerBasicService] = ComponentRunnerService,
+):
     """
     Main function to start the example service
 

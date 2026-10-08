@@ -24,10 +24,12 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v7
       with:
-        python-version: '3.12'
+        python-version: '3.14'
 
     - name: Install Poetry
       uses: snok/install-poetry@v1
+      with:
+        version: 2.5.1
 
     - name: Install dependencies
       run: poetry install

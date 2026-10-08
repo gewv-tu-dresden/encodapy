@@ -2,6 +2,7 @@
 Description: Configuration models for the thermal storage component
 Author: Martin Altenburger
 """
+
 import os
 from typing import Optional, TYPE_CHECKING
 from enum import Enum
@@ -14,10 +15,7 @@ from encodapy.components.basic_component_config import (
     OutputData,
     ConfigData,
 )
-from encodapy.utils.datapoints import (
-    DataPointNumber,
-    DataPointMedium
-)
+from encodapy.utils.datapoints import DataPointNumber, DataPointMedium
 from encodapy.utils.mediums import Medium
 
 # Split between real imports and mock classes for Sphinx
@@ -28,15 +26,16 @@ else:
     # Mock-Class for Sphinx
     class DataPointGeneral(BaseModel):
         """Mock-Class for Sphinx documentation.
-        
+
         For more information, see the real DataPointGeneral class: \
             :class:`encodapy.utils.datapoints.DataPointGeneral`.
         """
 
+
 class TemperatureLimits(BaseModel):
     """
     Configuration of the temperature limits in the termal storage
-    
+
     Attributes:
         minimal_temperature: Minimal temperature in the thermal storage in °C
         maximal_temperature: Maximal temperature in the thermal storage in °C
@@ -85,12 +84,9 @@ class StorageSensorConfig(BaseModel):
         limits (:class:`encodapy.components.thermal_storage.TemperatureLimits`): \
             Temperature limits for the sensor
     """
-    model_config = ConfigDict(
-        extra="forbid"
-    )
-    name: Optional[str] = Field(
-        None, description="Optional name of the sensor"
-    )
+
+    model_config = ConfigDict(extra="forbid")
+    name: Optional[str] = Field(None, description="Optional name of the sensor")
     height: float = Field(
         ...,
         ge=0,
@@ -113,6 +109,7 @@ class StorageSensorConfig(BaseModel):
         description="Whether the lower limit of the sensor should not be adjusted "
         "during calibration",
     )
+
     @model_validator(mode="after")
     def enforce_protected_lower_limit(self) -> "StorageSensorConfig":
         """
@@ -378,7 +375,7 @@ class ThermalStorageCalculationMethods(Enum):
 class ThermalStorageEnergyTypes(Enum):
     """
     Enum for the energy types of the thermal storage service.
-    
+
     Members:
         Nominal ("nominal"): Nominal energy of the thermal storage \
             between the temperature limits
@@ -408,6 +405,7 @@ class DataPointCalculationMethod(DataPointGeneral):
 
     value: ThermalStorageCalculationMethods
 
+
 class DataPointSensorConfig(DataPointGeneral):
     """
     Model for datapoints of the controller component which define the sensor configuration.
@@ -430,6 +428,7 @@ class ThermalStorageLoadLevelCheck(BaseModel):
     if the temperature falls below the required level. It would be advisable
     to check the sensors at the outlet of the storage tank.
     """
+
     enabled: bool = Field(
         True,
         description="Enable or disable the state of charge check",
@@ -446,8 +445,9 @@ class ThermalStorageLoadLevelCheck(BaseModel):
         5,
         ge=0,
         description="""
-        Minutes for historical temperature data to be considered for the state of charge check."""
+        Minutes for historical temperature data to be considered for the state of charge check.""",
     )
+
 
 class ThermalStorageCalibrationConfig(BaseModel):
     """
@@ -464,7 +464,7 @@ class ThermalStorageCalibrationConfig(BaseModel):
     historical_timerange_minimum: int = Field(
         1,
         ge=0,
-        description="Minimum timerange in hours for historical data to be considered "
+        description="Minimum timerange in hours for historical data to be considered ",
     )
     historical_timerange_retention: int = Field(
         48,
@@ -478,28 +478,35 @@ class ThermalStorageCalibrationConfig(BaseModel):
         description="Path to store calibration data (optional)",
     )
 
+
 class DataPointThermalStorageLoadLevelCheck(DataPointGeneral):
     """
     Model for datapoints of the controller component \
         which define the state of charge check configuration.
     """
+
     value: ThermalStorageLoadLevelCheck = Field(
         ThermalStorageLoadLevelCheck.model_validate({}),
-        description="Value of the datapoint, which is a ThermalStorageLoadLevelCheck "
+        description="Value of the datapoint, which is a ThermalStorageLoadLevelCheck ",
     )
+
+
 class DataPointThermalStorageCalibrationConfig(DataPointGeneral):
     """
     Model for datapoints of the controller component \
         which define the calibration configuration.
     """
+
     value: ThermalStorageCalibrationConfig = Field(
         ThermalStorageCalibrationConfig.model_validate({}),
-        description="Value of the datapoint, which is a ThermalStorageCalibrationConfig "
+        description="Value of the datapoint, which is a ThermalStorageCalibrationConfig ",
     )
+
+
 class ThermalStorageConfigData(ConfigData):
     """
     Model for the configuration data of the thermal storage service.
-    
+
     Arguments:
         volume (DataPointNumber ): Volume of the thermal storage in m³
         medium (DataPointMedium) : Medium of the thermal storage
@@ -539,28 +546,28 @@ class ThermalStorageConfigData(ConfigData):
         description="Calibration configuration for the thermal storage",
     )
 
+
 class TemperatureExtrema(BaseModel):
     """
     Model for storing temperature extrema (min and max) for a sensor.
     """
 
     minimal_temperature: float = Field(
-        ...,
-        description="Minimal recorded temperature for the sensor in °C"
+        ..., description="Minimal recorded temperature for the sensor in °C"
     )
     maximal_temperature: float = Field(
-        ...,
-        description="Maximal recorded temperature for the sensor in °C"
+        ..., description="Maximal recorded temperature for the sensor in °C"
     )
     time: datetime = Field(
-        ...,
-        description="Timestamp of when the extrema were recorded"
+        ..., description="Timestamp of when the extrema were recorded"
     )
+
 
 class ThermalStorageLoadLevelStorage(BaseModel):
     """
     Model to store state of charge check information for the thermal storage service.
     """
+
     last_check_time: Optional[datetime] = Field(
         None,
         description="Timestamp of the last state of charge check",
@@ -579,6 +586,7 @@ class ThermalStorageLoadLevelStorage(BaseModel):
         None,
         description="Nominal storage energy in Wh | set by the process",
     )
+
     @property
     def check_status(self):
         """

@@ -20,7 +20,9 @@ class _TestableFlixoptModelComponent(FlixoptModelComponent):
 
 def test_prepare_output_data_uses_forward_minus_reverse(monkeypatch: Any) -> None:
     """Bidirectional thermal power must be exported as forward minus reverse flow."""
-    component: Any = _TestableFlixoptModelComponent.__new__(_TestableFlixoptModelComponent)
+    component: Any = _TestableFlixoptModelComponent.__new__(
+        _TestableFlixoptModelComponent
+    )
 
     time_index = pd.date_range("2026-01-01", periods=3, freq="h")
     all_timeseries = pd.DataFrame(

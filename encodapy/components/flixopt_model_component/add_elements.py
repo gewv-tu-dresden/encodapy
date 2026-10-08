@@ -4,7 +4,7 @@ Description: Example for the Function to add constraints to the FlixOpt \
 Author: Martin Altenburger
 """
 
-import flixopt as fx # type: ignore[import-untyped]
+import flixopt as fx  # type: ignore[import-untyped]
 from encodapy.components.flixopt_model_component.flixopt_models import FlixOptModel
 
 
@@ -17,14 +17,14 @@ def _add_piecewise_example() -> list[fx.LinearConverter]:
 
     piecewise_efficiency = fx.PiecewiseConversion(
         {
-            'gas': fx.Piecewise(
+            "gas": fx.Piecewise(
                 [
                     fx.Piece(start=78, end=132),  # Part load
                     fx.Piece(start=132, end=179),  # Mid load
                     fx.Piece(start=179, end=250),  # Full load
                 ]
             ),
-            'electricity': fx.Piecewise(
+            "electricity": fx.Piecewise(
                 [
                     fx.Piece(start=25, end=50),  # 32% -> 38% efficiency
                     fx.Piece(start=50, end=75),  # 38% -> 42% efficiency
@@ -35,21 +35,22 @@ def _add_piecewise_example() -> list[fx.LinearConverter]:
     )
 
     converter = fx.LinearConverter(
-        'GasEngine',
+        "GasEngine",
         # this flows needs to exists in the model, define them in the configuration
-        inputs=[fx.Flow('gas', bus='gas')],
-        outputs=[fx.Flow('electricity', bus='electricity')],
+        inputs=[fx.Flow("gas", bus="gas")],
+        outputs=[fx.Flow("electricity", bus="electricity")],
         piecewise_conversion=piecewise_efficiency,
     )
 
     return [converter]
+
 
 def add_elements(
     config: FlixOptModel | None = None,
 ) -> list[fx.elements.Element]:
     """
     Add new elements to the flow system of the optimization model.
-    
+
     The function needs to be implemented for the specific use case \
         and need to return a list of flixopt components which should be added to the model.
 
@@ -57,7 +58,7 @@ def add_elements(
         config (FlixOptModel | None): The configuration object containing model parameters and \
             settings, which may be needed to determine how and which constraints to add.
     """
-    _ = config # if you want to use the config
+    _ = config  # if you want to use the config
 
     fx_elements: list[fx.elements.Element] = []
 

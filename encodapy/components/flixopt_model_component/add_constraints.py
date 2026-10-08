@@ -4,8 +4,9 @@ Description: Example for the Function to add constraints to the FlixOpt \
 Author: Martin Altenburger
 """
 
-import flixopt as fx # type: ignore[import-untyped]
+import flixopt as fx  # type: ignore[import-untyped]
 from encodapy.components.flixopt_model_component.flixopt_models import FlixOptModel
+
 
 def add_constraints(
     optimization: fx.Optimization,
@@ -38,6 +39,6 @@ def add_constraints(
         binary=True,
     )
     optimization.model.add_constraints(
-            example_variable_1 >= example_variable_2,
-            name="example",
-        )
+        example_variable_1 >= example_variable_2,
+        name="example",
+    )

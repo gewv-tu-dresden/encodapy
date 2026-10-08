@@ -6,7 +6,7 @@ Welcome to the EnCoDaPy (Energy Component Data Python) documentation!
 Overview
 --------
 
-EnCoDaPy is a Python framework for the configuration and management of energy system components. 
+EnCoDaPy is a Python framework for the configuration and management of energy system components.
 It provides a comprehensive solution for:
 
 * **Configuration Management**: Structured models for system and component configurations
@@ -37,9 +37,9 @@ This documentation is organized into the following sections:
 
 .. toctree::
   :maxdepth: 2
- 
+
   readme
-  
+
   basic_service
   components
   examples/examples

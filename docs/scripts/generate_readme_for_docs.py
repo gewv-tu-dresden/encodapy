@@ -7,6 +7,7 @@ This is a small, best-effort preprocessor. It resolves relative links that start
 with ./ or ../ and rewrites them to point to the repository's GitHub tree on the
 `main` branch. Adjust REPO_BASE and BRANCH if needed.
 """
+
 from pathlib import Path
 import re
 import sys
@@ -16,29 +17,29 @@ REPO_OWNER = "gewv-tu-dresden"
 REPO_NAME = "encodapy"
 BRANCH = "main"
 
-def main(argv=None):
 
+def main(argv=None):
     parser = argparse.ArgumentParser(
         description="Generate README copy for docs with rewritten links"
-        )
-    parser.add_argument("--owner",
-                        help="GitHub repo owner/organization",
-                        default=REPO_OWNER)
-    parser.add_argument("--repo",
-                        help="GitHub repository name",
-                        default=REPO_NAME)
-    parser.add_argument("--branch",
-                        help="GitHub branch (or tag)",
-                        default=BRANCH)
-    parser.add_argument("--repo_root",
-                        help="Path to the repository root (if not auto-detected)",
-                        default=None)
-    parser.add_argument("--readme-src",
-                        help="Path to the source README.md file",
-                        default=None)
-    parser.add_argument("--output_name",
-                        help="Output path for the generated README file",
-                        default="README_FOR_DOCS.md")
+    )
+    parser.add_argument(
+        "--owner", help="GitHub repo owner/organization", default=REPO_OWNER
+    )
+    parser.add_argument("--repo", help="GitHub repository name", default=REPO_NAME)
+    parser.add_argument("--branch", help="GitHub branch (or tag)", default=BRANCH)
+    parser.add_argument(
+        "--repo_root",
+        help="Path to the repository root (if not auto-detected)",
+        default=None,
+    )
+    parser.add_argument(
+        "--readme-src", help="Path to the source README.md file", default=None
+    )
+    parser.add_argument(
+        "--output_name",
+        help="Output path for the generated README file",
+        default="README_FOR_DOCS.md",
+    )
     args = parser.parse_args(argv)
 
     owner = args.owner

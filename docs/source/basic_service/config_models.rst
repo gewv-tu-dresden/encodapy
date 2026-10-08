@@ -28,5 +28,3 @@ The following models are used as sub-models within the `ConfigModel` for specifi
    :show-inheritance:
    :undoc-members:
    :exclude-members: ConfigModel, model_fields, model_config, model_computed_fields, model_extra, DataFile, DataFileEntity, DataFileAttribute
-
-

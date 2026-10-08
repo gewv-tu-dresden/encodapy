@@ -12,12 +12,12 @@
             "id_interface": "urn:thermal_storage:01",
             "attributes": [
                 {
-                    "id": "temperature_measured", 
+                    "id": "temperature_measured",
                     "id_interface":"temperature__measured",
                     "type": "value"
                 },
                 {
-                    "id": "temperature_setpoint", 
+                    "id": "temperature_setpoint",
                     "id_interface":"temperature__setpoint",
                     "type": "value"
                 }
@@ -29,7 +29,7 @@
             "id_interface": "urn:heater:01",
             "attributes": [
                 {
-                    "id": "operation__setpoint", 
+                    "id": "operation__setpoint",
                     "id_interface":"operation__setpoint",
                     "type": "value"
                 }
@@ -45,7 +45,7 @@
             ],
             "commands":[
                 {
-                    "id": "operation__setpoint", 
+                    "id": "operation__setpoint",
                     "id_interface":"operation__setpoint",
                     "unit": "KWT"
                 }
@@ -61,11 +61,11 @@
                 "temperature_measured": {
                     "entity" : "thermal_storage",
                     "attribute": "temperature_measured"
-                }, 
+                },
                 "temperature_setpoint": {
                     "entity" : "thermal_storage",
                     "attribute": "temperature_setpoint"
-                }, 
+                },
                 "heater_status": {
                     "entity" : "heater",
                     "attribute": "operation__setpoint"

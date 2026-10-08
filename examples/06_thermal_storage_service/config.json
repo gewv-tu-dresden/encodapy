@@ -12,38 +12,38 @@
             "id_interface": "urn:thermal_storage:01",
             "attributes": [
                 {
-                    "id": "temperature_1", 
+                    "id": "temperature_1",
                     "id_interface":"temperature__1",
                     "type": "value"
                 },
                 {
-                    "id": "temperature_2", 
+                    "id": "temperature_2",
                     "id_interface":"temperature__2",
                     "type": "value"
                 },
                 {
-                    "id": "temperature_3", 
+                    "id": "temperature_3",
                     "id_interface":"temperature__3",
                     "type": "value"
                 },
                 {
-                    "id": "temperature_4", 
+                    "id": "temperature_4",
                     "id_interface":"temperature__4",
                     "type": "value"
                 },
                 {
-                    "id": "temperature_5", 
+                    "id": "temperature_5",
                     "id_interface":"temperature__5",
                     "type": "value"
                 },
                 {
-                    "id": "temperature_in", 
+                    "id": "temperature_in",
                     "id_interface":"temperature__in",
                     "type": "value",
                     "unit" : "CEL"
                 },
                 {
-                    "id": "temperature_out", 
+                    "id": "temperature_out",
                     "id_interface":"temperature__out",
                     "type": "value",
                     "unit" : "CEL"
@@ -58,22 +58,22 @@
             "id_interface": "urn:thermal_storage:01",
             "attributes": [
                 {
-                    "id": "storage__level", 
+                    "id": "storage__level",
                     "id_interface":"storage__level",
                     "type": "value",
                     "unit": "P1"
                 },
                 {
-                    "id": "storage__energy", 
+                    "id": "storage__energy",
                     "id_interface":"storage__energy",
                     "type": "value",
-                    "unit": "WHR" 
+                    "unit": "WHR"
                 },
                 {
-                    "id": "storage__loading_potential", 
+                    "id": "storage__loading_potential",
                     "id_interface":"storage__loading_potential",
                     "type": "value",
-                    "unit": "WHR" 
+                    "unit": "WHR"
                 }
             ],
             "commands":[]
@@ -85,7 +85,7 @@
             "interface": "fiware",
             "id_interface": "urn:thermal_storage:01",
             "attributes": [
-                    {"id": "volume", 
+                    {"id": "volume",
                     "id_interface":"volume",
                     "type": "value"
                     }
@@ -96,7 +96,7 @@
             "interface": "fiware",
             "id_interface": "urn:thermal_storage:01",
             "attributes": [
-                    {"id": "medium", 
+                    {"id": "medium",
                     "id_interface":"medium",
                     "type": "value"
                     }
@@ -107,7 +107,7 @@
             "interface": "fiware",
             "id_interface": "urn:thermal_storage:01",
             "attributes": [
-                    {"id": "sensor_config", 
+                    {"id": "sensor_config",
                     "id_interface":"sensor_config",
                     "type": "value"
                     }
@@ -122,27 +122,27 @@
                 "temperature_1": {
                     "entity" : "thermal_storage",
                     "attribute": "temperature_1"
-                }, 
+                },
                 "temperature_2": {
                     "entity" : "thermal_storage",
                     "attribute": "temperature_2"
-                }, 
+                },
                 "temperature_3": {
                     "entity" : "thermal_storage",
                     "attribute": "temperature_3"
-                }, 
+                },
                 "temperature_4": {
                     "entity" : "thermal_storage",
                     "attribute": "temperature_4"
-                }, 
+                },
                 "temperature_5": {
                     "entity" : "thermal_storage",
                     "attribute": "temperature_5"
-                }, 
+                },
                 "load_temperature_in": {
                     "entity" : "thermal_storage",
                     "attribute": "temperature_in"
-                }, 
+                },
                 "load_temperature_out": {
                     "entity" : "thermal_storage",
                     "attribute": "temperature_out"
@@ -180,7 +180,7 @@
                 }
             }
         }
-        
+
     ],
     "controller_settings": {
         "time_settings":

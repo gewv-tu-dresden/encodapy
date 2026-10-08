@@ -116,7 +116,6 @@ napoleon_use_rtype = True  # Keeps :rtype:
 napoleon_use_ivar = True  # Keeps instance variables
 napoleon_preprocess_types = True
 # pydantic-specific settings - for automodule
-autodoc_pydantic_model_show_json = True
 autodoc_pydantic_model_show_config_summary = False
 autodoc_pydantic_field_list_validators = False
 autodoc_pydantic_model_show_field_summary = False

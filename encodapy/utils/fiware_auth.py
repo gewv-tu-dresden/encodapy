@@ -35,14 +35,19 @@ class BearerToken:
             self._token_typ = "limited"
         if self._token_typ == "limited":
             try:
-                assert self.client_id is not None, \
-                    "Client ID is required for limited token type"
-                assert self.client_secret is not None, \
-                    "Client secret is required for limited token type"
-                assert self.token_url is not None, \
-                    "Token URL is required for limited token type"
+                assert (
+                    self.client_id is not None
+                ), "Client ID is required for limited token type"
+                assert (
+                    self.client_secret is not None
+                ), "Client secret is required for limited token type"
+                assert (
+                    self.token_url is not None
+                ), "Token URL is required for limited token type"
             except AssertionError as exc:
-                raise ValueError("Missing required parameters for limited token type") from exc
+                raise ValueError(
+                    "Missing required parameters for limited token type"
+                ) from exc
             self._get_new_token()
 
     def _is_token_valid(
@@ -64,7 +69,6 @@ class BearerToken:
         )
 
         if response.status_code == 200:
-
             token_info = response.json()
             expires_in = token_info.get("expires_in")
 
@@ -78,14 +82,16 @@ class BearerToken:
         Function to get new bearer-token from oauth2-provider
         """
         try:
-            assert self.client_id is not None, \
-                "Client ID is required to get a new token for limited token type"
-            assert self.token_url is not None, \
-                "Token URL is required to get a new token for limited token type"
+            assert (
+                self.client_id is not None
+            ), "Client ID is required to get a new token for limited token type"
+            assert (
+                self.token_url is not None
+            ), "Token URL is required to get a new token for limited token type"
         except AssertionError as exc:
             raise ValueError(
                 "Missing required parameters to get a new token for limited token type"
-                ) from exc
+            ) from exc
 
         client = BackendApplicationClient(client_id=self.client_id)
         oauth = OAuth2Session(client=client)

@@ -618,7 +618,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """Helper function to check the datatype of the attribute."""
 
         match component.value:
-            case bool():  # MUSS vor int stehen!
+            case bool():
                 datatype_value = DataType.BOOLEAN
             case int():
                 datatype_value = DataType.INTEGER

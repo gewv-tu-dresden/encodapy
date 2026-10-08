@@ -1,4 +1,4 @@
-﻿"""Integration-style tests for result export and output mapping.
+"""Integration-style tests for result export and output mapping.
 
 The tests verify the derivation of domain outputs from optimization results,
 including the special case of bidirectional substations.
@@ -52,14 +52,18 @@ def test_prepare_output_data_uses_forward_minus_reverse() -> None:
             exchangers=[],
         ),
     )
-    setattr(component, "_bidirectional_substations", {
-        "sub_a": (
-            SimpleNamespace(label="sub_a_fwd"),
-            SimpleNamespace(label="sub_a_rev"),
-            1.0,
-            1.0,
-        )
-    })
+    setattr(
+        component,
+        "_bidirectional_substations",
+        {
+            "sub_a": (
+                SimpleNamespace(label="sub_a_fwd"),
+                SimpleNamespace(label="sub_a_rev"),
+                1.0,
+                1.0,
+            )
+        },
+    )
 
     setattr(component, "export_results_as_timeseries", lambda results: all_timeseries)
 
@@ -104,47 +108,51 @@ def test_prepare_output_data_maps_storage_and_converter_outputs() -> None:
         index=time_index,
     )
 
-    setattr(component, "flixopt_model", FlixOptModel.model_validate(
-        {
-            "buses": [
-                {"label": "heat"},
-            ],
-            "effects": [
-                {"label": "costs", "unit": "EUR"},
-            ],
-            "converters": [
-                {
-                    "label": "boiler_1",
-                    "converter_type": FlixOptConverterTypes.BOILER,
-                    "thermal_efficiency": 0.9,
-                    "input_flow": "gas_in",
-                    "thermal_flow": "heat_out",
-                    "thermal_nominal_power": 100,
-                    "thermal_power_range": {"min_power": 0, "max_power": 100},
-                    "status_parameters": {},
-                }
-            ],
-            "exchangers": [
-                {
-                    "label": "exchange_1",
-                    "direction": EnergyDirection.SINK,
-                    "input_bus": "heat_in",
-                    "nominal_power": 25,
-                }
-            ],
-            "storages": [
-                {
-                    "label": "battery",
-                    "bus": "heat",
-                    "nominal_power": 25,
-                    "nominal_capacity": 100,
-                    "start_soc": 50,
-                    "minimal_soc": 10,
-                    "maximal_soc": 90,
-                }
-            ],
-        }
-    ))
+    setattr(
+        component,
+        "flixopt_model",
+        FlixOptModel.model_validate(
+            {
+                "buses": [
+                    {"label": "heat"},
+                ],
+                "effects": [
+                    {"label": "costs", "unit": "EUR"},
+                ],
+                "converters": [
+                    {
+                        "label": "boiler_1",
+                        "converter_type": FlixOptConverterTypes.BOILER,
+                        "thermal_efficiency": 0.9,
+                        "input_flow": "gas_in",
+                        "thermal_flow": "heat_out",
+                        "thermal_nominal_power": 100,
+                        "thermal_power_range": {"min_power": 0, "max_power": 100},
+                        "status_parameters": {},
+                    }
+                ],
+                "exchangers": [
+                    {
+                        "label": "exchange_1",
+                        "direction": EnergyDirection.SINK,
+                        "input_bus": "heat_in",
+                        "nominal_power": 25,
+                    }
+                ],
+                "storages": [
+                    {
+                        "label": "battery",
+                        "bus": "heat",
+                        "nominal_power": 25,
+                        "nominal_capacity": 100,
+                        "start_soc": 50,
+                        "minimal_soc": 10,
+                        "maximal_soc": 90,
+                    }
+                ],
+            }
+        ),
+    )
     setattr(component, "_bidirectional_substations", {})
     setattr(component, "export_results_as_timeseries", lambda results: all_timeseries)
 
@@ -152,4 +160,8 @@ def test_prepare_output_data_maps_storage_and_converter_outputs() -> None:
 
     output_data = getattr(component, "output_data")
     assert getattr(output_data, "battery_soc").value.tolist() == [20.0, 25.0, 30.0]
-    assert getattr(output_data, "boiler_1_thermal_power").value.tolist() == [10.0, 11.0, 0.0]
+    assert getattr(output_data, "boiler_1_thermal_power").value.tolist() == [
+        10.0,
+        11.0,
+        0.0,
+    ]

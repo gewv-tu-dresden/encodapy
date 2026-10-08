@@ -1,7 +1,7 @@
 [
     {
-        "id": "file_input_entity", 
-        "attributes": 
+        "id": "file_input_entity",
+        "attributes":
         [
             {
                 "id": "input_data",
