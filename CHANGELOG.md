@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/gewv-tu-dresden/encodapy/compare/v0.11.0...v0.12.0) (2026-10-08)
+
+
+### Features
+
+* add support for Python 3.14 ([#147](https://github.com/gewv-tu-dresden/encodapy/issues/147)) ([7485b0c](https://github.com/gewv-tu-dresden/encodapy/commit/7485b0cef7c5989dbcb51f41968bf76f60bcb0ba))
+
 ## [0.11.0](https://github.com/gewv-tu-dresden/encodapy/compare/v0.10.2...v0.11.0) (2026-10-02)
 
 
