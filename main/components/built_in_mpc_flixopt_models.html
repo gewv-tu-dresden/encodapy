@@ -117,11 +117,7 @@
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixoptLogLevel"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixoptLogLevel"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="s2">"silent"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Log level for the flixopt framework"</span>
 <span class="w">      </span><span class="p">},</span>
@@ -188,7 +184,7 @@
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"FlixoptLogLevel"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Log-Levels from flixopt configuration - see: flixopt.CONFIG \n\nFLIXOPT_CONFIG_MAP is used to map the enum values         to the actual flixopt configuration functions"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Log-Levels from flixopt configuration - see: flixopt.CONFIG\n\nFLIXOPT_CONFIG_MAP is used to map the enum values         to the actual flixopt configuration functions"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"exploring"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"debug"</span><span class="p">,</span>
@@ -225,6 +221,7 @@ Can be a dict or a path to a json file.</p>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"additionalProperties"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="p">{</span>
@@ -305,7 +302,7 @@ Can be a dict or a path to a json file.</p>
 </div>
 </details></p><dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptModelConfig.value">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">value</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"> <span class="pre">[Required]</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptModelConfig.value" title="Link to this definition"></a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">value</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"> <span class="pre">[Required]</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptModelConfig.value" title="Link to this definition"></a></dt>
 <dd><p>Flixopt model configuration as dict or a path to a json file</p>
 </dd></dl>
 
@@ -324,11 +321,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixoptSolverSettings"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixoptSolverSettings"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HighsSolver"</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"mip_rel_gap"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
@@ -418,11 +411,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Base model for Flixopt solver settings.\nOnly non-None values override the flixopt defaults."</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptSolverName"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptSolverName"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Name of the solver (e.g. 'HighsSolver' or 'GurobiSolver')"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"mip_rel_gap"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -576,11 +565,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"log_level"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointFlixoptLogLevel"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointFlixoptLogLevel"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"silent"</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
@@ -589,11 +574,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Log level for the flixopt framework"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"solver_settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointFlixoptSolverSettings"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointFlixoptSolverSettings"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"additional_options"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
@@ -612,11 +593,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Solver settings for the flixopt framework"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"excess_penalty"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">100000.0</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
@@ -625,11 +602,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Penalty cost for excess of limits in the flixopt model"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"flixopt_model"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointFlixoptModelConfig"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointFlixoptModelConfig"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Flixopt model configuration as dict or a path to a json file as ``DataPointFlixoptModelConfig``.\n        Default to None. A valid flixopt model configuration must be provided.\n        "</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
@@ -638,11 +611,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPoint for Flixopt log level"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixoptLogLevel"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixoptLogLevel"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="s2">"silent"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Log level for the flixopt framework"</span>
 <span class="w">            </span><span class="p">},</span>
@@ -680,6 +649,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">"additionalProperties"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
 <span class="w">                     </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="w">                  </span><span class="p">},</span>
 <span class="w">                  </span><span class="p">{</span>
@@ -724,11 +694,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPoint for Flixopt solver settings.\nLeaves solver parameters unset so flixopt can use its own defaults."</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixoptSolverSettings"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixoptSolverSettings"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HighsSolver"</span><span class="p">,</span>
 <span class="w">                  </span><span class="nt">"mip_rel_gap"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
@@ -861,7 +827,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"FlixoptLogLevel"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Log-Levels from flixopt configuration - see: flixopt.CONFIG \n\nFLIXOPT_CONFIG_MAP is used to map the enum values         to the actual flixopt configuration functions"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Log-Levels from flixopt configuration - see: flixopt.CONFIG\n\nFLIXOPT_CONFIG_MAP is used to map the enum values         to the actual flixopt configuration functions"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"exploring"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"debug"</span><span class="p">,</span>
@@ -876,11 +842,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Base model for Flixopt solver settings.\nOnly non-None values override the flixopt defaults."</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptSolverName"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptSolverName"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Name of the solver (e.g. 'HighsSolver' or 'GurobiSolver')"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"mip_rel_gap"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1069,7 +1031,7 @@ without needing to change the input data model.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FlixoptModelComponentInputData"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Input model for the Flixopt model component\n\nThe `model_config` field is set to allow flexible input of model parameters, \nso the required parameters can be defined in the flixopt model itself.\nThis way, the component can be used with different flixopt models \nwithout needing to change the input data model."</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Input model for the Flixopt model component\n\nThe `model_config` field is set to allow flexible input of model parameters,\nso the required parameters can be defined in the flixopt model itself.\nThis way, the component can be used with different flixopt models\nwithout needing to change the input data model."</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
 <span class="w">   </span><span class="nt">"additionalProperties"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
@@ -1092,7 +1054,7 @@ so the output parameters can be defined in the flixopt model itself.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FlixoptModelComponentOutputData"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Output model for the Flixopt model component\n\nThe `model_config` field is set to allow flexible output of model parameters, \nso the output parameters can be defined in the flixopt model itself.\n\nThe component provide this output variables:\n- Storage levels for all storages in the model like this: `{storage_label}_soc`\n- For all converters in the model, the thermal power like this:         `{converter_label}_thermal_power`\n- For all CHP converters in the model, the electrical power like this:         `{converter_label}_electrical_power`"</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Output model for the Flixopt model component\n\nThe `model_config` field is set to allow flexible output of model parameters,\nso the output parameters can be defined in the flixopt model itself.\n\nThe component provide this output variables:\n- Storage levels for all storages in the model like this: `{storage_label}_soc`\n- For all converters in the model, the thermal power like this:         `{converter_label}_thermal_power`\n- For all CHP converters in the model, the electrical power like this:         `{converter_label}_electrical_power`"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
 <span class="w">   </span><span class="nt">"additionalProperties"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
@@ -1194,7 +1156,7 @@ calculated from the thermal efficiency and the electrical efficiency of the CHP 
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FlixOptCHPConverter"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model to define a CHP converter in the flixopt model, \nwhich inherits from the FlixOptConverter model\nand adds specific parameters for the CHP converter type\n\nKeep in mind, the `nominal_power` parameter in the FlixOptConverter model is the \nnominal thermal power of the CHP converter, while the nominal electrical power can be \ncalculated from the thermal efficiency and the electrical efficiency of the CHP converter."</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model to define a CHP converter in the flixopt model,\nwhich inherits from the FlixOptConverter model\nand adds specific parameters for the CHP converter type\n\nKeep in mind, the `nominal_power` parameter in the FlixOptConverter model is the\nnominal thermal power of the CHP converter, while the nominal electrical power can be\ncalculated from the thermal efficiency and the electrical efficiency of the CHP converter."</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"label"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1203,11 +1165,7 @@ calculated from the thermal efficiency and the electrical efficiency of the CHP 
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"converter_type"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptConverterTypes"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptConverterTypes"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Type of the converter, from the FlixOptConverterTypes enum"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"thermal_efficiency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1245,23 +1203,15 @@ calculated from the thermal efficiency and the electrical efficiency of the CHP 
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Thermal Nominal Power"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"thermal_power_range"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/PowerRange"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/PowerRange"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"min_power"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">"max_power"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span>
+<span class="w">            </span><span class="nt">"min_power"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"max_power"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Thermal power range of the boiler converter in percentages"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"status_parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptStatusParameters"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptStatusParameters"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"min_up_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"max_up_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
@@ -1269,7 +1219,7 @@ calculated from the thermal efficiency and the electrical efficiency of the CHP 
 <span class="w">            </span><span class="nt">"max_down_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"startup_effects"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
 <span class="w">         </span><span class="p">},</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional status parameters for the converter which includes information \n        about startup and shutdown limitations"</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional status parameters for the converter which includes information\n        about startup and shutdown limitations"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"previous_power"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1428,7 +1378,7 @@ calculated from the thermal efficiency and the electrical efficiency of the CHP 
 <span class="w">                  </span><span class="p">}</span>
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Startup effects of the converter,\n        where the key is the label of the effect \n        and the value is the amount of the effect per startup"</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Startup effects of the converter,\n        where the key is the label of the effect\n        and the value is the amount of the effect per startup"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Startup Effects"</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
@@ -1516,11 +1466,7 @@ calculated from the thermal efficiency and the electrical efficiency of the CHP 
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"converter_type"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptConverterTypes"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptConverterTypes"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Type of the converter, from the FlixOptConverterTypes enum"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"thermal_efficiency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1558,23 +1504,15 @@ calculated from the thermal efficiency and the electrical efficiency of the CHP 
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Thermal Nominal Power"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"thermal_power_range"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/PowerRange"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/PowerRange"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"min_power"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">"max_power"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span>
+<span class="w">            </span><span class="nt">"min_power"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"max_power"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Thermal power range of the boiler converter in percentages"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"status_parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptStatusParameters"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptStatusParameters"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"min_up_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"max_up_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
@@ -1582,7 +1520,7 @@ calculated from the thermal efficiency and the electrical efficiency of the CHP 
 <span class="w">            </span><span class="nt">"max_down_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"startup_effects"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
 <span class="w">         </span><span class="p">},</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional status parameters for the converter which includes information \n        about startup and shutdown limitations"</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional status parameters for the converter which includes information\n        about startup and shutdown limitations"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"previous_power"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1724,7 +1662,7 @@ calculated from the thermal efficiency and the electrical efficiency of the CHP 
 <span class="w">                  </span><span class="p">}</span>
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Startup effects of the converter,\n        where the key is the label of the effect \n        and the value is the amount of the effect per startup"</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Startup effects of the converter,\n        where the key is the label of the effect\n        and the value is the amount of the effect per startup"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Startup Effects"</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
@@ -1823,7 +1761,7 @@ calculated from the thermal efficiency and the electrical efficiency of the CHP 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_models.FlixOptConverter.status_parameters">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">status_parameters</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixOptStatusParameters" title="encodapy.components.flixopt_model_component.flixopt_models.FlixOptStatusParameters"><span class="pre">FlixOptStatusParameters</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">FlixOptStatusParameters(min_up_time=None,</span> <span class="pre">max_up_time=None,</span> <span class="pre">min_down_time=None,</span> <span class="pre">max_down_time=None,</span> <span class="pre">startup_effects=None)</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixOptConverter.status_parameters" title="Link to this definition"></a></dt>
-<dd><p>Optional status parameters for the converter which includes information 
+<dd><p>Optional status parameters for the converter which includes information
 about startup and shutdown limitations</p>
 </dd></dl>
 
@@ -1950,17 +1888,18 @@ TODO: describe the converter types and add more types if needed</p>
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">encodapy.components.flixopt_model_component.flixopt_models.</span></span><span class="sig-name descname"><span class="pre">FlixOptModel</span></span><a class="reference internal" href="../_modules/encodapy/components/flixopt_model_component/flixopt_models.html#FlixOptModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixOptModel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
 <p>Model to hold the flixopt Model used in the component</p>
-<p># Specific constraints
-To add constraints to the FlixOpt model, a Python file or module can be defined in the
-‘constraints_function’ field. This needs to include a function called
-‘add_constraints(optimization: fx.Optimization, config: FlixOptModel)’
+<section id="specific-constraints">
+<h2>Specific constraints<a class="headerlink" href="#specific-constraints" title="Link to this heading"></a></h2>
+<p>To add constraints to the FlixOpt model, a Python file or module can be defined in the
+<cite>constraints_function</cite> field. This needs to include a function called
+<cite>add_constraints(optimization: fx.Optimization, config: FlixOptModel)</cite>
 that adds additional constraints to the FlixOpt optimization model.
 This function is then called in the component after the FlixOpt model has been built.
 You can add more subfunctions to this function to add constraints.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FlixOptModel"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model to hold the flixopt Model used in the component\n\n# Specific constraints\nTo add constraints to the FlixOpt model, a Python file or module can be defined in the\n'constraints_function' field. This needs to include a function called \n'add_constraints(optimization: fx.Optimization, config: FlixOptModel)' \nthat adds additional constraints to the FlixOpt optimization model.\nThis function is then called in the component after the FlixOpt model has been built.\nYou can add more subfunctions to this function to add constraints."</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model to hold the flixopt Model used in the component\n\nSpecific constraints\n--------------------\nTo add constraints to the FlixOpt model, a Python file or module can be defined in the\n`constraints_function` field. This needs to include a function called\n`add_constraints(optimization: fx.Optimization, config: FlixOptModel)`\nthat adds additional constraints to the FlixOpt optimization model.\nThis function is then called in the component after the FlixOpt model has been built.\nYou can add more subfunctions to this function to add constraints."</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"buses"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1972,7 +1911,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"array"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"effects"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        List of effects in in the model, which are required to build the flixopt optimization model \n        (https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Effect/)\n        "</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        List of effects in in the model, which are required to build the flixopt optimization model\n        (https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Effect/)\n        "</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptEffect"</span>
 <span class="w">         </span><span class="p">},</span>
@@ -2003,7 +1942,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"array"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"storages"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        List of storages in in the model, which are required to build the flixopt model \n        (https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Storage/)\n        "</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        List of storages in in the model, which are required to build the flixopt model\n        (https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Storage/)\n        "</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"items"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptStorage"</span>
 <span class="w">         </span><span class="p">},</span>
@@ -2033,7 +1972,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Path to a python file or python module which includes a function `add_constraints`\n        used to add additional constraints to the flixopt optimization model\n    \n        The function needs to have the following signature: `add_constraints(optimization:\n        fx.Optimization, config: FlixOptModel)` and needs to add constraints to the optimization\n        model based on the configuration of the FlixOptModel.\n    \n        For an example for such a function, see `add_constraints.py`\n        in the same folder as this file.\n        "</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Path to a python file or python module which includes a function `add_constraints`\n        used to add additional constraints to the flixopt optimization model\n\n        The function needs to have the following signature: `add_constraints(optimization:\n        fx.Optimization, config: FlixOptModel)` and needs to add constraints to the optimization\n        model based on the configuration of the FlixOptModel.\n\n        For an example for such a function, see `add_constraints.py`\n        in the same folder as this file.\n        "</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Constraints Function"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
@@ -2082,7 +2021,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"FlixOptCHPConverter"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">"additionalProperties"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model to define a CHP converter in the flixopt model, \nwhich inherits from the FlixOptConverter model\nand adds specific parameters for the CHP converter type\n\nKeep in mind, the `nominal_power` parameter in the FlixOptConverter model is the \nnominal thermal power of the CHP converter, while the nominal electrical power can be \ncalculated from the thermal efficiency and the electrical efficiency of the CHP converter."</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model to define a CHP converter in the flixopt model,\nwhich inherits from the FlixOptConverter model\nand adds specific parameters for the CHP converter type\n\nKeep in mind, the `nominal_power` parameter in the FlixOptConverter model is the\nnominal thermal power of the CHP converter, while the nominal electrical power can be\ncalculated from the thermal efficiency and the electrical efficiency of the CHP converter."</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"label"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Label / Name of the converter"</span><span class="p">,</span>
@@ -2090,11 +2029,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"converter_type"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptConverterTypes"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptConverterTypes"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Type of the converter, from the FlixOptConverterTypes enum"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"thermal_efficiency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2132,23 +2067,15 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Thermal Nominal Power"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"thermal_power_range"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/PowerRange"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/PowerRange"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                  </span><span class="nt">"min_power"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-<span class="w">                  </span><span class="nt">"max_power"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span>
+<span class="w">                  </span><span class="nt">"min_power"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">                  </span><span class="nt">"max_power"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span>
 <span class="w">               </span><span class="p">},</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Thermal power range of the boiler converter in percentages"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"status_parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptStatusParameters"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptStatusParameters"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                  </span><span class="nt">"min_up_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">                  </span><span class="nt">"max_up_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
@@ -2156,7 +2083,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">                  </span><span class="nt">"max_down_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">                  </span><span class="nt">"startup_effects"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
 <span class="w">               </span><span class="p">},</span>
-<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional status parameters for the converter which includes information \n        about startup and shutdown limitations"</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional status parameters for the converter which includes information\n        about startup and shutdown limitations"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"previous_power"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -2237,11 +2164,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"converter_type"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptConverterTypes"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptConverterTypes"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Type of the converter, from the FlixOptConverterTypes enum"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"thermal_efficiency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2279,23 +2202,15 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Thermal Nominal Power"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"thermal_power_range"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/PowerRange"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/PowerRange"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                  </span><span class="nt">"min_power"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-<span class="w">                  </span><span class="nt">"max_power"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span>
+<span class="w">                  </span><span class="nt">"min_power"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">                  </span><span class="nt">"max_power"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span>
 <span class="w">               </span><span class="p">},</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Thermal power range of the boiler converter in percentages"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"status_parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptStatusParameters"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptStatusParameters"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                  </span><span class="nt">"min_up_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">                  </span><span class="nt">"max_up_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
@@ -2303,7 +2218,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">                  </span><span class="nt">"max_down_time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">                  </span><span class="nt">"startup_effects"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
 <span class="w">               </span><span class="p">},</span>
-<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional status parameters for the converter which includes information \n        about startup and shutdown limitations"</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional status parameters for the converter which includes information\n        about startup and shutdown limitations"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"previous_power"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -2411,11 +2326,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"direction"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/EnergyDirection"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/EnergyDirection"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Direction of the energy flow, either 'sink', 'source' or 'bidirectional'"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"nominal_power"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2457,7 +2368,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">                  </span><span class="p">}</span>
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Label of the input time series for the sink (heat demand ...), \n        if the sink has a time series input"</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Label of the input time series for the sink (heat demand ...),\n        if the sink has a time series input"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Input Label"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"input_effects"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2483,7 +2394,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">                  </span><span class="p">}</span>
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional dictionary to define the effect of the sink\n        on the defined effects in the model, where the key is the label of the effect\n        and the value is the amount of the effect per kWh of energy flow\n\n        Only used, if input_label is None and the input bus is defined.\n\n        Example::\n\n            {\n                \"costs\": 0.15\n            }\n\n        The value can also be defined as a label of an input value,             which is then used to read the effect from the input data \n            (for timeseries or a variable value).\n        "</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional dictionary to define the effect of the sink\n        on the defined effects in the model, where the key is the label of the effect\n        and the value is the amount of the effect per kWh of energy flow\n\n        Only used, if input_label is None and the input bus is defined.\n\n        Example::\n\n            {\n                \"costs\": 0.15\n            }\n\n        The value can also be defined as a label of an input value,             which is then used to read the effect from the input data\n            (for timeseries or a variable value).\n        "</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Input Effects"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"output_bus"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2535,7 +2446,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">                  </span><span class="p">}</span>
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional dictionary to define the effect of the source\n        on the defined effects in the model, where the key is the label of the effect\n        and the value is the amount of the effect per kWh of energy flow\n\n        Only used, if output_label is None and the output bus is defined.\n\n        Example::\n\n            {\n                \"costs\": 0.15\n            }\n\n        The value can also be defined as a label of an input value,             which is then used to read the effect from the input data \n            (for timeseries or a variable value).\n        "</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional dictionary to define the effect of the source\n        on the defined effects in the model, where the key is the label of the effect\n        and the value is the amount of the effect per kWh of energy flow\n\n        Only used, if output_label is None and the output bus is defined.\n\n        Example::\n\n            {\n                \"costs\": 0.15\n            }\n\n        The value can also be defined as a label of an input value,             which is then used to read the effect from the input data\n            (for timeseries or a variable value).\n        "</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Output Effects"</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
@@ -2634,7 +2545,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">                  </span><span class="p">}</span>
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Startup effects of the converter,\n        where the key is the label of the effect \n        and the value is the amount of the effect per startup"</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Startup effects of the converter,\n        where the key is the label of the effect\n        and the value is the amount of the effect per startup"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Startup Effects"</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
@@ -2742,7 +2653,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">                  </span><span class="p">}</span>
 <span class="w">               </span><span class="p">],</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Starting state of charge (SOC) of the storage at the beginning of the optimization period,\n        can be defined as a percentage of the nominal capacity (e.g. 50) or as an label\n        of a input value (e.g. `initial_soc`) which is then used to read the starting SOC \n        from the input data and is required there in Percentage of the nominal capacity as well\n        "</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Starting state of charge (SOC) of the storage at the beginning of the optimization period,\n        can be defined as a percentage of the nominal capacity (e.g. 50) or as an label\n        of a input value (e.g. `initial_soc`) which is then used to read the starting SOC\n        from the input data and is required there in Percentage of the nominal capacity as well\n        "</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Start Soc"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"minimal_soc"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2856,7 +2767,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_models.FlixOptModel.effects">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">effects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixOptEffect" title="encodapy.components.flixopt_model_component.flixopt_models.FlixOptEffect"><span class="pre">FlixOptEffect</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"> <span class="pre">[Required]</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixOptModel.effects" title="Link to this definition"></a></dt>
-<dd><p>List of effects in in the model, which are required to build the flixopt optimization model 
+<dd><p>List of effects in in the model, which are required to build the flixopt optimization model
 (<a class="reference external" href="https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Effect/">https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Effect/</a>)</p>
 </dd></dl>
 
@@ -2876,7 +2787,7 @@ You can add more subfunctions to this function to add constraints.</p>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_models.FlixOptModel.storages">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">storages</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixOptStorage" title="encodapy.components.flixopt_model_component.flixopt_models.FlixOptStorage"><span class="pre">FlixOptStorage</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"> <span class="pre">[Required]</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixOptModel.storages" title="Link to this definition"></a></dt>
-<dd><p>List of storages in in the model, which are required to build the flixopt model 
+<dd><p>List of storages in in the model, which are required to build the flixopt model
 (<a class="reference external" href="https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Storage/">https://flixopt.github.io/flixopt/latest/user-guide/mathematical-notation/elements/Storage/</a>)</p>
 </dd></dl>
 
@@ -2901,6 +2812,7 @@ model based on the configuration of the FlixOptModel.</p>
 in the same folder as this file.</p>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py class pydantic_model">
@@ -2921,11 +2833,7 @@ in the same folder as this file.</p>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"direction"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/EnergyDirection"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/EnergyDirection"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Direction of the energy flow, either 'sink', 'source' or 'bidirectional'"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"nominal_power"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2967,7 +2875,7 @@ in the same folder as this file.</p>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Label of the input time series for the sink (heat demand ...), \n        if the sink has a time series input"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Label of the input time series for the sink (heat demand ...),\n        if the sink has a time series input"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Input Label"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"input_effects"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -2993,7 +2901,7 @@ in the same folder as this file.</p>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional dictionary to define the effect of the sink\n        on the defined effects in the model, where the key is the label of the effect\n        and the value is the amount of the effect per kWh of energy flow\n\n        Only used, if input_label is None and the input bus is defined.\n\n        Example::\n\n            {\n                \"costs\": 0.15\n            }\n\n        The value can also be defined as a label of an input value,             which is then used to read the effect from the input data \n            (for timeseries or a variable value).\n        "</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional dictionary to define the effect of the sink\n        on the defined effects in the model, where the key is the label of the effect\n        and the value is the amount of the effect per kWh of energy flow\n\n        Only used, if input_label is None and the input bus is defined.\n\n        Example::\n\n            {\n                \"costs\": 0.15\n            }\n\n        The value can also be defined as a label of an input value,             which is then used to read the effect from the input data\n            (for timeseries or a variable value).\n        "</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Input Effects"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"output_bus"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -3045,7 +2953,7 @@ in the same folder as this file.</p>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional dictionary to define the effect of the source\n        on the defined effects in the model, where the key is the label of the effect\n        and the value is the amount of the effect per kWh of energy flow\n\n        Only used, if output_label is None and the output bus is defined.\n\n        Example::\n\n            {\n                \"costs\": 0.15\n            }\n\n        The value can also be defined as a label of an input value,             which is then used to read the effect from the input data \n            (for timeseries or a variable value).\n        "</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Optional dictionary to define the effect of the source\n        on the defined effects in the model, where the key is the label of the effect\n        and the value is the amount of the effect per kWh of energy flow\n\n        Only used, if output_label is None and the output bus is defined.\n\n        Example::\n\n            {\n                \"costs\": 0.15\n            }\n\n        The value can also be defined as a label of an input value,             which is then used to read the effect from the input data\n            (for timeseries or a variable value).\n        "</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Output Effects"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
@@ -3096,7 +3004,7 @@ in the same folder as this file.</p>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_models.FlixOptSinkSource.input_label">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">input_label</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixOptSinkSource.input_label" title="Link to this definition"></a></dt>
-<dd><p>Label of the input time series for the sink (heat demand …), 
+<dd><p>Label of the input time series for the sink (heat demand …),
 if the sink has a time series input</p>
 </dd></dl>
 
@@ -3114,7 +3022,7 @@ and the value is the amount of the effect per kWh of energy flow</p>
 </pre></div>
 </div>
 <dl class="simple">
-<dt>The value can also be defined as a label of an input value,             which is then used to read the effect from the input data </dt><dd><p>(for timeseries or a variable value).</p>
+<dt>The value can also be defined as a label of an input value,             which is then used to read the effect from the input data</dt><dd><p>(for timeseries or a variable value).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3145,7 +3053,7 @@ and the value is the amount of the effect per kWh of energy flow</p>
 </pre></div>
 </div>
 <dl class="simple">
-<dt>The value can also be defined as a label of an input value,             which is then used to read the effect from the input data </dt><dd><p>(for timeseries or a variable value).</p>
+<dt>The value can also be defined as a label of an input value,             which is then used to read the effect from the input data</dt><dd><p>(for timeseries or a variable value).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3265,7 +3173,7 @@ and the value is the amount of the effect per kWh of energy flow</p>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Startup effects of the converter,\n        where the key is the label of the effect \n        and the value is the amount of the effect per startup"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Startup effects of the converter,\n        where the key is the label of the effect\n        and the value is the amount of the effect per startup"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Startup Effects"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
@@ -3301,7 +3209,7 @@ and the value is the amount of the effect per kWh of energy flow</p>
 <dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_models.FlixOptStatusParameters.startup_effects">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">startup_effects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixOptStatusParameters.startup_effects" title="Link to this definition"></a></dt>
 <dd><p>Startup effects of the converter,
-where the key is the label of the effect 
+where the key is the label of the effect
 and the value is the amount of the effect per startup</p>
 </dd></dl>
 
@@ -3416,7 +3324,7 @@ and the value is the amount of the effect per startup</p>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">],</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Starting state of charge (SOC) of the storage at the beginning of the optimization period,\n        can be defined as a percentage of the nominal capacity (e.g. 50) or as an label\n        of a input value (e.g. `initial_soc`) which is then used to read the starting SOC \n        from the input data and is required there in Percentage of the nominal capacity as well\n        "</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Starting state of charge (SOC) of the storage at the beginning of the optimization period,\n        can be defined as a percentage of the nominal capacity (e.g. 50) or as an label\n        of a input value (e.g. `initial_soc`) which is then used to read the starting SOC\n        from the input data and is required there in Percentage of the nominal capacity as well\n        "</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Start Soc"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"minimal_soc"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -3522,7 +3430,7 @@ or as label of an input value, which is then used to read the nominal capacity</
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">start_soc</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixOptStorage.start_soc" title="Link to this definition"></a></dt>
 <dd><p>Starting state of charge (SOC) of the storage at the beginning of the optimization period,
 can be defined as a percentage of the nominal capacity (e.g. 50) or as an label
-of a input value (e.g. <cite>initial_soc</cite>) which is then used to read the starting SOC 
+of a input value (e.g. <cite>initial_soc</cite>) which is then used to read the starting SOC
 from the input data and is required there in Percentage of the nominal capacity as well</p>
 </dd></dl>
 
@@ -3593,11 +3501,7 @@ Only non-None values override the flixopt defaults.</p>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptSolverName"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixOptSolverName"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Name of the solver (e.g. 'HighsSolver' or 'GurobiSolver')"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"mip_rel_gap"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>

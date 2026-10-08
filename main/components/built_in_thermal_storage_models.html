@@ -214,8 +214,8 @@
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"height"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Height of the sensor in percent (0=top, 100=bottom)"</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Height"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
 <span class="w">            </span><span class="p">},</span>
@@ -319,11 +319,7 @@
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/ThermalStorageCalibrationConfig"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/ThermalStorageCalibrationConfig"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"historical_data_margin"</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"historical_timerange_minimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
@@ -340,8 +336,8 @@
 <span class="w">            </span><span class="nt">"historical_data_margin"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Margin in percent to adjust historical data temperatures for state of charge calculation (0-100)"</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Historical Data Margin"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
 <span class="w">            </span><span class="p">},</span>
@@ -400,11 +396,7 @@
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/ThermalStorageLoadLevelCheck"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/ThermalStorageLoadLevelCheck"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"minimal_level"</span><span class="p">:</span><span class="w"> </span><span class="mf">35.0</span><span class="p">,</span>
@@ -426,8 +418,8 @@
 <span class="w">            </span><span class="nt">"minimal_level"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="mf">35.0</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Threshold percentage for the upper temperature sensor.\n        When the top sensor falls below this percentage of the temperature range,\n        the state of charge is adjusted. (0-100)"</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"exclusiveMinimum"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"exclusiveMinimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Minimal Level"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
 <span class="w">            </span><span class="p">},</span>
@@ -489,8 +481,8 @@
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"height"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Height of the sensor in percent (0=top, 100=bottom)"</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Height"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
 <span class="w">      </span><span class="p">},</span>
@@ -764,8 +756,8 @@ HISTORICAL_LIMITS: Uses historical data to determine the limits</p>
 <span class="w">      </span><span class="nt">"historical_data_margin"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Margin in percent to adjust historical data temperatures for state of charge calculation (0-100)"</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Historical Data Margin"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
 <span class="w">      </span><span class="p">},</span>
@@ -874,20 +866,12 @@ higher values lead to more data being stored</p>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"volume"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Volume of the thermal storage in m\u00b3"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MTQ"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"medium"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointMedium"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointMedium"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"water"</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
@@ -896,30 +880,18 @@ higher values lead to more data being stored</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Medium of the thermal storage"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"sensor_config"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointSensorConfig"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointSensorConfig"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Sensor configuration of the thermal storage"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"calculation_method"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointCalculationMethod"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointCalculationMethod"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"static_limits"</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Calculation method for the thermal storage"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"load_level_check"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointThermalStorageLoadLevelCheck"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointThermalStorageLoadLevelCheck"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
@@ -930,11 +902,7 @@ higher values lead to more data being stored</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Configuration for the state of charge check"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"calibration"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointThermalStorageCalibrationConfig"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointThermalStorageCalibrationConfig"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"db_path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./thermal_storage_calibration_data"</span><span class="p">,</span>
@@ -1059,11 +1027,7 @@ higher values lead to more data being stored</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints of the controller component         which define the calibration configuration."</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/ThermalStorageCalibrationConfig"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/ThermalStorageCalibrationConfig"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                  </span><span class="nt">"historical_data_margin"</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
 <span class="w">                  </span><span class="nt">"historical_timerange_minimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
@@ -1080,11 +1044,7 @@ higher values lead to more data being stored</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints of the controller component         which define the state of charge check configuration."</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                  </span><span class="p">{</span>
-<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/ThermalStorageLoadLevelCheck"</span>
-<span class="w">                  </span><span class="p">}</span>
-<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/ThermalStorageLoadLevelCheck"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                  </span><span class="nt">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
 <span class="w">                  </span><span class="nt">"minimal_level"</span><span class="p">:</span><span class="w"> </span><span class="mf">35.0</span><span class="p">,</span>
@@ -1133,7 +1093,6 @@ higher values lead to more data being stored</p>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"Medium"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"const"</span><span class="p">:</span><span class="w"> </span><span class="s2">"water"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Enum class for the mediums\n\nTODO: Add more mediums"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"water"</span>
@@ -1160,8 +1119,8 @@ higher values lead to more data being stored</p>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"height"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Height of the sensor in percent (0=top, 100=bottom)"</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Height"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
 <span class="w">            </span><span class="p">},</span>
@@ -1237,8 +1196,8 @@ higher values lead to more data being stored</p>
 <span class="w">            </span><span class="nt">"historical_data_margin"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Margin in percent to adjust historical data temperatures for state of charge calculation (0-100)"</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Historical Data Margin"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
 <span class="w">            </span><span class="p">},</span>
@@ -1285,8 +1244,8 @@ higher values lead to more data being stored</p>
 <span class="w">            </span><span class="nt">"minimal_level"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="mf">35.0</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Threshold percentage for the upper temperature sensor.\n        When the top sensor falls below this percentage of the temperature range,\n        the state of charge is adjusted. (0-100)"</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"exclusiveMinimum"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"exclusiveMinimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Minimal Level"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
 <span class="w">            </span><span class="p">},</span>
@@ -1431,29 +1390,17 @@ in the thermal storage.</p>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"temperature_1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Input for the temperature of sensor 1 in the thermal storage"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CEL"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"temperature_2"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Input for the temperature of sensor 2 in the thermal storage"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CEL"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"temperature_3"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Input for the temperature of sensor 3 in the thermal storage"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CEL"</span>
 <span class="w">      </span><span class="p">},</span>
@@ -1791,8 +1738,8 @@ to check the sensors at the outlet of the storage tank.</p>
 <span class="w">      </span><span class="nt">"minimal_level"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="mf">35.0</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Threshold percentage for the upper temperature sensor.\n        When the top sensor falls below this percentage of the temperature range,\n        the state of charge is adjusted. (0-100)"</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"exclusiveMinimum"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"exclusiveMinimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Minimal Level"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
 <span class="w">      </span><span class="p">},</span>
@@ -1879,8 +1826,8 @@ the state of charge is adjusted. (0-100)</p>
 <span class="w">      </span><span class="nt">"state_of_charge"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="p">{</span>
@@ -2192,8 +2139,8 @@ must be between 0 and 100 percent and in ascending order.</p>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"height"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Height of the sensor in percent (0=top, 100=bottom)"</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Height"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
 <span class="w">            </span><span class="p">},</span>

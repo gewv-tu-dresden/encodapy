@@ -267,16 +267,17 @@
     <span class="n">unit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DataUnits</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">'value'</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'before'</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"value"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_value_to_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert a Pydantic BaseModel value to a dictionary.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">val</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">'json'</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">val</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">val</span>
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">'value'</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'before'</span><span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"value"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_value_to_dataframe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>

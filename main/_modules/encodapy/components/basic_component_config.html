@@ -120,15 +120,13 @@
 
 <div class="viewcode-block" id="IOModell">
 <a class="viewcode-back" href="../../../components/components_models.html#encodapy.components.basic_component_config.IOModell">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">IOModell</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">RootModel</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IOAllocationModel</span><span class="p">]])</span>
-<span class="p">):</span>  <span class="c1"># pylint: disable=too-few-public-methods</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IOModell</span><span class="p">((</span><span class="n">RootModel</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IOAllocationModel</span><span class="p">]])):</span>  <span class="c1"># pylint: disable=too-few-public-methods</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model for the input, staticdata and output of a component.</span>
 
 <span class="sd">    It contains a dictionary with the key as the ID of the input, output or static data</span>
 <span class="sd">    and the value as the allocation model</span>
-<span class="sd">    </span>
+
 <span class="sd">    See also :class:`~encodapy.components.basic_component_config.IOAllocationModel`.</span>
 
 <span class="sd">    There is no validation for this.</span>
@@ -139,12 +137,10 @@
 
 <div class="viewcode-block" id="ConfigDataPoints">
 <a class="viewcode-back" href="../../../components/components_models.html#encodapy.components.basic_component_config.ConfigDataPoints">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ConfigDataPoints</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">RootModel</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IOAllocationModel</span> <span class="o">|</span> <span class="n">DataPointGeneral</span><span class="p">]])</span>
-<span class="p">):</span>  <span class="c1"># pylint: disable=too-few-public-methods</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigDataPoints</span><span class="p">((</span><span class="n">RootModel</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IOAllocationModel</span> <span class="o">|</span> <span class="n">DataPointGeneral</span><span class="p">]])):</span>  <span class="c1"># pylint: disable=too-few-public-methods</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model for the configuration of config data points.</span>
-<span class="sd">    </span>
+
 <span class="sd">    See also :class:`~encodapy.components.basic_component_config.IOAllocationModel` and</span>
 <span class="sd">    :class:`~encodapy.utils.datapoints.DataPointGeneral`.</span>
 <span class="sd">    """</span></div>
@@ -156,7 +152,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ControllerComponentModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model for the configuration of the controller components.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Attributes:</span>
 <span class="sd">        active (bool): Whether the component is active or not</span>
 <span class="sd">        id (str): The id of the component</span>
@@ -248,10 +244,10 @@
                     <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">!=</span> <span class="n">DataUnits</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
                 <span class="p">):</span>
                     <span class="n">new_value</span> <span class="o">=</span> <span class="n">adjust_units</span><span class="p">(</span>
-                            <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                            <span class="n">unit_actual</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
-                            <span class="n">unit_target</span><span class="o">=</span><span class="n">DataUnits</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
-                        <span class="p">)</span>
+                        <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                        <span class="n">unit_actual</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+                        <span class="n">unit_target</span><span class="o">=</span><span class="n">DataUnits</span><span class="p">(</span><span class="n">unit</span><span class="p">),</span>
+                    <span class="p">)</span>
                     <span class="k">if</span> <span class="n">new_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">value</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">new_value</span>
                         <span class="n">value</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">DataUnits</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span>
@@ -292,9 +288,10 @@
 
 <span class="sd">    Fields should be instances of :class:`~encodapy.utils.datapoints.DataPointGeneral`</span>
 <span class="sd">    (or subclasses thereof) so the validator can handle unit and value conversion.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Needs to be implemented for the specific component.</span>
 <span class="sd">    """</span></div>
+
 
 
 <div class="viewcode-block" id="ConfigData">
@@ -313,6 +310,7 @@
 
 <span class="sd">    Needs to be implemented by the user if static configuration is required.</span>
 <span class="sd">    """</span></div>
+
 
 
 <div class="viewcode-block" id="ComponentIOModel">

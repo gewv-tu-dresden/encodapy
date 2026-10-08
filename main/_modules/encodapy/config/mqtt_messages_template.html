@@ -126,7 +126,7 @@
 
 <span class="sd">    The evironment variable `MQTT_TEMPLATE_&lt;NAME&gt;` (or variables for multiple templates) \</span>
 <span class="sd">        must be set, where `&lt;NAME&gt;` is the name of the template to load.\</span>
-<span class="sd">            It isn't loaded automatically from a `.env` file. </span>
+<span class="sd">            It isn't loaded automatically from a `.env` file.</span>
 <span class="sd">    The dictionary must contain the keys `topic` and `payload`, and could look like this:</span>
 
 <span class="sd">    .. code-block:: json</span>
@@ -416,12 +416,12 @@
 <span class="sd">    Model for MQTT template configuration.</span>
 
 <span class="sd">    **Mock class for documentation purposes.**</span>
-<span class="sd">    </span>
+
 <span class="sd">    Note:</span>
 <span class="sd">        In the actual implementation, `topic` and `payload` are `jinja2.Template` objects,</span>
 <span class="sd">        `time_format` is a `str` as time format for the timestamp in the payload.</span>
 <span class="sd">        This mock uses `dict` to avoid import issues during documentation generation.</span>
-<span class="sd">        </span>
+
 <span class="sd">        For more information,\</span>
 <span class="sd">            see :class:`~encodapy.config.mqtt_messages_template.MQTTTemplateConfig`.</span>
 <span class="sd">    """</span>

@@ -104,7 +104,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">TwoPointControllerInputData</span><span class="p">(</span><span class="n">InputData</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model for the input of the two-point controller component.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Attributes:</span>
 <span class="sd">        current_value (DataPointNumber): The current value of the input.</span>
 <span class="sd">        latest_control_signal (DataPointNumber): The latest control signal output \</span>
@@ -117,6 +117,7 @@
     <span class="n">latest_control_signal</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Latest control signal output from the two-point controller"</span>
     <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="TwoPointControllerOutputData">
@@ -164,7 +165,7 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Validator to check if the units of hysteresis and setpoint are the same.</span>
 <span class="sd">        If not, it tries to convert the hysteresis to the unit of the setpoint.</span>
-<span class="sd">        </span>
+
 <span class="sd">        """</span>
         <span class="n">hysteresis</span> <span class="o">=</span> <span class="n">DataPointNumber</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hysteresis</span><span class="p">)</span>
         <span class="n">setpoint</span> <span class="o">=</span> <span class="n">DataPointNumber</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoint</span><span class="p">)</span>
@@ -179,7 +180,9 @@
             <span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">hysteresis</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">adjust_unit_of_value</span><span class="p">(</span>
-                    <span class="n">value</span><span class="o">=</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">unit_actual</span><span class="o">=</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">unit_target</span><span class="o">=</span><span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">unit_actual</span><span class="o">=</span><span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+                    <span class="n">unit_target</span><span class="o">=</span><span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">hysteresis</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">setpoint</span><span class="o">.</span><span class="n">unit</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>

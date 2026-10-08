@@ -139,11 +139,7 @@ FORECAST: Retrieve weather forecast data</p>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">13.4</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
@@ -153,11 +149,7 @@ FORECAST: Retrieve weather forecast data</p>
 <span class="w">         </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DD"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointNumber"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">52.5</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
@@ -167,39 +159,27 @@ FORECAST: Retrieve weather forecast data</p>
 <span class="w">         </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DD"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"forecast_time_range"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointTimestep"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointTimestep"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DAY"</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Forecast time range (for the of last weather forecast) to retrieve.\n        Default value is set to 1 day."</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"time_interval_current_weather"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointTimestep"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointTimestep"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">15.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MIN"</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Time interval for current weather data retrieval.\n        Default value is set to 15 minutes."</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"time_interval_forecast_weather"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"allOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointTimestep"</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointTimestep"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HUR"</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
 <span class="w">         </span><span class="p">},</span>
@@ -499,6 +479,7 @@ Default value is set to 3 hours.</p>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Model for datapoints with a dictionary value.\n\nAttributes:\n    value (dict): The value of the datapoint, which is a dictionary.\n    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"additionalProperties"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Value"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span>
 <span class="w">            </span><span class="p">},</span>

@@ -86,9 +86,10 @@
 <span></span><span class="sd">"""</span>
 <span class="sd">Defines the configuration data models for the new component.</span>
 <span class="sd">"""</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span><span class="p">,</span> <span class="n">ConfigDict</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">flixopt</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fx</span> <span class="c1"># type: ignore[import-untyped]</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">flixopt</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fx</span>  <span class="c1"># type: ignore[import-untyped]</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.basic_component_config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ConfigData</span><span class="p">,</span>
     <span class="n">InputData</span><span class="p">,</span>
@@ -98,9 +99,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.flixopt_model_component.flixopt_models</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">FlixOptSolverName</span><span class="p">,</span>
     <span class="n">FlixoptSolverSettings</span><span class="p">,</span>
-    <span class="n">FlixoptLogLevel</span>
+    <span class="n">FlixoptLogLevel</span><span class="p">,</span>
 <span class="p">)</span>
-
 
 
 <div class="viewcode-block" id="FlixoptModelComponentInputData">
@@ -109,15 +109,13 @@
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Input model for the Flixopt model component</span>
 
-<span class="sd">    The `model_config` field is set to allow flexible input of model parameters, </span>
+<span class="sd">    The `model_config` field is set to allow flexible input of model parameters,</span>
 <span class="sd">    so the required parameters can be defined in the flixopt model itself.</span>
-<span class="sd">    This way, the component can be used with different flixopt models </span>
+<span class="sd">    This way, the component can be used with different flixopt models</span>
 <span class="sd">    without needing to change the input data model.</span>
 <span class="sd">    """</span>
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
-        <span class="n">extra</span><span class="o">=</span><span class="s2">"allow"</span>
-    <span class="p">)</span></div>
 
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"allow"</span><span class="p">)</span></div>
 
 
 
@@ -126,8 +124,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">FlixoptModelComponentOutputData</span><span class="p">(</span><span class="n">OutputData</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Output model for the Flixopt model component</span>
-<span class="sd">    </span>
-<span class="sd">    The `model_config` field is set to allow flexible output of model parameters, </span>
+
+<span class="sd">    The `model_config` field is set to allow flexible output of model parameters,</span>
 <span class="sd">    so the output parameters can be defined in the flixopt model itself.</span>
 
 <span class="sd">    The component provide this output variables:</span>
@@ -137,10 +135,8 @@
 <span class="sd">    - For all CHP converters in the model, the electrical power like this: \</span>
 <span class="sd">        `{converter_label}_electrical_power`</span>
 <span class="sd">    """</span>
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
-        <span class="n">extra</span><span class="o">=</span><span class="s2">"allow"</span>
-    <span class="p">)</span></div>
 
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"allow"</span><span class="p">)</span></div>
 
 
 
@@ -150,17 +146,19 @@
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    DataPoint for Flixopt log level</span>
 <span class="sd">    """</span>
+
     <span class="n">value</span><span class="p">:</span> <span class="n">FlixoptLogLevel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">SILENT</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"Log level for the flixopt framework"</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">'before'</span><span class="p">)</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">lowercase_to_enum</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Convert lowercase string to FlixoptLogLevel enum before model validation"""</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">'value'</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">'value'</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">data</span><span class="p">[</span><span class="s1">'value'</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'value'</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"value"</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"value"</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">data</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">data</span></div>
 
 
@@ -172,6 +170,7 @@
 <span class="sd">    DataPoint for Flixopt solver settings.</span>
 <span class="sd">    Leaves solver parameters unset so flixopt can use its own defaults.</span>
 <span class="sd">    """</span>
+
     <span class="n">value</span><span class="p">:</span> <span class="n">FlixoptSolverSettings</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="n">FlixoptSolverSettings</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">FlixOptSolverName</span><span class="o">.</span><span class="n">HIGHS</span><span class="p">,</span>
@@ -187,6 +186,8 @@
         <span class="n">description</span><span class="o">=</span><span class="s2">"Solver settings for the flixopt framework"</span><span class="p">,</span>
     <span class="p">)</span></div>
 
+
+
 <div class="viewcode-block" id="DataPointFlixoptModelConfig">
 <a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptModelConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataPointFlixoptModelConfig</span><span class="p">(</span><span class="n">DataPointGeneral</span><span class="p">):</span>
@@ -194,10 +195,12 @@
 <span class="sd">    DataPoint for Flixopt model configuration.</span>
 <span class="sd">    Can be a dict or a path to a json file.</span>
 <span class="sd">    """</span>
-    <span class="n">value</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span><span class="o">|</span><span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+
+    <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="o">...</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"Flixopt model configuration as dict or a path to a json file"</span><span class="p">,</span>
     <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="FlixoptModelComponentConfigData">
@@ -212,13 +215,11 @@
         <span class="n">description</span><span class="o">=</span><span class="s2">"Log level for the flixopt framework"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">solver_settings</span><span class="p">:</span> <span class="n">DataPointFlixoptSolverSettings</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span> <span class="o">=</span> <span class="n">DataPointFlixoptSolverSettings</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({}),</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">DataPointFlixoptSolverSettings</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({}),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"Solver settings for the flixopt framework"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">excess_penalty</span><span class="p">:</span> <span class="n">DataPointNumber</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">DataPointNumber</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({</span>
-            <span class="s2">"value"</span><span class="p">:</span> <span class="mf">1e5</span>
-        <span class="p">}),</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">DataPointNumber</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({</span><span class="s2">"value"</span><span class="p">:</span> <span class="mf">1e5</span><span class="p">}),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"Penalty cost for excess of limits in the flixopt model"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">flixopt_model</span><span class="p">:</span> <span class="n">DataPointFlixoptModelConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -226,7 +227,7 @@
         <span class="n">description</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">        Flixopt model configuration as dict or a path to a json file as ``DataPointFlixoptModelConfig``.</span>
 <span class="s2">        Default to None. A valid flixopt model configuration must be provided.</span>
-<span class="s2">        """</span>
+<span class="s2">        """</span><span class="p">,</span>
     <span class="p">)</span>
 
 <div class="viewcode-block" id="FlixoptModelComponentConfigData.get_solver">

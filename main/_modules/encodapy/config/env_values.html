@@ -95,6 +95,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSettings</span><span class="p">,</span> <span class="n">SettingsConfigDict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileStorageMethod</span>
 
+
 <div class="viewcode-block" id="BasicEnvVariables">
 <a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.env_values.BasicEnvVariables">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BasicEnvVariables</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
@@ -269,7 +270,7 @@
             <span class="s2">"If True, attributes with None values will not be published to MQTT. "</span>
             <span class="s2">"This can help reduce message size and avoid sending irrelevant data. "</span>
             <span class="s2">"Default is True, meaning None values will not be published."</span>
-        <span class="p">)</span>
+        <span class="p">),</span>
     <span class="p">)</span></div>
 
 

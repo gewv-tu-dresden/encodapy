@@ -87,6 +87,7 @@
 <span class="sd">Description: Configuration models for the thermal storage component</span>
 <span class="sd">Author: Martin Altenburger</span>
 <span class="sd">"""</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
@@ -99,10 +100,7 @@
     <span class="n">OutputData</span><span class="p">,</span>
     <span class="n">ConfigData</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">DataPointNumber</span><span class="p">,</span>
-    <span class="n">DataPointMedium</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.datapoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataPointNumber</span><span class="p">,</span> <span class="n">DataPointMedium</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.mediums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Medium</span>
 
 <span class="c1"># Split between real imports and mock classes for Sphinx</span>
@@ -115,10 +113,11 @@
 <a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.DataPointGeneral">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">DataPointGeneral</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Mock-Class for Sphinx documentation.</span>
-<span class="sd">        </span>
+
 <span class="sd">        For more information, see the real DataPointGeneral class: \</span>
 <span class="sd">            :class:`encodapy.utils.datapoints.DataPointGeneral`.</span>
 <span class="sd">        """</span></div>
+
 
 
 <div class="viewcode-block" id="TemperatureLimits">
@@ -126,7 +125,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">TemperatureLimits</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Configuration of the temperature limits in the termal storage</span>
-<span class="sd">    </span>
+
 <span class="sd">    Attributes:</span>
 <span class="sd">        minimal_temperature: Minimal temperature in the thermal storage in °C</span>
 <span class="sd">        maximal_temperature: Maximal temperature in the thermal storage in °C</span>
@@ -178,12 +177,9 @@
 <span class="sd">        limits (:class:`encodapy.components.thermal_storage.TemperatureLimits`): \</span>
 <span class="sd">            Temperature limits for the sensor</span>
 <span class="sd">    """</span>
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
-        <span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span>
-    <span class="p">)</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Optional name of the sensor"</span>
-    <span class="p">)</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Optional name of the sensor"</span><span class="p">)</span>
     <span class="n">height</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="o">...</span><span class="p">,</span>
         <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -206,6 +202,7 @@
         <span class="n">description</span><span class="o">=</span><span class="s2">"Whether the lower limit of the sensor should not be adjusted "</span>
         <span class="s2">"during calibration"</span><span class="p">,</span>
     <span class="p">)</span>
+
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">enforce_protected_lower_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"StorageSensorConfig"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -495,7 +492,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ThermalStorageEnergyTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Enum for the energy types of the thermal storage service.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Members:</span>
 <span class="sd">        Nominal ("nominal"): Nominal energy of the thermal storage \</span>
 <span class="sd">            between the temperature limits</span>
@@ -529,6 +526,7 @@
     <span class="n">value</span><span class="p">:</span> <span class="n">ThermalStorageCalculationMethods</span></div>
 
 
+
 <div class="viewcode-block" id="DataPointSensorConfig">
 <a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.DataPointSensorConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataPointSensorConfig</span><span class="p">(</span><span class="n">DataPointGeneral</span><span class="p">):</span>
@@ -556,6 +554,7 @@
 <span class="sd">    if the temperature falls below the required level. It would be advisable</span>
 <span class="sd">    to check the sensors at the outlet of the storage tank.</span>
 <span class="sd">    """</span>
+
     <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">True</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"Enable or disable the state of charge check"</span><span class="p">,</span>
@@ -572,8 +571,9 @@
         <span class="mi">5</span><span class="p">,</span>
         <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"""</span>
-<span class="s2">        Minutes for historical temperature data to be considered for the state of charge check."""</span>
+<span class="s2">        Minutes for historical temperature data to be considered for the state of charge check."""</span><span class="p">,</span>
     <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="ThermalStorageCalibrationConfig">
@@ -593,7 +593,7 @@
     <span class="n">historical_timerange_minimum</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="mi">1</span><span class="p">,</span>
         <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">"Minimum timerange in hours for historical data to be considered "</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Minimum timerange in hours for historical data to be considered "</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">historical_timerange_retention</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="mi">48</span><span class="p">,</span>
@@ -608,6 +608,7 @@
     <span class="p">)</span></div>
 
 
+
 <div class="viewcode-block" id="DataPointThermalStorageLoadLevelCheck">
 <a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.DataPointThermalStorageLoadLevelCheck">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataPointThermalStorageLoadLevelCheck</span><span class="p">(</span><span class="n">DataPointGeneral</span><span class="p">):</span>
@@ -615,10 +616,13 @@
 <span class="sd">    Model for datapoints of the controller component \</span>
 <span class="sd">        which define the state of charge check configuration.</span>
 <span class="sd">    """</span>
+
     <span class="n">value</span><span class="p">:</span> <span class="n">ThermalStorageLoadLevelCheck</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">ThermalStorageLoadLevelCheck</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({}),</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">"Value of the datapoint, which is a ThermalStorageLoadLevelCheck "</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Value of the datapoint, which is a ThermalStorageLoadLevelCheck "</span><span class="p">,</span>
     <span class="p">)</span></div>
+
+
 
 <div class="viewcode-block" id="DataPointThermalStorageCalibrationConfig">
 <a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.DataPointThermalStorageCalibrationConfig">[docs]</a>
@@ -627,17 +631,20 @@
 <span class="sd">    Model for datapoints of the controller component \</span>
 <span class="sd">        which define the calibration configuration.</span>
 <span class="sd">    """</span>
+
     <span class="n">value</span><span class="p">:</span> <span class="n">ThermalStorageCalibrationConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">ThermalStorageCalibrationConfig</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({}),</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">"Value of the datapoint, which is a ThermalStorageCalibrationConfig "</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Value of the datapoint, which is a ThermalStorageCalibrationConfig "</span><span class="p">,</span>
     <span class="p">)</span></div>
+
+
 
 <div class="viewcode-block" id="ThermalStorageConfigData">
 <a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ThermalStorageConfigData</span><span class="p">(</span><span class="n">ConfigData</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model for the configuration data of the thermal storage service.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Arguments:</span>
 <span class="sd">        volume (DataPointNumber ): Volume of the thermal storage in m³</span>
 <span class="sd">        medium (DataPointMedium) : Medium of the thermal storage</span>
@@ -678,6 +685,7 @@
     <span class="p">)</span></div>
 
 
+
 <div class="viewcode-block" id="TemperatureExtrema">
 <a class="viewcode-back" href="../../../../components/built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.TemperatureExtrema">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TemperatureExtrema</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -686,17 +694,15 @@
 <span class="sd">    """</span>
 
     <span class="n">minimal_temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="o">...</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">"Minimal recorded temperature for the sensor in °C"</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Minimal recorded temperature for the sensor in °C"</span>
     <span class="p">)</span>
     <span class="n">maximal_temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="o">...</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">"Maximal recorded temperature for the sensor in °C"</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Maximal recorded temperature for the sensor in °C"</span>
     <span class="p">)</span>
     <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="o">...</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">"Timestamp of when the extrema were recorded"</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Timestamp of when the extrema were recorded"</span>
     <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="ThermalStorageLoadLevelStorage">
@@ -705,6 +711,7 @@
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Model to store state of charge check information for the thermal storage service.</span>
 <span class="sd">    """</span>
+
     <span class="n">last_check_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"Timestamp of the last state of charge check"</span><span class="p">,</span>
@@ -723,6 +730,7 @@
         <span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"Nominal storage energy in Wh | set by the process"</span><span class="p">,</span>
     <span class="p">)</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
