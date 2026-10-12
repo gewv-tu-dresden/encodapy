@@ -17,12 +17,10 @@ import pytest
 
 from encodapy.config import (
     ConfigModel,
-    ControllerSettingModel,
     InterfaceModel,
     TimeSettingsCalculationModel,
     TimeSettingsCalibrationModel,
     TimeSettingsModel,
-    TimeSettingsResultsModel,
     AttributeModel,
     AttributeTypes,
     InputModel,
@@ -48,36 +46,25 @@ def mock_config():
         outputs=[],
         staticdata=[],
         controller_components=[],
-        controller_settings=ControllerSettingModel(
-            time_settings=TimeSettingsModel(
-                calculation=TimeSettingsCalculationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type="absolute",
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                calibration=TimeSettingsCalibrationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type="absolute",
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                results=TimeSettingsResultsModel(
-                    timerange=1,
-                    timerange_unit=TimeUnits.HOUR,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
+        time_settings=TimeSettingsModel(
+            calculation=TimeSettingsCalculationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type="absolute",
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
             ),
-            specific_settings={},
+            calibration=TimeSettingsCalibrationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type="absolute",
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
+            ),
         ),
     )
 
@@ -124,49 +111,6 @@ def mock_file_env_vars_custom():
     ):
         env = FileEnvVariables()
         yield env
-
-
-@pytest.fixture
-def mock_controller_settings():
-    """Create a minimal ControllerSettingModel for unit testing.
-
-    This fixture provides just the controller settings part for tests
-    that need to set conn.config.controller_settings directly.
-
-    Returns:
-        ControllerSettingModel: Configuration with time settings.
-    """
-    return ControllerSettingModel(
-        time_settings=TimeSettingsModel(
-            calculation=TimeSettingsCalculationModel(
-                timerange=24,
-                timerange_unit=TimeUnits.HOUR,
-                timerange_type="absolute",
-                timestep=60,
-                timestep_unit=TimeUnits.MINUTE,
-                sampling_time=1,
-                sampling_time_unit=TimeUnits.MINUTE,
-            ),
-            calibration=TimeSettingsCalibrationModel(
-                timerange=24,
-                timerange_unit=TimeUnits.HOUR,
-                timerange_type="absolute",
-                timestep=1,
-                timestep_unit=TimeUnits.SECOND,
-                sampling_time=1,
-                sampling_time_unit=TimeUnits.MINUTE,
-            ),
-            results=TimeSettingsResultsModel(
-                timerange=1,
-                timerange_unit=TimeUnits.HOUR,
-                timestep=1,
-                timestep_unit=TimeUnits.SECOND,
-                sampling_time=1,
-                sampling_time_unit=TimeUnits.MINUTE,
-            ),
-        ),
-        specific_settings={},
-    )
 
 
 @pytest.fixture

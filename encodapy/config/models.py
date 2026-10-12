@@ -311,15 +311,6 @@ class TimeSettingsCalibrationModel(BaseModel):
     sampling_time_unit: TimeUnits = TimeUnits.DAY
 
 
-class TimeSettingsResultsModel(BaseModel):
-    """
-    Settings for the timesteps of the results.
-    """
-
-    timestep: Union[float, int] = 1
-    timestep_unit: TimeUnits = TimeUnits.SECOND
-
-
 class TimeSettingsModel(BaseModel):
     """
     Base class for the time settings of the controller / system.
@@ -327,29 +318,10 @@ class TimeSettingsModel(BaseModel):
     Attributes:
         calculation: The timeranges and settings für the calculation
         calibration: The timeranges and settings for the calibration
-        results: The timesettings for the results
-
-    TODO: Add the needed fields - calibration?
     """
 
     calculation: TimeSettingsCalculationModel
     calibration: Optional[TimeSettingsCalibrationModel] = None
-    results: Optional[TimeSettingsResultsModel] = None
-
-
-class ControllerSettingModel(BaseModel):
-    """
-    Model for the configuration of the controller settings.
-
-    Attributes:
-        time_settings: The time settings for the controller
-        specific_settings: The specific settings for the controller - not defined as a model
-
-    TODO: What is needed here?
-    """
-
-    time_settings: TimeSettingsModel
-    specific_settings: Optional[dict] = {}
 
 
 class ConfigModel(BaseModel):
@@ -363,7 +335,7 @@ class ConfigModel(BaseModel):
         staticdata (list[StaticDataModel]): \
             Static configuration data for devices managed by the system controller.
         controller_components (list[ControllerComponentModel]): Components used by the controller.
-        controller_settings (ControllerSettingModel): Settings for the controller.
+        time_settings (TimeSettingsModel): Time settings for the controller.
     """
 
     interfaces: InterfaceModel
@@ -373,7 +345,7 @@ class ConfigModel(BaseModel):
 
     controller_components: list[ControllerComponentModel]
 
-    controller_settings: ControllerSettingModel
+    time_settings: TimeSettingsModel
 
     @classmethod
     def from_json(cls, file_path: str):
@@ -391,6 +363,52 @@ class ConfigModel(BaseModel):
             logger.error(e)
 
         raise ConfigError("Coudn't load configuration from json file")
+
+    @model_validator(mode="before")
+    @classmethod
+    def migrate_deprecated_settings(cls, data: Any) -> Any:
+        """Migrates deprecated configuration keys to the current structure.
+
+        The deprecated key 'controller_settings' is transformed into
+        'time_settings'. The deprecated 'specific_settings' and the time
+        settings 'results' are not used anymore and are dropped.
+
+        Args:
+            data (Any): The data to migrate
+
+        Returns:
+            Any: The migrated data
+        """
+        if not isinstance(data, dict):
+            return data
+
+        if "controller_settings" in data:
+            controller_settings = data.pop("controller_settings")
+            logger.warning(
+                "The key 'controller_settings' is deprecated - "
+                "use 'time_settings' instead."
+            )
+            if isinstance(controller_settings, dict):
+                if controller_settings.get("specific_settings"):
+                    logger.warning(
+                        "'specific_settings' is deprecated and not used "
+                        "anymore - the settings are dropped."
+                    )
+                data.setdefault(
+                    "time_settings", controller_settings.get("time_settings")
+                )
+
+        if (
+            isinstance(data.get("time_settings"), dict)
+            and "results" in data["time_settings"]
+        ):
+            logger.warning(
+                "'results' in the time settings is deprecated and not used "
+                "anymore - the settings are dropped."
+            )
+            data["time_settings"].pop("results")
+
+        return data
 
     @model_validator(mode="after")
     def check_interfaces(self) -> "ConfigModel":

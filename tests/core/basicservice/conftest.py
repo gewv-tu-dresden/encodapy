@@ -25,8 +25,6 @@ from encodapy.config import (
     TimeSettingsModel,
     TimeSettingsCalculationModel,
     TimeSettingsCalibrationModel,
-    TimeSettingsResultsModel,
-    ControllerSettingModel,
 )
 from encodapy.service.basic_service import ControllerBasicService
 from encodapy.utils.models import (
@@ -362,28 +360,19 @@ def mock_config_all_interfaces(
         ],
         outputs=[mock_fiware_entity, mock_file_entity, mock_mqtt_entity],
         staticdata=[mock_static_data_entity],
-        controller_settings=ControllerSettingModel(
-            time_settings=TimeSettingsModel(
-                calculation=TimeSettingsCalculationModel(
-                    timerange=1.0,
-                    timerange_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND,
-                ),
-                calibration=TimeSettingsCalibrationModel(
-                    timerange=5.0,
-                    timerange_unit=TimeUnits.MINUTE,
-                    sampling_time=5,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                results=TimeSettingsResultsModel(
-                    timerange=1.0,
-                    timerange_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND,
-                ),
+        time_settings=TimeSettingsModel(
+            calculation=TimeSettingsCalculationModel(
+                timerange=1.0,
+                timerange_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.SECOND,
             ),
-            specific_settings={},
+            calibration=TimeSettingsCalibrationModel(
+                timerange=5.0,
+                timerange_unit=TimeUnits.MINUTE,
+                sampling_time=5,
+                sampling_time_unit=TimeUnits.MINUTE,
+            ),
         ),
         controller_components=[],
     )
@@ -405,28 +394,19 @@ def mock_config_no_interfaces():
         inputs=[],
         outputs=[],
         staticdata=[],
-        controller_settings=ControllerSettingModel(
-            time_settings=TimeSettingsModel(
-                calculation=TimeSettingsCalculationModel(
-                    timerange=1.0,
-                    timerange_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND,
-                ),
-                calibration=TimeSettingsCalibrationModel(
-                    timerange=5.0,
-                    timerange_unit=TimeUnits.MINUTE,
-                    sampling_time=5,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                results=TimeSettingsResultsModel(
-                    timerange=1.0,
-                    timerange_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND,
-                ),
+        time_settings=TimeSettingsModel(
+            calculation=TimeSettingsCalculationModel(
+                timerange=1.0,
+                timerange_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.SECOND,
             ),
-            specific_settings={},
+            calibration=TimeSettingsCalibrationModel(
+                timerange=5.0,
+                timerange_unit=TimeUnits.MINUTE,
+                sampling_time=5,
+                sampling_time_unit=TimeUnits.MINUTE,
+            ),
         ),
         controller_components=[],
     )
@@ -449,28 +429,19 @@ def mock_config_only_fiware(mock_fiware_entity, mock_input_entity_fiware):
         inputs=[mock_input_entity_fiware],
         outputs=[mock_fiware_entity],
         staticdata=[],
-        controller_settings=ControllerSettingModel(
-            time_settings=TimeSettingsModel(
-                calculation=TimeSettingsCalculationModel(
-                    timerange=1.0,
-                    timerange_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND,
-                ),
-                calibration=TimeSettingsCalibrationModel(
-                    timerange=5.0,
-                    timerange_unit=TimeUnits.MINUTE,
-                    sampling_time=5,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                results=TimeSettingsResultsModel(
-                    timerange=1.0,
-                    timerange_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND,
-                ),
+        time_settings=TimeSettingsModel(
+            calculation=TimeSettingsCalculationModel(
+                timerange=1.0,
+                timerange_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.SECOND,
             ),
-            specific_settings={},
+            calibration=TimeSettingsCalibrationModel(
+                timerange=5.0,
+                timerange_unit=TimeUnits.MINUTE,
+                sampling_time=5,
+                sampling_time_unit=TimeUnits.MINUTE,
+            ),
         ),
         controller_components=[],
     )
@@ -493,18 +464,14 @@ def basic_service():
         inputs=[],
         outputs=[],
         staticdata=[],
-        controller_settings=ControllerSettingModel(
-            time_settings=TimeSettingsModel(
-                calculation=TimeSettingsCalculationModel(
-                    timerange=1.0,
-                    timerange_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.SECOND,
-                ),
-                calibration=None,
-                results=None,
+        time_settings=TimeSettingsModel(
+            calculation=TimeSettingsCalculationModel(
+                timerange=1.0,
+                timerange_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.SECOND,
             ),
-            specific_settings={},
+            calibration=None,
         ),
         controller_components=[],
     )

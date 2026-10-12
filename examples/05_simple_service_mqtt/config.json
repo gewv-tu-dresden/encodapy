@@ -97,18 +97,15 @@
             }
         }
     ],
-    "controller_settings": {
-        "time_settings": {
-            "calculation": {
-                "timerange": 1,
-                "timerange_unit": "minute",
-                "sampling_time": 10,
-                "sampling_time_unit": "second"
-            },
-            "calibration": {
-                "timerange": 24,
-                "timerange_unit": "hour"
-            }
+    "time_settings": {        "calculation": {
+            "timerange": 1,
+            "timerange_unit": "minute",
+            "sampling_time": 10,
+            "sampling_time_unit": "second"
+        },
+        "calibration": {
+            "timerange": 24,
+            "timerange_unit": "hour"
         }
     }
 }

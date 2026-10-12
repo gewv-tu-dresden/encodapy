@@ -142,7 +142,7 @@ class FileConnection:
             to the platform is not available
 
         """
-        time_settings = self.config.controller_settings.time_settings
+        time_settings = self.config.time_settings
         match method:
             case DataQueryTypes.CALCULATION:
                 timestep = time_settings.calculation.timestep

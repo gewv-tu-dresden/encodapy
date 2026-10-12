@@ -80,16 +80,13 @@
             }
         }
     ],
-    "controller_settings": {
-        "time_settings": {
-            "calculation": {
-                "timerange": 1,
-                "timerange_unit": "hour",
-                "sampling_time": 60,
-                "sampling_time_unit": "second",
-                "timestep": 1,
-                "timestep_unit": "hour"
-            }
+    "time_settings": {        "calculation": {
+            "timerange": 1,
+            "timerange_unit": "hour",
+            "sampling_time": 60,
+            "sampling_time_unit": "second",
+            "timestep": 1,
+            "timestep_unit": "hour"
         }
     }
 }
