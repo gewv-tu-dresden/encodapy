@@ -27,6 +27,11 @@ jobs:
           - os: windows-latest
             python-version: "3.13"
     runs-on: ${{ matrix.os }}
+    # Required for snok/install-poetry on Windows runners:
+    # poetry is only added to PATH for bash, not for PowerShell
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - uses: actions/checkout@v7
@@ -43,10 +48,22 @@ jobs:
 
       - name: Cache dependencies
         id: cache-deps
+        # .venv caching on Windows runners is unreliable and can stall
+        # (see snok/install-poetry README), so we only cache on Linux
+        if: runner.os == 'Linux'
         uses: actions/cache@v6
         with:
           path: .venv
           key: pydeps-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Cache Poetry downloads (Windows)
+        id: cache-pip
+        if: runner.os == 'Windows'
+        uses: actions/cache@v6
+        with:
+          # Poetry downloads wheels/artifacts to its own cache dir on Windows
+          path: ~\AppData\Local\pypoetry\Cache
+          key: poetrycache-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
         if: steps.cache-deps.outputs.cache-hit != 'true'
