@@ -145,16 +145,10 @@ class TestRealComponentsIntegration:
         assert hasattr(component_runner_config_model, "outputs")
         assert hasattr(component_runner_config_model, "staticdata")
         assert hasattr(component_runner_config_model, "controller_components")
-        assert hasattr(component_runner_config_model, "controller_settings")
+        assert hasattr(component_runner_config_model, "time_settings")
 
         # Check time settings
-        assert hasattr(
-            component_runner_config_model.controller_settings, "time_settings"
-        )
-        assert hasattr(
-            component_runner_config_model.controller_settings.time_settings,
-            "calculation",
-        )
+        assert hasattr(component_runner_config_model.time_settings, "calculation")
 
     def test_component_inputs_outputs_consistency(self, component_runner_config_model):
         """Test that component inputs and outputs reference valid entities."""

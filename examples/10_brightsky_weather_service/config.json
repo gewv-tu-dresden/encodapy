@@ -142,23 +142,15 @@
             }
         }
     ],
-    "controller_settings": {
-        "time_settings":
+    "time_settings": {        "calculation":
         {
-            "calculation":
-            {
-                "timerange":24,
-                "timerange_unit":"hour",
-                "timerange_type" : "absolute",
-                "timestep":15,
-                "timestep_unit" : "minute",
-                "sampling_time" : 10,
-                "sampling_time_unit" : "second"
-            },
-            "results":
-            {
-                "timestep":1
-            }
+            "timerange":24,
+            "timerange_unit":"hour",
+            "timerange_type" : "absolute",
+            "timestep":15,
+            "timestep_unit" : "minute",
+            "sampling_time" : 10,
+            "sampling_time_unit" : "second"
         }
     }
 }
