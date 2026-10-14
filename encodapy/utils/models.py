@@ -6,7 +6,7 @@ Authors: Martin Altenburger
 from datetime import datetime
 from typing import Dict, List, Optional, Union
 from pandas import DataFrame, Series
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from filip.models.ngsi_v2.base import NamedMetadata
 from filip.models.ngsi_v2.context import ContextEntity
 from encodapy.config.models import AttributeModel, CommandModel
@@ -243,12 +243,14 @@ class FiwareParameter(BaseModel):
         service (str): The service
         service_path (str): The service path
         authentication (Optional[Union[FiwareAuth, None]]): The authentication
+        call_timeout (float): Timeout in seconds for calls to the FIWARE Context Broker
     """
 
     cb_url: str
     service: str
     service_path: str
     authentication: Optional[Union[FiwareAuth, None]] = None
+    call_timeout: float = Field(default=15.0, gt=0)
 
 
 class DatabaseParameter(BaseModel):

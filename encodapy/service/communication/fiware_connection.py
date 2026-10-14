@@ -76,13 +76,13 @@ class FiwareConnection:
     """
 
     def __init__(self) -> None:
-        self.fiware_conn_params: FiwareConnectionParameter = None
-        self.fiware_token_client: BearerToken = None
-        self.fiware_header: FiwareHeaderSecure = None
-        self.cb_client: ContextBrokerClient = None
-        self.crate_db_client: CrateDBConnection = None
+        self.fiware_conn_params: Optional[FiwareConnectionParameter] = None
+        self.fiware_token_client: Optional[BearerToken] = None
+        self.fiware_header: Optional[FiwareHeaderSecure] = None
+        self.cb_client: Optional[ContextBrokerClient] = None
+        self.crate_db_client: Optional[CrateDBConnection] = None
         self.config: ConfigModel
-        self._fiware_call_timeout_seconds = 15.0
+        self._fiware_call_timeout_seconds: float = 15.0
 
     async def _run_cb_call_with_timeout(self, callback: Any) -> Any:
         """Run a potentially blocking Context Broker call with timeout protection."""
@@ -121,6 +121,7 @@ class FiwareConnection:
             service=fiware_env.service,
             service_path=fiware_env.service_path,
             authentication=fiware_auth,
+            call_timeout=fiware_env.call_timeout,
         )
 
         database_params = DatabaseParameter(
@@ -133,6 +134,7 @@ class FiwareConnection:
         self.fiware_conn_params = FiwareConnectionParameter(
             fiware_params=fiware_params, database_params=database_params
         )
+        self._fiware_call_timeout_seconds = fiware_params.call_timeout
 
     def check_fiware_connection(self) -> None:
         """
@@ -212,6 +214,9 @@ class FiwareConnection:
                 - the latest timestamp of the output entity for the attribute
                 with the oldest value (None if no timestamp is available)
         """
+        if self.cb_client is None:
+            raise InterfaceNotActive("ContextBrokerClient is not active")
+
         try:
             output_attributes_entity = self.cb_client.get_entity_attributes(
                 entity_id=output_entity.id_interface
@@ -673,6 +678,8 @@ class FiwareConnection:
                 https://github.com/RWTH-EBC/FiLiP/blob/master/filip/clients/ngsi_v2/quantumleap.py#L449
             - Improve the error handling
         """
+        if self.crate_db_client is None or self.fiware_conn_params is None:
+            raise InterfaceNotActive("CrateDB connection is not active")
 
         from_date, to_date = self._calculate_dates(
             method=method, last_timestamp=timestamp_latest_output
@@ -756,6 +763,8 @@ class FiwareConnection:
             entity_type (str): Type of the entity
             attrs (list[NamedContextAttribute]): List with the attributes to update
         """
+        if self.cb_client is None:
+            raise InterfaceNotActive("ContextBrokerClient is not active")
 
         self.cb_client.update_or_append_entity_attributes(
             entity_id=entity_id, entity_type=entity_type, attrs=attrs
@@ -937,6 +946,8 @@ class FiwareConnection:
         TODO:
             - Is there a better way to send the data from dataframes to the FIWARE platform?
         """
+        if self.cb_client is None:
+            raise InterfaceNotActive("ContextBrokerClient is not active")
 
         if not output_attributes and not output_commands:
             logger.debug(
