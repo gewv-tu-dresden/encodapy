@@ -169,7 +169,7 @@ jobs:
   # Gate job with a stable name: make this one the required status check
   # in branch protection, so matrix/job changes never break the protection
   ci:
-    name: ci
+    name: All tests passed
     needs: [unit-tests, docs-build-test, integration-tests]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
