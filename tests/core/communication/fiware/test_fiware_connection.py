@@ -625,3 +625,61 @@ def test_update_fiware_entity_without_client_raises_error():
 
     with pytest.raises(InterfaceNotActive):
         connection.update_fiware_entity("entity_id", "entity_type", [])
+
+
+def test_get_last_timestamp_without_client_raises_error():
+    """Test that InterfaceNotActive is raised without a prepared connection.
+
+    Verifies the guard of _get_last_timestamp_for_fiware_output: accessing
+    the communication path without a prior prepare_fiware_connection()
+    raises a defined exception instead of an AttributeError.
+
+    Asserts:
+        - InterfaceNotActive is raised
+    """
+    connection = FiwareConnection()
+
+    with pytest.raises(InterfaceNotActive):
+        connection._get_last_timestamp_for_fiware_output(MagicMock())
+
+
+def test_get_data_from_database_without_client_raises_error():
+    """Test that InterfaceNotActive is raised without a prepared connection.
+
+    Verifies the guard of get_data_from_database: accessing the database
+    path without a prior prepare_fiware_connection() raises a defined
+    exception instead of an AttributeError.
+
+    Asserts:
+        - InterfaceNotActive is raised
+    """
+    connection = FiwareConnection()
+
+    with pytest.raises(InterfaceNotActive):
+        connection.get_data_from_database(
+            entity=MagicMock(),
+            entity_attributes=MagicMock(),
+            method=MagicMock(),
+            timestamp_latest_output=MagicMock(),
+        )
+
+
+@pytest.mark.asyncio
+async def test_send_data_to_fiware_without_client_raises_error():
+    """Test that InterfaceNotActive is raised without a prepared connection.
+
+    Verifies the guard of _send_data_to_fiware: accessing the communication
+    path without a prior prepare_fiware_connection() raises a defined
+    exception instead of an AttributeError.
+
+    Asserts:
+        - InterfaceNotActive is raised
+    """
+    connection = FiwareConnection()
+
+    with pytest.raises(InterfaceNotActive):
+        await connection._send_data_to_fiware(
+            output_entity=MagicMock(),
+            output_attributes=[],
+            output_commands=[],
+        )
