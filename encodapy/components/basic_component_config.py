@@ -124,7 +124,7 @@ class ComponentData(BaseModel):
         """
         Check the units of the input values and convert them if necessary.
         """
-        for name, field in self.model_fields.items():
+        for name, field in type(self).model_fields.items():
             value = getattr(self, name)
             extra = field.json_schema_extra or {}
             if not isinstance(extra, dict):
