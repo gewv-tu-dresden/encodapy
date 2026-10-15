@@ -910,6 +910,13 @@ class FiwareConnection:
             if attribute_value_adjusted is not None:
                 attribute.value = attribute_value_adjusted
                 attribute.unit = fiware_unit
+                if attribute.factor != 1.0:
+                    logger.warning(
+                        f"Attribute {attribute.id} of entity "
+                        f"{id_output_entity} combines a unit conversion "
+                        "with a `factor` != 1.0 - the value is scaled by "
+                        "both (double scaling). Please use only one of them."
+                    )
                 meta_data.append(
                     NamedMetadata(
                         name="unitCode", type=DataType.TEXT, value=fiware_unit.value

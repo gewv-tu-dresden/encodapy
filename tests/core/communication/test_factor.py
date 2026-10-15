@@ -27,6 +27,7 @@ import pandas as pd
 import pytest
 from filip.models.base import DataType
 from filip.models.ngsi_v2.context import ContextAttribute, ContextEntity
+from loguru import logger as loguru_logger
 
 from encodapy.config import (
     AttributeTypes,
@@ -44,7 +45,7 @@ from encodapy.utils.models import (
     MetaDataModel,
     apply_factor,
 )
-from encodapy.utils.units import TimeUnits
+from encodapy.utils.units import DataUnits, TimeUnits
 
 
 class TestApplyFactor:
@@ -434,3 +435,25 @@ class TestFiwareFactor:
             "attrs_timeseries"
         ]
         assert [item.value for item in sent] == pytest.approx([2.0, 2.1])
+
+    def test_adjust_units_for_fiware_warns_on_double_scaling(self):
+        """Combining a unit conversion with a factor logs a warning."""
+        connection = FiwareConnection()
+        attribute = AttributeModel(
+            id="power",
+            id_interface="power",
+            value=1000.0,
+            unit=DataUnits.WTT,
+            factor=0.1,
+        )
+        messages = []
+        sink_id = loguru_logger.add(lambda message: messages.append(str(message)))
+        try:
+            connection._adjust_units_for_fiware(
+                id_output_entity="boiler",
+                attribute=attribute,
+                fiware_unit=DataUnits.KWT,
+            )
+        finally:
+            loguru_logger.remove(sink_id)
+        assert any("double scaling" in message for message in messages)

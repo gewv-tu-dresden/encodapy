@@ -75,6 +75,9 @@ class AttributeModel(BaseModel):
             Applies to all communication connections (MQTT, FIWARE, FILE) in both \
             directions (input and output) for numeric values and numeric timeseries \
             columns (DataFrames / Series); the default 1.0 leaves values unchanged. \
+            Do not combine `factor` with other scaling mechanisms (FIWARE unit \
+            conversion or scaling expressions in MQTT templates) - values would \
+            be scaled twice. \
             Rationale (why): devices behind Modbus-based gateways often transmit \
             values in a fixed scaling (e.g. tenths of a degree), so the real \
             physical value is ``interface value * factor``.

@@ -28,6 +28,8 @@ def apply_factor(
     directions (input and output). Numeric scalars and numeric columns
     of DataFrames / Series (timeseries) are scaled; booleans, strings,
     non-numeric columns, other containers and None are returned unchanged.
+    For DataFrames, ALL numeric columns are scaled - callers must pass a
+    frame containing only the attribute's own column(s).
 
     Why: devices (especially behind Modbus gateways) often transmit values
     in a fixed scaling (e.g. tenths of a degree). The `factor` configured on
