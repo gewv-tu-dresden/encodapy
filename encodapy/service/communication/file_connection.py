@@ -33,6 +33,7 @@ from encodapy.utils.models import (
     OutputDataAttributeModel,
     OutputDataEntityModel,
     StaticDataEntityModel,
+    apply_factor,
 )
 from encodapy.utils.error_handling import NotSupportedError
 from encodapy.utils.units import TimeUnits
@@ -212,7 +213,9 @@ class FileConnection:
                 attributes_values.append(
                     InputDataAttributeModel(
                         id=attribute.id,
-                        data=data[attribute.id_interface].iloc[0],
+                        data=apply_factor(
+                            data[attribute.id_interface].iloc[0], attribute.factor
+                        ),
                         data_type=AttributeTypes.VALUE,
                         data_available=True,
                         latest_timestamp_input=data.index[0],
@@ -283,7 +286,7 @@ class FileConnection:
                 if file_attribute.id == attribute.id_interface:
                     return InputDataAttributeModel(
                         id=attribute.id,
-                        data=file_attribute.value,
+                        data=apply_factor(file_attribute.value, attribute.factor),
                         unit=file_attribute.unit,
                         data_type=attribute.type,
                         data_available=True,
@@ -515,7 +518,7 @@ class FileConnection:
             output_attr.append(
                 {
                     "id": output.id_interface,
-                    "value": output.value,
+                    "value": apply_factor(output.value, output.factor),
                     "unit": None if output.unit is None else output.unit.value,
                     "time": None
                     if output.timestamp is None

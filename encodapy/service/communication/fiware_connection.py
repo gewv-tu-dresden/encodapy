@@ -50,6 +50,7 @@ from encodapy.utils.models import (
     MetaDataModel,
     OutputDataAttributeModel,
     OutputDataEntityModel,
+    apply_factor,
 )
 from encodapy.utils.units import DataUnits, adjust_units, get_time_unit_seconds
 
@@ -396,9 +397,12 @@ class FiwareConnection:
                 attributes_values.append(
                     InputDataAttributeModel(
                         id=attribute.id,
-                        data=fiware_input_entity_attributes[
-                            attribute.id_interface
-                        ].value,
+                        data=apply_factor(
+                            fiware_input_entity_attributes[
+                                attribute.id_interface
+                            ].value,
+                            attribute.factor,
+                        ),
                         data_type=AttributeTypes.VALUE,
                         data_available=(
                             fiware_input_entity_attributes[attribute.id_interface].value
@@ -836,7 +840,10 @@ class FiwareConnection:
 
         attr = NamedContextAttribute(
             name=fiware_datapoint.attribute.id_interface,
-            value=df[fiware_datapoint.attribute.id].iloc[-1],
+            value=apply_factor(
+                df[fiware_datapoint.attribute.id].iloc[-1],
+                fiware_datapoint.attribute.factor,
+            ),
             type=datatype,
             metadata=meta_data_row,
         )
@@ -856,7 +863,10 @@ class FiwareConnection:
             attrs_timeseries.append(
                 NamedContextAttribute(
                     name=fiware_datapoint.attribute.id_interface,
-                    value=row[fiware_datapoint.attribute.id],
+                    value=apply_factor(
+                        row[fiware_datapoint.attribute.id],
+                        fiware_datapoint.attribute.factor,
+                    ),
                     type=datatype,
                     metadata=meta_data_row,
                 )
@@ -1021,7 +1031,7 @@ class FiwareConnection:
                 attrs.append(
                     NamedContextAttribute(
                         name=attribute.id_interface,
-                        value=attribute.value,
+                        value=apply_factor(attribute.value, attribute.factor),
                         type=datatype,
                         metadata=meta_data,
                     )

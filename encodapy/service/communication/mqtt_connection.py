@@ -32,6 +32,7 @@ from encodapy.utils.models import (
     InputDataAttributeModel,
     InputDataEntityModel,
     OutputDataEntityModel,
+    apply_factor,
 )
 
 
@@ -702,7 +703,9 @@ class MqttConnection:
 
             # if the topic is in the message store, get value and timestamp
             else:
-                data = self.mqtt_message_store[topic]["value"]
+                data = apply_factor(
+                    self.mqtt_message_store[topic]["value"], attribute.factor
+                )
                 timestamp = self.mqtt_message_store[topic]["timestamp"]
                 data_available = True
 
@@ -733,7 +736,7 @@ class MqttConnection:
             None
         )
         if output_attribute.mqtt_format is MQTTFormatTypes.PLAIN:
-            payload = output_attribute.value
+            payload = apply_factor(output_attribute.value, output_attribute.factor)
         elif (
             output_attribute.mqtt_format is MQTTFormatTypes.FIWARE_ATTR
             or output_attribute.mqtt_format is MQTTFormatTypes.FIWARE_CMDEXE
@@ -752,7 +755,9 @@ class MqttConnection:
             render_values = {
                 "output_entity": output_entity.id_interface,
                 "output_attribute": output_attribute.id_interface,
-                "output_value": output_attribute.value,
+                "output_value": apply_factor(
+                    output_attribute.value, output_attribute.factor
+                ),
                 "output_unit": output_attribute.unit.value
                 if output_attribute.unit
                 else None,

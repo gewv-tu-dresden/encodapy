@@ -14,6 +14,38 @@ from encodapy.config.types import AttributeTypes
 from encodapy.utils.units import DataUnits
 
 
+def apply_factor(
+    value: Union[str, float, int, bool, Dict, List, DataFrame, Series, None],
+    factor: float,
+) -> Union[str, float, int, bool, Dict, List, DataFrame, Series, None]:
+    """
+    Scale a raw interface value by the attribute's `factor`
+    (``value_in_interface * factor = internal value``).
+
+    Used by all communication connections (MQTT, FIWARE, FILE) in both
+    directions (input and output). Only numeric values are scaled;
+    booleans, strings, containers and None are returned unchanged.
+
+    Why: devices (especially behind Modbus gateways) often transmit values
+    in a fixed scaling (e.g. tenths of a degree). The `factor` configured on
+    the attribute converts between the raw interface value and the real
+    physical value without touching component logic.
+
+    Args:
+        value: The raw value to scale.
+        factor (float): The scaling factor; the default 1.0 leaves the
+            value unchanged.
+
+    Returns:
+        The scaled value if numeric, otherwise the original value.
+    """
+    if factor == 1.0:
+        return value
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return value
+    return value * factor
+
+
 class InputDataAttributeModel(BaseModel):
     """
     Model for a attribute of input data of the system controller.
