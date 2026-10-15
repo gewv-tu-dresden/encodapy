@@ -155,6 +155,23 @@ class TestMqttFactor:
         payload = connection._prepare_mqtt_payload(entity, attribute)
         assert payload == {"temperature": 250.0}
 
+    def test_prepare_mqtt_payload_fiware_cmdexe_with_factor(self):
+        """FIWARE_CMDEXE output payload is scaled by the attribute factor."""
+        connection = MqttConnection()
+        connection.mqtt_params = MagicMock()
+        connection.mqtt_params.topic_prefix = "test"
+        attribute = AttributeModel(
+            id="command",
+            id_interface="command",
+            value=25,
+            mqtt_format=MQTTFormatTypes.FIWARE_CMDEXE,
+            factor=10.0,
+        )
+        entity = MagicMock()
+        entity.id_interface = "TestOutput:001"
+        payload = connection._prepare_mqtt_payload(entity, attribute)
+        assert payload == {"command": 250.0}
+
     def test_get_data_from_mqtt_with_factor(self):
         """Incoming values are multiplied by the attribute factor."""
         connection = MqttConnection()
