@@ -59,6 +59,14 @@ class MQTTTemplateConfig(BaseModel):
 
     The key `time_format` is optional, as default '%Y-%m-%dT%H:%M:%S%z' is used.
 
+    Note:
+        The value placeholder already contains the value scaled by the \
+            attribute's `factor` (see
+            :class:`~encodapy.config.models.AttributeModel`). Do not apply an \
+            additional scaling expression in the template (e.g.
+            ``{{ output_value * 0.1 }}``) when a `factor` is configured, as the \
+            value would be scaled twice.
+
     Please see the examples for this.
 
     Arguments:
