@@ -202,7 +202,10 @@ class FileConnection:
                 attributes_values.append(
                     InputDataAttributeModel(
                         id=attribute.id,
-                        data=data.filter([attribute.id_interface]),
+                        data=apply_factor(
+                            data.filter([attribute.id_interface]),
+                            attribute.factor,
+                        ),
                         data_type=AttributeTypes.TIMESERIES,
                         data_available=True,
                         latest_timestamp_input=data.index[0],

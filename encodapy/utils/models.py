@@ -5,7 +5,9 @@ Authors: Martin Altenburger
 
 from datetime import datetime
 from typing import Dict, List, Optional, Union
+import numpy as np
 from pandas import DataFrame, Series
+from pandas.api.types import is_numeric_dtype
 from pydantic import BaseModel, ConfigDict, field_validator
 from filip.models.ngsi_v2.base import NamedMetadata
 from filip.models.ngsi_v2.context import ContextEntity
@@ -23,8 +25,9 @@ def apply_factor(
     (``value_in_interface * factor = internal value``).
 
     Used by all communication connections (MQTT, FIWARE, FILE) in both
-    directions (input and output). Only numeric values are scaled;
-    booleans, strings, containers and None are returned unchanged.
+    directions (input and output). Numeric scalars and numeric columns
+    of DataFrames / Series (timeseries) are scaled; booleans, strings,
+    non-numeric columns, other containers and None are returned unchanged.
 
     Why: devices (especially behind Modbus gateways) often transmit values
     in a fixed scaling (e.g. tenths of a degree). The `factor` configured on
@@ -41,7 +44,18 @@ def apply_factor(
     """
     if factor == 1.0:
         return value
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
+    if isinstance(value, DataFrame):
+        scaled = value.copy()
+        numeric_columns = scaled.select_dtypes(include="number").columns
+        scaled[numeric_columns] = scaled[numeric_columns] * factor
+        return scaled
+    if isinstance(value, Series):
+        if not is_numeric_dtype(value):
+            return value
+        return value * factor
+    if isinstance(value, bool) or not isinstance(
+        value, (int, float, np.integer, np.floating)
+    ):
         return value
     return value * factor
 

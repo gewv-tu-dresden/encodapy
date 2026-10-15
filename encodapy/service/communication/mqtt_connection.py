@@ -742,7 +742,9 @@ class MqttConnection:
             or output_attribute.mqtt_format is MQTTFormatTypes.FIWARE_CMDEXE
         ):
             payload = {}
-            payload[output_attribute.id_interface] = output_attribute.value
+            payload[output_attribute.id_interface] = apply_factor(
+                output_attribute.value, output_attribute.factor
+            )
             if (
                 output_attribute.timestamp is not None
                 and output_attribute.mqtt_format is MQTTFormatTypes.FIWARE_ATTR

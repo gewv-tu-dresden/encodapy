@@ -384,6 +384,7 @@ class FiwareConnection:
             if attribute.type == AttributeTypes.TIMESERIES:
                 attributes_timeseries[attribute.id] = {
                     "id_interface": attribute.id_interface,
+                    "factor": attribute.factor,
                     "metadata": self._get_metadata_from_fiware(
                         fiware_input_entity_attributes[attribute.id_interface]
                     ),
@@ -664,7 +665,8 @@ class FiwareConnection:
         Args:
             - entity_id: id of the entity
             - entity_type: type of the entity
-            - entity_attributes: dict with the attributes of the entity (id, metadata)
+            - entity_attributes: dict with the attributes of the entity \
+                (id_interface, metadata, factor)
             - method (DataQueryTypes): method of the function which queries the data
             (calculation or calibration)
             - timestamp_latest_output: timestamp of the last output of the entity
@@ -713,7 +715,10 @@ class FiwareConnection:
             df.rename(
                 columns={attribute_data["id_interface"]: attribute_id}, inplace=True
             )
-            data = df.filter([attribute_id]).dropna()
+            data = apply_factor(
+                df.filter([attribute_id]).dropna(),
+                attribute_data.get("factor", 1.0),
+            )
             if data.empty:
                 logger.debug(
                     f"Data for attribute {attribute_id} of entity {entity.id} is empty"

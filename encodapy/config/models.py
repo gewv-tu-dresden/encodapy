@@ -72,8 +72,9 @@ class AttributeModel(BaseModel):
         factor (float): Optional scaling factor for interface values (default 1.0). \
             The raw interface value is multiplied by `factor` on input, and the \
             internal value is multiplied by `factor` before publishing/sending. \
-            Applies to all communication connections (MQTT, FIWARE, FILE) for \
-            numeric values; the default 1.0 leaves values unchanged. \
+            Applies to all communication connections (MQTT, FIWARE, FILE) in both \
+            directions (input and output) for numeric values and numeric timeseries \
+            columns (DataFrames / Series); the default 1.0 leaves values unchanged. \
             Rationale (why): devices behind Modbus-based gateways often transmit \
             values in a fixed scaling (e.g. tenths of a degree), so the real \
             physical value is ``interface value * factor``.
