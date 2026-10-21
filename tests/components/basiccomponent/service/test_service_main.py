@@ -335,11 +335,18 @@ class TestServiceMainShutdownFlow:
         with patch(
             "encodapy.service.service_main.signal.signal",
             side_effect=signal_side_effect,
-        ):
+        ) as mock_signal:
             task = asyncio.create_task(service_main(service_class=EventDrivenService))
 
             # Wait until the signal handlers are registered
             await asyncio.sleep(0.2)
+
+            registered_signals = [call.args[0] for call in mock_signal.call_args_list]
+            assert registered_signals == [
+                sig_module.SIGINT,
+                sig_module.SIGTERM,
+                sig_module.SIGINT,
+            ]
 
             # Nothing sets the shutdown event here, so finish via cancel
             task.cancel()

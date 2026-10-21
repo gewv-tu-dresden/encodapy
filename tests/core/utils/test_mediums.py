@@ -41,7 +41,7 @@ def test_get_medium_parameter_with_temperature_too_high_raises() -> None:
 def test_get_medium_parameter_with_boundary_temperatures_is_calculated() -> None:
     """The range boundaries (0.1 and 99.0 degree Celsius) are still valid."""
 
-    lower = get_medium_parameter(medium=Medium.WATER, temperature=0.2)
+    lower = get_medium_parameter(medium=Medium.WATER, temperature=0.1)
     upper = get_medium_parameter(medium=Medium.WATER, temperature=99.0)
 
     assert lower.cp > 0

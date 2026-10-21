@@ -64,7 +64,7 @@ def get_medium_parameter(
         return MEDIUM_VALUES[medium]
 
     if medium is Medium.WATER:
-        if temperature <= 0.1:
+        if temperature < 0.1:
             logger.error("Attention! Temperature to low!")
             raise ValueError(
                 f"Temperature of {temperature} degree Celsius is too low "
