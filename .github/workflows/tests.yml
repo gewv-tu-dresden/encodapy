@@ -63,7 +63,7 @@ jobs:
         with:
           # Poetry downloads wheels/artifacts to its own cache dir on Windows
           path: ~\AppData\Local\pypoetry\Cache
-          key: poetrycache-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: poetrycache-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}
 
       - name: Install dependencies
         if: steps.cache-deps.outputs.cache-hit != 'true'
