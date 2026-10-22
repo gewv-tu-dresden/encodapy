@@ -107,6 +107,18 @@ class TestDeprecatedConfigMigration:
         assert not hasattr(config, "specific_settings")
         assert "'specific_settings' is deprecated" in logs
 
+    def test_empty_specific_settings_are_dropped_with_warning(self):
+        """Test that an empty deprecated 'specific_settings' key is warned about."""
+        _, logs = self._build_config_with_logs(
+            controller_settings={
+                "time_settings": {
+                    "calculation": {"timerange": 24, "timerange_unit": "hour"}
+                },
+                "specific_settings": {},
+            },
+        )
+        assert "'specific_settings' is deprecated" in logs
+
     def test_results_in_time_settings_are_dropped(self):
         """Test that deprecated time settings 'results' are dropped with a warning."""
         config, logs = self._build_config_with_logs(

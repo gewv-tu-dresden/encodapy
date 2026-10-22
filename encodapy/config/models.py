@@ -3,25 +3,27 @@ Description: This file contains the models for the configuration of the system c
 Authors: Martin Altenburger
 """
 
-import os
 import json
+import os
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
 from enum import Enum
-from pydantic import BaseModel, ConfigDict, ValidationError, Field
-from pydantic.functional_validators import model_validator
-from loguru import logger
+from typing import TYPE_CHECKING, Any
+
 import pandas as pd
 from filip.models.base import DataType
+from loguru import logger
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic.functional_validators import model_validator
+
+from encodapy.components.basic_component_config import ControllerComponentModel
 from encodapy.config.types import (
     AttributeTypes,
     Interfaces,
-    TimerangeTypes,
     MQTTFormatTypes,
+    TimerangeTypes,
 )
 from encodapy.utils.error_handling import ConfigError, InterfaceNotActive
 from encodapy.utils.units import DataUnits, TimeUnits
-from encodapy.components.basic_component_config import ControllerComponentModel
 
 # Import MQTTTemplateConfigDoc for sphinx documentation generation
 IS_BUILDING_DOCS = "BUILDING_DOCS" in os.environ
@@ -76,13 +78,13 @@ class AttributeModel(BaseModel):
     id: str
     id_interface: str = Field(default="")
     type: AttributeTypes = AttributeTypes.VALUE
-    value: Union[str, float, int, bool, Dict, List, pd.DataFrame, pd.Series, None] = (
+    value: str | float | int | bool | dict | list | pd.DataFrame | pd.Series | None = (
         None
     )
-    unit: Optional[DataUnits] = None
+    unit: DataUnits | None = None
     datatype: DataType = DataType("Number")
-    timestamp: Optional[datetime] = None
-    mqtt_format: Union[MQTTFormatTypes, MQTTTemplateConfig] = MQTTFormatTypes.PLAIN
+    timestamp: datetime | None = None
+    mqtt_format: MQTTFormatTypes | MQTTTemplateConfig = MQTTFormatTypes.PLAIN
 
     @model_validator(mode="after")
     def set_id_interface(self) -> "AttributeModel":
@@ -112,7 +114,7 @@ class CommandModel(BaseModel):
 
     id: str
     id_interface: str = Field(default="")
-    value: Union[str, int, float, List, Dict, bool, None] = None
+    value: str | int | float | list | dict | bool | None = None
 
     @model_validator(mode="after")
     def set_id_interface(self) -> "CommandModel":
@@ -214,16 +216,16 @@ class TimeSettingsCalculationModel(BaseModel):
         sampling_time_unit: The unit of the sampling time (if not set, the default unit is minute)
     """
 
-    timerange: Optional[float] = None
-    timerange_min: Optional[float] = None
-    timerange_max: Optional[float] = None
-    timerange_type: Optional[TimerangeTypes] = TimerangeTypes.ABSOLUTE
+    timerange: float | None = None
+    timerange_min: float | None = None
+    timerange_max: float | None = None
+    timerange_type: TimerangeTypes | None = TimerangeTypes.ABSOLUTE
     timerange_unit: TimeUnits = TimeUnits.MINUTE
 
-    timestep: Union[float, int] = 1
+    timestep: float | int = 1
     timestep_unit: TimeUnits = TimeUnits.SECOND
 
-    sampling_time: Union[float, int] = 1
+    sampling_time: float | int = 1
     sampling_time_unit: TimeUnits = TimeUnits.MINUTE
 
     @model_validator(mode="after")
@@ -301,13 +303,13 @@ class TimeSettingsCalibrationModel(BaseModel):
 
     """
 
-    timerange: Optional[float] = None
+    timerange: float | None = None
     timerange_unit: TimeUnits = TimeUnits.MINUTE
 
-    timestep: Union[float, int] = 1
+    timestep: float | int = 1
     timestep_unit: TimeUnits = TimeUnits.SECOND
 
-    sampling_time: Union[float, int] = 1
+    sampling_time: float | int = 1
     sampling_time_unit: TimeUnits = TimeUnits.DAY
 
 
@@ -321,7 +323,7 @@ class TimeSettingsModel(BaseModel):
     """
 
     calculation: TimeSettingsCalculationModel
-    calibration: Optional[TimeSettingsCalibrationModel] = None
+    calibration: TimeSettingsCalibrationModel | None = None
 
 
 class ConfigModel(BaseModel):
@@ -389,7 +391,7 @@ class ConfigModel(BaseModel):
                 "use 'time_settings' instead."
             )
             if isinstance(controller_settings, dict):
-                if controller_settings.get("specific_settings"):
+                if "specific_settings" in controller_settings:
                     logger.warning(
                         "'specific_settings' is deprecated and not used "
                         "anymore - the settings are dropped."
@@ -428,9 +430,7 @@ class ConfigModel(BaseModel):
             raise InterfaceNotActive("At least one interface must be set.")
 
         def check_interface_active(
-            datapoints: Union[
-                List[InputModel], List[StaticDataModel], List[OutputModel]
-            ],
+            datapoints: list[InputModel] | list[StaticDataModel] | list[OutputModel],
         ) -> None:
             """
             Check if the interface is active for the datapoints.
@@ -497,9 +497,9 @@ class DataFileAttribute(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: str
-    value: Union[str, float, int, bool, Dict, List, pd.DataFrame, None]
-    unit: Optional[DataUnits] = None
-    time: Optional[str] = None
+    value: str | float | int | bool | dict | list | pd.DataFrame | None
+    unit: DataUnits | None = None
+    time: str | None = None
 
 
 class DataFileEntity(BaseModel):
