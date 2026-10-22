@@ -219,16 +219,12 @@
             }
         }
     ],
-    "controller_settings": {
-        "time_settings":
+    "time_settings": {        "calculation":
         {
-            "calculation":
-            {
-                "timerange":1,
-                "timerange_unit":"minute",
-                "sampling_time":1,
-                "sampling_time_unit":"minute"
-            }
+            "timerange":1,
+            "timerange_unit":"minute",
+            "sampling_time":1,
+            "sampling_time_unit":"minute"
         }
     }
 }

@@ -196,8 +196,10 @@ class TestServiceLoops:
         """
         from encodapy.utils.models import InputDataModel
 
-        basic_service.config.controller_settings.time_settings.calculation.sampling_time = 0.001
-        basic_service.config.controller_settings.time_settings.calculation.sampling_time_unit = TimeUnits.SECOND
+        basic_service.config.time_settings.calculation.sampling_time = 0.001
+        basic_service.config.time_settings.calculation.sampling_time_unit = (
+            TimeUnits.SECOND
+        )
         basic_service.config.interfaces.fiware = False
 
         call_counts = {
@@ -266,13 +268,11 @@ class TestServiceLoops:
         from encodapy.utils.models import InputDataModel
 
         # Ensure calibration settings exist
-        basic_service.config.controller_settings.time_settings.calibration = (
-            TimeSettingsCalibrationModel(
-                timerange=5.0,
-                timerange_unit=TimeUnits.MINUTE,
-                sampling_time=0.001,
-                sampling_time_unit=TimeUnits.SECOND,
-            )
+        basic_service.config.time_settings.calibration = TimeSettingsCalibrationModel(
+            timerange=5.0,
+            timerange_unit=TimeUnits.MINUTE,
+            sampling_time=0.001,
+            sampling_time_unit=TimeUnits.SECOND,
         )
 
         call_counts = {"get_data": 0, "calibration": 0}
@@ -329,8 +329,10 @@ class TestServiceLoops:
 
         # Replace shutdown_event with unset_shutdown_event for this test
         basic_service.shutdown_event = unset_shutdown_event
-        basic_service.config.controller_settings.time_settings.calculation.sampling_time = 0.001
-        basic_service.config.controller_settings.time_settings.calculation.sampling_time_unit = TimeUnits.SECOND
+        basic_service.config.time_settings.calculation.sampling_time = 0.001
+        basic_service.config.time_settings.calculation.sampling_time_unit = (
+            TimeUnits.SECOND
+        )
 
         # Patch the module where it's used, not where it's imported from
         with (
