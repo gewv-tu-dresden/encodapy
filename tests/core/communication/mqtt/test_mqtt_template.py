@@ -14,8 +14,10 @@ Test Strategy:
 
 # pylint: disable=protected-access, unused-argument, redefined-outer-name, import-outside-toplevel, missing-class-docstring, too-few-public-methods, unnecessary-lambda-assignment
 
+import json
+import os
 from datetime import datetime, timezone
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -30,7 +32,6 @@ from encodapy.config.types import AttributeTypes
 from encodapy.service.communication.mqtt_connection import MqttConnection
 from encodapy.utils.error_handling import ConfigError, NotSupportedError
 from encodapy.utils.units import DataUnits
-
 
 # =============================================================================
 # Fixtures for Priority 1 Tests
@@ -623,3 +624,98 @@ def test_prepare_payload_for_publish_none():
 
     # Should return None
     assert result is None
+
+
+# =============================================================================
+# Missing Parameter Logging Tests (once per template)
+# =============================================================================
+
+
+def test_missing_params_logged_once_for_dict_template():
+    """Test that missing parameters are logged once per template (dict path)."""
+    MQTTTemplateConfig._checked_templates.clear()
+
+    template = {
+        "topic": "test/__OUTPUT_ENTITY__",
+        "payload": {"value": "__OUTPUT_VALUE__"},
+    }
+
+    with patch("encodapy.config.mqtt_messages_template.logger.debug") as debug_mock:
+        MQTTTemplateConfig.model_validate(template)
+        MQTTTemplateConfig.model_validate(template)
+
+    missing_param_calls = [
+        call
+        for call in debug_mock.call_args_list
+        if "not found in MQTT template" in call.args[0]
+    ]
+    assert len(missing_param_calls) == 4
+
+
+def test_missing_params_logged_once_for_env_template():
+    """Test that missing parameters are logged once per template (env path)."""
+    MQTTTemplateConfig._checked_templates.clear()
+
+    template = {
+        "topic": "test/__OUTPUT_ENTITY__",
+        "payload": {"value": "__OUTPUT_VALUE__"},
+    }
+
+    with (
+        patch.dict(os.environ, {"MQTT_TEST_TEMPLATE": json.dumps(template)}),
+        patch("encodapy.config.mqtt_messages_template.logger.debug") as debug_mock,
+    ):
+        MQTTTemplateConfig.model_validate("test_template")
+        MQTTTemplateConfig.model_validate("test_template")
+
+    missing_param_calls = [
+        call
+        for call in debug_mock.call_args_list
+        if "not found in MQTT template" in call.args[0]
+    ]
+    assert len(missing_param_calls) == 4
+
+
+def test_no_missing_params_logged_for_complete_template():
+    """Test that no missing parameters are logged for a complete template."""
+    MQTTTemplateConfig._checked_templates.clear()
+
+    template = {
+        "topic": "__MQTT_TOPIC_PREFIX__/__OUTPUT_ENTITY__/__OUTPUT_ATTRIBUTE__",
+        "payload": {
+            "value": "__OUTPUT_VALUE__",
+            "unit": "__OUTPUT_UNIT__",
+            "time": "__OUTPUT_TIME__",
+        },
+    }
+
+    with patch("encodapy.config.mqtt_messages_template.logger.debug") as debug_mock:
+        MQTTTemplateConfig.model_validate(template)
+        MQTTTemplateConfig.model_validate(template)
+
+    missing_param_calls = [
+        call
+        for call in debug_mock.call_args_list
+        if "not found in MQTT template" in call.args[0]
+    ]
+    assert len(missing_param_calls) == 0
+
+
+def test_no_missing_params_logged_for_complete_template_with_list_payload():
+    """Test that placeholders in a list payload are found by the diagnostic."""
+    MQTTTemplateConfig._checked_templates.clear()
+
+    template = {
+        "topic": "__MQTT_TOPIC_PREFIX__/__OUTPUT_ENTITY__/__OUTPUT_ATTRIBUTE__",
+        "payload": ["__OUTPUT_VALUE__", "__OUTPUT_UNIT__", "__OUTPUT_TIME__"],
+    }
+
+    with patch("encodapy.config.mqtt_messages_template.logger.debug") as debug_mock:
+        MQTTTemplateConfig.model_validate(template)
+
+    missing_param_calls = [
+        call
+        for call in debug_mock.call_args_list
+        if "not found in MQTT template" in call.args[0]
+    ]
+    assert len(missing_param_calls) == 0
