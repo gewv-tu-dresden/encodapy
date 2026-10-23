@@ -22,23 +22,21 @@ import time
 from unittest.mock import MagicMock, patch
 
 import pytest
-from pydantic import ValidationError
-
 from filip.clients.ngsi_v2 import ContextBrokerClient
 from filip.models.base import FiwareHeaderSecure
+from pydantic import ValidationError
 
 from encodapy.config.env_values import FiwareEnvVariables
 from encodapy.service.communication.fiware_connection import FiwareConnection
 from encodapy.utils.cratedb import CrateDBConnection
-from encodapy.utils.error_handling import NoCredentials, InterfaceNotActive
+from encodapy.utils.error_handling import InterfaceNotActive, NoCredentials
 from encodapy.utils.fiware_auth import BearerToken
 from encodapy.utils.models import (
+    DatabaseParameter,
     FiwareAuth,
     FiwareConnectionParameter,
     FiwareParameter,
-    DatabaseParameter,
 )
-
 
 # =============================================================================
 # Fixtures
@@ -285,32 +283,34 @@ def test_load_fiware_params_no_credentials_raises_error():
     Asserts:
         - NoCredentials exception is raised
     """
-    with patch.dict(
-        os.environ,
-        {
-            "FIWARE_AUTH": "true",
-            "FIWARE_SERVICE": "test_service",
-        },
-    ):
-        with patch(
+    with (
+        patch.dict(
+            os.environ,
+            {
+                "FIWARE_AUTH": "true",
+                "FIWARE_SERVICE": "test_service",
+            },
+        ),
+        patch(
             "encodapy.service.communication.fiware_connection.FiwareEnvVariables"
-        ) as mock_env_class:
-            mock_env = MagicMock()
-            mock_env.auth = True
-            mock_env.client_id = None
-            mock_env.client_pw = None
-            mock_env.token_url = None
-            mock_env.bearer_token = None
-            mock_env.service = "test_service"
-            mock_env.service_path = "/test"
-            mock_env.cb_url = "http://localhost:1026"
-            mock_env.crate_db_url = "http://localhost:4200"
-            mock_env_class.return_value = mock_env
+        ) as mock_env_class,
+    ):
+        mock_env = MagicMock()
+        mock_env.auth = True
+        mock_env.client_id = None
+        mock_env.client_pw = None
+        mock_env.token_url = None
+        mock_env.bearer_token = None
+        mock_env.service = "test_service"
+        mock_env.service_path = "/test"
+        mock_env.cb_url = "http://localhost:1026"
+        mock_env.crate_db_url = "http://localhost:4200"
+        mock_env_class.return_value = mock_env
 
-            connection = FiwareConnection()
+        connection = FiwareConnection()
 
-            with pytest.raises(NoCredentials):
-                connection.load_fiware_params()
+        with pytest.raises(NoCredentials):
+            connection.load_fiware_params()
 
 
 # =============================================================================
@@ -357,6 +357,7 @@ def test_prepare_fiware_connection_no_auth(
 ):
     """Test preparing FIWARE connection without authentication."""
     mock_fiware_connection.fiware_conn_params.fiware_params.authentication = None
+    mock_fiware_connection._fiware_call_timeout_seconds = 30.0
 
     with patch(
         "encodapy.service.communication.fiware_connection.ContextBrokerClient"
@@ -373,6 +374,11 @@ def test_prepare_fiware_connection_no_auth(
 
             mock_fiware_connection.prepare_fiware_connection()
 
+    mock_cbc.assert_called_once_with(
+        url="http://localhost:1026",
+        fiware_header=mock_fiware_connection.fiware_header,
+        timeout=30.0,
+    )
     assert mock_fiware_connection.cb_client is not None
     assert mock_fiware_connection.crate_db_client is not None
     assert mock_fiware_connection.fiware_token_client is None

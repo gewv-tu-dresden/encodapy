@@ -5,15 +5,15 @@ Author: Martin Altenburger
 """
 
 import asyncio
-from asyncio import sleep
-from datetime import datetime, timedelta, timezone
-from typing import Any, Optional, Union
 import concurrent.futures
 import multiprocessing
+from asyncio import sleep
+from datetime import datetime, timedelta, timezone
+from typing import Any
+
 import numpy as np
 import pandas as pd
 import requests
-from loguru import logger
 from filip.clients.exceptions import BaseHttpClientException
 from filip.clients.ngsi_v2 import ContextBrokerClient
 from filip.models.base import DataType, FiwareHeaderSecure
@@ -24,6 +24,7 @@ from filip.models.ngsi_v2.context import (
     NamedCommand,
     NamedContextAttribute,
 )
+from loguru import logger
 
 from encodapy.config import (
     AttributeModel,
@@ -76,11 +77,11 @@ class FiwareConnection:
     """
 
     def __init__(self) -> None:
-        self.fiware_conn_params: Optional[FiwareConnectionParameter] = None
-        self.fiware_token_client: Optional[BearerToken] = None
-        self.fiware_header: Optional[FiwareHeaderSecure] = None
-        self.cb_client: Optional[ContextBrokerClient] = None
-        self.crate_db_client: Optional[CrateDBConnection] = None
+        self.fiware_conn_params: FiwareConnectionParameter | None = None
+        self.fiware_token_client: BearerToken | None = None
+        self.fiware_header: FiwareHeaderSecure | None = None
+        self.cb_client: ContextBrokerClient | None = None
+        self.crate_db_client: CrateDBConnection | None = None
         self.config: ConfigModel
         self._fiware_call_timeout_seconds: float = 15.0
 
@@ -178,6 +179,7 @@ class FiwareConnection:
         self.cb_client = ContextBrokerClient(
             url=self.fiware_conn_params.fiware_params.cb_url,
             fiware_header=self.fiware_header,
+            timeout=self._fiware_call_timeout_seconds,
         )
         self.check_fiware_connection()
 
@@ -201,7 +203,7 @@ class FiwareConnection:
 
     def _get_last_timestamp_for_fiware_output(
         self, output_entity: OutputModel
-    ) -> tuple[OutputDataEntityModel, Union[datetime, None]]:
+    ) -> tuple[OutputDataEntityModel, datetime | None]:
         """
         Function to get the latest timestamps of the output entity from the FIWARE platform
 
@@ -330,8 +332,8 @@ class FiwareConnection:
         self,
         method: DataQueryTypes,
         entity: InputModel,
-        timestamp_latest_output: Union[datetime, None],
-    ) -> Union[InputDataEntityModel, None]:
+        timestamp_latest_output: datetime | None,
+    ) -> InputDataEntityModel | None:
         """
         Function fetches the data for evaluation which have not yet been evaluated.
             First get the last timestamp of the output entity. Then get the data from
@@ -437,10 +439,10 @@ class FiwareConnection:
     def _calculate_timerange(
         self,
         time_now: datetime,
-        last_timestamp: Union[datetime, None],
-        timerange_value: Union[int, float],
-        timerange_type: Union[TimerangeTypes, None],
-    ) -> tuple[str, Optional[str]]:
+        last_timestamp: datetime | None,
+        timerange_value: float,
+        timerange_type: TimerangeTypes | None,
+    ) -> tuple[str, str | None]:
         """Function to calculate the timerange for the input data query based on
         a fixed timerange from the configuration
 
@@ -485,10 +487,10 @@ class FiwareConnection:
     def _calculate_timerange_min_max(
         self,
         time_now: datetime,
-        last_timestamp: Union[datetime, None],
-        timerange_min: Union[int, float],
-        timerange_max: Union[int, float],
-    ) -> tuple[str, Optional[str]]:
+        last_timestamp: datetime | None,
+        timerange_min: float,
+        timerange_max: float,
+    ) -> tuple[str, str | None]:
         """Function to calculate the timerange for the input data query based on a min
         and max timerange from the configuration
 
@@ -532,7 +534,7 @@ class FiwareConnection:
         self,
         time_now: datetime,
         last_timestamp: datetime,
-    ) -> tuple[str, Optional[str]]:
+    ) -> tuple[str, str | None]:
         """Funtion to calculate the dates for the calculation method
 
         Args:
@@ -580,7 +582,7 @@ class FiwareConnection:
         return None, None
 
     def _calculate_dates(
-        self, method: DataQueryTypes, last_timestamp: Union[datetime, None]
+        self, method: DataQueryTypes, last_timestamp: datetime | None
     ) -> tuple[str, str]:
         """Function to calculate the dates for the input data query
 
@@ -612,7 +614,7 @@ class FiwareConnection:
         return from_date, to_date
 
     def _handle_calibration_method(
-        self, time_now: datetime, last_timestamp: Union[datetime, None]
+        self, time_now: datetime, last_timestamp: datetime | None
     ) -> tuple[str, str]:
         """Funtion to calculate the dates for the calibration method
             - Use the last timestamp of the output entity as the from_date if available
@@ -815,9 +817,9 @@ class FiwareConnection:
             list: List with the attributes (NamedContextAttribute) for the FIWARE platform
         """
         try:
-            assert isinstance(
-                fiware_datapoint.attribute.value, pd.DataFrame
-            ), f"Expected pandas DataFrame, got {type(fiware_datapoint.attribute.value)}"
+            assert isinstance(fiware_datapoint.attribute.value, pd.DataFrame), (
+                f"Expected pandas DataFrame, got {type(fiware_datapoint.attribute.value)}"
+            )
         except AssertionError as exc:
             logger.error("Assertion error: %s", exc)
             raise ValueError("Invalid data type for FiwareDatapointParameter") from exc
@@ -883,7 +885,7 @@ class FiwareConnection:
         self,
         id_output_entity: str,
         attribute: AttributeModel,
-        fiware_unit: Optional[DataUnits],
+        fiware_unit: DataUnits | None,
     ) -> tuple[AttributeModel, list[NamedMetadata]]:
         meta_data = []
         attribute = attribute.model_copy()
@@ -1088,8 +1090,7 @@ class FiwareConnection:
                         await sleep(0.1)
                     else:
                         logger.error(
-                            "Error while sending attributes to FIWARE platform: "
-                            f"{err}"
+                            f"Error while sending attributes to FIWARE platform: {err}"
                         )
 
                 i += 1
@@ -1128,7 +1129,7 @@ class FiwareConnection:
                         await sleep(0.1)
                     else:
                         logger.error(
-                            "Error while sending commands to FIWARE platform: " f"{err}"
+                            f"Error while sending commands to FIWARE platform: {err}"
                         )
 
                 i += 1
