@@ -5,8 +5,8 @@ Author: Martin Altenburger
 
 import json
 import os
-from datetime import datetime
-from typing import Any, ClassVar, Optional, Union
+from datetime import datetime, timezone
+from typing import Any, ClassVar
 
 from jinja2 import Template
 from loguru import logger
@@ -93,9 +93,7 @@ class MQTTTemplateConfig(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def load_mqtt_message_template(
-        cls, mqtt_format_template_env: Union[str, dict]
-    ) -> Any:
+    def load_mqtt_message_template(cls, mqtt_format_template_env: str | dict) -> Any:
         """
         Load the MQTT message template from an environment variable or dictionary.
 
@@ -114,7 +112,7 @@ class MQTTTemplateConfig(BaseModel):
         if isinstance(mqtt_format_template_env, dict):
             return cls._handle_dict_input(mqtt_format_template_env)
         if not isinstance(mqtt_format_template_env, str):
-            raise ValueError(
+            raise TypeError(
                 "Invalid type for mqtt_format_template_env: "
                 f"{type(mqtt_format_template_env).__name__}. "
                 "Expected a string or dict."
@@ -129,7 +127,7 @@ class MQTTTemplateConfig(BaseModel):
         env_variable = f"MQTT_{mqtt_format_template_env.upper()}"
         mqtt_format_template_info = os.getenv(env_variable)
 
-        mqtt_format_template: Optional[dict] = None
+        mqtt_format_template: dict | None = None
         if mqtt_format_template_info is not None:
             if mqtt_format_template_info.endswith(".json"):
                 try:
@@ -155,7 +153,7 @@ class MQTTTemplateConfig(BaseModel):
             )
 
         if not isinstance(mqtt_format_template, dict):
-            raise ValueError(
+            raise TypeError(
                 "Invalid MQTT template: expected a dict, "
                 f"got {type(mqtt_format_template).__name__} ({mqtt_format_template})."
             )
@@ -193,10 +191,10 @@ class MQTTTemplateConfig(BaseModel):
                 f"got {type(time_format).__name__} ({time_format})."
             )
         try:
-            datetime.now().strftime(time_format)
+            datetime.now(timezone.utc).strftime(time_format)
         except (ValueError, TypeError) as e:
             raise ConfigError(
-                f"Invalid time format string '{time_format}': {str(e)}"
+                f"Invalid time format string '{time_format}': {e!s}"
             ) from e
 
         return time_format
@@ -217,7 +215,7 @@ class MQTTTemplateConfig(BaseModel):
             ValueError: If `mqtt_format_data` is missing `topic` or `payload` keys.
         """
         if not isinstance(mqtt_format_data, dict):
-            raise ValueError("Input data must be a dictionary.")
+            raise TypeError("Input data must be a dictionary.")
 
         if "topic" not in mqtt_format_data:
             raise ValueError("MQTT template dict must contain 'topic' key.")
@@ -278,7 +276,7 @@ class MQTTTemplateConfig(BaseModel):
         Returns:
             str: String representation of the value for placeholder search.
         """
-        if isinstance(value, dict):
+        if isinstance(value, (dict, list)):
             return json.dumps(value, default=str)
         if isinstance(value, str):
             return value
