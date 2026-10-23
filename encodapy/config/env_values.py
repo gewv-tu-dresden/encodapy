@@ -95,6 +95,11 @@ class FiwareEnvVariables(BaseSettings):
     service_path: str = Field(
         default="/", description="FIWARE Service Path for sub-tenant isolation"
     )
+    call_timeout: float = Field(
+        default=15.0,
+        gt=0,
+        description="Timeout in seconds for calls to the FIWARE Context Broker",
+    )
 
     crate_db_url: AnyHttpUrl = Field(
         default=AnyHttpUrl("http://127.0.0.1:4200"),
