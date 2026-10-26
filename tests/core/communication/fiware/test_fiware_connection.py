@@ -143,6 +143,7 @@ def mock_fiware_connection():
     connection.fiware_conn_params.fiware_params.service = "test_service"
     connection.fiware_conn_params.fiware_params.service_path = "/test"
     connection.fiware_conn_params.fiware_params.cb_url = "http://localhost:1026"
+    connection.fiware_conn_params.fiware_params.call_timeout = 15.0
     connection.fiware_conn_params.database_params = MagicMock(spec=DatabaseParameter)
     connection.fiware_conn_params.database_params.crate_db_url = "http://localhost:4200"
     connection.fiware_conn_params.database_params.crate_db_user = "test_user"
@@ -357,7 +358,7 @@ def test_prepare_fiware_connection_no_auth(
 ):
     """Test preparing FIWARE connection without authentication."""
     mock_fiware_connection.fiware_conn_params.fiware_params.authentication = None
-    mock_fiware_connection._fiware_call_timeout_seconds = 30.0
+    mock_fiware_connection.fiware_conn_params.fiware_params.call_timeout = 30.0
 
     with patch(
         "encodapy.service.communication.fiware_connection.ContextBrokerClient"
@@ -597,7 +598,15 @@ async def test_run_cb_call_with_timeout_raises_timeout_error():
         - asyncio.TimeoutError is raised
     """
     connection = FiwareConnection()
-    connection._fiware_call_timeout_seconds = 0.01
+    connection.fiware_conn_params = FiwareConnectionParameter(
+        fiware_params=FiwareParameter(
+            cb_url="http://localhost:1026",
+            service="test_service",
+            service_path="/",
+            call_timeout=0.01,
+        ),
+        database_params=DatabaseParameter(crate_db_url="http://localhost:4200"),
+    )
 
     with pytest.raises(asyncio.TimeoutError):
         await connection._run_cb_call_with_timeout(lambda: time.sleep(0.5))

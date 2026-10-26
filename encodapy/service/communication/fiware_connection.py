@@ -36,7 +36,7 @@ from encodapy.config import (
     OutputModel,
     TimerangeTypes,
 )
-from encodapy.config.env_values import FiwareEnvVariables
+from encodapy.config.env_values import DEFAULT_FIWARE_CALL_TIMEOUT, FiwareEnvVariables
 from encodapy.utils.cratedb import CrateDBConnection
 from encodapy.utils.error_handling import InterfaceNotActive, NoCredentials
 from encodapy.utils.fiware_auth import BearerToken
@@ -83,7 +83,17 @@ class FiwareConnection:
         self.cb_client: ContextBrokerClient | None = None
         self.crate_db_client: CrateDBConnection | None = None
         self.config: ConfigModel
-        self._fiware_call_timeout_seconds: float = 15.0
+
+    @property
+    def _fiware_call_timeout_seconds(self) -> float:
+        """Timeout in seconds for calls to the FIWARE Context Broker.
+
+        Reads the value from the loaded connection parameters and falls back
+        to the default timeout if the parameters are not loaded yet.
+        """
+        if self.fiware_conn_params is None:
+            return DEFAULT_FIWARE_CALL_TIMEOUT
+        return self.fiware_conn_params.fiware_params.call_timeout
 
     async def _run_cb_call_with_timeout(self, callback: Any) -> Any:
         """Run a potentially blocking Context Broker call with timeout protection."""
@@ -135,7 +145,6 @@ class FiwareConnection:
         self.fiware_conn_params = FiwareConnectionParameter(
             fiware_params=fiware_params, database_params=database_params
         )
-        self._fiware_call_timeout_seconds = fiware_params.call_timeout
 
     def check_fiware_connection(self) -> None:
         """

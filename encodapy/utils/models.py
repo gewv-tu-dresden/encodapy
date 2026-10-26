@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from filip.models.ngsi_v2.base import NamedMetadata
 from filip.models.ngsi_v2.context import ContextEntity
 from encodapy.config.models import AttributeModel, CommandModel
+from encodapy.config.env_values import DEFAULT_FIWARE_CALL_TIMEOUT
 from encodapy.config.types import AttributeTypes
 from encodapy.utils.units import DataUnits
 
@@ -250,7 +251,7 @@ class FiwareParameter(BaseModel):
     service: str
     service_path: str
     authentication: Optional[Union[FiwareAuth, None]] = None
-    call_timeout: float = Field(default=15.0, gt=0)
+    call_timeout: float = Field(default=DEFAULT_FIWARE_CALL_TIMEOUT, gt=0)
 
 
 class DatabaseParameter(BaseModel):
