@@ -567,6 +567,14 @@ The dictionary must contain the keys <cite>topic</cite> and <cite>payload</cite>
 </pre></div>
 </div>
 <p>The key <cite>time_format</cite> is optional, as default ‘%Y-%m-%dT%H:%M:%S%z’ is used.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt>The value placeholder already contains the value scaled by the             attribute’s <cite>factor</cite> (see</dt><dd><p><a class="reference internal" href="config_models.html#encodapy.config.models.AttributeModel" title="encodapy.config.models.AttributeModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeModel</span></code></a>). Do not apply an             additional scaling expression in the template (e.g.
+<code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">output_value</span> <span class="pre">*</span> <span class="pre">0.1</span> <span class="pre">}}</span></code>) when a <cite>factor</cite> is configured, as the             value would be scaled twice.</p>
+</dd>
+</dl>
+</div>
 <p>Please see the examples for this.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
