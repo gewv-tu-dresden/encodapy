@@ -5,8 +5,8 @@ Author: Martin Altenburger
 
 import json
 import os
-from datetime import datetime
-from typing import Any, ClassVar, Optional, Union
+from datetime import datetime, timezone
+from typing import Any, ClassVar
 
 from jinja2 import Template
 from loguru import logger
@@ -89,6 +89,9 @@ class MQTTTemplateConfig(BaseModel):
         "__MQTT_TOPIC_PREFIX__": "mqtt_topic_prefix",
     }
 
+    # Templates already checked for missing parameters (process-wide cache)
+    _checked_templates: ClassVar[set[str]] = set()
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     topic: Template
@@ -98,9 +101,7 @@ class MQTTTemplateConfig(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def load_mqtt_message_template(
-        cls, mqtt_format_template_env: Union[str, dict]
-    ) -> Any:
+    def load_mqtt_message_template(cls, mqtt_format_template_env: str | dict) -> Any:
         """
         Load the MQTT message template from an environment variable or dictionary.
 
@@ -119,7 +120,7 @@ class MQTTTemplateConfig(BaseModel):
         if isinstance(mqtt_format_template_env, dict):
             return cls._handle_dict_input(mqtt_format_template_env)
         if not isinstance(mqtt_format_template_env, str):
-            raise ValueError(
+            raise TypeError(
                 "Invalid type for mqtt_format_template_env: "
                 f"{type(mqtt_format_template_env).__name__}. "
                 "Expected a string or dict."
@@ -134,7 +135,7 @@ class MQTTTemplateConfig(BaseModel):
         env_variable = f"MQTT_{mqtt_format_template_env.upper()}"
         mqtt_format_template_info = os.getenv(env_variable)
 
-        mqtt_format_template: Optional[dict] = None
+        mqtt_format_template: dict | None = None
         if mqtt_format_template_info is not None:
             if mqtt_format_template_info.endswith(".json"):
                 try:
@@ -160,10 +161,12 @@ class MQTTTemplateConfig(BaseModel):
             )
 
         if not isinstance(mqtt_format_template, dict):
-            raise ValueError(
+            raise TypeError(
                 "Invalid MQTT template: expected a dict, "
                 f"got {type(mqtt_format_template).__name__} ({mqtt_format_template})."
             )
+
+        cls._log_missing_params(mqtt_format_template)
 
         return {
             "topic": cls.load_mqtt_template(
@@ -196,10 +199,10 @@ class MQTTTemplateConfig(BaseModel):
                 f"got {type(time_format).__name__} ({time_format})."
             )
         try:
-            datetime.now().strftime(time_format)
+            datetime.now(timezone.utc).strftime(time_format)
         except (ValueError, TypeError) as e:
             raise ConfigError(
-                f"Invalid time format string '{time_format}': {str(e)}"
+                f"Invalid time format string '{time_format}': {e!s}"
             ) from e
 
         return time_format
@@ -220,12 +223,14 @@ class MQTTTemplateConfig(BaseModel):
             ValueError: If `mqtt_format_data` is missing `topic` or `payload` keys.
         """
         if not isinstance(mqtt_format_data, dict):
-            raise ValueError("Input data must be a dictionary.")
+            raise TypeError("Input data must be a dictionary.")
 
         if "topic" not in mqtt_format_data:
             raise ValueError("MQTT template dict must contain 'topic' key.")
         if "payload" not in mqtt_format_data:
             raise ValueError("MQTT template dict must contain 'payload' key.")
+
+        cls._log_missing_params(mqtt_format_data)
 
         return {
             "topic": cls.load_mqtt_template(
@@ -239,6 +244,51 @@ class MQTTTemplateConfig(BaseModel):
                 mqtt_format_data.get("payload", {})
             ),
         }
+
+    @classmethod
+    def _log_missing_params(cls, mqtt_format_data: dict) -> None:
+        """
+        Log missing parameters in an MQTT template once per template.
+
+        A template referenced by several attributes is validated once per
+        attribute instance. To avoid repeated log messages, the check is
+        only performed once per template (process-wide).
+
+        Args:
+            mqtt_format_data: Dictionary containing the raw `topic` and
+                `payload` templates.
+        """
+        cache_key = json.dumps(mqtt_format_data, sort_keys=True, default=str)
+        if cache_key in cls._checked_templates:
+            return
+        cls._checked_templates.add(cache_key)
+
+        topic = cls._serialize_template_part(mqtt_format_data.get("topic"))
+        payload = cls._serialize_template_part(mqtt_format_data.get("payload"))
+
+        for placeholder in cls.PLACEHOLDER_TO_VARIABLE:
+            if placeholder not in topic and placeholder not in payload:
+                logger.debug(
+                    f"Parameter {placeholder} not found in MQTT template "
+                    "for topic and payload."
+                )
+
+    @classmethod
+    def _serialize_template_part(cls, value: Any) -> str:
+        """
+        Serialize a raw template part to a searchable string.
+
+        Args:
+            value: Raw value of a template part (`topic` or `payload`).
+
+        Returns:
+            str: String representation of the value for placeholder search.
+        """
+        if isinstance(value, (dict, list)):
+            return json.dumps(value, default=str)
+        if isinstance(value, str):
+            return value
+        return ""
 
     @classmethod
     def _collect_embedded_payload_placeholders(cls, value: Any) -> set[str]:
