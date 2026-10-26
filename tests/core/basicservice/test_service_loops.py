@@ -352,12 +352,12 @@ class TestServiceLoops:
             await basic_service.check_health_status()
 
         # Verify methods were called at least once
-        assert (
-            call_counts["update_health"] >= 1
-        ), f"update_health called {call_counts['update_health']} times"
-        assert (
-            call_counts["hold_sampling"] >= 1
-        ), f"hold_sampling called {call_counts['hold_sampling']} times"
+        assert call_counts["update_health"] >= 1, (
+            f"update_health called {call_counts['update_health']} times"
+        )
+        assert call_counts["hold_sampling"] >= 1, (
+            f"hold_sampling called {call_counts['hold_sampling']} times"
+        )
 
 
 class TestHealthTimestamp:
