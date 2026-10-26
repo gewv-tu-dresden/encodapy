@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.13.0](https://github.com/gewv-tu-dresden/encodapy/compare/v0.12.0...v0.13.0) (2026-10-26)
+
+
+### Features
+
+* add optional factor key to scale MQTT in- and output values ([#156](https://github.com/gewv-tu-dresden/encodapy/issues/156)) ([d580dae](https://github.com/gewv-tu-dresden/encodapy/commit/d580dae926efc7cd3237dbdb9168c862d76ba48b))
+* make FIWARE call timeout configurable and fix type annotations … ([#153](https://github.com/gewv-tu-dresden/encodapy/issues/153)) ([0696942](https://github.com/gewv-tu-dresden/encodapy/commit/0696942b8ed9308f9e9b7802bf4d505668357eef))
+* restructure basic configuration - replace controller_settings with top-level time_settings ([#152](https://github.com/gewv-tu-dresden/encodapy/issues/152)) ([8d63c14](https://github.com/gewv-tu-dresden/encodapy/commit/8d63c1424932673f370a2a84fb6547d9d4b29082))
+
+
+### Bug Fixes
+
+* check MQTT template parameters once per template instead of per … ([#154](https://github.com/gewv-tu-dresden/encodapy/issues/154)) ([56e03bf](https://github.com/gewv-tu-dresden/encodapy/commit/56e03bf600db6416de36c2307f4c9d3cf00412f1))
+* make first weather_data api call deterministic ([#158](https://github.com/gewv-tu-dresden/encodapy/issues/158)) ([ca57df3](https://github.com/gewv-tu-dresden/encodapy/commit/ca57df344677028687500ee1a0af6d2c12d0c597))
+
 ## [0.12.0](https://github.com/gewv-tu-dresden/encodapy/compare/v0.11.0...v0.12.0) (2026-10-08)
 
 
