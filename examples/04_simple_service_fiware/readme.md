@@ -17,6 +17,7 @@ FIWARE_IOTA= ["http://localhost:4041"]      # URL of the IoT Agent
 FIWARE_CB= ["http://localhost:1026"]        # URL of the Context Broker
 FIWARE_SERVICE= ["example_service"]         # Name of the FIWARE Service
 FIWARE_SERVICE_PATH= ["/"]                  # FIWARE Service Path, usually "/"
+FIWARE_CALL_TIMEOUT=15.0                    # Timeout in seconds for calls to the FIWARE Context Broker (optional, default: 15.0)
 LOG_LEVEL=["WARNING"]                       # Level for Logging Messages ("DEBUG" to get more information)
 ```
 

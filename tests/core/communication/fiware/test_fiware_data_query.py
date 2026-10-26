@@ -70,14 +70,12 @@ def mock_fiware_connection_with_client():
 
     # Mock config with proper structure
     connection.config = MagicMock(spec=ConfigModel)
-    connection.config.controller_settings = MagicMock()
-    connection.config.controller_settings.time_settings = MagicMock()
-    connection.config.controller_settings.time_settings.calculation = MagicMock()
-    connection.config.controller_settings.time_settings.calculation.timestep = 60
-    connection.config.controller_settings.time_settings.calculation.timestep_unit = (
-        "minute"
-    )
-    connection.config.controller_settings.time_settings.calibration = None
+    connection.config.time_settings = MagicMock()
+    connection.config.time_settings = MagicMock()
+    connection.config.time_settings.calculation = MagicMock()
+    connection.config.time_settings.calculation.timestep = 60
+    connection.config.time_settings.calculation.timestep_unit = "minute"
+    connection.config.time_settings.calibration = None
 
     return connection
 

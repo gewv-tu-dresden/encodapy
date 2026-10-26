@@ -716,9 +716,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         """
 
         sampling_time = (
-            self.config.controller_settings.time_settings.calculation.sampling_time
+            self.config.time_settings.calculation.sampling_time
             * get_time_unit_seconds(
-                self.config.controller_settings.time_settings.calculation.sampling_time_unit
+                self.config.time_settings.calculation.sampling_time_unit
             )
         )
 
@@ -768,7 +768,7 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         Function for autonomous adjustment of the system parameters
         """
 
-        if self.config.controller_settings.time_settings.calibration is None:
+        if self.config.time_settings.calibration is None:
             logger.info(
                 "No Information about the calibration time in the configuration. "
                 "Calibration will not be performed."
@@ -776,9 +776,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
             return
 
         sampling_time = (
-            self.config.controller_settings.time_settings.calibration.sampling_time
+            self.config.time_settings.calibration.sampling_time
             * get_time_unit_seconds(
-                self.config.controller_settings.time_settings.calibration.sampling_time_unit
+                self.config.time_settings.calibration.sampling_time_unit
             )
         )
         await self._hold_sampling_time(
@@ -805,9 +805,9 @@ class ControllerBasicService(FiwareConnection, FileConnection, MqttConnection):
         while not self.shutdown_event.is_set():
             start_time = datetime.now()
             sampling_time = (
-                self.config.controller_settings.time_settings.calculation.sampling_time
+                self.config.time_settings.calculation.sampling_time
                 * get_time_unit_seconds(
-                    self.config.controller_settings.time_settings.calculation.sampling_time_unit
+                    self.config.time_settings.calculation.sampling_time_unit
                 )
             )
 

@@ -5,15 +5,15 @@ Author: Martin Altenburger
 """
 
 import asyncio
-from asyncio import sleep
-from datetime import datetime, timedelta, timezone
-from typing import Any, Optional, Union
 import concurrent.futures
 import multiprocessing
+from asyncio import sleep
+from datetime import datetime, timedelta, timezone
+from typing import Any
+
 import numpy as np
 import pandas as pd
 import requests
-from loguru import logger
 from filip.clients.exceptions import BaseHttpClientException
 from filip.clients.ngsi_v2 import ContextBrokerClient
 from filip.models.base import DataType, FiwareHeaderSecure
@@ -24,6 +24,7 @@ from filip.models.ngsi_v2.context import (
     NamedCommand,
     NamedContextAttribute,
 )
+from loguru import logger
 
 from encodapy.config import (
     AttributeModel,
@@ -35,7 +36,7 @@ from encodapy.config import (
     OutputModel,
     TimerangeTypes,
 )
-from encodapy.config.env_values import FiwareEnvVariables
+from encodapy.config.env_values import DEFAULT_FIWARE_CALL_TIMEOUT, FiwareEnvVariables
 from encodapy.utils.cratedb import CrateDBConnection
 from encodapy.utils.error_handling import InterfaceNotActive, NoCredentials
 from encodapy.utils.fiware_auth import BearerToken
@@ -50,6 +51,7 @@ from encodapy.utils.models import (
     MetaDataModel,
     OutputDataAttributeModel,
     OutputDataEntityModel,
+    apply_factor,
 )
 from encodapy.utils.units import DataUnits, adjust_units, get_time_unit_seconds
 
@@ -76,13 +78,23 @@ class FiwareConnection:
     """
 
     def __init__(self) -> None:
-        self.fiware_conn_params: FiwareConnectionParameter = None
-        self.fiware_token_client: BearerToken = None
-        self.fiware_header: FiwareHeaderSecure = None
-        self.cb_client: ContextBrokerClient = None
-        self.crate_db_client: CrateDBConnection = None
+        self.fiware_conn_params: FiwareConnectionParameter | None = None
+        self.fiware_token_client: BearerToken | None = None
+        self.fiware_header: FiwareHeaderSecure | None = None
+        self.cb_client: ContextBrokerClient | None = None
+        self.crate_db_client: CrateDBConnection | None = None
         self.config: ConfigModel
-        self._fiware_call_timeout_seconds = 15.0
+
+    @property
+    def _fiware_call_timeout_seconds(self) -> float:
+        """Timeout in seconds for calls to the FIWARE Context Broker.
+
+        Reads the value from the loaded connection parameters and falls back
+        to the default timeout if the parameters are not loaded yet.
+        """
+        if self.fiware_conn_params is None:
+            return DEFAULT_FIWARE_CALL_TIMEOUT
+        return self.fiware_conn_params.fiware_params.call_timeout
 
     async def _run_cb_call_with_timeout(self, callback: Any) -> Any:
         """Run a potentially blocking Context Broker call with timeout protection."""
@@ -121,6 +133,7 @@ class FiwareConnection:
             service=fiware_env.service,
             service_path=fiware_env.service_path,
             authentication=fiware_auth,
+            call_timeout=fiware_env.call_timeout,
         )
 
         database_params = DatabaseParameter(
@@ -176,6 +189,7 @@ class FiwareConnection:
         self.cb_client = ContextBrokerClient(
             url=self.fiware_conn_params.fiware_params.cb_url,
             fiware_header=self.fiware_header,
+            timeout=self._fiware_call_timeout_seconds,
         )
         self.check_fiware_connection()
 
@@ -199,7 +213,7 @@ class FiwareConnection:
 
     def _get_last_timestamp_for_fiware_output(
         self, output_entity: OutputModel
-    ) -> tuple[OutputDataEntityModel, Union[datetime, None]]:
+    ) -> tuple[OutputDataEntityModel, datetime | None]:
         """
         Function to get the latest timestamps of the output entity from the FIWARE platform
 
@@ -212,6 +226,9 @@ class FiwareConnection:
                 - the latest timestamp of the output entity for the attribute
                 with the oldest value (None if no timestamp is available)
         """
+        if self.cb_client is None:
+            raise InterfaceNotActive("ContextBrokerClient is not active")
+
         try:
             output_attributes_entity = self.cb_client.get_entity_attributes(
                 entity_id=output_entity.id_interface
@@ -325,8 +342,8 @@ class FiwareConnection:
         self,
         method: DataQueryTypes,
         entity: InputModel,
-        timestamp_latest_output: Union[datetime, None],
-    ) -> Union[InputDataEntityModel, None]:
+        timestamp_latest_output: datetime | None,
+    ) -> InputDataEntityModel | None:
         """
         Function fetches the data for evaluation which have not yet been evaluated.
             First get the last timestamp of the output entity. Then get the data from
@@ -383,6 +400,7 @@ class FiwareConnection:
             if attribute.type == AttributeTypes.TIMESERIES:
                 attributes_timeseries[attribute.id] = {
                     "id_interface": attribute.id_interface,
+                    "factor": attribute.factor,
                     "metadata": self._get_metadata_from_fiware(
                         fiware_input_entity_attributes[attribute.id_interface]
                     ),
@@ -396,9 +414,12 @@ class FiwareConnection:
                 attributes_values.append(
                     InputDataAttributeModel(
                         id=attribute.id,
-                        data=fiware_input_entity_attributes[
-                            attribute.id_interface
-                        ].value,
+                        data=apply_factor(
+                            fiware_input_entity_attributes[
+                                attribute.id_interface
+                            ].value,
+                            attribute.factor,
+                        ),
                         data_type=AttributeTypes.VALUE,
                         data_available=(
                             fiware_input_entity_attributes[attribute.id_interface].value
@@ -432,10 +453,10 @@ class FiwareConnection:
     def _calculate_timerange(
         self,
         time_now: datetime,
-        last_timestamp: Union[datetime, None],
-        timerange_value: Union[int, float],
-        timerange_type: Union[TimerangeTypes, None],
-    ) -> tuple[str, Optional[str]]:
+        last_timestamp: datetime | None,
+        timerange_value: float,
+        timerange_type: TimerangeTypes | None,
+    ) -> tuple[str, str | None]:
         """Function to calculate the timerange for the input data query based on
         a fixed timerange from the configuration
 
@@ -480,10 +501,10 @@ class FiwareConnection:
     def _calculate_timerange_min_max(
         self,
         time_now: datetime,
-        last_timestamp: Union[datetime, None],
-        timerange_min: Union[int, float],
-        timerange_max: Union[int, float],
-    ) -> tuple[str, Optional[str]]:
+        last_timestamp: datetime | None,
+        timerange_min: float,
+        timerange_max: float,
+    ) -> tuple[str, str | None]:
         """Function to calculate the timerange for the input data query based on a min
         and max timerange from the configuration
 
@@ -527,7 +548,7 @@ class FiwareConnection:
         self,
         time_now: datetime,
         last_timestamp: datetime,
-    ) -> tuple[str, Optional[str]]:
+    ) -> tuple[str, str | None]:
         """Funtion to calculate the dates for the calculation method
 
         Args:
@@ -537,7 +558,7 @@ class FiwareConnection:
         Returns:
             tuple[str, Optional[str]]: Timestamps for the input data query (from_date, to_date)
         """
-        calculation = self.config.controller_settings.time_settings.calculation
+        calculation = self.config.time_settings.calculation
 
         if calculation.timerange is not None:
             return self._calculate_timerange(
@@ -575,7 +596,7 @@ class FiwareConnection:
         return None, None
 
     def _calculate_dates(
-        self, method: DataQueryTypes, last_timestamp: Union[datetime, None]
+        self, method: DataQueryTypes, last_timestamp: datetime | None
     ) -> tuple[str, str]:
         """Function to calculate the dates for the input data query
 
@@ -607,7 +628,7 @@ class FiwareConnection:
         return from_date, to_date
 
     def _handle_calibration_method(
-        self, time_now: datetime, last_timestamp: Union[datetime, None]
+        self, time_now: datetime, last_timestamp: datetime | None
     ) -> tuple[str, str]:
         """Funtion to calculate the dates for the calibration method
             - Use the last timestamp of the output entity as the from_date if available
@@ -622,16 +643,14 @@ class FiwareConnection:
         Returns:
             tuple[str, str]: Timestamps for the input data query (from_date, to_date)
         """
-        calibration_time_settings = (
-            self.config.controller_settings.time_settings.calibration
-        )
+        calibration_time_settings = self.config.time_settings.calibration
 
         timerange = calibration_time_settings.timerange * get_time_unit_seconds(
             calibration_time_settings.timerange_unit
         )
 
         if (
-            self.config.controller_settings.time_settings.calculation.timerange_type
+            self.config.time_settings.calculation.timerange_type
             is TimerangeTypes.RELATIVE
             and last_timestamp is not None
         ):
@@ -660,7 +679,8 @@ class FiwareConnection:
         Args:
             - entity_id: id of the entity
             - entity_type: type of the entity
-            - entity_attributes: dict with the attributes of the entity (id, metadata)
+            - entity_attributes: dict with the attributes of the entity \
+                (id_interface, metadata, factor)
             - method (DataQueryTypes): method of the function which queries the data
             (calculation or calibration)
             - timestamp_latest_output: timestamp of the last output of the entity
@@ -673,6 +693,8 @@ class FiwareConnection:
                 https://github.com/RWTH-EBC/FiLiP/blob/master/filip/clients/ngsi_v2/quantumleap.py#L449
             - Improve the error handling
         """
+        if self.crate_db_client is None or self.fiware_conn_params is None:
+            raise InterfaceNotActive("CrateDB connection is not active")
 
         from_date, to_date = self._calculate_dates(
             method=method, last_timestamp=timestamp_latest_output
@@ -696,10 +718,8 @@ class FiwareConnection:
         # resample the time series with configured time step size
         df.fillna(value=np.nan, inplace=True)
         time_step_seconds = int(
-            self.config.controller_settings.time_settings.calculation.timestep
-            * get_time_unit_seconds(
-                self.config.controller_settings.time_settings.calculation.timestep_unit
-            )
+            self.config.time_settings.calculation.timestep
+            * get_time_unit_seconds(self.config.time_settings.calculation.timestep_unit)
         )
         df = df.resample(f"""{time_step_seconds}s""").mean(numeric_only=True)
 
@@ -709,7 +729,10 @@ class FiwareConnection:
             df.rename(
                 columns={attribute_data["id_interface"]: attribute_id}, inplace=True
             )
-            data = df.filter([attribute_id]).dropna()
+            data = apply_factor(
+                df.filter([attribute_id]).dropna(),
+                attribute_data.get("factor", 1.0),
+            )
             if data.empty:
                 logger.debug(
                     f"Data for attribute {attribute_id} of entity {entity.id} is empty"
@@ -756,6 +779,8 @@ class FiwareConnection:
             entity_type (str): Type of the entity
             attrs (list[NamedContextAttribute]): List with the attributes to update
         """
+        if self.cb_client is None:
+            raise InterfaceNotActive("ContextBrokerClient is not active")
 
         self.cb_client.update_or_append_entity_attributes(
             entity_id=entity_id, entity_type=entity_type, attrs=attrs
@@ -806,9 +831,9 @@ class FiwareConnection:
             list: List with the attributes (NamedContextAttribute) for the FIWARE platform
         """
         try:
-            assert isinstance(
-                fiware_datapoint.attribute.value, pd.DataFrame
-            ), f"Expected pandas DataFrame, got {type(fiware_datapoint.attribute.value)}"
+            assert isinstance(fiware_datapoint.attribute.value, pd.DataFrame), (
+                f"Expected pandas DataFrame, got {type(fiware_datapoint.attribute.value)}"
+            )
         except AssertionError as exc:
             logger.error("Assertion error: %s", exc)
             raise ValueError("Invalid data type for FiwareDatapointParameter") from exc
@@ -836,7 +861,10 @@ class FiwareConnection:
 
         attr = NamedContextAttribute(
             name=fiware_datapoint.attribute.id_interface,
-            value=df[fiware_datapoint.attribute.id].iloc[-1],
+            value=apply_factor(
+                df[fiware_datapoint.attribute.id].iloc[-1],
+                fiware_datapoint.attribute.factor,
+            ),
             type=datatype,
             metadata=meta_data_row,
         )
@@ -856,7 +884,10 @@ class FiwareConnection:
             attrs_timeseries.append(
                 NamedContextAttribute(
                     name=fiware_datapoint.attribute.id_interface,
-                    value=row[fiware_datapoint.attribute.id],
+                    value=apply_factor(
+                        row[fiware_datapoint.attribute.id],
+                        fiware_datapoint.attribute.factor,
+                    ),
                     type=datatype,
                     metadata=meta_data_row,
                 )
@@ -874,7 +905,7 @@ class FiwareConnection:
         self,
         id_output_entity: str,
         attribute: AttributeModel,
-        fiware_unit: Optional[DataUnits],
+        fiware_unit: DataUnits | None,
     ) -> tuple[AttributeModel, list[NamedMetadata]]:
         meta_data = []
         attribute = attribute.model_copy()
@@ -895,6 +926,13 @@ class FiwareConnection:
             if attribute_value_adjusted is not None:
                 attribute.value = attribute_value_adjusted
                 attribute.unit = fiware_unit
+                if attribute.factor != 1.0:
+                    logger.warning(
+                        f"Attribute {attribute.id} of entity "
+                        f"{id_output_entity} combines a unit conversion "
+                        "with a `factor` != 1.0 - the value is scaled by "
+                        "both (double scaling). Please use only one of them."
+                    )
                 meta_data.append(
                     NamedMetadata(
                         name="unitCode", type=DataType.TEXT, value=fiware_unit.value
@@ -937,6 +975,8 @@ class FiwareConnection:
         TODO:
             - Is there a better way to send the data from dataframes to the FIWARE platform?
         """
+        if self.cb_client is None:
+            raise InterfaceNotActive("ContextBrokerClient is not active")
 
         if not output_attributes and not output_commands:
             logger.debug(
@@ -1021,7 +1061,7 @@ class FiwareConnection:
                 attrs.append(
                     NamedContextAttribute(
                         name=attribute.id_interface,
-                        value=attribute.value,
+                        value=apply_factor(attribute.value, attribute.factor),
                         type=datatype,
                         metadata=meta_data,
                     )
@@ -1077,8 +1117,7 @@ class FiwareConnection:
                         await sleep(0.1)
                     else:
                         logger.error(
-                            "Error while sending attributes to FIWARE platform: "
-                            f"{err}"
+                            f"Error while sending attributes to FIWARE platform: {err}"
                         )
 
                 i += 1
@@ -1117,7 +1156,7 @@ class FiwareConnection:
                         await sleep(0.1)
                     else:
                         logger.error(
-                            "Error while sending commands to FIWARE platform: " f"{err}"
+                            f"Error while sending commands to FIWARE platform: {err}"
                         )
 
                 i += 1

@@ -1,34 +1,31 @@
 $defs:
   AttributeModel:
-    description: 'Base class for the attributes
-
-
-      Contains:
-
-      - id: The id of the attribute
-
-      - id_interface: The id of the attribute on the interface (if not set, the id
-      is used)
-
-      - type: The type of the attribute
-
-      - value: The value of the attribute
-
-      - unit: The unit of the attribute
-
-      - datatype: The datatype of the attribute
-
-      - timestamp: The timestamp of the attribute'
+    description: "Configuration class for representing attributes with metadata, value,\
+      \         and optional interface-specific identifier.\n\nThis class models attributes\
+      \ with a unique ID, type, value, unit, and timestamp.\nIf `id_interface` is\
+      \ not set, it defaults to the value of `id`.\n\nAttributes:\n    id (str): The\
+      \ unique identifier of the attribute.\n    id_interface (str): The interface-specific\
+      \ identifier. Defaults to `None`.\n        If not set, it will be automatically\
+      \ set to the value of `id`.\n    type (AttributeTypes): The type of the attribute.\
+      \ Defaults to `AttributeTypes.VALUE`.\n    value (Union[str, float, int, bool,\
+      \ Dict, List, pd.DataFrame, pd.Series, None]):             The value of the\
+      \ attribute. Defaults to `None`.\n    unit (Optional[DataUnits]): The unit of\
+      \ measurement for the value. Defaults to `None`.\n    datatype (DataType): The\
+      \ data type of the attribute. Defaults to `DataType(\"Number\")`.\n    timestamp\
+      \ (Optional[datetime]): The timestamp of the attribute. Defaults to `None`.\n\
+      \    mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]):             The\
+      \ format of the attribute for MQTT (if not set, the default format is used)\
+      \                 - only for mqtt interface needed"
     properties:
       id:
         title: Id
         type: string
       id_interface:
+        default: ''
         title: Id Interface
         type: string
       type:
-        allOf:
-        - $ref: '#/$defs/AttributeTypes'
+        $ref: '#/$defs/AttributeTypes'
         default: value
       value:
         anyOf:
@@ -36,7 +33,8 @@ $defs:
         - type: number
         - type: integer
         - type: boolean
-        - type: object
+        - additionalProperties: true
+          type: object
         - items: {}
           type: array
         - type: 'null'
@@ -48,8 +46,7 @@ $defs:
         - type: 'null'
         default: null
       datatype:
-        allOf:
-        - $ref: '#/$defs/DataType'
+        $ref: '#/$defs/DataType'
         default: Number
       timestamp:
         anyOf:
@@ -58,34 +55,34 @@ $defs:
         - type: 'null'
         default: null
         title: Timestamp
+      mqtt_format:
+        $ref: '#/$defs/MQTTFormatTypes'
+        default: plain
+        title: Mqtt Format
     required:
     - id
     title: AttributeModel
     type: object
   AttributeTypes:
-    description: Enum class for the attribute types
+    description: "Enum class for the attribute types\n\nAttributes:\n    TIMESERIES\
+      \ (str): Timeseries data \"timeseries\"\n    VALUE (str): Single value data\
+      \ \"value\""
     enum:
     - timeseries
     - value
     title: AttributeTypes
     type: string
   CommandModel:
-    description: 'Base class for the commands
-
-
-      Contains:
-
-      - id: The id of the command
-
-      - id_interface: The id of the command on the interface (if not set, the id is
-      used)
-
-      - value: The value of the command'
+    description: "Configuration class for the commands\n\nAttributes:\n    id (str):\
+      \ The id of the command\n    id_interface (str | None): The id of the command\
+      \ on the interface             (if not set, the id is used)\n    value (Union[str,\
+      \ int, float, List, Dict, None]): The value of the command"
     properties:
       id:
         title: Id
         type: string
       id_interface:
+        default: ''
         title: Id Interface
         type: string
       value:
@@ -95,7 +92,9 @@ $defs:
         - type: number
         - items: {}
           type: array
-        - type: object
+        - additionalProperties: true
+          type: object
+        - type: boolean
         - type: 'null'
         default: null
         title: Value
@@ -103,74 +102,84 @@ $defs:
     - id
     title: CommandModel
     type: object
-  ControllerComponentModel:
-    description: 'Model for the configuration of the controller components.
+  ConfigDataPoints:
+    additionalProperties:
+      anyOf:
+      - $ref: '#/$defs/IOAllocationModel'
+      - $ref: '#/$defs/DataPointGeneral'
+    description: 'Model for the configuration of config data points.
 
-      TODO: - Improve the model'
+
+      See also :class:`~encodapy.components.basic_component_config.IOAllocationModel`
+      and
+
+      :class:`~encodapy.utils.datapoints.DataPointGeneral`.'
+    title: ConfigDataPoints
+    type: object
+  ControllerComponentModel:
+    description: "Model for the configuration of the controller components.\n\nAttributes:\n\
+      \    active (bool): Whether the component is active or not\n    id (str): The\
+      \ id of the component\n    type (str): The type of the component (e.g. thermal\
+      \ storage, heat pump, etc. /             needs to be defined for individual\
+      \ components)\n    inputs (IOModell): The inputs of the component as a dictionary\
+      \ with IOAllocationModel             for the individual inputs\n    outputs\
+      \ (IOModell): The outputs of the component as a dictionary with IOAllocationModel\
+      \             for the individual outputs\n    config (ConfigDataPoints): The\
+      \ configuration of the component as a dictionary with             IOAllocationModel\
+      \ for the individual static data or DataPointModel with direct values"
     properties:
       active:
+        anyOf:
+        - type: boolean
+        - type: 'null'
         default: true
         title: Active
-        type: boolean
       id:
         title: Id
         type: string
       type:
-        anyOf:
-        - $ref: '#/$defs/ControllerComponents'
-        - type: string
         title: Type
+        type: string
       inputs:
-        title: Inputs
-        type: object
+        $ref: '#/$defs/IOModell'
       outputs:
-        title: Outputs
-        type: object
+        $ref: '#/$defs/IOModell'
       config:
-        title: Config
-        type: object
+        anyOf:
+        - $ref: '#/$defs/ConfigDataPoints'
+        - type: 'null'
+        default: null
     required:
     - id
     - type
     - inputs
     - outputs
-    - config
     title: ControllerComponentModel
     type: object
-  ControllerComponents:
-    description: Enum class for the controller components, could be extended by the
-      needed components
-    enum:
-    - storage_controller
-    - energytrendband_controller
-    - hygienic_controller
-    title: ControllerComponents
-    type: string
-  ControllerSettingModel:
-    description: 'Model for the configuration of the controller settings.
-
-
-      Contains:
-
-      - time_settings: The time settings for the controller
-
-      - specific_settings: The specific settings for the controller - not defined
-      as a model
-
-
-      TODO: What is needed here?'
+  DataPointGeneral:
+    description: "Model for datapoints with a general value.\n\nAttributes:\n    value\
+      \ (Any): The value of the datapoint, which can be of various types         \
+      \    (string, float, int, boolean, dictionary, list, DataFrame, or None).\n\
+      \    unit (Optional[DataUnits]): Optional unit of the datapoint, if applicable.\n\
+      \    time (Optional[datetime]): Optional timestamp of the datapoint, if applicable."
     properties:
-      time_settings:
-        $ref: '#/$defs/TimeSettingsModel'
-      specific_settings:
+      value:
+        title: Value
+      unit:
         anyOf:
-        - type: object
+        - $ref: '#/$defs/DataUnits'
         - type: 'null'
-        default: {}
-        title: Specific Settings
+        default: null
+      time:
+        anyOf:
+        - format: date-time
+          type: string
+        - type: 'null'
+        default: null
+        title: Time
     required:
-    - time_settings
-    title: ControllerSettingModel
+    - value
+    title: DataPointGeneral
     type: object
   DataType:
     description: 'When possible reuse schema.org data types
@@ -204,41 +213,92 @@ $defs:
     type: string
   DataUnits:
     description: "Possible units for the data\nUnits which are defined by Unit Code\
-      \ (https://unece.org/trade/cefact/UNLOCODE-Download \nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\n\
+      \ (https://unece.org/trade/cefact/UNLOCODE-Download\nor https://github.com/RWTH-EBC/FiLiP/blob/master/filip/data/unece-units/units_of_measure.csv)\n\
       or here: https://unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf\n\
-      TODO:\n    - Is there a better way to handle the units?\n    - Add more units?"
+      \nThe enum value is the standardized unit code (e.g., \"SEC\" for seconds).\n\
+      The pint_unit attribute contains the corresponding pint unit string for conversion.\n\
+      \nTo add a new unit, add it to the DataUnits enum: UNIT_NAME = (\"CODE\", \"\
+      pint_string\")\nThe _UNIT_MAP will be generated automatically from the pint_unit\
+      \ attributes.\n\nUsage:\n    - DataUnits.PERCENT.value -> \"P1\" (unit code,\
+      \ for serialization)\n    - DataUnits.PERCENT.pint_unit -> \"percent\" (for\
+      \ pint conversion)\n    - DataUnits(\"P1\") -> DataUnits.PERCENT (lookup by\
+      \ unit code)"
     enum:
     - SEC
+    - MIN
     - HUR
+    - DAY
+    - MON
+    - ANN
     - CEL
-    - LIT
-    - MTW
+    - KEL
+    - LTR
+    - MTQ
     - MQH
+    - MQS
+    - E32
+    - L2
     - WTT
+    - KWT
     - WHR
     - KWH
     - CMT
     - MTR
     - MTK
+    - DD
     - MTS
     - P1
     - OHM
     - VLT
+    - A97
+    - PAL
+    - B13
     title: DataUnits
     type: string
+  IOAllocationModel:
+    description: "Model for the input or output allocation.\n\nAttributes:\n    entity\
+      \ (str): ID of the entity to which the input or output is allocated\n    attribute\
+      \ (str): ID of the attribute to which the input or output is allocated"
+    properties:
+      entity:
+        description: ID of the entity to which the input or output is allocated
+        title: Entity
+        type: string
+      attribute:
+        description: ID of the attribute to which the input or output is allocated
+        title: Attribute
+        type: string
+    required:
+    - entity
+    - attribute
+    title: IOAllocationModel
+    type: object
+  IOModell:
+    additionalProperties:
+      $ref: '#/$defs/IOAllocationModel'
+    description: 'Model for the input, staticdata and output of a component.
+
+
+      It contains a dictionary with the key as the ID of the input, output or static
+      data
+
+      and the value as the allocation model
+
+
+      See also :class:`~encodapy.components.basic_component_config.IOAllocationModel`.
+
+
+      There is no validation for this.
+
+      It is used to create the the ComponentIOModel for each component.'
+    title: IOModell
+    type: object
   InputModel:
-    description: 'Model for the configuration of inputs.
-
-
-      Contains:
-
-      - id: The id of the input
-
-      - interface: The interface of the input
-
-      - id_interface: The id of the input on the interface
-
-      - attributes: The attributes of the'
+    description: "Model for the configuration of inputs.\n\nAttributes:\n    id (str):\
+      \ The id of the input\n    interface (Interfaces): The interface of the input\n\
+      \    id_interface (str | None): The id of the input on the interface, default\
+      \ is the id\n    attributes (list[AttributeModel]): A list of attributes for\
+      \ the input as AttributeModel"
     properties:
       id:
         title: Id
@@ -246,6 +306,7 @@ $defs:
       interface:
         $ref: '#/$defs/Interfaces'
       id_interface:
+        default: ''
         title: Id Interface
         type: string
       attributes:
@@ -256,14 +317,14 @@ $defs:
     required:
     - id
     - interface
-    - id_interface
     - attributes
     title: InputModel
     type: object
   InterfaceModel:
-    description: 'Base class for the interfaces
-
-      TODO: - How to use this model?'
+    description: "Base class for the interfaces\n\nAttributes:\n    mqtt (bool): Whether\
+      \ the MQTT interface is active. Defaults to False.\n    fiware (bool): Whether\
+      \ the FIWARE interface is active. Defaults to False.\n    file (bool): Whether\
+      \ the FILE interface is active. Defaults to False."
     properties:
       mqtt:
         default: false
@@ -280,26 +341,39 @@ $defs:
     title: InterfaceModel
     type: object
   Interfaces:
-    description: Enum class for the interfaces
+    description: "Enum class for the interfaces\n\nAttributes:\n    MQTT (str): MQTT\
+      \ interface \"mqtt\"\n    FIWARE (str): FIWARE interface \"fiware\"\n    FILE\
+      \ (str): File interface \"file\""
     enum:
     - mqtt
     - fiware
     - file
     title: Interfaces
     type: string
+  MQTTFormatTypes:
+    description: 'Enum class for MQTT format types
+
+      Possible values:
+
+      - PLAIN (plain): Plain format
+
+      - FIWARE_ATTR (fiware-attr): FIWARE attribute format
+
+      - FIWARE_CMDEXE (fiware-cmdexe): FIWARE command execution format
+
+      - TEMPLATE (template): Template-based format'
+    enum:
+    - plain
+    - fiware-attr
+    - fiware-cmdexe
+    - template
+    title: MQTTFormatTypes
+    type: string
   OutputModel:
-    description: 'Model for the configuration of outputs.
-
-
-      Contains:
-
-      - id: The id of the output
-
-      - interface: The interface of the output
-
-      - id_interface: The id of the output on the interface
-
-      - attributes: The attributes of the output'
+    description: "Model for the configuration of outputs.\n\nAttributes:\n    id:\
+      \ The id of the output\n    interface: The interface of the output\n    id_interface:\
+      \ The id of the output on the interface, default is the id\n    attributes:\
+      \ The attributes of the output"
     properties:
       id:
         title: Id
@@ -307,6 +381,7 @@ $defs:
       interface:
         $ref: '#/$defs/Interfaces'
       id_interface:
+        default: ''
         title: Id Interface
         type: string
       attributes:
@@ -322,24 +397,15 @@ $defs:
     required:
     - id
     - interface
-    - id_interface
     - attributes
-    - commands
     title: OutputModel
     type: object
   StaticDataModel:
-    description: 'Model for the configuration of inputs.
-
-
-      Contains:
-
-      - id: The id of the input
-
-      - interface: The interface of the input
-
-      - id_interface: The id of the input on the interface
-
-      - attributes: The attributes of the'
+    description: "Model for the configuration of inputs.\n\nAttributes:\n    id (str):\
+      \ The id of the input\n    interface (Interfaces): The interface of the input\n\
+      \    id_interface (str | None): The id of the input on the interface\n    attributes\
+      \ (list[AttributeModel]): A list of attributes for the static data         \
+      \    as AttributeModel"
     properties:
       id:
         title: Id
@@ -347,6 +413,7 @@ $defs:
       interface:
         $ref: '#/$defs/Interfaces'
       id_interface:
+        default: ''
         title: Id Interface
         type: string
       attributes:
@@ -357,54 +424,27 @@ $defs:
     required:
     - id
     - interface
-    - id_interface
     - attributes
     title: StaticDataModel
     type: object
   TimeSettingsCalculationModel:
-    description: 'Base class for the calculation time settings of the controller /
-      system.
-
-
-      Contains:
-
-      - timerange: The timerange for the calculation (if only one value is needed
-      and primary value,
-
-      otherwise use timerange_min and timerange_max)
-
-      - timerange_min: The minimum timerange for the calculation (only used if timerange
-      is not set
-
-      and timerange_max is set too)
-
-      - timerange_max: The maximum timerange for the calculation (only used if timerange
-      is not set
-
-      and timerange_min is set too)
-
-      - timerange_type: Type of time period, relative to the last result or absolute
-      at the current
-
-      time (if not set, the default type is absolute)
-
-      - timerange_unit: The unit of the timerange (if not set, the default unit is
-      minute)
-
-      - timestep: The timestep for the calculation (if not set, the default value
-      is 1), the
-
-      related unit is defined in the timestep_unit attribute
-
-      - timestep_unit: The unit of the timestep (if not set, the default unit is second)
-
-      - sampling_time: The sampling time for the calculation (if not set, the default
-      value is 1),
-
-      the related unit is defined in the sampling_time_unit attribute
-
-      - sampling_time_unit: The unit of the sampling time (if not set, the default
-      unit is minute)'
+    description: "Base class for the calculation time settings of the controller /\
+      \ system.\n\nAttributes:\n    timerange: The timerange for the calculation (if\
+      \ only one value is needed and primary value            , otherwise use timerange_min\
+      \ and timerange_max)\n    timerange_min: The minimum timerange for the calculation\
+      \ (only used if timerange is not set            and timerange_max is set too)\n\
+      \    timerange_max: The maximum timerange for the calculation (only used if\
+      \ timerange is not set            and timerange_min is set too)\n    timerange_type:\
+      \ Type of time period, relative to the last result or absolute at the current\
+      \            time (if not set, the default type is absolute)\n    timerange_unit:\
+      \ The unit of the timerange (if not set, the default unit is minute)\n    timestep:\
+      \ The timestep for the calculation (if not set, the default value is 1), the\
+      \            related unit is defined in the timestep_unit attribute\n    timestep_unit:\
+      \ The unit of the timestep (if not set, the default unit is second)\n    sampling_time:\
+      \ The sampling time for the calculation (if not set, the default value is 1),\
+      \            the related unit is defined in the sampling_time_unit attribute\n\
+      \    sampling_time_unit: The unit of the sampling time (if not set, the default\
+      \ unit is minute)"
     properties:
       timerange:
         anyOf:
@@ -430,9 +470,7 @@ $defs:
         - type: 'null'
         default: absolute
       timerange_unit:
-        anyOf:
-        - $ref: '#/$defs/TimeUnits'
-        - type: 'null'
+        $ref: '#/$defs/TimeUnits'
         default: minute
       timestep:
         anyOf:
@@ -441,8 +479,7 @@ $defs:
         default: 1
         title: Timestep
       timestep_unit:
-        allOf:
-        - $ref: '#/$defs/TimeUnits'
+        $ref: '#/$defs/TimeUnits'
         default: second
       sampling_time:
         anyOf:
@@ -451,40 +488,23 @@ $defs:
         default: 1
         title: Sampling Time
       sampling_time_unit:
-        allOf:
-        - $ref: '#/$defs/TimeUnits'
+        $ref: '#/$defs/TimeUnits'
         default: minute
     title: TimeSettingsCalculationModel
     type: object
   TimeSettingsCalibrationModel:
-    description: 'Base class for the calibration time settings of the controller /
-      system.
-
-
-      Contains:
-
-      - timerange: The timerange for the calibration (if not set, the default value
-      is 1),
-
-      the related unit is defined in the timerange_unit attribute
-
-      - timerange_unit: The unit of the timerange (if not set, the default unit is
-      minute)
-
-      - timestep: The timestep for the calibration (if not set, the default value
-      is 1),
-
-      the related unit is defined in the timestep_unit attribute
-
-      - timestep_unit: The unit of the timestep (if not set, the default unit is second)
-
-      - sampling_time: The sampling time for the calibration (if not set, the default
-      value is 1),
-
-      the related unit is defined in the sampling_time_unit attribute
-
-      - sampling_time_unit: The unit of the sampling time (if not set, the default
-      unit is day)'
+    description: "Base class for the calibration time settings of the controller /\
+      \ system.\n\nAttributes:\n    timerange: The timerange for the calibration (if\
+      \ not set, the default value is 1),             the related unit is defined\
+      \ in the timerange_unit attribute\n    timerange_unit: The unit of the timerange\
+      \ (if not set, the default unit is minute)\n    timestep: The timestep for the\
+      \ calibration (if not set, the default value is 1),             the related\
+      \ unit is defined in the timestep_unit attribute\n    timestep_unit: The unit\
+      \ of the timestep (if not set, the default unit is second)\n    sampling_time:\
+      \ The sampling time for the calibration (if not set, the default value is 1),\
+      \             the related unit is defined in the sampling_time_unit attribute\n\
+      \    sampling_time_unit: The unit of the sampling time (if not set, the default\
+      \ unit is day)"
     properties:
       timerange:
         anyOf:
@@ -493,9 +513,7 @@ $defs:
         default: null
         title: Timerange
       timerange_unit:
-        anyOf:
-        - $ref: '#/$defs/TimeUnits'
-        - type: 'null'
+        $ref: '#/$defs/TimeUnits'
         default: minute
       timestep:
         anyOf:
@@ -504,8 +522,7 @@ $defs:
         default: 1
         title: Timestep
       timestep_unit:
-        allOf:
-        - $ref: '#/$defs/TimeUnits'
+        $ref: '#/$defs/TimeUnits'
         default: second
       sampling_time:
         anyOf:
@@ -514,25 +531,14 @@ $defs:
         default: 1
         title: Sampling Time
       sampling_time_unit:
-        allOf:
-        - $ref: '#/$defs/TimeUnits'
+        $ref: '#/$defs/TimeUnits'
         default: day
     title: TimeSettingsCalibrationModel
     type: object
   TimeSettingsModel:
-    description: 'Base class for the time settings of the controller / system.
-
-
-      Contains:
-
-      - calculation: The timeranges and settings für the calculation
-
-      - calibration: The timeranges and settings for the calibration
-
-      - results: The timesettings for the results
-
-
-      TODO: Add the needed fields - calibration?'
+    description: "Base class for the time settings of the controller / system.\n\n\
+      Attributes:\n    calculation: The timeranges and settings fÃ¼r the calculation\n\
+      \    calibration: The timeranges and settings for the calibration"
     properties:
       calculation:
         $ref: '#/$defs/TimeSettingsCalculationModel'
@@ -541,35 +547,17 @@ $defs:
         - $ref: '#/$defs/TimeSettingsCalibrationModel'
         - type: 'null'
         default: null
-      results:
-        anyOf:
-        - $ref: '#/$defs/TimeSettingsResultsModel'
-        - type: 'null'
-        default: null
     required:
     - calculation
     title: TimeSettingsModel
-    type: object
-  TimeSettingsResultsModel:
-    description: Settings for the timesteps of the results.
-    properties:
-      timestep:
-        anyOf:
-        - type: number
-        - type: integer
-        default: 1
-        title: Timestep
-      timestep_unit:
-        allOf:
-        - $ref: '#/$defs/TimeUnits'
-        default: second
-    title: TimeSettingsResultsModel
     type: object
   TimeUnits:
     description: 'Possible time units for the time series data
 
 
-      TODO: Is it better to use standard time units? Like in the unit code?'
+      Used for the configuration of time series queries
+
+      and calculations in the system controller.'
     enum:
     - second
     - minute
@@ -579,35 +567,23 @@ $defs:
     title: TimeUnits
     type: string
   TimerangeTypes:
-    description: 'Enum class for the timedelta types
-
-
-      Contains:
-
-      - ABSOLUTE: The timedelta is calculated from the actual time
-
-      - RELATIVE: The timedelta is calculated from the last timestamp'
+    description: "Enum class for the timedelta types, used for the functions to get\
+      \ timeseries data\n\nAttributes:\n    ABSOLUTE (str): The timedelta is calculated\
+      \ from the actual time \"absolute\"\n    RELATIVE (str): The timedelta is calculated\
+      \ from the last timestamp \"relative\""
     enum:
     - absolute
     - relative
     title: TimerangeTypes
     type: string
-description: 'Base Model for the configuration
-
-
-  Contains:
-
-  - interfaces: The interfaces of the system controller
-
-  - inputs: The inputs of the system controller
-
-  - outputs: The outputs of the system controller
-
-  - staticdata: The static configuration data for devices the system controller
-
-  - controller_components: The components of the controller
-
-  - controller_settings: The settings for the controller'
+description: "Base model for the configuration of the system controller.\n\nAttributes:\n\
+  \    interfaces (InterfaceModel): Configuration of the system controller interfaces.\n\
+  \    inputs (list[InputModel]): List of input configurations for the system controller.\n\
+  \    outputs (ist[OutputModel]): Output configurations for the system controller.\n\
+  \    staticdata (list[StaticDataModel]):             Static configuration data for\
+  \ devices managed by the system controller.\n    controller_components (list[ControllerComponentModel]):\
+  \ Components used by the controller.\n    time_settings (TimeSettingsModel): Time\
+  \ settings for the controller."
 properties:
   interfaces:
     $ref: '#/$defs/InterfaceModel'
@@ -631,14 +607,14 @@ properties:
       $ref: '#/$defs/ControllerComponentModel'
     title: Controller Components
     type: array
-  controller_settings:
-    $ref: '#/$defs/ControllerSettingModel'
+  time_settings:
+    $ref: '#/$defs/TimeSettingsModel'
 required:
 - interfaces
 - inputs
 - outputs
 - staticdata
 - controller_components
-- controller_settings
+- time_settings
 title: ConfigModel
 type: object

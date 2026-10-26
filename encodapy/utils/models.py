@@ -5,13 +5,62 @@ Authors: Martin Altenburger
 
 from datetime import datetime
 from typing import Dict, List, Optional, Union
+import numpy as np
 from pandas import DataFrame, Series
-from pydantic import BaseModel, ConfigDict, field_validator
+from pandas.api.types import is_numeric_dtype
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from filip.models.ngsi_v2.base import NamedMetadata
 from filip.models.ngsi_v2.context import ContextEntity
 from encodapy.config.models import AttributeModel, CommandModel
+from encodapy.config.env_values import DEFAULT_FIWARE_CALL_TIMEOUT
 from encodapy.config.types import AttributeTypes
 from encodapy.utils.units import DataUnits
+
+
+def apply_factor(
+    value: Union[str, float, int, bool, Dict, List, DataFrame, Series, None],
+    factor: float,
+) -> Union[str, float, int, bool, Dict, List, DataFrame, Series, None]:
+    """
+    Scale a raw interface value by the attribute's `factor`
+    (``value_in_interface * factor = internal value``).
+
+    Used by all communication connections (MQTT, FIWARE, FILE) in both
+    directions (input and output). Numeric scalars and numeric columns
+    of DataFrames / Series (timeseries) are scaled; booleans, strings,
+    non-numeric columns, other containers and None are returned unchanged.
+    For DataFrames, ALL numeric columns are scaled - callers must pass a
+    frame containing only the attribute's own column(s).
+
+    Why: devices (especially behind Modbus gateways) often transmit values
+    in a fixed scaling (e.g. tenths of a degree). The `factor` configured on
+    the attribute converts between the raw interface value and the real
+    physical value without touching component logic.
+
+    Args:
+        value: The raw value to scale.
+        factor (float): The scaling factor; the default 1.0 leaves the
+            value unchanged.
+
+    Returns:
+        The scaled value if numeric, otherwise the original value.
+    """
+    if factor == 1.0:
+        return value
+    if isinstance(value, DataFrame):
+        scaled = value.copy()
+        numeric_columns = scaled.select_dtypes(include="number").columns
+        scaled[numeric_columns] = scaled[numeric_columns] * factor
+        return scaled
+    if isinstance(value, Series):
+        if not is_numeric_dtype(value):
+            return value
+        return value * factor
+    if isinstance(value, bool) or not isinstance(
+        value, (int, float, np.integer, np.floating)
+    ):
+        return value
+    return value * factor
 
 
 class InputDataAttributeModel(BaseModel):
@@ -243,12 +292,14 @@ class FiwareParameter(BaseModel):
         service (str): The service
         service_path (str): The service path
         authentication (Optional[Union[FiwareAuth, None]]): The authentication
+        call_timeout (float): Timeout in seconds for calls to the FIWARE Context Broker
     """
 
     cb_url: str
     service: str
     service_path: str
     authentication: Optional[Union[FiwareAuth, None]] = None
+    call_timeout: float = Field(default=DEFAULT_FIWARE_CALL_TIMEOUT, gt=0)
 
 
 class DatabaseParameter(BaseModel):

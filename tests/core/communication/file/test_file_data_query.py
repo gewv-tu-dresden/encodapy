@@ -59,18 +59,14 @@ def mock_file_connection_with_config():
 
     # Mock config with proper structure
     connection.config = MagicMock()
-    connection.config.controller_settings = MagicMock()
-    connection.config.controller_settings.time_settings = MagicMock()
-    connection.config.controller_settings.time_settings.calculation = MagicMock()
-    connection.config.controller_settings.time_settings.calculation.timestep = 60
-    connection.config.controller_settings.time_settings.calculation.timestep_unit = (
-        TimeUnits.MINUTE
-    )
-    connection.config.controller_settings.time_settings.calibration = MagicMock()
-    connection.config.controller_settings.time_settings.calibration.timestep = 1
-    connection.config.controller_settings.time_settings.calibration.timestep_unit = (
-        TimeUnits.SECOND
-    )
+    connection.config.time_settings = MagicMock()
+    connection.config.time_settings = MagicMock()
+    connection.config.time_settings.calculation = MagicMock()
+    connection.config.time_settings.calculation.timestep = 60
+    connection.config.time_settings.calculation.timestep_unit = TimeUnits.MINUTE
+    connection.config.time_settings.calibration = MagicMock()
+    connection.config.time_settings.calibration.timestep = 1
+    connection.config.time_settings.calibration.timestep_unit = TimeUnits.SECOND
 
     return connection
 
