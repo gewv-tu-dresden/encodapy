@@ -51,6 +51,7 @@ from encodapy.utils.models import (
     MetaDataModel,
     OutputDataAttributeModel,
     OutputDataEntityModel,
+    apply_factor,
 )
 from encodapy.utils.units import DataUnits, adjust_units, get_time_unit_seconds
 
@@ -399,6 +400,7 @@ class FiwareConnection:
             if attribute.type == AttributeTypes.TIMESERIES:
                 attributes_timeseries[attribute.id] = {
                     "id_interface": attribute.id_interface,
+                    "factor": attribute.factor,
                     "metadata": self._get_metadata_from_fiware(
                         fiware_input_entity_attributes[attribute.id_interface]
                     ),
@@ -412,9 +414,12 @@ class FiwareConnection:
                 attributes_values.append(
                     InputDataAttributeModel(
                         id=attribute.id,
-                        data=fiware_input_entity_attributes[
-                            attribute.id_interface
-                        ].value,
+                        data=apply_factor(
+                            fiware_input_entity_attributes[
+                                attribute.id_interface
+                            ].value,
+                            attribute.factor,
+                        ),
                         data_type=AttributeTypes.VALUE,
                         data_available=(
                             fiware_input_entity_attributes[attribute.id_interface].value
@@ -553,7 +558,7 @@ class FiwareConnection:
         Returns:
             tuple[str, Optional[str]]: Timestamps for the input data query (from_date, to_date)
         """
-        calculation = self.config.controller_settings.time_settings.calculation
+        calculation = self.config.time_settings.calculation
 
         if calculation.timerange is not None:
             return self._calculate_timerange(
@@ -638,16 +643,14 @@ class FiwareConnection:
         Returns:
             tuple[str, str]: Timestamps for the input data query (from_date, to_date)
         """
-        calibration_time_settings = (
-            self.config.controller_settings.time_settings.calibration
-        )
+        calibration_time_settings = self.config.time_settings.calibration
 
         timerange = calibration_time_settings.timerange * get_time_unit_seconds(
             calibration_time_settings.timerange_unit
         )
 
         if (
-            self.config.controller_settings.time_settings.calculation.timerange_type
+            self.config.time_settings.calculation.timerange_type
             is TimerangeTypes.RELATIVE
             and last_timestamp is not None
         ):
@@ -676,7 +679,8 @@ class FiwareConnection:
         Args:
             - entity_id: id of the entity
             - entity_type: type of the entity
-            - entity_attributes: dict with the attributes of the entity (id, metadata)
+            - entity_attributes: dict with the attributes of the entity \
+                (id_interface, metadata, factor)
             - method (DataQueryTypes): method of the function which queries the data
             (calculation or calibration)
             - timestamp_latest_output: timestamp of the last output of the entity
@@ -714,10 +718,8 @@ class FiwareConnection:
         # resample the time series with configured time step size
         df.fillna(value=np.nan, inplace=True)
         time_step_seconds = int(
-            self.config.controller_settings.time_settings.calculation.timestep
-            * get_time_unit_seconds(
-                self.config.controller_settings.time_settings.calculation.timestep_unit
-            )
+            self.config.time_settings.calculation.timestep
+            * get_time_unit_seconds(self.config.time_settings.calculation.timestep_unit)
         )
         df = df.resample(f"""{time_step_seconds}s""").mean(numeric_only=True)
 
@@ -727,7 +729,10 @@ class FiwareConnection:
             df.rename(
                 columns={attribute_data["id_interface"]: attribute_id}, inplace=True
             )
-            data = df.filter([attribute_id]).dropna()
+            data = apply_factor(
+                df.filter([attribute_id]).dropna(),
+                attribute_data.get("factor", 1.0),
+            )
             if data.empty:
                 logger.debug(
                     f"Data for attribute {attribute_id} of entity {entity.id} is empty"
@@ -856,7 +861,10 @@ class FiwareConnection:
 
         attr = NamedContextAttribute(
             name=fiware_datapoint.attribute.id_interface,
-            value=df[fiware_datapoint.attribute.id].iloc[-1],
+            value=apply_factor(
+                df[fiware_datapoint.attribute.id].iloc[-1],
+                fiware_datapoint.attribute.factor,
+            ),
             type=datatype,
             metadata=meta_data_row,
         )
@@ -876,7 +884,10 @@ class FiwareConnection:
             attrs_timeseries.append(
                 NamedContextAttribute(
                     name=fiware_datapoint.attribute.id_interface,
-                    value=row[fiware_datapoint.attribute.id],
+                    value=apply_factor(
+                        row[fiware_datapoint.attribute.id],
+                        fiware_datapoint.attribute.factor,
+                    ),
                     type=datatype,
                     metadata=meta_data_row,
                 )
@@ -915,6 +926,13 @@ class FiwareConnection:
             if attribute_value_adjusted is not None:
                 attribute.value = attribute_value_adjusted
                 attribute.unit = fiware_unit
+                if attribute.factor != 1.0:
+                    logger.warning(
+                        f"Attribute {attribute.id} of entity "
+                        f"{id_output_entity} combines a unit conversion "
+                        "with a `factor` != 1.0 - the value is scaled by "
+                        "both (double scaling). Please use only one of them."
+                    )
                 meta_data.append(
                     NamedMetadata(
                         name="unitCode", type=DataType.TEXT, value=fiware_unit.value
@@ -1043,7 +1061,7 @@ class FiwareConnection:
                 attrs.append(
                     NamedContextAttribute(
                         name=attribute.id_interface,
-                        value=attribute.value,
+                        value=apply_factor(attribute.value, attribute.factor),
                         type=datatype,
                         metadata=meta_data,
                     )

@@ -15,12 +15,10 @@ from datetime import datetime, timezone, timedelta
 
 from encodapy.config import (
     ConfigModel,
-    ControllerSettingModel,
     InterfaceModel,
     TimeSettingsModel,
     TimeSettingsCalculationModel,
     TimeSettingsCalibrationModel,
-    TimeSettingsResultsModel,
 )
 from encodapy.config.types import TimerangeTypes, DataQueryTypes
 from encodapy.service.communication.fiware_connection import FiwareConnection
@@ -50,38 +48,27 @@ def test_handle_calibration_method_relative_with_last_timestamp():
         outputs=[],
         staticdata=[],
         controller_components=[],
-        controller_settings=ControllerSettingModel(
-            time_settings=TimeSettingsModel(
-                calculation=TimeSettingsCalculationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type=TimerangeTypes.RELATIVE,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                    timerange_min=None,
-                    timerange_max=None,
-                ),
-                calibration=TimeSettingsCalibrationModel(
-                    timerange=2,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type=TimerangeTypes.RELATIVE,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                results=TimeSettingsResultsModel(
-                    timerange=1,
-                    timerange_unit=TimeUnits.HOUR,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
+        time_settings=TimeSettingsModel(
+            calculation=TimeSettingsCalculationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type=TimerangeTypes.RELATIVE,
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
+                timerange_min=None,
+                timerange_max=None,
             ),
-            specific_settings={},
+            calibration=TimeSettingsCalibrationModel(
+                timerange=2,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type=TimerangeTypes.RELATIVE,
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
+            ),
         ),
     )
 
@@ -118,38 +105,27 @@ def test_handle_calibration_method_relative_without_last_timestamp():
         outputs=[],
         staticdata=[],
         controller_components=[],
-        controller_settings=ControllerSettingModel(
-            time_settings=TimeSettingsModel(
-                calculation=TimeSettingsCalculationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type=TimerangeTypes.RELATIVE,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                    timerange_min=None,
-                    timerange_max=None,
-                ),
-                calibration=TimeSettingsCalibrationModel(
-                    timerange=2,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type=TimerangeTypes.RELATIVE,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                results=TimeSettingsResultsModel(
-                    timerange=1,
-                    timerange_unit=TimeUnits.HOUR,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
+        time_settings=TimeSettingsModel(
+            calculation=TimeSettingsCalculationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type=TimerangeTypes.RELATIVE,
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
+                timerange_min=None,
+                timerange_max=None,
             ),
-            specific_settings={},
+            calibration=TimeSettingsCalibrationModel(
+                timerange=2,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type=TimerangeTypes.RELATIVE,
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
+            ),
         ),
     )
 
@@ -184,38 +160,27 @@ def test_handle_calibration_method_absolute_with_last_timestamp():
         outputs=[],
         staticdata=[],
         controller_components=[],
-        controller_settings=ControllerSettingModel(
-            time_settings=TimeSettingsModel(
-                calculation=TimeSettingsCalculationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type=TimerangeTypes.ABSOLUTE,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                    timerange_min=None,
-                    timerange_max=None,
-                ),
-                calibration=TimeSettingsCalibrationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type=TimerangeTypes.ABSOLUTE,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                results=TimeSettingsResultsModel(
-                    timerange=1,
-                    timerange_unit=TimeUnits.HOUR,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
+        time_settings=TimeSettingsModel(
+            calculation=TimeSettingsCalculationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type=TimerangeTypes.ABSOLUTE,
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
+                timerange_min=None,
+                timerange_max=None,
             ),
-            specific_settings={},
+            calibration=TimeSettingsCalibrationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type=TimerangeTypes.ABSOLUTE,
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
+            ),
         ),
     )
 
@@ -251,38 +216,27 @@ def test_handle_calibration_method_absolute_without_last_timestamp():
         outputs=[],
         staticdata=[],
         controller_components=[],
-        controller_settings=ControllerSettingModel(
-            time_settings=TimeSettingsModel(
-                calculation=TimeSettingsCalculationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type=TimerangeTypes.ABSOLUTE,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                    timerange_min=None,
-                    timerange_max=None,
-                ),
-                calibration=TimeSettingsCalibrationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type=TimerangeTypes.ABSOLUTE,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                results=TimeSettingsResultsModel(
-                    timerange=1,
-                    timerange_unit=TimeUnits.HOUR,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
+        time_settings=TimeSettingsModel(
+            calculation=TimeSettingsCalculationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type=TimerangeTypes.ABSOLUTE,
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
+                timerange_min=None,
+                timerange_max=None,
             ),
-            specific_settings={},
+            calibration=TimeSettingsCalibrationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type=TimerangeTypes.ABSOLUTE,
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
+            ),
         ),
     )
 
@@ -323,36 +277,25 @@ def test_calculate_dates_calibration_method():
         outputs=[],
         staticdata=[],
         controller_components=[],
-        controller_settings=ControllerSettingModel(
-            time_settings=TimeSettingsModel(
-                calculation=TimeSettingsCalculationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type=TimerangeTypes.ABSOLUTE,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                calibration=TimeSettingsCalibrationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type=TimerangeTypes.ABSOLUTE,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                results=TimeSettingsResultsModel(
-                    timerange=1,
-                    timerange_unit=TimeUnits.HOUR,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
+        time_settings=TimeSettingsModel(
+            calculation=TimeSettingsCalculationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type=TimerangeTypes.ABSOLUTE,
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
             ),
-            specific_settings={},
+            calibration=TimeSettingsCalibrationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type=TimerangeTypes.ABSOLUTE,
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
+            ),
         ),
     )
 

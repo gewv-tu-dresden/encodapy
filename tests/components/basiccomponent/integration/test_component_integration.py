@@ -37,7 +37,6 @@ from encodapy.utils.units import DataUnits
 from encodapy.config import (
     ConfigModel,
     InterfaceModel,
-    ControllerSettingModel,
     TimeSettingsModel,
     TimeSettingsCalculationModel,
 )
@@ -294,18 +293,14 @@ class TestComponentIntegration:
                     config=ConfigDataPoints({}),
                 )
             ],
-            controller_settings=ControllerSettingModel(
-                time_settings=TimeSettingsModel(
-                    calculation=TimeSettingsCalculationModel(
-                        timerange=1.0,
-                        timerange_unit="hour",
-                        sampling_time=1,
-                        sampling_time_unit="second",
-                    ),
-                    calibration=None,
-                    results=None,
+            time_settings=TimeSettingsModel(
+                calculation=TimeSettingsCalculationModel(
+                    timerange=1.0,
+                    timerange_unit="hour",
+                    sampling_time=1,
+                    sampling_time_unit="second",
                 ),
-                specific_settings={},
+                calibration=None,
             ),
         )
 

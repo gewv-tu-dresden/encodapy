@@ -39,13 +39,11 @@ from filip.models.ngsi_v2.context import ContextEntity
 
 from encodapy.config import (
     ConfigModel,
-    ControllerSettingModel,
     DataQueryTypes,
     InterfaceModel,
     TimeSettingsCalculationModel,
     TimeSettingsCalibrationModel,
     TimeSettingsModel,
-    TimeSettingsResultsModel,
 )
 from encodapy.config.types import TimerangeTypes
 from encodapy.service.communication.fiware_connection import FiwareConnection
@@ -85,36 +83,25 @@ def create_mock_config():
         outputs=[],
         staticdata=[],
         controller_components=[],
-        controller_settings=ControllerSettingModel(
-            time_settings=TimeSettingsModel(
-                calculation=TimeSettingsCalculationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type=TimerangeTypes.ABSOLUTE,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                calibration=TimeSettingsCalibrationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type=TimerangeTypes.ABSOLUTE,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
-                results=TimeSettingsResultsModel(
-                    timerange=1,
-                    timerange_unit=TimeUnits.HOUR,
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
+        time_settings=TimeSettingsModel(
+            calculation=TimeSettingsCalculationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type=TimerangeTypes.ABSOLUTE,
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
             ),
-            specific_settings={},
+            calibration=TimeSettingsCalibrationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type=TimerangeTypes.ABSOLUTE,
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
+            ),
         ),
     )
 
