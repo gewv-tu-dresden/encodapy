@@ -94,10 +94,11 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="n">Series</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_numeric_dtype</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">field_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">filip.models.ngsi_v2.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedMetadata</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">filip.models.ngsi_v2.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContextEntity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeModel</span><span class="p">,</span> <span class="n">CommandModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.env_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_FIWARE_CALL_TIMEOUT</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeTypes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataUnits</span>
 
@@ -421,12 +422,14 @@
 <span class="sd">        service (str): The service</span>
 <span class="sd">        service_path (str): The service path</span>
 <span class="sd">        authentication (Optional[Union[FiwareAuth, None]]): The authentication</span>
+<span class="sd">        call_timeout (float): Timeout in seconds for calls to the FIWARE Context Broker</span>
 <span class="sd">    """</span>
 
     <span class="n">cb_url</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">service</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">service_path</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">authentication</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">FiwareAuth</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+    <span class="n">authentication</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">FiwareAuth</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">call_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">DEFAULT_FIWARE_CALL_TIMEOUT</span><span class="p">,</span> <span class="n">gt</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 
 
