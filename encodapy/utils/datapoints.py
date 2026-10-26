@@ -168,11 +168,16 @@ class DataPointDatetime(DataPointGeneral):
         description="A datetime value for the datapoint",
     )
 
-    @field_validator("value")
+    @field_validator("value", mode="before")
     @classmethod
-    def validate_datetime(cls, v: datetime) -> datetime:
+    def validate_datetime(cls, v: Any) -> datetime:
         """Validate that the value is a datetime object or a string in ISO format
-        that can be converted to datetime."""
+        that can be converted to datetime.
+
+        Runs in "before" mode: pydantic converts strings to datetime objects
+        before "after" validators run, so the custom ISO-format check has to
+        run on the raw input.
+        """
         if isinstance(v, datetime):
             return v
         if isinstance(v, str):

@@ -50,6 +50,11 @@ def get_medium_parameter(
 
     Returns:
         MediumParameters: The parameters of the medium
+
+    Raises:
+        ValueError: If the medium is not available, the temperature is outside
+            the supported range (0.1 to 99.0 degree Celsius for water) or the
+            medium does not support temperature-dependent calculations
     """
     if medium not in MEDIUM_VALUES:
         logger.error(f"Medium {medium} not available")
@@ -59,30 +64,34 @@ def get_medium_parameter(
         return MEDIUM_VALUES[medium]
 
     if medium is Medium.WATER:
-        if temperature <= 0.1:
+        if temperature < 0.1:
             logger.error("Attention! Temperature to low!")
-            values = MediumParameters(cp=None, rho=None)
-        elif temperature > 99.0:
+            raise ValueError(
+                f"Temperature of {temperature} degree Celsius is too low "
+                "to calculate medium parameters for water"
+            )
+        if temperature > 99.0:
             logger.error("Attention! Temperature to hight!")
-            values = MediumParameters(cp=None, rho=None)
-        else:
-            # rho aproximation of Glück [kg/m³]:
-            rho_calc = (
-                1.002045 * 1000
-                - 1.029905 * 0.1 * temperature
-                - 3.698162 * 0.001 * temperature**2
-                + 3.991053 * 0.000001 * temperature**3
+            raise ValueError(
+                f"Temperature of {temperature} degree Celsius is too high "
+                "to calculate medium parameters for water"
             )
-            # cp aproximation of Glück [kJ/kgK]:
-            cp_calc = (
-                4.177375
-                - 2.144614 * 0.000001 * temperature
-                - 3.165823 * 0.0000001 * temperature**2
-                + 4.134309 * 0.00000001 * temperature**3
-            )
-            values = MediumParameters(cp=cp_calc, rho=rho_calc)
 
-        return values
+        # rho aproximation of Glück [kg/m³]:
+        rho_calc = (
+            1.002045 * 1000
+            - 1.029905 * 0.1 * temperature
+            - 3.698162 * 0.001 * temperature**2
+            + 3.991053 * 0.000001 * temperature**3
+        )
+        # cp aproximation of Glück [kJ/kgK]:
+        cp_calc = (
+            4.177375
+            - 2.144614 * 0.000001 * temperature
+            - 3.165823 * 0.0000001 * temperature**2
+            + 4.134309 * 0.00000001 * temperature**3
+        )
+        return MediumParameters(cp=cp_calc, rho=rho_calc)
     # TODO add more mediums
     logger.error("Medium is not supported for temperature calculation")
     raise ValueError("Medium is not supported for temperature calculation")

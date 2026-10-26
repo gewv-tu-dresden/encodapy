@@ -10,10 +10,10 @@ skip_docker = os.environ.get("SKIP_DOCKER_FIXTURES", "0") == "1"
 if not skip_docker:
     try:
         from tests.docker.conftest import (
-            fiware_environment,  # noqa: F401: Unused import
-            fiware_cb_client,  # noqa: F401: Unused import
-            test_entity,  # noqa: F401: Unused import
-            fiware_envs,  # noqa: F401: Unused import
+            fiware_environment,  # noqa: F401
+            fiware_cb_client,  # noqa: F401
+            test_entity,  # noqa: F401
+            fiware_envs,  # noqa: F401
         )
     except (ImportError, SystemExit):
         # Docker dependencies not available, skip docker fixtures

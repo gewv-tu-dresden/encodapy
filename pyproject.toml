@@ -27,14 +27,14 @@ nbformat = ">=5.11.1"
 filip = ">=0.8.1"
 numpy = ">=2.4.6"
 loguru = ">=0.7.3"
-requests = ">=2.32.5"
+requests = ">=2.33.0"
 requests-oauthlib = ">=2.0.0"
-crate = ">=2.2.1"
-pydantic = ">=2.12.0,<2.14.0"
+crate = ">=2.3.0"
+pydantic = ">=2.12.0,<2.15.0"
 python-dotenv = ">=1.2.3"
-pydantic-settings = ">=2.7.0,<2.12.0"
+pydantic-settings = ">=2.7.0,<2.16.0"
 types-requests = "^2.33.0"
-pint = "^0.25.3"
+pint = ">=0.25.3,<0.27.0"
 
 [tool.poetry.group.dev.dependencies]
 pylint = ">=4.0.8"
@@ -56,7 +56,7 @@ pandas-stubs = "^3.0"
 pylint-pydantic = "^0.4.1"
 cffconvert = "^2.0.0"
 pre-commit = "^4.6.2"
-ruff = "^0.16.6"
+ruff = "^0.17.0"
 pytest-asyncio = "^1.4.0"
 testcontainers = "^4.15.0"
 pytest-order = "^1.5.0"
@@ -67,6 +67,16 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
 plugins = ["pydantic.mypy"]
+
+[tool.ruff.lint]
+# Keep in sync with the ruff version pinned in .pre-commit-config.yaml
+# (rev of astral-sh/ruff-pre-commit). Without an explicit selection ruff
+# would expand its default rule set across versions.
+select = ["E4", "E7", "E9", "F"]
+
+[tool.ruff.lint.per-file-ignores]
+# __init__.py re-exports are part of the package API
+"**/__init__.py" = ["F401", "F403"]
 
 [[tool.mypy.overrides]]
 module = "filip.*"  # Ignore missing imports for the filip package
@@ -79,4 +89,28 @@ markers = [
     "integration: tests with optional external runtime dependencies",
     "docker: tests requiring Docker containers via testcontainers",
     "slow: tests that take a long time to run",
+]
+
+# Third-party warnings EncoDaPy cannot fix itself - remove entries once the
+# upstream projects ship fixed releases.
+# Filters with a trailing module regex (fourth field) only ignore warnings
+# raised from inside filip's own code; the same patterns used in encodapy
+# would still be reported.
+filterwarnings = [
+    # pandas 2.3.x builds every Timedelta via np.timedelta64 with generic
+    # unit, deprecated by numpy >= 2.5 - raised from pandas internals for
+    # any correct pd.Timedelta usage, so it cannot be scoped or avoided
+    "ignore:The 'generic' unit for NumPy timedelta is deprecated:DeprecationWarning",
+    # All DeprecationWarnings raised from inside filip's own code -
+    # EncoDaPy cannot fix those. The same patterns used in encodapy
+    # code would still be reported, because the module regex does not
+    # match encodapy modules. The regex matches 'filip' itself and all
+    # of its submodules, but not names like 'filipfoo'. The filter format
+    # is colon-separated, so the module regex must not contain a colon
+    # (a plain group is used instead of '(?:').
+    'ignore::DeprecationWarning:filip(\..*)?\Z',
+    # filip's QueryString types (used in EntityQuery fields) implement
+    # the pydantic-V1 __get_validators__ protocol; pydantic raises this
+    # warning from its own internals, so it cannot be scoped to filip
+    "ignore:`__get_validators__` is deprecated:DeprecationWarning",
 ]
