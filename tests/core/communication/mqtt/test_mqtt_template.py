@@ -719,3 +719,35 @@ def test_no_missing_params_logged_for_complete_template_with_list_payload():
         if "not found in MQTT template" in call.args[0]
     ]
     assert len(missing_param_calls) == 0
+
+
+# =============================================================================
+# Input Validation / Template Diagnostics Edge Cases
+# =============================================================================
+
+
+def test_invalid_input_type_raises_type_error():
+    """Test that a non-str/non-dict input raises a TypeError."""
+    with pytest.raises(TypeError, match="Invalid type for mqtt_format_template_env"):
+        MQTTTemplateConfig.model_validate(123)
+
+
+def test_env_template_with_invalid_json_raises_type_error():
+    """Test that an env variable holding no valid JSON raises a TypeError."""
+    MQTTTemplateConfig._checked_templates.clear()
+
+    with patch.dict(os.environ, {"MQTT_BROKEN_TEMPLATE": "not-a-json"}):
+        with pytest.raises(TypeError, match="Invalid MQTT template"):
+            MQTTTemplateConfig.model_validate("broken_template")
+
+
+def test_handle_dict_input_rejects_non_dict():
+    """Test that _handle_dict_input rejects non-dict input with a TypeError."""
+    with pytest.raises(TypeError, match="Input data must be a dictionary"):
+        MQTTTemplateConfig._handle_dict_input("not-a-dict")
+
+
+def test_serialize_template_part_with_non_string_value():
+    """Test that non-str/dict/list template parts serialize to an empty string."""
+    assert MQTTTemplateConfig._serialize_template_part(None) == ""
+    assert MQTTTemplateConfig._serialize_template_part(42) == ""
