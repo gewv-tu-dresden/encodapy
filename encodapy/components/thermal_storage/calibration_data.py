@@ -6,8 +6,9 @@ Authors: Martin Altenburger
 
 from typing import Optional
 from pathlib import Path
+from contextlib import closing
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 from loguru import logger
 from encodapy.components.thermal_storage.thermal_storage_config import (
     TemperatureExtrema,
@@ -34,7 +35,9 @@ class CalibrationData:
             db_path (Path): Path to the SQLite database file.
         """
         for table in self.tables:
-            with sqlite3.connect(db_path) as conn:
+            # `closing` ensures the connection is closed again
+            # (the sqlite3 context manager only commits, it does not close)
+            with closing(sqlite3.connect(db_path)) as conn:
                 conn.execute(f"""
                 CREATE TABLE IF NOT EXISTS {table} (
                     sensor_index INTEGER PRIMARY KEY,
@@ -42,6 +45,7 @@ class CalibrationData:
                     max_value REAL,
                     updated_at TEXT
                 )""")
+                conn.commit()
 
     def _save_values_sqlite(
         self, sensor_index: int, table: str, extrema: TemperatureExtrema
@@ -56,7 +60,7 @@ class CalibrationData:
             logger.error(f"Table {table} is not recognized.")
             return
         try:
-            with sqlite3.connect(self.db_path) as conn:
+            with closing(sqlite3.connect(self.db_path)) as conn:
                 conn.execute(
                     f""" INSERT INTO {table}(sensor_index,min_value,max_value,updated_at)
                     VALUES(?,?,?,?)
@@ -72,6 +76,7 @@ class CalibrationData:
                         extrema.time.isoformat(),
                     ),
                 )
+                conn.commit()
         except sqlite3.Error as e:
             logger.error(f"An error occurred while saving extrema: {e}")
 
@@ -100,7 +105,7 @@ class CalibrationData:
             extrema = TemperatureExtrema(
                 minimal_temperature=sensor.limits.minimal_temperature,
                 maximal_temperature=sensor.limits.maximal_temperature,
-                time=datetime.utcnow(),
+                time=datetime.now(timezone.utc),
             )
             self._save_values_sqlite(
                 sensor_index=sensor_index, table="sensor_limits", extrema=extrema
@@ -122,7 +127,7 @@ class CalibrationData:
             return None
 
         try:
-            with sqlite3.connect(self.db_path) as conn:
+            with closing(sqlite3.connect(self.db_path)) as conn:
                 cur = conn.execute(
                     f"""SELECT min_value,max_value,updated_at
                     FROM {table} WHERE sensor_index=?""",
