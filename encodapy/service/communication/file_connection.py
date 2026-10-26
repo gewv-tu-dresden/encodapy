@@ -33,6 +33,7 @@ from encodapy.utils.models import (
     OutputDataAttributeModel,
     OutputDataEntityModel,
     StaticDataEntityModel,
+    apply_factor,
 )
 from encodapy.utils.error_handling import NotSupportedError
 from encodapy.utils.units import TimeUnits
@@ -183,7 +184,7 @@ class FileConnection:
                     resample_unit = ""
 
             if resample_unit != "":
-                data = data.resample(f"{timestep}" f"{resample_unit}").asfreq()
+                data = data.resample(f"{timestep}{resample_unit}").asfreq()
 
         except (FileNotFoundError, PermissionError) as e:
             logger.error(f"Could not open file ({path_of_file}): {e}")
@@ -201,7 +202,10 @@ class FileConnection:
                 attributes_values.append(
                     InputDataAttributeModel(
                         id=attribute.id,
-                        data=data.filter([attribute.id_interface]),
+                        data=apply_factor(
+                            data.filter([attribute.id_interface]),
+                            attribute.factor,
+                        ),
                         data_type=AttributeTypes.TIMESERIES,
                         data_available=True,
                         latest_timestamp_input=data.index[0],
@@ -212,7 +216,9 @@ class FileConnection:
                 attributes_values.append(
                     InputDataAttributeModel(
                         id=attribute.id,
-                        data=data[attribute.id_interface].iloc[0],
+                        data=apply_factor(
+                            data[attribute.id_interface].iloc[0], attribute.factor
+                        ),
                         data_type=AttributeTypes.VALUE,
                         data_available=True,
                         latest_timestamp_input=data.index[0],
@@ -259,8 +265,7 @@ class FileConnection:
             return time
         except ValueError:
             logger.debug(
-                f"Time string '{time_string}' is not in ISO format. "
-                f"Could not parse."
+                f"Time string '{time_string}' is not in ISO format. Could not parse."
             )
             return None
 
@@ -283,7 +288,7 @@ class FileConnection:
                 if file_attribute.id == attribute.id_interface:
                     return InputDataAttributeModel(
                         id=attribute.id,
-                        data=file_attribute.value,
+                        data=apply_factor(file_attribute.value, attribute.factor),
                         unit=file_attribute.unit,
                         data_type=attribute.type,
                         data_available=True,
@@ -315,14 +320,12 @@ class FileConnection:
                 data_file = json.load(f)
         except (FileNotFoundError, PermissionError) as e:
             logger.error(
-                f"File not found / not readable ({path_of_file}) "
-                f"for {data_type}: {e}"
+                f"File not found / not readable ({path_of_file}) for {data_type}: {e}"
             )
             return None
         except (json.JSONDecodeError, UnicodeDecodeError, TypeError, ValueError) as e:
             logger.error(
-                f"Error decoding JSON from file ({path_of_file})"
-                f"for {data_type}: {e}"
+                f"Error decoding JSON from file ({path_of_file})for {data_type}: {e}"
             )
             return None
 
@@ -515,7 +518,7 @@ class FileConnection:
             output_attr.append(
                 {
                     "id": output.id_interface,
-                    "value": output.value,
+                    "value": apply_factor(output.value, output.factor),
                     "unit": None if output.unit is None else output.unit.value,
                     "time": None
                     if output.timestamp is None

@@ -50,6 +50,7 @@ from encodapy.utils.models import (
     MetaDataModel,
     OutputDataAttributeModel,
     OutputDataEntityModel,
+    apply_factor,
 )
 from encodapy.utils.units import DataUnits, adjust_units, get_time_unit_seconds
 
@@ -383,6 +384,7 @@ class FiwareConnection:
             if attribute.type == AttributeTypes.TIMESERIES:
                 attributes_timeseries[attribute.id] = {
                     "id_interface": attribute.id_interface,
+                    "factor": attribute.factor,
                     "metadata": self._get_metadata_from_fiware(
                         fiware_input_entity_attributes[attribute.id_interface]
                     ),
@@ -396,9 +398,12 @@ class FiwareConnection:
                 attributes_values.append(
                     InputDataAttributeModel(
                         id=attribute.id,
-                        data=fiware_input_entity_attributes[
-                            attribute.id_interface
-                        ].value,
+                        data=apply_factor(
+                            fiware_input_entity_attributes[
+                                attribute.id_interface
+                            ].value,
+                            attribute.factor,
+                        ),
                         data_type=AttributeTypes.VALUE,
                         data_available=(
                             fiware_input_entity_attributes[attribute.id_interface].value
@@ -658,7 +663,8 @@ class FiwareConnection:
         Args:
             - entity_id: id of the entity
             - entity_type: type of the entity
-            - entity_attributes: dict with the attributes of the entity (id, metadata)
+            - entity_attributes: dict with the attributes of the entity \
+                (id_interface, metadata, factor)
             - method (DataQueryTypes): method of the function which queries the data
             (calculation or calibration)
             - timestamp_latest_output: timestamp of the last output of the entity
@@ -705,7 +711,10 @@ class FiwareConnection:
             df.rename(
                 columns={attribute_data["id_interface"]: attribute_id}, inplace=True
             )
-            data = df.filter([attribute_id]).dropna()
+            data = apply_factor(
+                df.filter([attribute_id]).dropna(),
+                attribute_data.get("factor", 1.0),
+            )
             if data.empty:
                 logger.debug(
                     f"Data for attribute {attribute_id} of entity {entity.id} is empty"
@@ -802,9 +811,9 @@ class FiwareConnection:
             list: List with the attributes (NamedContextAttribute) for the FIWARE platform
         """
         try:
-            assert isinstance(
-                fiware_datapoint.attribute.value, pd.DataFrame
-            ), f"Expected pandas DataFrame, got {type(fiware_datapoint.attribute.value)}"
+            assert isinstance(fiware_datapoint.attribute.value, pd.DataFrame), (
+                f"Expected pandas DataFrame, got {type(fiware_datapoint.attribute.value)}"
+            )
         except AssertionError as exc:
             logger.error("Assertion error: %s", exc)
             raise ValueError("Invalid data type for FiwareDatapointParameter") from exc
@@ -832,7 +841,10 @@ class FiwareConnection:
 
         attr = NamedContextAttribute(
             name=fiware_datapoint.attribute.id_interface,
-            value=df[fiware_datapoint.attribute.id].iloc[-1],
+            value=apply_factor(
+                df[fiware_datapoint.attribute.id].iloc[-1],
+                fiware_datapoint.attribute.factor,
+            ),
             type=datatype,
             metadata=meta_data_row,
         )
@@ -852,7 +864,10 @@ class FiwareConnection:
             attrs_timeseries.append(
                 NamedContextAttribute(
                     name=fiware_datapoint.attribute.id_interface,
-                    value=row[fiware_datapoint.attribute.id],
+                    value=apply_factor(
+                        row[fiware_datapoint.attribute.id],
+                        fiware_datapoint.attribute.factor,
+                    ),
                     type=datatype,
                     metadata=meta_data_row,
                 )
@@ -891,6 +906,13 @@ class FiwareConnection:
             if attribute_value_adjusted is not None:
                 attribute.value = attribute_value_adjusted
                 attribute.unit = fiware_unit
+                if attribute.factor != 1.0:
+                    logger.warning(
+                        f"Attribute {attribute.id} of entity "
+                        f"{id_output_entity} combines a unit conversion "
+                        "with a `factor` != 1.0 - the value is scaled by "
+                        "both (double scaling). Please use only one of them."
+                    )
                 meta_data.append(
                     NamedMetadata(
                         name="unitCode", type=DataType.TEXT, value=fiware_unit.value
@@ -1017,7 +1039,7 @@ class FiwareConnection:
                 attrs.append(
                     NamedContextAttribute(
                         name=attribute.id_interface,
-                        value=attribute.value,
+                        value=apply_factor(attribute.value, attribute.factor),
                         type=datatype,
                         metadata=meta_data,
                     )
@@ -1073,8 +1095,7 @@ class FiwareConnection:
                         await sleep(0.1)
                     else:
                         logger.error(
-                            "Error while sending attributes to FIWARE platform: "
-                            f"{err}"
+                            f"Error while sending attributes to FIWARE platform: {err}"
                         )
 
                 i += 1
@@ -1113,7 +1134,7 @@ class FiwareConnection:
                         await sleep(0.1)
                     else:
                         logger.error(
-                            "Error while sending commands to FIWARE platform: " f"{err}"
+                            f"Error while sending commands to FIWARE platform: {err}"
                         )
 
                 i += 1

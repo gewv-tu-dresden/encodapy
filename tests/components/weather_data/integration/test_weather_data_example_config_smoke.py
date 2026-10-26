@@ -206,3 +206,46 @@ def test_example_config_smoke_runs_weather_data_component(
     assert len(api_calls) == 2
     second_output = component.output_data.model_dump()
     assert second_output["temperature"]["value"] == pytest.approx(21.5)
+
+
+@pytest.mark.integration
+def test_first_calculate_calls_api_within_same_second_as_prepare(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Regression: prepare and calculate within second :00 must still trigger the api call."""
+    example_dir = _example_dir()
+    static_entities = _load_static_entities(example_dir)
+
+    fixed_now = weather_data_module.WEATHER_DATA_TZ.localize(
+        datetime(2026, 9, 29, 12, 0, 0, 500_000)
+    )
+
+    class _FrozenDatetime(datetime):
+        """datetime whose now() always returns the same moment with microseconds."""
+
+        @classmethod
+        def now(cls, tz=None):
+            return fixed_now
+
+    monkeypatch.setattr(weather_data_module, "datetime", _FrozenDatetime)
+
+    api_calls: list[dict[str, Any]] = []
+    monkeypatch.setattr(
+        weather_data_module.requests, "get", _fake_brightsky_api(api_calls)
+    )
+
+    component = WeatherData(
+        config=_load_component_config(example_dir),
+        component_id="weatherdata",
+        static_data=static_entities,
+    )
+    component.set_input_data(
+        InputDataModel(
+            input_entities=[],
+            output_entities=[],
+            static_entities=static_entities,
+        )
+    )
+    component.calculate()
+
+    assert len(api_calls) == 2

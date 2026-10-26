@@ -71,6 +71,18 @@ class AttributeModel(BaseModel):
         mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]): \
             The format of the attribute for MQTT (if not set, the default format is used) \
                 - only for mqtt interface needed
+        factor (float): Optional scaling factor for interface values (default 1.0). \
+            The raw interface value is multiplied by `factor` on input, and the \
+            internal value is multiplied by `factor` before publishing/sending. \
+            Applies to all communication connections (MQTT, FIWARE, FILE) in both \
+            directions (input and output) for numeric values and numeric timeseries \
+            columns (DataFrames / Series); the default 1.0 leaves values unchanged. \
+            Do not combine `factor` with other scaling mechanisms (FIWARE unit \
+            conversion or scaling expressions in MQTT templates) - values would \
+            be scaled twice. \
+            Rationale (why): devices behind Modbus-based gateways often transmit \
+            values in a fixed scaling (e.g. tenths of a degree), so the real \
+            physical value is ``interface value * factor``.
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -85,6 +97,7 @@ class AttributeModel(BaseModel):
     datatype: DataType = DataType("Number")
     timestamp: datetime | None = None
     mqtt_format: MQTTFormatTypes | MQTTTemplateConfig = MQTTFormatTypes.PLAIN
+    factor: float = 1.0
 
     @model_validator(mode="after")
     def set_id_interface(self) -> "AttributeModel":
