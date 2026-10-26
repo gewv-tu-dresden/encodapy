@@ -102,7 +102,7 @@ class WeatherData(BasicComponent):
                 "Configure at least one output field (current and/or forecast)."
             )
 
-        actual_time = datetime.now(WEATHER_DATA_TZ).replace(second=0)
+        actual_time = datetime.now(WEATHER_DATA_TZ).replace(second=0, microsecond=0)
         self.next_time_step_current_weather = actual_time
         self.next_time_step_forecast_weather = actual_time
 
