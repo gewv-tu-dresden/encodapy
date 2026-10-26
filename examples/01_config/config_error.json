@@ -89,12 +89,9 @@
             "config": {}
         }
     ],
-    "controller_settings": {
-        "time_settings": {
-            "calculation": {
-                "timerange": 24,
-                "timerange_unit": "hour"
-            }
+    "time_settings": {        "calculation": {
+            "timerange": 24,
+            "timerange_unit": "hour"
         }
     }
 }

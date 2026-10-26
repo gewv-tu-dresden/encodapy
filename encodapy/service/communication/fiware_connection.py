@@ -542,7 +542,7 @@ class FiwareConnection:
         Returns:
             tuple[str, Optional[str]]: Timestamps for the input data query (from_date, to_date)
         """
-        calculation = self.config.controller_settings.time_settings.calculation
+        calculation = self.config.time_settings.calculation
 
         if calculation.timerange is not None:
             return self._calculate_timerange(
@@ -627,16 +627,14 @@ class FiwareConnection:
         Returns:
             tuple[str, str]: Timestamps for the input data query (from_date, to_date)
         """
-        calibration_time_settings = (
-            self.config.controller_settings.time_settings.calibration
-        )
+        calibration_time_settings = self.config.time_settings.calibration
 
         timerange = calibration_time_settings.timerange * get_time_unit_seconds(
             calibration_time_settings.timerange_unit
         )
 
         if (
-            self.config.controller_settings.time_settings.calculation.timerange_type
+            self.config.time_settings.calculation.timerange_type
             is TimerangeTypes.RELATIVE
             and last_timestamp is not None
         ):
@@ -702,10 +700,8 @@ class FiwareConnection:
         # resample the time series with configured time step size
         df.fillna(value=np.nan, inplace=True)
         time_step_seconds = int(
-            self.config.controller_settings.time_settings.calculation.timestep
-            * get_time_unit_seconds(
-                self.config.controller_settings.time_settings.calculation.timestep_unit
-            )
+            self.config.time_settings.calculation.timestep
+            * get_time_unit_seconds(self.config.time_settings.calculation.timestep_unit)
         )
         df = df.resample(f"""{time_step_seconds}s""").mean(numeric_only=True)
 
@@ -815,9 +811,9 @@ class FiwareConnection:
             list: List with the attributes (NamedContextAttribute) for the FIWARE platform
         """
         try:
-            assert isinstance(
-                fiware_datapoint.attribute.value, pd.DataFrame
-            ), f"Expected pandas DataFrame, got {type(fiware_datapoint.attribute.value)}"
+            assert isinstance(fiware_datapoint.attribute.value, pd.DataFrame), (
+                f"Expected pandas DataFrame, got {type(fiware_datapoint.attribute.value)}"
+            )
         except AssertionError as exc:
             logger.error("Assertion error: %s", exc)
             raise ValueError("Invalid data type for FiwareDatapointParameter") from exc
@@ -1099,8 +1095,7 @@ class FiwareConnection:
                         await sleep(0.1)
                     else:
                         logger.error(
-                            "Error while sending attributes to FIWARE platform: "
-                            f"{err}"
+                            f"Error while sending attributes to FIWARE platform: {err}"
                         )
 
                 i += 1
@@ -1139,7 +1134,7 @@ class FiwareConnection:
                         await sleep(0.1)
                     else:
                         logger.error(
-                            "Error while sending commands to FIWARE platform: " f"{err}"
+                            f"Error while sending commands to FIWARE platform: {err}"
                         )
 
                 i += 1

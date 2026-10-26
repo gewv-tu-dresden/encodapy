@@ -36,7 +36,7 @@
   - `outputs`: Configuration of the outputs
   - `staticdata`: Static data point configuration (Data that is not continuously updated)
   - `controller_components`: Configuration of the controller components, see [encodapy/components/readme.md](./encodapy/components/readme.md) or the [documentation](https://gewv-tu-dresden.github.io/encodapy/components.html)
-  - `controller_settings`: General settings about the controller
+  - `time_settings`: Time settings for the controller (calculation and calibration)
 
 - Environmental variables are required to configure the basic service and the interfaces. For more information, see [encodapy/config/env_values](./encodapy/config/env_values.py) or the [documentation](https://gewv-tu-dresden.github.io/encodapy/).
 

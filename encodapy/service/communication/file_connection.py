@@ -143,7 +143,7 @@ class FileConnection:
             to the platform is not available
 
         """
-        time_settings = self.config.controller_settings.time_settings
+        time_settings = self.config.time_settings
         match method:
             case DataQueryTypes.CALCULATION:
                 timestep = time_settings.calculation.timestep
@@ -184,7 +184,7 @@ class FileConnection:
                     resample_unit = ""
 
             if resample_unit != "":
-                data = data.resample(f"{timestep}" f"{resample_unit}").asfreq()
+                data = data.resample(f"{timestep}{resample_unit}").asfreq()
 
         except (FileNotFoundError, PermissionError) as e:
             logger.error(f"Could not open file ({path_of_file}): {e}")
@@ -265,8 +265,7 @@ class FileConnection:
             return time
         except ValueError:
             logger.debug(
-                f"Time string '{time_string}' is not in ISO format. "
-                f"Could not parse."
+                f"Time string '{time_string}' is not in ISO format. Could not parse."
             )
             return None
 
@@ -321,14 +320,12 @@ class FileConnection:
                 data_file = json.load(f)
         except (FileNotFoundError, PermissionError) as e:
             logger.error(
-                f"File not found / not readable ({path_of_file}) "
-                f"for {data_type}: {e}"
+                f"File not found / not readable ({path_of_file}) for {data_type}: {e}"
             )
             return None
         except (json.JSONDecodeError, UnicodeDecodeError, TypeError, ValueError) as e:
             logger.error(
-                f"Error decoding JSON from file ({path_of_file})"
-                f"for {data_type}: {e}"
+                f"Error decoding JSON from file ({path_of_file})for {data_type}: {e}"
             )
             return None
 

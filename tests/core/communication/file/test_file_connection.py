@@ -29,7 +29,6 @@ from encodapy.config.models import (
 )
 from encodapy.config import (
     ConfigModel,
-    ControllerSettingModel,
     InterfaceModel,
     TimeSettingsModel,
 )
@@ -248,19 +247,16 @@ def test_file_connection_init():
         outputs=[],
         staticdata=[],
         controller_components=[],
-        controller_settings=ControllerSettingModel(
-            time_settings=TimeSettingsModel(
-                calculation=TimeSettingsCalculationModel(
-                    timerange=24,
-                    timerange_unit=TimeUnits.HOUR,
-                    timerange_type="absolute",
-                    timestep=1,
-                    timestep_unit=TimeUnits.SECOND,
-                    sampling_time=1,
-                    sampling_time_unit=TimeUnits.MINUTE,
-                ),
+        time_settings=TimeSettingsModel(
+            calculation=TimeSettingsCalculationModel(
+                timerange=24,
+                timerange_unit=TimeUnits.HOUR,
+                timerange_type="absolute",
+                timestep=1,
+                timestep_unit=TimeUnits.SECOND,
+                sampling_time=1,
+                sampling_time_unit=TimeUnits.MINUTE,
             ),
-            specific_settings={},
         ),
     )
 
