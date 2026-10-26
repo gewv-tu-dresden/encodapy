@@ -41,11 +41,49 @@ def test_get_medium_parameter_with_temperature_too_high_raises() -> None:
 def test_get_medium_parameter_with_boundary_temperatures_is_calculated() -> None:
     """The range boundaries (0.1 and 99.0 degree Celsius) are still valid."""
 
-    lower = get_medium_parameter(medium=Medium.WATER, temperature=0.1)
-    upper = get_medium_parameter(medium=Medium.WATER, temperature=99.0)
+    lower = get_medium_parameter(
+        medium=Medium.WATER, temperature=mediums.WATER_TEMPERATURE_MIN
+    )
+    upper = get_medium_parameter(
+        medium=Medium.WATER, temperature=mediums.WATER_TEMPERATURE_MAX
+    )
 
     assert lower.cp > 0
     assert upper.cp > 0
+
+
+def test_get_medium_parameter_below_accurate_range_logs_warning() -> None:
+    """Temperatures below the accurate range log a warning but are calculated."""
+
+    import loguru
+
+    messages: list = []
+    handler_id = loguru.logger.add(lambda m: messages.append(str(m)), level="WARNING")
+    try:
+        parameters = get_medium_parameter(medium=Medium.WATER, temperature=5.0)
+    finally:
+        loguru.logger.remove(handler_id)
+
+    assert parameters.cp > 0
+    assert any("Glück approximation" in message for message in messages)
+
+
+def test_get_medium_parameter_at_accurate_range_logs_no_warning() -> None:
+    """Temperatures at the accurate range boundary log no warning."""
+
+    import loguru
+
+    messages: list = []
+    handler_id = loguru.logger.add(lambda m: messages.append(str(m)), level="WARNING")
+    try:
+        parameters = get_medium_parameter(
+            medium=Medium.WATER, temperature=mediums.WATER_ACCURATE_TEMPERATURE_MIN
+        )
+    finally:
+        loguru.logger.remove(handler_id)
+
+    assert parameters.cp > 0
+    assert messages == []
 
 
 def test_get_medium_parameter_with_unknown_medium_raises(

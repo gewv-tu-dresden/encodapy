@@ -34,6 +34,14 @@ class MediumParameters(BaseModel):
 
 MEDIUM_VALUES = {Medium.WATER: MediumParameters(cp=4.19, rho=997)}
 
+# Supported temperature range for the temperature-dependent calculation of water
+# parameters based on the Glück approximation [degree Celsius]
+WATER_TEMPERATURE_MIN = 0.1
+WATER_TEMPERATURE_MAX = 99.0
+# The Glück approximation is only reasonably accurate from this temperature
+# upward [degree Celsius]; below it the results should be treated with care
+WATER_ACCURATE_TEMPERATURE_MIN = 10.0
+
 
 def get_medium_parameter(
     medium: Medium, temperature: Optional[float] = None
@@ -44,6 +52,13 @@ def get_medium_parameter(
            - https://berndglueck.de/stoffwerte.php
            - "Zustandswerte Luft Wasser Dampf"  ISBN 3-345-00487-9
 
+       The Glück approximation is only reasonably accurate from around
+       10 degree Celsius upward. Temperatures between
+       WATER_TEMPERATURE_MIN and WATER_ACCURATE_TEMPERATURE_MIN are still
+       calculated, but a warning is logged and the results should be treated
+       with care. A property library like CoolProp could provide reliable
+       calculations across a wider range of temperatures and media.
+
     Args:
         medium (Mediums): The medium
         temperature : float = None
@@ -53,7 +68,8 @@ def get_medium_parameter(
 
     Raises:
         ValueError: If the medium is not available, the temperature is outside
-            the supported range (0.1 to 99.0 degree Celsius for water) or the
+            the supported range (WATER_TEMPERATURE_MIN to
+            WATER_TEMPERATURE_MAX degree Celsius for water) or the
             medium does not support temperature-dependent calculations
     """
     if medium not in MEDIUM_VALUES:
@@ -64,17 +80,24 @@ def get_medium_parameter(
         return MEDIUM_VALUES[medium]
 
     if medium is Medium.WATER:
-        if temperature < 0.1:
+        if temperature < WATER_TEMPERATURE_MIN:
             logger.error("Attention! Temperature to low!")
             raise ValueError(
                 f"Temperature of {temperature} degree Celsius is too low "
                 "to calculate medium parameters for water"
             )
-        if temperature > 99.0:
+        if temperature > WATER_TEMPERATURE_MAX:
             logger.error("Attention! Temperature to hight!")
             raise ValueError(
                 f"Temperature of {temperature} degree Celsius is too high "
                 "to calculate medium parameters for water"
+            )
+        if temperature < WATER_ACCURATE_TEMPERATURE_MIN:
+            logger.warning(
+                f"Temperature of {temperature} degree Celsius is below "
+                f"{WATER_ACCURATE_TEMPERATURE_MIN} degree Celsius; the Glück "
+                "approximation is only reasonably accurate from around "
+                f"{WATER_ACCURATE_TEMPERATURE_MIN} degree Celsius upward"
             )
 
         # rho aproximation of Glück [kg/m³]:
