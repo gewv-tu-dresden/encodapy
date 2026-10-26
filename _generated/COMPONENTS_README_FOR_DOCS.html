@@ -9,6 +9,7 @@
   <title>Component Architecture of EnCoDaPy &mdash; EnCoDaPy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_autodoc_typehints.css?v=057ac668" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=76f00390" />
 
@@ -27,7 +28,7 @@
   <script>
     window.ENCODAPY_DOCS = {
       baseUrl: "/encodapy/",
-      currentVersion: "v0.12.0",
+      currentVersion: "v0.13.0",
     };
   </script>
 
@@ -75,7 +76,7 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Component Architecture of EnCoDaPy</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/docs/source/_generated/COMPONENTS_README_FOR_DOCS.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/docs/source/_generated/COMPONENTS_README_FOR_DOCS.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -110,13 +111,13 @@
 <h3>Available Components<a class="headerlink" href="#available-components" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>ThermalStorage (<code class="docutils literal notranslate"><span class="pre">thermal_storage</span></code>): Thermal storage component to calculate the stored energy using temperature sensors.<br />
-An example can be found under: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/06_thermal_storage_service"><code class="docutils literal notranslate"><span class="pre">examples/06_thermal_storage_service</span></code></a></p></li>
+An example can be found under: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/06_thermal_storage_service"><code class="docutils literal notranslate"><span class="pre">examples/06_thermal_storage_service</span></code></a></p></li>
 <li><p>TwoPointController (<code class="docutils literal notranslate"><span class="pre">two_point_controller</span></code>): Two-Point-Controller component for the steering of the loading process of a thermal storage or other processes.<br />
-An example can be found under: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/07_component_runner"><code class="docutils literal notranslate"><span class="pre">examples/07_component_runner</span></code></a></p></li>
+An example can be found under: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/07_component_runner"><code class="docutils literal notranslate"><span class="pre">examples/07_component_runner</span></code></a></p></li>
 <li><p>Pradictiv Control model with FlixOpt [<code class="docutils literal notranslate"><span class="pre">flixopt_model_component</span></code>]: Component for optimisation within operational management with <a class="reference external" href="https://github.com/flixOpt/flixopt">FlixOpt</a><br />
-An example can be found under <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/09_flixopt"><code class="docutils literal notranslate"><span class="pre">examples/09_flixopt</span></code></a>.</p></li>
+An example can be found under <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/09_flixopt"><code class="docutils literal notranslate"><span class="pre">examples/09_flixopt</span></code></a>.</p></li>
 <li><p>WeatherData (<code class="docutils literal notranslate"><span class="pre">weather_data</span></code>): Weather data component to retrieve current and forecast weather data from <a class="reference external" href="https://brightsky.dev/">Brightsky</a>.<br />
-An example can be found under <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/10_brightsky_weather_service"><code class="docutils literal notranslate"><span class="pre">examples/10_brightsky_weather_service</span></code></a>.</p></li>
+An example can be found under <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/10_brightsky_weather_service"><code class="docutils literal notranslate"><span class="pre">examples/10_brightsky_weather_service</span></code></a>.</p></li>
 </ul>
 </section>
 </section>
@@ -169,14 +170,14 @@ An example can be found under <a class="reference external" href="https://github
 <section id="example-configuration">
 <h3>Example Configuration<a class="headerlink" href="#example-configuration" title="Link to this heading"></a></h3>
 <p>An example of how a Pydantic model can be used to validate the configuration of a component is available at:<br />
-<a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/thermal_storage/thermal_storage_config.py"><code class="docutils literal notranslate"><span class="pre">encodapy/components/thermal_storage/thermal_storage_config.py</span></code></a></p>
+<a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/thermal_storage/thermal_storage_config.py"><code class="docutils literal notranslate"><span class="pre">encodapy/components/thermal_storage/thermal_storage_config.py</span></code></a></p>
 </section>
 </section>
 <hr class="docutils" />
 <section id="implementing-a-new-component">
 <h2>Implementing a New Component<a class="headerlink" href="#implementing-a-new-component" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>an example is provided in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/08_create_new_component"><code class="docutils literal notranslate"><span class="pre">examples/08_create_new_component</span></code></a></p></li>
+<li><p>an example is provided in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/08_create_new_component"><code class="docutils literal notranslate"><span class="pre">examples/08_create_new_component</span></code></a></p></li>
 </ul>
 <section id="infos-for-the-new-component">
 <h3>Infos for the New Component<a class="headerlink" href="#infos-for-the-new-component" title="Link to this heading"></a></h3>

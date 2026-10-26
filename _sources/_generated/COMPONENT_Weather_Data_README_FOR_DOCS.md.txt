@@ -20,7 +20,7 @@ The retrieval of the weather data is controlled by its own time intervals (see <
 
 ## Component Configuration
 
-The configuration model is {py:class}`~encodapy.components.weather_data.weather_data_config.WeatherDataConfigData` in [weather_data_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/weather_data/weather_data_config.py).
+The configuration model is {py:class}`~encodapy.components.weather_data.weather_data_config.WeatherDataConfigData` in [weather_data_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/weather_data/weather_data_config.py).
 
 Coordinates of the location:
 
@@ -87,7 +87,7 @@ No inputs are required. The input model is {py:class}`~encodapy.components.weath
 
 ## Outputs
 
-All implemented outputs are optional, but at least one output must be configured. The output model is {py:class}`~encodapy.components.weather_data.weather_data_config.WeatherDataOutputData` in [weather_data_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/weather_data/weather_data_config.py).
+All implemented outputs are optional, but at least one output must be configured. The output model is {py:class}`~encodapy.components.weather_data.weather_data_config.WeatherDataOutputData` in [weather_data_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/weather_data/weather_data_config.py).
 
 Current weather:
 
@@ -106,7 +106,7 @@ The forecast outputs are dicts with the timestamp of each forecast step as key (
 
 ## Timezone
 
-The timezone for the API retrieval is defined by the constant `WEATHER_DATA_TZ_NAME` in [weather_data_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/weather_data/weather_data_config.py) (default: `Europe/Berlin`). It is used for the component clock (interval checks) and passed to Brightsky as the `tz` parameter, so the API returns timestamps with the matching UTC offset. All output timestamps are therefore complete datetime information: the `time` field of the current weather datapoints is given in UTC, the forecast keys carry the offset of the retrieval timezone. Both can be converted to any other timezone by the receiving component.
+The timezone for the API retrieval is defined by the constant `WEATHER_DATA_TZ_NAME` in [weather_data_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/weather_data/weather_data_config.py) (default: `Europe/Berlin`). It is used for the component clock (interval checks) and passed to Brightsky as the `tz` parameter, so the API returns timestamps with the matching UTC offset. All output timestamps are therefore complete datetime information: the `time` field of the current weather datapoints is given in UTC, the forecast keys carry the offset of the retrieval timezone. Both can be converted to any other timezone by the receiving component.
 
 ## Error Handling
 
@@ -125,10 +125,10 @@ The retry time step of an interval is only advanced after a successful API call.
 
 A full working example is available in:
 
-- [examples/10_brightsky_weather_service](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/10_brightsky_weather_service)
+- [examples/10_brightsky_weather_service](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/10_brightsky_weather_service)
 
 Relevant files:
 
-- Example service configuration: [examples/10_brightsky_weather_service/config.json](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/10_brightsky_weather_service/config.json)
-- Example static data: [examples/10_brightsky_weather_service/static_data.json](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/10_brightsky_weather_service/static_data.json)
-- Notebook to run the example: [examples/10_brightsky_weather_service/run_weatherdata_service.ipynb](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/10_brightsky_weather_service/run_weatherdata_service.ipynb)
+- Example service configuration: [examples/10_brightsky_weather_service/config.json](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/10_brightsky_weather_service/config.json)
+- Example static data: [examples/10_brightsky_weather_service/static_data.json](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/10_brightsky_weather_service/static_data.json)
+- Notebook to run the example: [examples/10_brightsky_weather_service/run_weatherdata_service.ipynb](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/10_brightsky_weather_service/run_weatherdata_service.ipynb)

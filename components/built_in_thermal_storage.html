@@ -9,6 +9,7 @@
   <title>Thermal Storage &mdash; EnCoDaPy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_autodoc_typehints.css?v=057ac668" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=76f00390" />
 
@@ -29,7 +30,7 @@
   <script>
     window.ENCODAPY_DOCS = {
       baseUrl: "/encodapy/",
-      currentVersion: "v0.12.0",
+      currentVersion: "v0.13.0",
     };
   </script>
 
@@ -94,7 +95,7 @@
           <li class="breadcrumb-item"><a href="built_in_components.html">Built-in Components</a></li>
       <li class="breadcrumb-item active">Thermal Storage</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/docs/source/components/built_in_thermal_storage.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/docs/source/components/built_in_thermal_storage.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -115,7 +116,7 @@
 <li><p>Storage energy content in Wh: <code class="docutils literal notranslate"><span class="pre">storage__energy</span></code></p></li>
 <li><p>Additional storable energy in Wh: <code class="docutils literal notranslate"><span class="pre">storage__loading_potential_nominal</span></code></p></li>
 </ul>
-<p>An overview is available as Pydantic BaseModel <a class="reference internal" href="built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageOutputData" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageOutputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageOutputData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a>.</p>
+<p>An overview is available as Pydantic BaseModel <a class="reference internal" href="built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageOutputData" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageOutputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageOutputData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a>.</p>
 <p>If the Temperature Check (<code class="docutils literal notranslate"><span class="pre">load_level_check</span></code> in <a class="reference internal" href="built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageConfigData</span></code></a>) is enabled, the temperature of the sensor is checked and if the levels fall below the limits, the charge level is adjusted. See <a href="#component-configuration">Component Configuration</a> for the information on adding this to temperature sensors.</p>
 </section>
 <section id="calculation-methods">
@@ -190,7 +191,7 @@ sensor limits using stored historical temperatures per sensor.</p>
 </li>
 <li><p>Calibration must be enabled in the general configuration (sample time).</p></li>
 </ul>
-<p>Configuration parameters must be set as datapoints or connections to static data in the config file. For more details, see the <a class="reference internal" href="built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageConfigData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a> or the documentation.</p>
+<p>Configuration parameters must be set as datapoints or connections to static data in the config file. For more details, see the <a class="reference internal" href="built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageConfigData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a> or the documentation.</p>
 </section>
 <section id="inputs">
 <h2>Inputs<a class="headerlink" href="#inputs" title="Link to this heading"></a></h2>
@@ -212,11 +213,11 @@ sensor limits using stored historical temperatures per sensor.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">load_temperature_in</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">load_temperature_out</span></code></p></li>
 </ul>
-<p>For detailed documentation of the inputs, see the <a class="reference internal" href="built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageInputData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a> or the documentation.</p>
+<p>For detailed documentation of the inputs, see the <a class="reference internal" href="built_in_thermal_storage_models.html#encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData" title="encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThermalStorageInputData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/thermal_storage/thermal_storage_config.py">thermal_storage_config.py</a> or the documentation.</p>
 </section>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
-<p>An example how the component could be used is available in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/06_thermal_storage_service">examples/06_thermal_storage_service</a></p>
+<p>An example how the component could be used is available in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/06_thermal_storage_service">examples/06_thermal_storage_service</a></p>
 </section>
 </section>
 

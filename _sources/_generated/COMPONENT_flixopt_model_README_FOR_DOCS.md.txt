@@ -31,7 +31,7 @@ Implemented workflow:
 
 ## Supported Model Elements
 
-The FlixOpt model schema is implemented in [flixopt_models.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/flixopt_model_component/flixopt_models.py). You need to create a {py:class}`~encodapy.components.flixopt_model_component.flixopt_models.FlixOptModel` and add it to the component configuration  {py:class}`~encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData` as `flixopt_mode`.
+The FlixOpt model schema is implemented in [flixopt_models.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/flixopt_model_component/flixopt_models.py). You need to create a {py:class}`~encodapy.components.flixopt_model_component.flixopt_models.FlixOptModel` and add it to the component configuration  {py:class}`~encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData` as `flixopt_mode`.
 
 ### Converters
 
@@ -64,7 +64,7 @@ For `bidirectional` exchangers, the component uses `SourceAndSink` with preventi
 
 ## Component Configuration
 
-Main configuration model: `FlixoptModelComponentConfigData` in [flixopt_model_component_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/flixopt_model_component/flixopt_model_component_config.py).
+Main configuration model: `FlixoptModelComponentConfigData` in [flixopt_model_component_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/flixopt_model_component/flixopt_model_component_config.py).
 
 Required and optional fields:
 
@@ -92,7 +92,7 @@ The referenced model definition (`flixopt_model`) supports:
 - `manual_elements_function` (optional)
 - `constraints_function` (optional)
 
-See `FlixOptModel` in [flixopt_models.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/flixopt_model_component/flixopt_models.py) for detailed field definitions and validation rules.
+See `FlixOptModel` in [flixopt_models.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/flixopt_model_component/flixopt_models.py) for detailed field definitions and validation rules.
 
 ### Custom Elements
 
@@ -102,7 +102,7 @@ You can inject additional FlixOpt elements into the optimization model.
 - Value can be:
   - A Python file path (`*.py`), or
   - A Python module import path.
-- The module must contain a function named `add_elements`, like it is shown in [add_elements.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/flixopt_model_component/add_elements.py). The function needs to return list of flixopt elements (`list[fx.elements.Element]`) which should be added to the model.
+- The module must contain a function named `add_elements`, like it is shown in [add_elements.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/flixopt_model_component/add_elements.py). The function needs to return list of flixopt elements (`list[fx.elements.Element]`) which should be added to the model.
 
 The function is loaded during component preparation and called before solving.
 
@@ -114,7 +114,7 @@ You can inject additional constraints into the optimization model.
 - Value can be:
   - A Python file path (`*.py`), or
   - A Python module import path.
-- The module must contain a function named `add_constraints`, like it is shown in [add_constraints.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/flixopt_model_component/add_constraints.py)
+- The module must contain a function named `add_constraints`, like it is shown in [add_constraints.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/flixopt_model_component/add_constraints.py)
 
 The function is loaded during component preparation and called before solving.
 
@@ -207,13 +207,13 @@ The FlixOpt model must match the inputs and outputs; see the examples above.
 
 A full working example is available in:
 
-- [examples/09_mpc_flixopt](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/09_mpc_flixopt)
+- [examples/09_mpc_flixopt](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/09_mpc_flixopt)
 
 Relevant files:
 
-- Example service configuration: [examples/09_mpc_flixopt/02_config_example.json](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/09_mpc_flixopt/02_config_example.json)
-- Example FlixOpt model: [examples/09_mpc_flixopt/02_flixopt_model_config.json](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/09_mpc_flixopt/02_flixopt_model_config.json)
-- Notebook to run the example: [examples/09_mpc_flixopt/run_example_optimisation.ipynb](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/09_mpc_flixopt/run_example_optimisation.ipynb)
+- Example service configuration: [examples/09_mpc_flixopt/02_config_example.json](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/09_mpc_flixopt/02_config_example.json)
+- Example FlixOpt model: [examples/09_mpc_flixopt/02_flixopt_model_config.json](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/09_mpc_flixopt/02_flixopt_model_config.json)
+- Notebook to run the example: [examples/09_mpc_flixopt/run_example_optimisation.ipynb](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/09_mpc_flixopt/run_example_optimisation.ipynb)
 
 ## Troubleshooting
 
@@ -228,9 +228,9 @@ Relevant files:
 
 ## Developer Notes
 
-- Core implementation: [flixopt_model_component.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/flixopt_model_component/flixopt_model_component.py)
-- Config and runtime models: [flixopt_model_component_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/flixopt_model_component/flixopt_model_component_config.py)
-- FlixOpt schema models: [flixopt_models.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/flixopt_model_component/flixopt_models.py)
+- Core implementation: [flixopt_model_component.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/flixopt_model_component/flixopt_model_component.py)
+- Config and runtime models: [flixopt_model_component_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/flixopt_model_component/flixopt_model_component_config.py)
+- FlixOpt schema models: [flixopt_models.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/flixopt_model_component/flixopt_models.py)
 - You need to install FlixOpt in your environment.
 - To use the GurobiSolver, you need to add a licence. With a licence file, you can add the path to the environment with `GRB_LICENSE_FILE`.
 

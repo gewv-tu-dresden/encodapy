@@ -8,6 +8,7 @@
   <title>encodapy.config.env_values &mdash; EnCoDaPy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_autodoc_typehints.css?v=057ac668" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=76f00390" />
 
@@ -26,7 +27,7 @@
   <script>
     window.ENCODAPY_DOCS = {
       baseUrl: "/encodapy/",
-      currentVersion: "v0.12.0",
+      currentVersion: "v0.13.0",
     };
   </script>
 
@@ -147,6 +148,10 @@
 
 
 
+<span class="n">DEFAULT_FIWARE_CALL_TIMEOUT</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">15.0</span>
+<span class="sd">"""Default timeout in seconds for calls to the FIWARE Context Broker."""</span>
+
+
 <div class="viewcode-block" id="FiwareEnvVariables">
 <a class="viewcode-back" href="../../../basic_service/interfaces.html#encodapy.config.env_values.FiwareEnvVariables">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FiwareEnvVariables</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
@@ -185,7 +190,11 @@
     <span class="n">service_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">"/"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"FIWARE Service Path for sub-tenant isolation"</span>
     <span class="p">)</span>
-
+    <span class="n">call_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">DEFAULT_FIWARE_CALL_TIMEOUT</span><span class="p">,</span>
+        <span class="n">gt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Timeout in seconds for calls to the FIWARE Context Broker"</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">crate_db_url</span><span class="p">:</span> <span class="n">AnyHttpUrl</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="n">AnyHttpUrl</span><span class="p">(</span><span class="s2">"http://127.0.0.1:4200"</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"URL of the CrateDB instance"</span><span class="p">,</span>

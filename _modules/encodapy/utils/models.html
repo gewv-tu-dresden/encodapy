@@ -8,6 +8,7 @@
   <title>encodapy.utils.models &mdash; EnCoDaPy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_autodoc_typehints.css?v=057ac668" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=76f00390" />
 
@@ -26,7 +27,7 @@
   <script>
     window.ENCODAPY_DOCS = {
       baseUrl: "/encodapy/",
-      currentVersion: "v0.12.0",
+      currentVersion: "v0.13.0",
     };
   </script>
 
@@ -90,13 +91,65 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="n">Series</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">field_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_numeric_dtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">filip.models.ngsi_v2.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedMetadata</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">filip.models.ngsi_v2.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContextEntity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeModel</span><span class="p">,</span> <span class="n">CommandModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.env_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_FIWARE_CALL_TIMEOUT</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeTypes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataUnits</span>
+
+
+<div class="viewcode-block" id="apply_factor">
+<a class="viewcode-back" href="../../../basic_service/internal_models.html#encodapy.utils.models.apply_factor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_factor</span><span class="p">(</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Scale a raw interface value by the attribute's `factor`</span>
+<span class="sd">    (``value_in_interface * factor = internal value``).</span>
+
+<span class="sd">    Used by all communication connections (MQTT, FIWARE, FILE) in both</span>
+<span class="sd">    directions (input and output). Numeric scalars and numeric columns</span>
+<span class="sd">    of DataFrames / Series (timeseries) are scaled; booleans, strings,</span>
+<span class="sd">    non-numeric columns, other containers and None are returned unchanged.</span>
+<span class="sd">    For DataFrames, ALL numeric columns are scaled - callers must pass a</span>
+<span class="sd">    frame containing only the attribute's own column(s).</span>
+
+<span class="sd">    Why: devices (especially behind Modbus gateways) often transmit values</span>
+<span class="sd">    in a fixed scaling (e.g. tenths of a degree). The `factor` configured on</span>
+<span class="sd">    the attribute converts between the raw interface value and the real</span>
+<span class="sd">    physical value without touching component logic.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value: The raw value to scale.</span>
+<span class="sd">        factor (float): The scaling factor; the default 1.0 leaves the</span>
+<span class="sd">            value unchanged.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The scaled value if numeric, otherwise the original value.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">factor</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">):</span>
+        <span class="n">scaled</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">numeric_columns</span> <span class="o">=</span> <span class="n">scaled</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="s2">"number"</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">scaled</span><span class="p">[</span><span class="n">numeric_columns</span><span class="p">]</span> <span class="o">=</span> <span class="n">scaled</span><span class="p">[</span><span class="n">numeric_columns</span><span class="p">]</span> <span class="o">*</span> <span class="n">factor</span>
+        <span class="k">return</span> <span class="n">scaled</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_numeric_dtype</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="o">*</span> <span class="n">factor</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="o">*</span> <span class="n">factor</span></div>
+
 
 
 <div class="viewcode-block" id="InputDataAttributeModel">
@@ -369,12 +422,14 @@
 <span class="sd">        service (str): The service</span>
 <span class="sd">        service_path (str): The service path</span>
 <span class="sd">        authentication (Optional[Union[FiwareAuth, None]]): The authentication</span>
+<span class="sd">        call_timeout (float): Timeout in seconds for calls to the FIWARE Context Broker</span>
 <span class="sd">    """</span>
 
     <span class="n">cb_url</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">service</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">service_path</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">authentication</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">FiwareAuth</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+    <span class="n">authentication</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">FiwareAuth</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">call_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">DEFAULT_FIWARE_CALL_TIMEOUT</span><span class="p">,</span> <span class="n">gt</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 
 

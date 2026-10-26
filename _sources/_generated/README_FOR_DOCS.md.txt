@@ -16,29 +16,29 @@
   - receive data
   - start a calculation
   - return the results
-- This interaction is possible with several interfaces, see [examples/03_interfaces](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/03_interfaces):
+- This interaction is possible with several interfaces, see [examples/03_interfaces](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/03_interfaces):
   - FIWARE-API
   - MQTT
   - File
 - The controller has the functionality to read a configuration from JSON and ENV, validate it and return it as a model.
 - The framework provides components that can be used within a service. This is the recommended solution for running a functional service.
-  For more information and code, see: [encodapy/components/readme.md](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/readme.md)
+  For more information and code, see: [encodapy/components/readme.md](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/readme.md)
 
 - Further documentation can be found on our [website](https://gewv-tu-dresden.github.io/encodapy/).
-- Examples and documentation for each part of the project are available under: [examples](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples)
+- Examples and documentation for each part of the project are available under: [examples](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples)
 
 ## Configuration
 
-- The configuration of the service must be provided via `config.json` and has several sections (see the [documentation](https://gewv-tu-dresden.github.io/encodapy/basic_service.html) or the [examples](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples)):
+- The configuration of the service must be provided via `config.json` and has several sections (see the [documentation](https://gewv-tu-dresden.github.io/encodapy/basic_service.html) or the [examples](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples)):
   - `name`: Controller name - for documentation purposes only
   - `interfaces`: Indicates which interfaces are active
   - `inputs`: Configuration of the inputs to the controller
   - `outputs`: Configuration of the outputs
   - `staticdata`: Static data point configuration (Data that is not continuously updated)
-  - `controller_components`: Configuration of the controller components, see [encodapy/components/readme.md](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/readme.md) or the [documentation](https://gewv-tu-dresden.github.io/encodapy/components.html)
-  - `controller_settings`: General settings about the controller
+  - `controller_components`: Configuration of the controller components, see [encodapy/components/readme.md](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/readme.md) or the [documentation](https://gewv-tu-dresden.github.io/encodapy/components.html)
+  - `time_settings`: Time settings for the controller (calculation and calibration)
 
-- Environmental variables are required to configure the basic service and the interfaces. For more information, see [encodapy/config/env_values](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/config/env_values.py) or the [documentation](https://gewv-tu-dresden.github.io/encodapy/).
+- Environmental variables are required to configure the basic service and the interfaces. For more information, see [encodapy/config/env_values](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/config/env_values.py) or the [documentation](https://gewv-tu-dresden.github.io/encodapy/).
 
 ## Usage
 
@@ -52,7 +52,7 @@ There are two ways to use the Package:
 
 ### Customer service based on the ControllerBasicService
 
-To create your own custom service, you have to overwrite two functions of the [ControllerBasicService](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/service/basic_service.py):
+To create your own custom service, you have to overwrite two functions of the [ControllerBasicService](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/service/basic_service.py):
 
 - `prepare_start()`: This is a synchronous function that prepares the start of the algorithm and specifies aspects of the service. This should not take long due to health issues in Docker containers. It only needs to be overwritten if other tasks are required after initialisation of the service.
 - `calculation()`: Asynchronous function to perform the main calculation in the service
@@ -63,21 +63,21 @@ To start the service, you need to call
 - `start_calibration()`: To start the calibration if required
 - `start_service()`: To start the service
 
-For more details, see the [examples](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples)
+For more details, see the [examples](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples)
 
 ### Run Components with the ComponentRunnerService
 
-- You could use components to run them with the [ComponentRunnerService](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/service/component_runner_service.py)
+- You could use components to run them with the [ComponentRunnerService](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/service/component_runner_service.py)
 - Frist, create a configuration, then start the service:
-  - as shown in [examples/07_component_runner](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/07_component_runner)
-  - by running the service with the [encodapy.service.service_main](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/service/service_main.py) function.
-- If you need additional components, please see [encodapy/components](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components):
+  - as shown in [examples/07_component_runner](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/07_component_runner)
+  - by running the service with the [encodapy.service.service_main](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/service/service_main.py) function.
+- If you need additional components, please see [encodapy/components](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components):
   - You can use components from `encodapy/components` or create your own
-  - An easy way to build your own component is shown in [examples/08_create_new_component](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/08_create_new_component)
+  - An easy way to build your own component is shown in [examples/08_create_new_component](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/08_create_new_component)
 
 ### Examples
 
-For different examples and documentation, how to use the tool - see [examples](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples).
+For different examples and documentation, how to use the tool - see [examples](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples).
 
 The examples are intended to help you use the tool and understand how it works:
 
@@ -87,7 +87,7 @@ The examples are intended to help you use the tool and understand how it works:
 
 ### Units
 
-- Inputs and outputs get information about the unit. The class [`DataUnits`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/controller_software/utils/units.py) is used for this.
+- Inputs and outputs get information about the unit. The class [`DataUnits`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/controller_software/utils/units.py) is used for this.
 - More units must be added manually.
 - Timeranges:
   - Timeranges for data queries are different for calculation and calibration.
@@ -102,9 +102,9 @@ The examples are intended to help you use the tool and understand how it works:
 
 The recommended way to run the service is:
 
-- Create a Python environment using Poetry (see [pyproject.toml](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/pyproject.toml)).
-- For production deployments, use the [Dockerfile](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/Dockerfile) or the official Docker image.
-- Use [dockerfile.dev](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/dockerfile.dev) for local development in Docker.
+- Create a Python environment using Poetry (see [pyproject.toml](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/pyproject.toml)).
+- For production deployments, use the [Dockerfile](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/Dockerfile) or the official Docker image.
+- Use [dockerfile.dev](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/dockerfile.dev) for local development in Docker.
 
 Example commands:
 
@@ -113,7 +113,7 @@ docker buildx build --platform linux/amd64 --target production -t encodapy:prod 
 docker buildx build --platform linux/amd64 -t encodapy:dev --load -f Dockerfile.dev .
 ```
 
-There are examples of how to use the image in [examples/07_component_runner](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/07_component_runner) and [examples/05_simple_service_mqtt](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/05_simple_service_mqtt). The working directory in the production image is `/app`, so you need to either mount the necessary files or change the environmental variables. See the documentation.
+There are examples of how to use the image in [examples/07_component_runner](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/07_component_runner) and [examples/05_simple_service_mqtt](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/05_simple_service_mqtt). The working directory in the production image is `/app`, so you need to either mount the necessary files or change the environmental variables. See the documentation.
 
 ### Testing Notes
 
@@ -122,7 +122,7 @@ There are examples of how to use the image in [examples/07_component_runner](htt
 
 ## Contribution
 
-For information on contributions, see [CONTRIBUTING.md](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/CONTRIBUTING.md)
+For information on contributions, see [CONTRIBUTING.md](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/CONTRIBUTING.md)
 
 > Releases are driven by [Conventional Commits](https://www.conventionalcommits.org).
 > Please make sure your **pull request title** follows the convention
@@ -132,9 +132,9 @@ For information on contributions, see [CONTRIBUTING.md](https://github.com/gewv-
 
 This project uses GitHub Actions for continuous integration and delivery
 (tests, linting, automated releases, docs & Docker image publishing).
-See [.github/workflows/README.md](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/.github/workflows/README.md) for details.
+See [.github/workflows/README.md](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/.github/workflows/README.md) for details.
 
-A changelog is attached with [CHANGELOG.md](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/CHANGELOG.md).
+A changelog is attached with [CHANGELOG.md](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/CHANGELOG.md).
 
 ## References
 
@@ -142,7 +142,7 @@ If you use EnCoDaPy in your research or project, please cite [https://doi.org/10
 
 ## License
 
-This project is licensed under the BSD License - see the [LICENSE](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/LICENSE) file for details.
+This project is licensed under the BSD License - see the [LICENSE](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/LICENSE) file for details.
 
 ## Copyright
 

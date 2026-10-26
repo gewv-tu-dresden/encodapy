@@ -21,13 +21,13 @@ This module provides a structured way to define and manage components for use wi
 ### Available Components
 
 - ThermalStorage (`thermal_storage`): Thermal storage component to calculate the stored energy using temperature sensors.  
-  An example can be found under: [`examples/06_thermal_storage_service`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/06_thermal_storage_service)
+  An example can be found under: [`examples/06_thermal_storage_service`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/06_thermal_storage_service)
 - TwoPointController (`two_point_controller`): Two-Point-Controller component for the steering of the loading process of a thermal storage or other processes.  
-  An example can be found under: [`examples/07_component_runner`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/07_component_runner)
+  An example can be found under: [`examples/07_component_runner`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/07_component_runner)
 - Pradictiv Control model with FlixOpt [`flixopt_model_component`]: Component for optimisation within operational management with [FlixOpt](https://github.com/flixOpt/flixopt)  
-  An example can be found under [`examples/09_flixopt`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/09_flixopt).
+  An example can be found under [`examples/09_flixopt`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/09_flixopt).
 - WeatherData (`weather_data`): Weather data component to retrieve current and forecast weather data from [Brightsky](https://brightsky.dev/).  
-  An example can be found under [`examples/10_brightsky_weather_service`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/10_brightsky_weather_service).
+  An example can be found under [`examples/10_brightsky_weather_service`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/10_brightsky_weather_service).
 
 ---
 
@@ -84,13 +84,13 @@ Model for the static data attributes of the controller component, is part if the
 ### Example Configuration
 
 An example of how a Pydantic model can be used to validate the configuration of a component is available at:  
-[`encodapy/components/thermal_storage/thermal_storage_config.py`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/thermal_storage/thermal_storage_config.py)
+[`encodapy/components/thermal_storage/thermal_storage_config.py`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/thermal_storage/thermal_storage_config.py)
 
 ---
 
 ## Implementing a New Component
 
-- an example is provided in [`examples/08_create_new_component`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/08_create_new_component)
+- an example is provided in [`examples/08_create_new_component`](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/08_create_new_component)
 
 ### Infos for the New Component
 

@@ -9,6 +9,7 @@
   <title>“EnCoDaPy” – Energy Control and Data Preparation in Python &mdash; EnCoDaPy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_autodoc_typehints.css?v=057ac668" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=76f00390" />
 
@@ -27,7 +28,7 @@
   <script>
     window.ENCODAPY_DOCS = {
       baseUrl: "/encodapy/",
-      currentVersion: "v0.12.0",
+      currentVersion: "v0.13.0",
     };
   </script>
 
@@ -75,7 +76,7 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">“EnCoDaPy” – Energy Control and Data Preparation in Python</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/docs/source/_generated/README_FOR_DOCS.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/docs/source/_generated/README_FOR_DOCS.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -104,7 +105,7 @@
 <li><p>return the results</p></li>
 </ul>
 </li>
-<li><p>This interaction is possible with several interfaces, see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/03_interfaces">examples/03_interfaces</a>:</p>
+<li><p>This interaction is possible with several interfaces, see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/03_interfaces">examples/03_interfaces</a>:</p>
 <ul>
 <li><p>FIWARE-API</p></li>
 <li><p>MQTT</p></li>
@@ -113,26 +114,26 @@
 </li>
 <li><p>The controller has the functionality to read a configuration from JSON and ENV, validate it and return it as a model.</p></li>
 <li><p>The framework provides components that can be used within a service. This is the recommended solution for running a functional service.
-For more information and code, see: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/readme.md">encodapy/components/readme.md</a></p></li>
+For more information and code, see: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/readme.md">encodapy/components/readme.md</a></p></li>
 <li><p>Further documentation can be found on our <a class="reference external" href="https://gewv-tu-dresden.github.io/encodapy/">website</a>.</p></li>
-<li><p>Examples and documentation for each part of the project are available under: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples">examples</a></p></li>
+<li><p>Examples and documentation for each part of the project are available under: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples">examples</a></p></li>
 </ul>
 </section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>The configuration of the service must be provided via <code class="docutils literal notranslate"><span class="pre">config.json</span></code> and has several sections (see the <a class="reference external" href="https://gewv-tu-dresden.github.io/encodapy/basic_service.html">documentation</a> or the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples">examples</a>):</p>
+<li><p>The configuration of the service must be provided via <code class="docutils literal notranslate"><span class="pre">config.json</span></code> and has several sections (see the <a class="reference external" href="https://gewv-tu-dresden.github.io/encodapy/basic_service.html">documentation</a> or the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples">examples</a>):</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Controller name - for documentation purposes only</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">interfaces</span></code>: Indicates which interfaces are active</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">inputs</span></code>: Configuration of the inputs to the controller</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">outputs</span></code>: Configuration of the outputs</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">staticdata</span></code>: Static data point configuration (Data that is not continuously updated)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">controller_components</span></code>: Configuration of the controller components, see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/readme.md">encodapy/components/readme.md</a> or the <a class="reference external" href="https://gewv-tu-dresden.github.io/encodapy/components.html">documentation</a></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">controller_settings</span></code>: General settings about the controller</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">controller_components</span></code>: Configuration of the controller components, see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/readme.md">encodapy/components/readme.md</a> or the <a class="reference external" href="https://gewv-tu-dresden.github.io/encodapy/components.html">documentation</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_settings</span></code>: Time settings for the controller (calculation and calibration)</p></li>
 </ul>
 </li>
-<li><p>Environmental variables are required to configure the basic service and the interfaces. For more information, see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/config/env_values.py">encodapy/config/env_values</a> or the <a class="reference external" href="https://gewv-tu-dresden.github.io/encodapy/">documentation</a>.</p></li>
+<li><p>Environmental variables are required to configure the basic service and the interfaces. For more information, see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/config/env_values.py">encodapy/config/env_values</a> or the <a class="reference external" href="https://gewv-tu-dresden.github.io/encodapy/">documentation</a>.</p></li>
 </ul>
 </section>
 <section id="usage">
@@ -144,7 +145,7 @@ For more information and code, see: <a class="reference external" href="https://
 <p>There are two ways to use the Package:</p>
 <section id="customer-service-based-on-the-controllerbasicservice">
 <h3>Customer service based on the ControllerBasicService<a class="headerlink" href="#customer-service-based-on-the-controllerbasicservice" title="Link to this heading"></a></h3>
-<p>To create your own custom service, you have to overwrite two functions of the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/service/basic_service.py">ControllerBasicService</a>:</p>
+<p>To create your own custom service, you have to overwrite two functions of the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/service/basic_service.py">ControllerBasicService</a>:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">prepare_start()</span></code>: This is a synchronous function that prepares the start of the algorithm and specifies aspects of the service. This should not take long due to health issues in Docker containers. It only needs to be overwritten if other tasks are required after initialisation of the service.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">calculation()</span></code>: Asynchronous function to perform the main calculation in the service</p></li>
@@ -155,29 +156,29 @@ For more information and code, see: <a class="reference external" href="https://
 <li><p><code class="docutils literal notranslate"><span class="pre">start_calibration()</span></code>: To start the calibration if required</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">start_service()</span></code>: To start the service</p></li>
 </ul>
-<p>For more details, see the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples">examples</a></p>
+<p>For more details, see the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples">examples</a></p>
 </section>
 <section id="run-components-with-the-componentrunnerservice">
 <h3>Run Components with the ComponentRunnerService<a class="headerlink" href="#run-components-with-the-componentrunnerservice" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>You could use components to run them with the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/service/component_runner_service.py">ComponentRunnerService</a></p></li>
+<li><p>You could use components to run them with the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/service/component_runner_service.py">ComponentRunnerService</a></p></li>
 <li><p>Frist, create a configuration, then start the service:</p>
 <ul>
-<li><p>as shown in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/07_component_runner">examples/07_component_runner</a></p></li>
-<li><p>by running the service with the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/service/service_main.py">encodapy.service.service_main</a> function.</p></li>
+<li><p>as shown in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/07_component_runner">examples/07_component_runner</a></p></li>
+<li><p>by running the service with the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/service/service_main.py">encodapy.service.service_main</a> function.</p></li>
 </ul>
 </li>
-<li><p>If you need additional components, please see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components">encodapy/components</a>:</p>
+<li><p>If you need additional components, please see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components">encodapy/components</a>:</p>
 <ul>
 <li><p>You can use components from <code class="docutils literal notranslate"><span class="pre">encodapy/components</span></code> or create your own</p></li>
-<li><p>An easy way to build your own component is shown in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/08_create_new_component">examples/08_create_new_component</a></p></li>
+<li><p>An easy way to build your own component is shown in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/08_create_new_component">examples/08_create_new_component</a></p></li>
 </ul>
 </li>
 </ul>
 </section>
 <section id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h3>
-<p>For different examples and documentation, how to use the tool - see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples">examples</a>.</p>
+<p>For different examples and documentation, how to use the tool - see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples">examples</a>.</p>
 <p>The examples are intended to help you use the tool and understand how it works:</p>
 <ul class="simple">
 <li><p>the configuration</p></li>
@@ -188,7 +189,7 @@ For more information and code, see: <a class="reference external" href="https://
 <section id="units">
 <h3>Units<a class="headerlink" href="#units" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Inputs and outputs get information about the unit. The class <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/controller_software/utils/units.py"><code class="docutils literal notranslate"><span class="pre">DataUnits</span></code></a> is used for this.</p></li>
+<li><p>Inputs and outputs get information about the unit. The class <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/controller_software/utils/units.py"><code class="docutils literal notranslate"><span class="pre">DataUnits</span></code></a> is used for this.</p></li>
 <li><p>More units must be added manually.</p></li>
 <li><p>Timeranges:</p>
 <ul>
@@ -210,16 +211,16 @@ For more information and code, see: <a class="reference external" href="https://
 <h3>Deployment<a class="headerlink" href="#deployment" title="Link to this heading"></a></h3>
 <p>The recommended way to run the service is:</p>
 <ul class="simple">
-<li><p>Create a Python environment using Poetry (see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/pyproject.toml">pyproject.toml</a>).</p></li>
-<li><p>For production deployments, use the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/Dockerfile">Dockerfile</a> or the official Docker image.</p></li>
-<li><p>Use <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/dockerfile.dev">dockerfile.dev</a> for local development in Docker.</p></li>
+<li><p>Create a Python environment using Poetry (see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/pyproject.toml">pyproject.toml</a>).</p></li>
+<li><p>For production deployments, use the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/Dockerfile">Dockerfile</a> or the official Docker image.</p></li>
+<li><p>Use <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/dockerfile.dev">dockerfile.dev</a> for local development in Docker.</p></li>
 </ul>
 <p>Example commands:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/amd64<span class="w"> </span>--target<span class="w"> </span>production<span class="w"> </span>-t<span class="w"> </span>encodapy:prod<span class="w"> </span>--load<span class="w"> </span>.
 docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/amd64<span class="w"> </span>-t<span class="w"> </span>encodapy:dev<span class="w"> </span>--load<span class="w"> </span>-f<span class="w"> </span>Dockerfile.dev<span class="w"> </span>.
 </pre></div>
 </div>
-<p>There are examples of how to use the image in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/07_component_runner">examples/07_component_runner</a> and <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/05_simple_service_mqtt">examples/05_simple_service_mqtt</a>. The working directory in the production image is <code class="docutils literal notranslate"><span class="pre">/app</span></code>, so you need to either mount the necessary files or change the environmental variables. See the documentation.</p>
+<p>There are examples of how to use the image in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/07_component_runner">examples/07_component_runner</a> and <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/05_simple_service_mqtt">examples/05_simple_service_mqtt</a>. The working directory in the production image is <code class="docutils literal notranslate"><span class="pre">/app</span></code>, so you need to either mount the necessary files or change the environmental variables. See the documentation.</p>
 </section>
 <section id="testing-notes">
 <h3>Testing Notes<a class="headerlink" href="#testing-notes" title="Link to this heading"></a></h3>
@@ -231,7 +232,7 @@ docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"
 </section>
 <section id="contribution">
 <h2>Contribution<a class="headerlink" href="#contribution" title="Link to this heading"></a></h2>
-<p>For information on contributions, see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/CONTRIBUTING.md">CONTRIBUTING.md</a></p>
+<p>For information on contributions, see <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/CONTRIBUTING.md">CONTRIBUTING.md</a></p>
 <blockquote>
 <div><p>Releases are driven by <a class="reference external" href="https://www.conventionalcommits.org">Conventional Commits</a>.
 Please make sure your <strong>pull request title</strong> follows the convention
@@ -242,8 +243,8 @@ Please make sure your <strong>pull request title</strong> follows the convention
 <h2>Development &amp; CI<a class="headerlink" href="#development-ci" title="Link to this heading"></a></h2>
 <p>This project uses GitHub Actions for continuous integration and delivery
 (tests, linting, automated releases, docs &amp; Docker image publishing).
-See <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/.github/workflows/README.md">.github/workflows/README.md</a> for details.</p>
-<p>A changelog is attached with <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/CHANGELOG.md">CHANGELOG.md</a>.</p>
+See <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/.github/workflows/README.md">.github/workflows/README.md</a> for details.</p>
+<p>A changelog is attached with <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/CHANGELOG.md">CHANGELOG.md</a>.</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
@@ -251,7 +252,7 @@ See <a class="reference external" href="https://github.com/gewv-tu-dresden/encod
 </section>
 <section id="license">
 <h2>License<a class="headerlink" href="#license" title="Link to this heading"></a></h2>
-<p>This project is licensed under the BSD License - see the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/LICENSE">LICENSE</a> file for details.</p>
+<p>This project is licensed under the BSD License - see the <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/LICENSE">LICENSE</a> file for details.</p>
 </section>
 <section id="copyright">
 <h2>Copyright<a class="headerlink" href="#copyright" title="Link to this heading"></a></h2>

@@ -12,7 +12,7 @@ The component uses measurement values from temperature sensors to calculate the 
 - Storage energy content in Wh: `storage__energy`
 - Additional storable energy in Wh: `storage__loading_potential_nominal`
 
-An overview is available as Pydantic BaseModel {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageOutputData` in [thermal_storage_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/thermal_storage/thermal_storage_config.py).
+An overview is available as Pydantic BaseModel {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageOutputData` in [thermal_storage_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/thermal_storage/thermal_storage_config.py).
 
 If the Temperature Check (`load_level_check` in {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData`) is enabled, the temperature of the sensor is checked and if the levels fall below the limits, the charge level is adjusted. See <a href="#component-configuration">Component Configuration</a> for the information on adding this to temperature sensors.
 
@@ -74,7 +74,7 @@ To enable calibration, configure:
   - `temperature_check` (automatically enforces lower-limit protection)
 - Calibration must be enabled in the general configuration (sample time).
 
-Configuration parameters must be set as datapoints or connections to static data in the config file. For more details, see the {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData` in [thermal_storage_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/thermal_storage/thermal_storage_config.py) or the documentation.
+Configuration parameters must be set as datapoints or connections to static data in the config file. For more details, see the {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageConfigData` in [thermal_storage_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/thermal_storage/thermal_storage_config.py) or the documentation.
 
 ## Inputs
 
@@ -96,8 +96,8 @@ If you want to use load connection sensors as references for the limits, provide
 - `load_temperature_in`
 - `load_temperature_out`
 
-For detailed documentation of the inputs, see the {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData` in [thermal_storage_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/thermal_storage/thermal_storage_config.py) or the documentation.
+For detailed documentation of the inputs, see the {py:class}`~encodapy.components.thermal_storage.thermal_storage_config.ThermalStorageInputData` in [thermal_storage_config.py](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/thermal_storage/thermal_storage_config.py) or the documentation.
 
 ## Example
 
-An example how the component could be used is available in [examples/06_thermal_storage_service](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/06_thermal_storage_service)
+An example how the component could be used is available in [examples/06_thermal_storage_service](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/06_thermal_storage_service)

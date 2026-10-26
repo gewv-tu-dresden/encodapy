@@ -28,4 +28,4 @@ Configuration values can be provided as static data or as datapoints in the serv
 
 ## Example
 
-An example using this component together with a thermal storage is available in [examples/07_component_runner/config.json](https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/07_component_runner/config.json) (see the `two_point_controller` entry).
+An example using this component together with a thermal storage is available in [examples/07_component_runner/config.json](https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/07_component_runner/config.json) (see the `two_point_controller` entry).

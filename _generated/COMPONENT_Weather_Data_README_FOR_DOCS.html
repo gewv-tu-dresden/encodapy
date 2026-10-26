@@ -9,6 +9,7 @@
   <title>Weather Data &mdash; EnCoDaPy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_autodoc_typehints.css?v=057ac668" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=76f00390" />
 
@@ -27,7 +28,7 @@
   <script>
     window.ENCODAPY_DOCS = {
       baseUrl: "/encodapy/",
-      currentVersion: "v0.12.0",
+      currentVersion: "v0.13.0",
     };
   </script>
 
@@ -75,7 +76,7 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Weather Data</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/docs/source/_generated/COMPONENT_Weather_Data_README_FOR_DOCS.md" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/docs/source/_generated/COMPONENT_Weather_Data_README_FOR_DOCS.md" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -101,7 +102,7 @@ Bright Sky is a free and open-source weather API. It aims to provide an easy-to-
 </section>
 <section id="component-configuration">
 <h2>Component Configuration<a class="headerlink" href="#component-configuration" title="Link to this heading"></a></h2>
-<p>The configuration model is <a class="reference internal" href="../components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataConfigData" title="encodapy.components.weather_data.weather_data_config.WeatherDataConfigData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WeatherDataConfigData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/weather_data/weather_data_config.py">weather_data_config.py</a>.</p>
+<p>The configuration model is <a class="reference internal" href="../components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataConfigData" title="encodapy.components.weather_data.weather_data_config.WeatherDataConfigData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WeatherDataConfigData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/weather_data/weather_data_config.py">weather_data_config.py</a>.</p>
 <p>Coordinates of the location:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">longitude</span></code>: longitude of the chosen location in degree (default value: 13.4, Berlin)</p></li>
@@ -165,7 +166,7 @@ Bright Sky is a free and open-source weather API. It aims to provide an easy-to-
 </section>
 <section id="outputs">
 <h2>Outputs<a class="headerlink" href="#outputs" title="Link to this heading"></a></h2>
-<p>All implemented outputs are optional, but at least one output must be configured. The output model is <a class="reference internal" href="../components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataOutputData" title="encodapy.components.weather_data.weather_data_config.WeatherDataOutputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WeatherDataOutputData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/weather_data/weather_data_config.py">weather_data_config.py</a>.</p>
+<p>All implemented outputs are optional, but at least one output must be configured. The output model is <a class="reference internal" href="../components/built_in_weather_data_models.html#encodapy.components.weather_data.weather_data_config.WeatherDataOutputData" title="encodapy.components.weather_data.weather_data_config.WeatherDataOutputData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WeatherDataOutputData</span></code></a> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/weather_data/weather_data_config.py">weather_data_config.py</a>.</p>
 <p>Current weather:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">temperature</span></code>: air temperature at timestamp, 2 m above the ground in °C</p></li>
@@ -183,7 +184,7 @@ Bright Sky is a free and open-source weather API. It aims to provide an easy-to-
 </section>
 <section id="timezone">
 <h2>Timezone<a class="headerlink" href="#timezone" title="Link to this heading"></a></h2>
-<p>The timezone for the API retrieval is defined by the constant <code class="docutils literal notranslate"><span class="pre">WEATHER_DATA_TZ_NAME</span></code> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/encodapy/components/weather_data/weather_data_config.py">weather_data_config.py</a> (default: <code class="docutils literal notranslate"><span class="pre">Europe/Berlin</span></code>). It is used for the component clock (interval checks) and passed to Brightsky as the <code class="docutils literal notranslate"><span class="pre">tz</span></code> parameter, so the API returns timestamps with the matching UTC offset. All output timestamps are therefore complete datetime information: the <code class="docutils literal notranslate"><span class="pre">time</span></code> field of the current weather datapoints is given in UTC, the forecast keys carry the offset of the retrieval timezone. Both can be converted to any other timezone by the receiving component.</p>
+<p>The timezone for the API retrieval is defined by the constant <code class="docutils literal notranslate"><span class="pre">WEATHER_DATA_TZ_NAME</span></code> in <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/encodapy/components/weather_data/weather_data_config.py">weather_data_config.py</a> (default: <code class="docutils literal notranslate"><span class="pre">Europe/Berlin</span></code>). It is used for the component clock (interval checks) and passed to Brightsky as the <code class="docutils literal notranslate"><span class="pre">tz</span></code> parameter, so the API returns timestamps with the matching UTC offset. All output timestamps are therefore complete datetime information: the <code class="docutils literal notranslate"><span class="pre">time</span></code> field of the current weather datapoints is given in UTC, the forecast keys carry the offset of the retrieval timezone. Both can be converted to any other timezone by the receiving component.</p>
 </section>
 <section id="error-handling">
 <h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading"></a></h2>
@@ -201,13 +202,13 @@ Bright Sky is a free and open-source weather API. It aims to provide an easy-to-
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
 <p>A full working example is available in:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/10_brightsky_weather_service">examples/10_brightsky_weather_service</a></p></li>
+<li><p><a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/10_brightsky_weather_service">examples/10_brightsky_weather_service</a></p></li>
 </ul>
 <p>Relevant files:</p>
 <ul class="simple">
-<li><p>Example service configuration: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/10_brightsky_weather_service/config.json">examples/10_brightsky_weather_service/config.json</a></p></li>
-<li><p>Example static data: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/10_brightsky_weather_service/static_data.json">examples/10_brightsky_weather_service/static_data.json</a></p></li>
-<li><p>Notebook to run the example: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.12.0/examples/10_brightsky_weather_service/run_weatherdata_service.ipynb">examples/10_brightsky_weather_service/run_weatherdata_service.ipynb</a></p></li>
+<li><p>Example service configuration: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/10_brightsky_weather_service/config.json">examples/10_brightsky_weather_service/config.json</a></p></li>
+<li><p>Example static data: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/10_brightsky_weather_service/static_data.json">examples/10_brightsky_weather_service/static_data.json</a></p></li>
+<li><p>Notebook to run the example: <a class="reference external" href="https://github.com/gewv-tu-dresden/encodapy/blob/v0.13.0/examples/10_brightsky_weather_service/run_weatherdata_service.ipynb">examples/10_brightsky_weather_service/run_weatherdata_service.ipynb</a></p></li>
 </ul>
 </section>
 </section>

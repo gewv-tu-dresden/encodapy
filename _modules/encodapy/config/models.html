@@ -8,6 +8,7 @@
   <title>encodapy.config.models &mdash; EnCoDaPy  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_autodoc_typehints.css?v=057ac668" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=76f00390" />
 
@@ -26,7 +27,7 @@
   <script>
     window.ENCODAPY_DOCS = {
       baseUrl: "/encodapy/",
-      currentVersion: "v0.12.0",
+      currentVersion: "v0.13.0",
     };
   </script>
 
@@ -88,25 +89,27 @@
 <span class="sd">Authors: Martin Altenburger</span>
 <span class="sd">"""</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">ValidationError</span><span class="p">,</span> <span class="n">Field</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.functional_validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_validator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">filip.models.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">ValidationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.functional_validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_validator</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.basic_component_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ControllerComponentModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AttributeTypes</span><span class="p">,</span>
     <span class="n">Interfaces</span><span class="p">,</span>
-    <span class="n">TimerangeTypes</span><span class="p">,</span>
     <span class="n">MQTTFormatTypes</span><span class="p">,</span>
+    <span class="n">TimerangeTypes</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.error_handling</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigError</span><span class="p">,</span> <span class="n">InterfaceNotActive</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.utils.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataUnits</span><span class="p">,</span> <span class="n">TimeUnits</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.basic_component_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ControllerComponentModel</span>
 
 <span class="c1"># Import MQTTTemplateConfigDoc for sphinx documentation generation</span>
 <span class="n">IS_BUILDING_DOCS</span> <span class="o">=</span> <span class="s2">"BUILDING_DOCS"</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
@@ -159,6 +162,18 @@
 <span class="sd">        mqtt_format (Union[MQTTFormatTypes, MQTTTemplateConfig]): \</span>
 <span class="sd">            The format of the attribute for MQTT (if not set, the default format is used) \</span>
 <span class="sd">                - only for mqtt interface needed</span>
+<span class="sd">        factor (float): Optional scaling factor for interface values (default 1.0). \</span>
+<span class="sd">            The raw interface value is multiplied by `factor` on input, and the \</span>
+<span class="sd">            internal value is multiplied by `factor` before publishing/sending. \</span>
+<span class="sd">            Applies to all communication connections (MQTT, FIWARE, FILE) in both \</span>
+<span class="sd">            directions (input and output) for numeric values and numeric timeseries \</span>
+<span class="sd">            columns (DataFrames / Series); the default 1.0 leaves values unchanged. \</span>
+<span class="sd">            Do not combine `factor` with other scaling mechanisms (FIWARE unit \</span>
+<span class="sd">            conversion or scaling expressions in MQTT templates) - values would \</span>
+<span class="sd">            be scaled twice. \</span>
+<span class="sd">            Rationale (why): devices behind Modbus-based gateways often transmit \</span>
+<span class="sd">            values in a fixed scaling (e.g. tenths of a degree), so the real \</span>
+<span class="sd">            physical value is ``interface value * factor``.</span>
 <span class="sd">    """</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -166,13 +181,14 @@
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">id_interface</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
     <span class="nb">type</span><span class="p">:</span> <span class="n">AttributeTypes</span> <span class="o">=</span> <span class="n">AttributeTypes</span><span class="o">.</span><span class="n">VALUE</span>
-    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="p">(</span>
         <span class="kc">None</span>
     <span class="p">)</span>
-    <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataUnits</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">DataUnits</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">datatype</span><span class="p">:</span> <span class="n">DataType</span> <span class="o">=</span> <span class="n">DataType</span><span class="p">(</span><span class="s2">"Number"</span><span class="p">)</span>
-    <span class="n">timestamp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">mqtt_format</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MQTTFormatTypes</span><span class="p">,</span> <span class="n">MQTTTemplateConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">MQTTFormatTypes</span><span class="o">.</span><span class="n">PLAIN</span>
+    <span class="n">timestamp</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mqtt_format</span><span class="p">:</span> <span class="n">MQTTFormatTypes</span> <span class="o">|</span> <span class="n">MQTTTemplateConfig</span> <span class="o">=</span> <span class="n">MQTTFormatTypes</span><span class="o">.</span><span class="n">PLAIN</span>
+    <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_id_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"AttributeModel"</span><span class="p">:</span>
@@ -205,7 +221,7 @@
 
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">id_interface</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
-    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_id_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"CommandModel"</span><span class="p">:</span>
@@ -319,16 +335,16 @@
 <span class="sd">        sampling_time_unit: The unit of the sampling time (if not set, the default unit is minute)</span>
 <span class="sd">    """</span>
 
-    <span class="n">timerange</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">timerange_min</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">timerange_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">timerange_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimerangeTypes</span><span class="p">]</span> <span class="o">=</span> <span class="n">TimerangeTypes</span><span class="o">.</span><span class="n">ABSOLUTE</span>
+    <span class="n">timerange</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">timerange_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">timerange_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">timerange_type</span><span class="p">:</span> <span class="n">TimerangeTypes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">TimerangeTypes</span><span class="o">.</span><span class="n">ABSOLUTE</span>
     <span class="n">timerange_unit</span><span class="p">:</span> <span class="n">TimeUnits</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">MINUTE</span>
 
-    <span class="n">timestep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">timestep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">timestep_unit</span><span class="p">:</span> <span class="n">TimeUnits</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">SECOND</span>
 
-    <span class="n">sampling_time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">sampling_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">sampling_time_unit</span><span class="p">:</span> <span class="n">TimeUnits</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">MINUTE</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
@@ -409,26 +425,14 @@
 
 <span class="sd">    """</span>
 
-    <span class="n">timerange</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">timerange</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">timerange_unit</span><span class="p">:</span> <span class="n">TimeUnits</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">MINUTE</span>
 
-    <span class="n">timestep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">timestep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">timestep_unit</span><span class="p">:</span> <span class="n">TimeUnits</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">SECOND</span>
 
-    <span class="n">sampling_time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">sampling_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">sampling_time_unit</span><span class="p">:</span> <span class="n">TimeUnits</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">DAY</span></div>
-
-
-
-<div class="viewcode-block" id="TimeSettingsResultsModel">
-<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.TimeSettingsResultsModel">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">TimeSettingsResultsModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Settings for the timesteps of the results.</span>
-<span class="sd">    """</span>
-
-    <span class="n">timestep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">timestep_unit</span><span class="p">:</span> <span class="n">TimeUnits</span> <span class="o">=</span> <span class="n">TimeUnits</span><span class="o">.</span><span class="n">SECOND</span></div>
 
 
 
@@ -441,32 +445,10 @@
 <span class="sd">    Attributes:</span>
 <span class="sd">        calculation: The timeranges and settings für the calculation</span>
 <span class="sd">        calibration: The timeranges and settings for the calibration</span>
-<span class="sd">        results: The timesettings for the results</span>
-
-<span class="sd">    TODO: Add the needed fields - calibration?</span>
 <span class="sd">    """</span>
 
     <span class="n">calculation</span><span class="p">:</span> <span class="n">TimeSettingsCalculationModel</span>
-    <span class="n">calibration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimeSettingsCalibrationModel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">results</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimeSettingsResultsModel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
-
-
-
-<div class="viewcode-block" id="ControllerSettingModel">
-<a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.ControllerSettingModel">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ControllerSettingModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Model for the configuration of the controller settings.</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        time_settings: The time settings for the controller</span>
-<span class="sd">        specific_settings: The specific settings for the controller - not defined as a model</span>
-
-<span class="sd">    TODO: What is needed here?</span>
-<span class="sd">    """</span>
-
-    <span class="n">time_settings</span><span class="p">:</span> <span class="n">TimeSettingsModel</span>
-    <span class="n">specific_settings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
+    <span class="n">calibration</span><span class="p">:</span> <span class="n">TimeSettingsCalibrationModel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 
@@ -483,7 +465,7 @@
 <span class="sd">        staticdata (list[StaticDataModel]): \</span>
 <span class="sd">            Static configuration data for devices managed by the system controller.</span>
 <span class="sd">        controller_components (list[ControllerComponentModel]): Components used by the controller.</span>
-<span class="sd">        controller_settings (ControllerSettingModel): Settings for the controller.</span>
+<span class="sd">        time_settings (TimeSettingsModel): Time settings for the controller.</span>
 <span class="sd">    """</span>
 
     <span class="n">interfaces</span><span class="p">:</span> <span class="n">InterfaceModel</span>
@@ -493,7 +475,7 @@
 
     <span class="n">controller_components</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ControllerComponentModel</span><span class="p">]</span>
 
-    <span class="n">controller_settings</span><span class="p">:</span> <span class="n">ControllerSettingModel</span>
+    <span class="n">time_settings</span><span class="p">:</span> <span class="n">TimeSettingsModel</span>
 
 <div class="viewcode-block" id="ConfigModel.from_json">
 <a class="viewcode-back" href="../../../basic_service/config_models.html#encodapy.config.models.ConfigModel.from_json">[docs]</a>
@@ -515,6 +497,52 @@
         <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s2">"Coudn't load configuration from json file"</span><span class="p">)</span></div>
 
 
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">migrate_deprecated_settings</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Migrates deprecated configuration keys to the current structure.</span>
+
+<span class="sd">        The deprecated key 'controller_settings' is transformed into</span>
+<span class="sd">        'time_settings'. The deprecated 'specific_settings' and the time</span>
+<span class="sd">        settings 'results' are not used anymore and are dropped.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (Any): The data to migrate</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Any: The migrated data</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">data</span>
+
+        <span class="k">if</span> <span class="s2">"controller_settings"</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">controller_settings</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"controller_settings"</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">"The key 'controller_settings' is deprecated - "</span>
+                <span class="s2">"use 'time_settings' instead."</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">controller_settings</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">if</span> <span class="s2">"specific_settings"</span> <span class="ow">in</span> <span class="n">controller_settings</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">"'specific_settings' is deprecated and not used "</span>
+                        <span class="s2">"anymore - the settings are dropped."</span>
+                    <span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span>
+                    <span class="s2">"time_settings"</span><span class="p">,</span> <span class="n">controller_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"time_settings"</span><span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"time_settings"</span><span class="p">),</span> <span class="nb">dict</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="s2">"results"</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">"time_settings"</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">"'results' in the time settings is deprecated and not used "</span>
+                <span class="s2">"anymore - the settings are dropped."</span>
+            <span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">"time_settings"</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"results"</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_interfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ConfigModel"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Check the interfaces of the input / output.</span>
@@ -533,9 +561,7 @@
             <span class="k">raise</span> <span class="n">InterfaceNotActive</span><span class="p">(</span><span class="s2">"At least one interface must be set."</span><span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">check_interface_active</span><span class="p">(</span>
-            <span class="n">datapoints</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
-                <span class="n">List</span><span class="p">[</span><span class="n">InputModel</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">StaticDataModel</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">OutputModel</span><span class="p">]</span>
-            <span class="p">],</span>
+            <span class="n">datapoints</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">InputModel</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">StaticDataModel</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">OutputModel</span><span class="p">],</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">            </span><span class="sd">"""</span>
 <span class="sd">            Check if the interface is active for the datapoints.</span>
@@ -605,9 +631,9 @@
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
-    <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataUnits</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">DataUnits</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">time</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 
