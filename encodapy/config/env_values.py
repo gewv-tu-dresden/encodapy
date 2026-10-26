@@ -59,6 +59,10 @@ class BasicEnvVariables(BaseSettings):
     )
 
 
+DEFAULT_FIWARE_CALL_TIMEOUT: float = 15.0
+"""Default timeout in seconds for calls to the FIWARE Context Broker."""
+
+
 class FiwareEnvVariables(BaseSettings):
     """
     Environment variables for FIWARE communication.
@@ -95,7 +99,11 @@ class FiwareEnvVariables(BaseSettings):
     service_path: str = Field(
         default="/", description="FIWARE Service Path for sub-tenant isolation"
     )
-
+    call_timeout: float = Field(
+        default=DEFAULT_FIWARE_CALL_TIMEOUT,
+        gt=0,
+        description="Timeout in seconds for calls to the FIWARE Context Broker",
+    )
     crate_db_url: AnyHttpUrl = Field(
         default=AnyHttpUrl("http://127.0.0.1:4200"),
         description="URL of the CrateDB instance",

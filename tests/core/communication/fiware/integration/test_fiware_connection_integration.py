@@ -492,8 +492,7 @@ class TestCrateDBConnection:
             connection = cratedb_client.get_database_connection()
             cursor = connection.cursor()
             cursor.execute(
-                f"DELETE FROM mt{service}.et{entity_type.lower()} "
-                f"WHERE entity_id = %s",
+                f"DELETE FROM mt{service}.et{entity_type.lower()} WHERE entity_id = %s",
                 (entity_id,),
             )
             connection.commit()

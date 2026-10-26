@@ -16,26 +16,27 @@ Test Strategy:
 
 # pylint: disable=protected-access, unused-argument, redefined-outer-name
 
+import asyncio
 import os
+import time
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from filip.clients.ngsi_v2 import ContextBrokerClient
 from filip.models.base import FiwareHeaderSecure
+from pydantic import ValidationError
 
 from encodapy.config.env_values import FiwareEnvVariables
 from encodapy.service.communication.fiware_connection import FiwareConnection
 from encodapy.utils.cratedb import CrateDBConnection
-from encodapy.utils.error_handling import NoCredentials, InterfaceNotActive
+from encodapy.utils.error_handling import InterfaceNotActive, NoCredentials
 from encodapy.utils.fiware_auth import BearerToken
 from encodapy.utils.models import (
+    DatabaseParameter,
     FiwareAuth,
     FiwareConnectionParameter,
     FiwareParameter,
-    DatabaseParameter,
 )
-
 
 # =============================================================================
 # Fixtures
@@ -142,6 +143,7 @@ def mock_fiware_connection():
     connection.fiware_conn_params.fiware_params.service = "test_service"
     connection.fiware_conn_params.fiware_params.service_path = "/test"
     connection.fiware_conn_params.fiware_params.cb_url = "http://localhost:1026"
+    connection.fiware_conn_params.fiware_params.call_timeout = 15.0
     connection.fiware_conn_params.database_params = MagicMock(spec=DatabaseParameter)
     connection.fiware_conn_params.database_params.crate_db_url = "http://localhost:4200"
     connection.fiware_conn_params.database_params.crate_db_user = "test_user"
@@ -282,32 +284,34 @@ def test_load_fiware_params_no_credentials_raises_error():
     Asserts:
         - NoCredentials exception is raised
     """
-    with patch.dict(
-        os.environ,
-        {
-            "FIWARE_AUTH": "true",
-            "FIWARE_SERVICE": "test_service",
-        },
-    ):
-        with patch(
+    with (
+        patch.dict(
+            os.environ,
+            {
+                "FIWARE_AUTH": "true",
+                "FIWARE_SERVICE": "test_service",
+            },
+        ),
+        patch(
             "encodapy.service.communication.fiware_connection.FiwareEnvVariables"
-        ) as mock_env_class:
-            mock_env = MagicMock()
-            mock_env.auth = True
-            mock_env.client_id = None
-            mock_env.client_pw = None
-            mock_env.token_url = None
-            mock_env.bearer_token = None
-            mock_env.service = "test_service"
-            mock_env.service_path = "/test"
-            mock_env.cb_url = "http://localhost:1026"
-            mock_env.crate_db_url = "http://localhost:4200"
-            mock_env_class.return_value = mock_env
+        ) as mock_env_class,
+    ):
+        mock_env = MagicMock()
+        mock_env.auth = True
+        mock_env.client_id = None
+        mock_env.client_pw = None
+        mock_env.token_url = None
+        mock_env.bearer_token = None
+        mock_env.service = "test_service"
+        mock_env.service_path = "/test"
+        mock_env.cb_url = "http://localhost:1026"
+        mock_env.crate_db_url = "http://localhost:4200"
+        mock_env_class.return_value = mock_env
 
-            connection = FiwareConnection()
+        connection = FiwareConnection()
 
-            with pytest.raises(NoCredentials):
-                connection.load_fiware_params()
+        with pytest.raises(NoCredentials):
+            connection.load_fiware_params()
 
 
 # =============================================================================
@@ -354,6 +358,7 @@ def test_prepare_fiware_connection_no_auth(
 ):
     """Test preparing FIWARE connection without authentication."""
     mock_fiware_connection.fiware_conn_params.fiware_params.authentication = None
+    mock_fiware_connection.fiware_conn_params.fiware_params.call_timeout = 30.0
 
     with patch(
         "encodapy.service.communication.fiware_connection.ContextBrokerClient"
@@ -370,6 +375,11 @@ def test_prepare_fiware_connection_no_auth(
 
             mock_fiware_connection.prepare_fiware_connection()
 
+    mock_cbc.assert_called_once_with(
+        url="http://localhost:1026",
+        fiware_header=mock_fiware_connection.fiware_header,
+        timeout=30.0,
+    )
     assert mock_fiware_connection.cb_client is not None
     assert mock_fiware_connection.crate_db_client is not None
     assert mock_fiware_connection.fiware_token_client is None
@@ -496,3 +506,195 @@ def test_update_authentication_no_auth(mock_fiware_connection):
 
     # Should not raise an exception
     mock_fiware_connection.update_authentication()
+
+
+# =============================================================================
+# Tests for the FIWARE call timeout configuration
+# =============================================================================
+
+
+def test_load_fiware_params_default_call_timeout(monkeypatch):
+    """Test the default call timeout of 15.0 seconds.
+
+    Verifies that the call timeout defaults to 15.0 seconds when the
+    FIWARE_CALL_TIMEOUT environment variable is not set, and that the
+    value is propagated to the internal timeout of the FiwareConnection.
+
+    Args:
+        monkeypatch: Pytest fixture to manipulate environment variables
+
+    Asserts:
+        - fiware_params.call_timeout is 15.0
+        - _fiware_call_timeout_seconds is 15.0
+    """
+    monkeypatch.setenv("FIWARE_SERVICE", "test_service")
+    monkeypatch.setenv("FIWARE_AUTH", "false")
+    monkeypatch.delenv("FIWARE_CALL_TIMEOUT", raising=False)
+
+    connection = FiwareConnection()
+    connection.load_fiware_params()
+
+    assert connection.fiware_conn_params.fiware_params.call_timeout == 15.0
+    assert connection._fiware_call_timeout_seconds == 15.0
+
+
+def test_load_fiware_params_call_timeout_from_env(monkeypatch):
+    """Test that FIWARE_CALL_TIMEOUT is loaded from the environment.
+
+    Verifies that a FIWARE_CALL_TIMEOUT environment variable overrides the
+    default and is propagated to the internal timeout of the FiwareConnection.
+
+    Args:
+        monkeypatch: Pytest fixture to manipulate environment variables
+
+    Asserts:
+        - fiware_params.call_timeout is 30.0
+        - _fiware_call_timeout_seconds is 30.0
+    """
+    monkeypatch.setenv("FIWARE_SERVICE", "test_service")
+    monkeypatch.setenv("FIWARE_AUTH", "false")
+    monkeypatch.setenv("FIWARE_CALL_TIMEOUT", "30.0")
+
+    connection = FiwareConnection()
+    connection.load_fiware_params()
+
+    assert connection.fiware_conn_params.fiware_params.call_timeout == 30.0
+    assert connection._fiware_call_timeout_seconds == 30.0
+
+
+def test_fiware_env_variables_call_timeout_must_be_positive():
+    """Test that a non-positive call timeout is rejected by validation.
+
+    Asserts:
+        - ValidationError is raised for call_timeout = 0
+    """
+    with pytest.raises(ValidationError):
+        FiwareEnvVariables(service="test_service", call_timeout=0)
+
+
+def test_fiware_parameter_call_timeout_must_be_positive():
+    """Test that FiwareParameter rejects a non-positive call timeout.
+
+    Asserts:
+        - ValidationError is raised for call_timeout = -1
+    """
+    with pytest.raises(ValidationError):
+        FiwareParameter(
+            cb_url="http://localhost:1026",
+            service="test_service",
+            service_path="/",
+            call_timeout=-1,
+        )
+
+
+@pytest.mark.asyncio
+async def test_run_cb_call_with_timeout_raises_timeout_error():
+    """Test that a callback exceeding the configured timeout is cancelled.
+
+    Verifies that _run_cb_call_with_timeout raises an asyncio.TimeoutError
+    when the callback takes longer than the configured timeout.
+
+    Asserts:
+        - asyncio.TimeoutError is raised
+    """
+    connection = FiwareConnection()
+    connection.fiware_conn_params = FiwareConnectionParameter(
+        fiware_params=FiwareParameter(
+            cb_url="http://localhost:1026",
+            service="test_service",
+            service_path="/",
+            call_timeout=0.01,
+        ),
+        database_params=DatabaseParameter(crate_db_url="http://localhost:4200"),
+    )
+
+    with pytest.raises(asyncio.TimeoutError):
+        await connection._run_cb_call_with_timeout(lambda: time.sleep(0.5))
+
+
+@pytest.mark.asyncio
+async def test_run_cb_call_with_timeout_returns_callback_result():
+    """Test that the result of the callback is returned on success.
+
+    Asserts:
+        - the callback result is passed through
+    """
+    connection = FiwareConnection()
+
+    result = await connection._run_cb_call_with_timeout(lambda: "success")
+
+    assert result == "success"
+
+
+def test_update_fiware_entity_without_client_raises_error():
+    """Test that InterfaceNotActive is raised without a prepared connection.
+
+    Verifies the guard of update_fiware_entity: accessing the communication
+    path without a prior prepare_fiware_connection() raises a defined
+    exception instead of an AttributeError.
+
+    Asserts:
+        - InterfaceNotActive is raised
+    """
+    connection = FiwareConnection()
+
+    with pytest.raises(InterfaceNotActive):
+        connection.update_fiware_entity("entity_id", "entity_type", [])
+
+
+def test_get_last_timestamp_without_client_raises_error():
+    """Test that InterfaceNotActive is raised without a prepared connection.
+
+    Verifies the guard of _get_last_timestamp_for_fiware_output: accessing
+    the communication path without a prior prepare_fiware_connection()
+    raises a defined exception instead of an AttributeError.
+
+    Asserts:
+        - InterfaceNotActive is raised
+    """
+    connection = FiwareConnection()
+
+    with pytest.raises(InterfaceNotActive):
+        connection._get_last_timestamp_for_fiware_output(MagicMock())
+
+
+def test_get_data_from_database_without_client_raises_error():
+    """Test that InterfaceNotActive is raised without a prepared connection.
+
+    Verifies the guard of get_data_from_database: accessing the database
+    path without a prior prepare_fiware_connection() raises a defined
+    exception instead of an AttributeError.
+
+    Asserts:
+        - InterfaceNotActive is raised
+    """
+    connection = FiwareConnection()
+
+    with pytest.raises(InterfaceNotActive):
+        connection.get_data_from_database(
+            entity=MagicMock(),
+            entity_attributes=MagicMock(),
+            method=MagicMock(),
+            timestamp_latest_output=MagicMock(),
+        )
+
+
+@pytest.mark.asyncio
+async def test_send_data_to_fiware_without_client_raises_error():
+    """Test that InterfaceNotActive is raised without a prepared connection.
+
+    Verifies the guard of _send_data_to_fiware: accessing the communication
+    path without a prior prepare_fiware_connection() raises a defined
+    exception instead of an AttributeError.
+
+    Asserts:
+        - InterfaceNotActive is raised
+    """
+    connection = FiwareConnection()
+
+    with pytest.raises(InterfaceNotActive):
+        await connection._send_data_to_fiware(
+            output_entity=MagicMock(),
+            output_attributes=[],
+            output_commands=[],
+        )
