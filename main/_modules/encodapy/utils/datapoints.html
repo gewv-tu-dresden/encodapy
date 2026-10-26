@@ -277,11 +277,16 @@
         <span class="n">description</span><span class="o">=</span><span class="s2">"A datetime value for the datapoint"</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"value"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"value"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_datetime</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_datetime</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Validate that the value is a datetime object or a string in ISO format</span>
-<span class="sd">        that can be converted to datetime."""</span>
+<span class="sd">        that can be converted to datetime.</span>
+
+<span class="sd">        Runs in "before" mode: pydantic converts strings to datetime objects</span>
+<span class="sd">        before "after" validators run, so the custom ISO-format check has to</span>
+<span class="sd">        run on the raw input.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">v</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
