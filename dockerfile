@@ -1,4 +1,4 @@
-FROM python:3.12-slim AS builder
+FROM python:3.14-slim AS builder
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -19,7 +19,7 @@ RUN apt-get update \
 
 WORKDIR $PYSETUP_PATH
 
-COPY pyproject.toml poetry.lock* ./
+COPY pyproject.toml ./
 RUN poetry install --only main --no-root
 
 COPY . .
@@ -27,7 +27,7 @@ RUN poetry build -f wheel \
     && poetry run pip install --no-cache-dir --no-deps dist/*.whl
 
 
-FROM python:3.12-slim AS production
+FROM python:3.14-slim AS production
 
 LABEL org.opencontainers.image.title="EnCoDaPy" \
     org.opencontainers.image.description="Energy Control and Data Preparation in Python" \
