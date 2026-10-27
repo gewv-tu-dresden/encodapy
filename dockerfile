@@ -19,7 +19,7 @@ RUN apt-get update \
 
 WORKDIR $PYSETUP_PATH
 
-COPY pyproject.toml poetry.lock* ./
+COPY pyproject.toml ./
 RUN poetry install --only main --no-root
 
 COPY . .
