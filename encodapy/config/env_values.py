@@ -6,7 +6,7 @@ more information: https://docs.pydantic.dev/latest/concepts/pydantic_settings/#u
 
 from typing import Optional
 from datetime import time, timedelta
-from pydantic import AnyHttpUrl, Field
+from pydantic import AnyHttpUrl, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from encodapy.config.models import FileStorageMethod
 
@@ -27,6 +27,20 @@ class BasicEnvVariables(BaseSettings):
     log_level: str = Field(
         default="WARNING", description="Logging level for the service"
     )
+
+    @field_validator("log_level", mode="before")
+    @classmethod
+    def uppercase_log_level(cls, value) -> str:
+        """Normalize the log level to upper case.
+
+        Accepts `debug`, `Debug`, `DEBUG ` etc. so comparisons against
+        canonical level names work everywhere (service logger, component
+        log level derivation).
+        """
+        if isinstance(value, str):
+            return value.strip().upper()
+        return value
+
     log_path: Optional[str] = Field(
         default=None,
         description=(

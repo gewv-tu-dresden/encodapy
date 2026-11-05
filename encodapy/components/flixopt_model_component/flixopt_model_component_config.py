@@ -2,7 +2,7 @@
 Defines the configuration data models for the new component.
 """
 
-from typing import Any, Dict, cast
+from typing import Any, Dict, Optional, cast
 from pydantic import Field, model_validator, ConfigDict
 import flixopt as fx  # type: ignore[import-untyped]
 from encodapy.components.basic_component_config import (
@@ -51,12 +51,22 @@ class FlixoptModelComponentOutputData(OutputData):
 
 class DataPointFlixoptLogLevel(DataPointGeneral):
     """
-    DataPoint for Flixopt log level
+    DataPoint for the Flixopt operating preset.
+    Controls what the flixopt framework produces (solver log capture,
+    main result logging); visibility of all forwarded records is governed
+    by the central EnCoDaPy log level.
+    A value of None derives the preset from the central EnCoDaPy log level
+    (DEBUG -> `debug`, otherwise -> `silent`).
     """
 
-    value: FlixoptLogLevel = Field(
-        FlixoptLogLevel.SILENT,
-        description="Log level for the flixopt framework",
+    value: Optional[FlixoptLogLevel] = Field(
+        None,
+        description=(
+            "Operating preset for the flixopt framework "
+            "(silent, production, exploring, debug); "
+            "None derives it from the central EnCoDaPy log level "
+            "(DEBUG -> debug, otherwise -> silent)"
+        ),
     )
 
     @model_validator(mode="before")
@@ -110,7 +120,13 @@ class FlixoptModelComponentConfigData(ConfigData):
 
     log_level: DataPointFlixoptLogLevel = Field(
         default=DataPointFlixoptLogLevel.model_validate({}),
-        description="Log level for the flixopt framework",
+        description=(
+            "Flixopt operating preset (silent, production, exploring, debug). "
+            "If not set, the preset is derived from the central EnCoDaPy log "
+            "level (DEBUG -> debug, otherwise -> silent); visibility of the "
+            "forwarded flixopt logs is controlled by the central EnCoDaPy "
+            "log level"
+        ),
     )
     solver_settings: DataPointFlixoptSolverSettings = Field(
         default=DataPointFlixoptSolverSettings.model_validate({}),
@@ -127,6 +143,28 @@ class FlixoptModelComponentConfigData(ConfigData):
         Default to None. A valid flixopt model configuration must be provided.
         """,
     )
+
+    def get_effective_log_level(self) -> FlixoptLogLevel:
+        """Resolve the flixopt operating preset to apply.
+
+        An explicitly configured preset wins. If none is configured, the
+        preset is derived from the central EnCoDaPy log level (the same
+        source the service logger uses): a DEBUG service gets the fully
+        instrumented flixopt `debug` preset, all other levels get the
+        quiet `silent` preset.
+        """
+        configured = self.log_level.value
+        if configured is not None:
+            return configured
+        from encodapy.config.env_values import BasicEnvVariables
+
+        # BasicEnvVariables normalizes the level to upper case
+        central_level = BasicEnvVariables().log_level
+        return (
+            FlixoptLogLevel.DEBUG
+            if central_level == "DEBUG"
+            else FlixoptLogLevel.SILENT
+        )
 
     def get_solver(self) -> fx.solvers._Solver:
         """
@@ -188,6 +226,13 @@ class FlixoptModelComponentConfigData(ConfigData):
             extra_options[option_key_map["cuts"]] = cfg.cuts
         if cfg.additional_options is not None:
             extra_options.update(cast(dict[str, Any], cfg.additional_options))
+        # In silent operation, gurobipy prints its license banner and lp-file
+        # reading info directly to stdout before linopy can apply any solver
+        # options. 'env' is forwarded to linopy as environment startup
+        # parameters, which is the only way to suppress these prints during
+        # each optimization cycle.
+        if is_gurobi and self.get_effective_log_level() == FlixoptLogLevel.SILENT:
+            extra_options.setdefault("env", {"OutputFlag": 0})
         if extra_options:
             kwargs["extra_options"] = extra_options
 

@@ -77,6 +77,21 @@ Required and optional fields:
   - Optional: `mip_rel_gap`, `time_limit`
 - `log_level` (optional):
   - `exploring`, `debug`, `production`, `silent`
+  - **Optional** - if not set, the preset is derived from the central EnCoDaPy
+    log level: a service at `DEBUG` gets the `debug` preset, every other level
+    gets `silent` (quiet MPC operation)
+  - Selects the FlixOpt operating preset (`flixopt.CONFIG`), which controls what
+    the library itself produces: solver log capture, main results logging, etc.
+  - This is **not** a filter for what you see on the console:
+    all log output of the embedded libraries (FlixOpt, its solver log stream
+    and linopy) is routed through the central EnCoDaPy loguru logger, where the
+    central `LOG_LEVEL` decides what is visible. Direct outputs of the libraries
+    on console or into files are suppressed, so no `flixopt.log` is written
+    (with the `production` preset, the unused file is placed in the system
+    temporary directory).
+  - `silent` additionally suppresses solver console output
+    (gurobipy stdout banner, HiGHS/Gurobi solve logs) and the
+    lp-file writing progress bars in every optimization cycle
 - `excess_penalty` (optional):
   - Penalty datapoint (can be used in model design)
 

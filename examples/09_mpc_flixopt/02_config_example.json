@@ -69,12 +69,9 @@
 
             },
             "config": {
-                "log_level": {
-                    "value": "production"
-                },
                 "solver_settings": {
                     "value": {
-                        "name": "HighsSolver",
+                        "name": "GurobiSolver",
                         "mip_rel_gap": 0.01,
                         "time_limit": 60
                     }
