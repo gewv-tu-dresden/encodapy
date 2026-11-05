@@ -29,8 +29,12 @@ jobs:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created == 'true' }}
     runs-on: ubuntu-24.04
+    environment:
+      name: pypi
+      url: https://pypi.org/project/encodapy/
     permissions:
       contents: read
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -41,22 +45,18 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
 
       - name: Install Poetry
         run: pip install poetry==2.5.1
-
-      - name: Configure Poetry
-        run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
-
-      - name: Install dependencies
-        run: poetry install --no-root
 
       - name: Build the package
         run: poetry build
 
       - name: Publish to PyPI
-        run: poetry publish
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          attestations: true
 
   docs:
     name: Build and publish documentation
@@ -84,7 +84,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.14'
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -149,7 +149,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: ./Dockerfile
+          file: ./dockerfile
           target: production
           platforms: linux/amd64,linux/arm64
           push: true
