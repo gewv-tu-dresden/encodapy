@@ -71,7 +71,7 @@
             "config": {
                 "solver_settings": {
                     "value": {
-                        "name": "GurobiSolver",
+                        "name": "HighsSolver",
                         "mip_rel_gap": 0.01,
                         "time_limit": 60
                     }
