@@ -542,3 +542,129 @@ def test_production_preset_writes_no_logfile_to_cwd(
 
     assert list(tmp_path.iterdir()) == []
     assert not os.path.exists("flixopt.log")
+
+
+def test_loguru_forward_handler_reports_errors_when_all_forwards_fail(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Fall back to the handler error routine if loguru rejects all levels."""
+    import encodapy.components.flixopt_model_component.flixopt_model_component as flix_module
+
+    class _RaisingLogger:
+        def opt(self, **_kwargs: Any) -> Any:
+            return self
+
+        def log(self, *_args: Any, **_kwargs: Any) -> None:
+            raise ValueError("loguru rejected the level")
+
+    class _TrackingHandler(flix_module._LoguruForwardHandler):
+        def __init__(self) -> None:
+            super().__init__()
+            self.handled = False
+
+        def handleError(self, record: Any) -> None:
+            del record
+            self.handled = True
+
+    monkeypatch.setattr(flix_module, "logger", _RaisingLogger())
+
+    handler = _TrackingHandler()
+    record = logging.LogRecord(
+        name="test",
+        level=logging.INFO,
+        pathname=__file__,
+        lineno=1,
+        msg="unreportable record",
+        args=(),
+        exc_info=None,
+    )
+
+    handler.emit(record)
+
+    assert handler.handled is True
+
+
+def test_get_storages_raises_for_soc_below_bounds() -> None:
+    """Raise when the effective minimal SOC is below the valid range."""
+    component: Any = _create_component()
+    setattr(
+        component,
+        "input_data",
+        SimpleNamespace(
+            model_dump=lambda: {
+                "storage_capacity": {"value": 100},
+                "storage_start": {"value": 50},
+                "storage_min": {"value": -10},
+                "storage_max": {"value": 80},
+            }
+        ),
+    )
+    setattr(
+        component,
+        "flixopt_model",
+        FlixOptModel.model_validate(
+            {
+                "buses": [{"label": "heat"}],
+                "effects": [{"label": "costs", "unit": "EUR"}],
+                "converters": [],
+                "exchangers": [],
+                "storages": [
+                    {
+                        "label": "storage_1",
+                        "bus": "heat",
+                        "nominal_power": 25,
+                        "nominal_capacity": "storage_capacity",
+                        "start_soc": "storage_start",
+                        "minimal_soc": "storage_min",
+                        "maximal_soc": "storage_max",
+                    }
+                ],
+            }
+        ),
+    )
+
+    with pytest.raises(ValueError, match="invalid SOC limits"):
+        getattr(component, "_get_storages")()
+
+
+def test_get_storages_raises_for_min_soc_above_max_soc() -> None:
+    """Raise when the effective minimal SOC is not below the maximal SOC."""
+    component: Any = _create_component()
+    setattr(
+        component,
+        "input_data",
+        SimpleNamespace(
+            model_dump=lambda: {
+                "storage_capacity": {"value": 100},
+                "storage_start": {"value": 50},
+                "storage_min": {"value": 60},
+                "storage_max": {"value": 50},
+            }
+        ),
+    )
+    setattr(
+        component,
+        "flixopt_model",
+        FlixOptModel.model_validate(
+            {
+                "buses": [{"label": "heat"}],
+                "effects": [{"label": "costs", "unit": "EUR"}],
+                "converters": [],
+                "exchangers": [],
+                "storages": [
+                    {
+                        "label": "storage_1",
+                        "bus": "heat",
+                        "nominal_power": 25,
+                        "nominal_capacity": "storage_capacity",
+                        "start_soc": "storage_start",
+                        "minimal_soc": "storage_min",
+                        "maximal_soc": "storage_max",
+                    }
+                ],
+            }
+        ),
+    )
+
+    with pytest.raises(ValueError, match="minimal_soc >= maximal_soc"):
+        getattr(component, "_get_storages")()

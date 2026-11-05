@@ -33,9 +33,10 @@ class BasicEnvVariables(BaseSettings):
     def uppercase_log_level(cls, value) -> str:
         """Normalize the log level to upper case.
 
-        Accepts `debug`, `Debug`, `DEBUG ` etc. so comparisons against
-        canonical level names work everywhere (service logger, component
-        log level derivation).
+        Accepts any casing like `debug`, `Debug` or `DEBUG`, including
+        values with surrounding whitespace, so comparisons against canonical
+        level names work everywhere (service logger, component log level
+        derivation).
         """
         if isinstance(value, str):
             return value.strip().upper()

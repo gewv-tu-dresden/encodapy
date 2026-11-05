@@ -324,3 +324,15 @@ class TestLogLevelNormalization:
     def test_log_level_default_is_warning(self):
         """Verify the default log level remains WARNING."""
         assert BasicEnvVariables(config_path="c.json").log_level == "WARNING"
+
+
+class TestLogLevelTypeValidation:
+    """Test class for the log level type handling of BasicEnvVariables."""
+
+    def test_log_level_rejects_non_string_values(self):
+        """Non-string values pass the normalizer but fail the type check."""
+        from pydantic import ValidationError
+        import pytest
+
+        with pytest.raises(ValidationError):
+            BasicEnvVariables(config_path="c.json", log_level=123)
