@@ -759,6 +759,22 @@ def test_export_results_as_timeseries_handles_scalar_data_var() -> None:
     assert "scalar" not in out.columns
 
 
+def test_export_results_as_timeseries_raises_when_only_scalars() -> None:
+    """Raise a clear error when the results contain no time series variables."""
+    component = _component()
+    setattr(
+        component,
+        "df_input",
+        pd.DataFrame(index=pd.date_range("2026-01-01", periods=3, freq="h")),
+    )
+    setattr(component, "df_input_timezone", None)
+
+    dataset = xr.Dataset(data_vars={"scalar": ((), 7.0)})
+
+    with pytest.raises(ValueError, match="no time series variables"):
+        getattr(component, "export_results_as_timeseries")(dataset)
+
+
 def test_prepare_output_data_maps_chp_and_exchanger_io() -> None:
     """Map CHP and exchanger inputs and outputs into the result model."""
     component = _component()

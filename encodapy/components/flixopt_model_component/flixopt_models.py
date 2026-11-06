@@ -3,6 +3,8 @@ Description: Collection of configuration and data models for the FlixOpt model c
 Authors: Martin Altenburger
 """
 
+import tempfile
+from pathlib import Path
 from typing import Optional
 from enum import Enum
 from pydantic import BaseModel, Field, ConfigDict, model_validator
@@ -97,9 +99,6 @@ def _apply_production_preset() -> None:
     redirect removes it, therefore the unused log file is placed in the system
     temporary directory instead of the working directory.
     """
-    import tempfile
-    from pathlib import Path
-
     fx.CONFIG.production(
         log_file=Path(tempfile.gettempdir()) / "flixopt.log",
     )

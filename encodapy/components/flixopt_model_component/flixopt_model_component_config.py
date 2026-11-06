@@ -16,6 +16,7 @@ from encodapy.components.flixopt_model_component.flixopt_models import (
     FlixoptSolverSettings,
     FlixoptLogLevel,
 )
+from encodapy.config.env_values import BasicEnvVariables
 
 
 class FlixoptModelComponentInputData(InputData):
@@ -156,8 +157,6 @@ class FlixoptModelComponentConfigData(ConfigData):
         configured = self.log_level.value
         if configured is not None:
             return configured
-        from encodapy.config.env_values import BasicEnvVariables
-
         # BasicEnvVariables normalizes the level to upper case
         central_level = BasicEnvVariables().log_level
         return (

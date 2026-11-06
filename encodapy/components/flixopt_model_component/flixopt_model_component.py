@@ -50,7 +50,7 @@ class _LoguruForwardHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
         try:
             message = self.format(record)
-        except Exception:  # noqa: BLE001 - forward all handler errors
+        except Exception:  # noqa: BLE001 - forward all handler errors  # pylint: disable=broad-exception-caught
             self.handleError(record)
             return
         try:
@@ -709,7 +709,7 @@ class FlixoptModelComponent(BasicComponent):
                     f"minimal_soc={minimal_soc}, maximal_soc={maximal_soc}. "
                     f"Check the soc_safety_margin and soc limits."
                 )
-            elif minimal_soc >= maximal_soc:
+            if minimal_soc >= maximal_soc:
                 logger.error(
                     f"Storage {storage.label} has minimal_soc >= maximal_soc: "
                     f"minimal_soc={minimal_soc}, maximal_soc={maximal_soc}. "
@@ -1105,9 +1105,18 @@ class FlixoptModelComponent(BasicComponent):
                     data = data.reset_index(drop=False).iloc[:, -1]
                 columns_to_concat.append(pd.DataFrame({var_name: data}))
 
+        if not columns_to_concat:
+            # Only scalar results, nothing to export as timeseries
+            error_message = (
+                "Results contain no time series variables, "
+                "can not export results as timeseries."
+            )
+            logger.error(error_message)
+            raise ValueError(error_message)
+
         time_index = pd.date_range(
             start=self.df_input.index[0],
-            periods=len(columns_to_concat[0]),  # Annahme: Alle Spalten gleich lang
+            periods=len(columns_to_concat[0]),  # assume equal column lengths
             freq=self.df_input.index.freq,
             tz=self.df_input_timezone,
         )
