@@ -3,6 +3,8 @@ Description: Collection of configuration and data models for the FlixOpt model c
 Authors: Martin Altenburger
 """
 
+import tempfile
+from pathlib import Path
 from typing import Optional
 from enum import Enum
 from pydantic import BaseModel, Field, ConfigDict, model_validator
@@ -70,10 +72,15 @@ class FlixoptSolverSettings(BaseModel):
 
 class FlixoptLogLevel(Enum):
     """
-    Log-Levels from flixopt configuration - see: flixopt.CONFIG
+    Operating presets of the flixopt framework - see: flixopt.CONFIG
+
+    The preset controls what the framework itself PRODUCES
+    (e.g. solver log capture, main result logging, progress bars).
+    Which of the forwarded records is VISIBLE is governed solely by the
+    central EnCoDaPy log level, not by this preset.
 
     FLIXOPT_CONFIG_MAP is used to map the enum values \
-        to the actual flixopt configuration functions
+        to the flixopt configuration functions
 
     """
 
@@ -83,10 +90,24 @@ class FlixoptLogLevel(Enum):
     SILENT = "silent"
 
 
+def _apply_production_preset() -> None:
+    """Apply the flixopt production preset without writing to the working dir.
+
+    All flixopt log records are routed through the EnCoDaPy loguru logger by the
+    component (see FlixoptModelComponent._configure_library_logging), so flixopt's
+    own file logging is never used. The preset opens its file handler before the
+    redirect removes it, therefore the unused log file is placed in the system
+    temporary directory instead of the working directory.
+    """
+    fx.CONFIG.production(
+        log_file=Path(tempfile.gettempdir()) / "flixopt.log",
+    )
+
+
 FLIXOPT_CONFIG_MAP = {
     FlixoptLogLevel.EXPLORING: fx.CONFIG.exploring,
     FlixoptLogLevel.DEBUG: fx.CONFIG.debug,
-    FlixoptLogLevel.PRODUCTION: fx.CONFIG.production,
+    FlixoptLogLevel.PRODUCTION: _apply_production_preset,
     FlixoptLogLevel.SILENT: fx.CONFIG.silent,
 }
 
@@ -338,6 +359,15 @@ class FlixOptStorage(BaseModel):
         description="""Percentage of the start_soc which should be reached at the end
         of the optimization period, used to define the required final SOC at the end
         of the optimization period (final_soc = start_soc * final_soc_percentage / 100)""",
+    )
+    soc_safety_margin: Optional[float | int] = Field(
+        0.0,
+        description="""
+        Safety margin for the SOC of the storage in percentage of the nominal capacity,
+        which is used to define the minimal and maximal SOC of the storage
+        (minimal_soc = minimal_soc + soc_safety_margin,
+        maximal_soc = maximal_soc - soc_safety_margin)
+        """,
     )
 
 

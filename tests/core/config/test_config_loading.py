@@ -301,3 +301,38 @@ class TestLoadConfigInterfaces:
             mock_fiware.assert_called_once()
             mock_file.assert_not_called()
             mock_mqtt.assert_not_called()
+
+
+class TestLogLevelNormalization:
+    """Test class for the log level normalization of BasicEnvVariables."""
+
+    def test_log_level_is_uppercased(self):
+        """Verify lowercase and mixed case log levels are normalized."""
+        assert (
+            BasicEnvVariables(config_path="c.json", log_level="debug").log_level
+            == "DEBUG"
+        )
+        assert (
+            BasicEnvVariables(config_path="c.json", log_level="Info ").log_level
+            == "INFO"
+        )
+        assert (
+            BasicEnvVariables(config_path="c.json", log_level="warning").log_level
+            == "WARNING"
+        )
+
+    def test_log_level_default_is_warning(self):
+        """Verify the default log level remains WARNING."""
+        assert BasicEnvVariables(config_path="c.json").log_level == "WARNING"
+
+
+class TestLogLevelTypeValidation:
+    """Test class for the log level type handling of BasicEnvVariables."""
+
+    def test_log_level_rejects_non_string_values(self):
+        """Non-string values pass the normalizer but fail the type check."""
+        from pydantic import ValidationError
+        import pytest
+
+        with pytest.raises(ValidationError):
+            BasicEnvVariables(config_path="c.json", log_level=123)

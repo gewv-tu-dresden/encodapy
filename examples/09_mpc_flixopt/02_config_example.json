@@ -69,9 +69,6 @@
 
             },
             "config": {
-                "log_level": {
-                    "value": "production"
-                },
                 "solver_settings": {
                     "value": {
                         "name": "HighsSolver",

@@ -28,6 +28,7 @@ from encodapy.components.flixopt_model_component.flixopt_models import (
     FlixOptCHPConverter,
     EnergyDirection,
     FlixOptSinkSource,
+    FlixoptLogLevel,
 )
 
 from encodapy.components.flixopt_model_component.flixopt_model_component_config import (
@@ -39,22 +40,39 @@ from encodapy.components.flixopt_model_component.flixopt_model_component_config 
 
 
 class _LoguruForwardHandler(logging.Handler):
-    """Forward standard-library log records to loguru."""
+    """Forward standard-library log records to loguru.
+
+    Records keep their original level, so the central EnCoDaPy loguru sink
+    decides what is visible; unknown stdlib level names fall back to the
+    numeric level.
+    """
 
     def emit(self, record: logging.LogRecord) -> None:
         try:
             message = self.format(record)
-            logger.opt(exception=record.exc_info).log(record.levelname, message)
-        except (TypeError, ValueError, KeyError):
+        except Exception:  # noqa: BLE001 - forward all handler errors  # pylint: disable=broad-exception-caught
             self.handleError(record)
+            return
+        try:
+            logger.opt(exception=record.exc_info).log(record.levelname, message)
+        except (ValueError, TypeError):
+            # Unknown stdlib level names: forward at the numeric level instead.
+            try:
+                logger.opt(exception=record.exc_info).log(record.levelno, message)
+            except (ValueError, TypeError, KeyError):
+                self.handleError(record)
+
+
+# Loggers of the embedded optimization stack that must not write around
+# the central EnCoDaPy logging: all records are forwarded to loguru instead,
+# and their own console/file handlers are removed.
+_LIBRARY_LOGGERS = ("flixopt", "flixopt.solver", "linopy")
 
 
 class FlixoptModelComponent(BasicComponent):
     """
     Class for a FlixOpt component based on a model defined for the FlixOpt library.
     """
-
-    _linopy_logger_redirect_configured = False
 
     def __init__(
         self,
@@ -94,9 +112,11 @@ class FlixoptModelComponent(BasicComponent):
         """
         # Example: Initialize FlixOpt model or other resources here
 
-        # Set flixopt log level based on configuration
-        FLIXOPT_CONFIG_MAP[self.config_data.log_level.value]()
-        self._configure_linopy_logging()
+        # Set flixopt operating preset based on configuration
+        FLIXOPT_CONFIG_MAP[self.config_data.get_effective_log_level()]()
+        # Suppress all direct log outputs of the embedded libraries and route
+        # their records through loguru; visibility follows the central level.
+        self._configure_library_logging()
 
         try:
             if not isinstance(
@@ -135,17 +155,36 @@ class FlixoptModelComponent(BasicComponent):
             self.manual_elements_function = func
 
     @classmethod
-    def _configure_linopy_logging(cls) -> None:
-        """Route linopy standard logging through loguru once per process."""
-        if cls._linopy_logger_redirect_configured:
-            return
+    def _configure_library_logging(cls) -> None:
+        """Route flixopt and linopy logging through loguru.
 
-        linopy_logger = logging.getLogger("linopy")
-        linopy_logger.handlers.clear()
-        linopy_logger.addHandler(_LoguruForwardHandler())
-        linopy_logger.propagate = False
-        linopy_logger.setLevel(logging.INFO)
-        cls._linopy_logger_redirect_configured = True
+        Removes the loggers' own handlers, so the embedded optimization stack
+        can not write directly to console or to files (e.g. ``flixopt.log``).
+        All records are forwarded to loguru at their original level; which of
+        them is actually visible is therefore governed solely by the central
+        EnCoDaPy log level (see encodapy LoggerControl), not by this component.
+        Safe to call repeatedly: re-applied on every component preparation.
+        """
+        for logger_name in _LIBRARY_LOGGERS:
+            library_logger = logging.getLogger(logger_name)
+            # Drop all foreign handlers (console/file handlers attached by the
+            # flixopt CONFIG presets), keep only forward handlers. Closing the
+            # removed handlers also closes log files like `flixopt.log`.
+            foreign_handlers = [
+                handler
+                for handler in library_logger.handlers
+                if not isinstance(handler, _LoguruForwardHandler)
+            ]
+            for handler in foreign_handlers:
+                library_logger.removeHandler(handler)
+                handler.close()
+            if not any(
+                isinstance(handler, _LoguruForwardHandler)
+                for handler in library_logger.handlers
+            ):
+                library_logger.addHandler(_LoguruForwardHandler())
+            library_logger.setLevel(logging.DEBUG)
+            library_logger.propagate = False
 
     def _load_helper_functions(self, path: str, symbol: str) -> Optional[Callable]:
         """
@@ -336,9 +375,9 @@ class FlixoptModelComponent(BasicComponent):
         """
         try:
             assert self.df_input is not None, "Input data preparation failed."
-            assert isinstance(
-                self.df_input.index, pd.DatetimeIndex
-            ), "Input time series must have a DatetimeIndex"
+            assert isinstance(self.df_input.index, pd.DatetimeIndex), (
+                "Input time series must have a DatetimeIndex"
+            )
         except AssertionError as e:
             logger.error(f"Error in input data: {e}")
             raise ValueError from e
@@ -651,10 +690,36 @@ class FlixoptModelComponent(BasicComponent):
 
             minimal_soc = (
                 cast(float | int, self._get_input_value(storage.minimal_soc)) / 100
+                + cast(float | int, self._get_input_value(storage.soc_safety_margin))
+                / 100
             )
             maximal_soc = (
                 cast(float | int, self._get_input_value(storage.maximal_soc)) / 100
+                - cast(float | int, self._get_input_value(storage.soc_safety_margin))
+                / 100
             )
+            if minimal_soc < 0 or maximal_soc > 1:
+                logger.error(
+                    f"Storage {storage.label} has invalid SOC limits: "
+                    f"minimal_soc={minimal_soc}, maximal_soc={maximal_soc}. "
+                    f"Check the soc_safety_margin and soc limits."
+                )
+                raise ValueError(
+                    f"Storage {storage.label} has invalid SOC limits: "
+                    f"minimal_soc={minimal_soc}, maximal_soc={maximal_soc}. "
+                    f"Check the soc_safety_margin and soc limits."
+                )
+            if minimal_soc >= maximal_soc:
+                logger.error(
+                    f"Storage {storage.label} has minimal_soc >= maximal_soc: "
+                    f"minimal_soc={minimal_soc}, maximal_soc={maximal_soc}. "
+                    f"Check the soc_safety_margin and soc limits."
+                )
+                raise ValueError(
+                    f"Storage {storage.label} has minimal_soc >= maximal_soc: "
+                    f"minimal_soc={minimal_soc}, maximal_soc={maximal_soc}. "
+                    f"Check the soc_safety_margin and soc limits."
+                )
 
             # inital soc needs to be within the capacity of the storage
             initial_soc = max(
@@ -953,9 +1018,15 @@ class FlixoptModelComponent(BasicComponent):
             return None
 
         # Solve Problem
+        # Progress bars for writing the lp file are written directly to stderr by
+        # linopy, so they bypass all log levels; only show them in verbose modes.
+        verbose_logging = self.config_data.get_effective_log_level() in (
+            FlixoptLogLevel.DEBUG,
+            FlixoptLogLevel.EXPLORING,
+        )
         try:
             solving_start = perf_counter()
-            flow_system.solve(self.config_data.get_solver())
+            flow_system.solve(self.config_data.get_solver(), progress=verbose_logging)
             solving_duration = perf_counter() - solving_start
 
             results = getattr(flow_system, "solution", None)
@@ -1026,24 +1097,36 @@ class FlixoptModelComponent(BasicComponent):
                 value = data_array.values
                 results_dict[var_name] = value
 
-        # Combine all timeseries into a single DataFrame (optional)
-        all_timeseries = pd.DataFrame()
+        # Combine all timeseries into a single DataFrame
+        columns_to_concat = []
         for var_name, data in results_dict.items():
             if isinstance(data, (pd.DataFrame, pd.Series)):
                 if isinstance(data, pd.DataFrame):
-                    data = data.reset_index(drop=False)
-                all_timeseries[var_name] = (
-                    data if isinstance(data, pd.Series) else data.iloc[:, -1]
-                )
-        all_timeseries["time"] = pd.date_range(
+                    data = data.reset_index(drop=False).iloc[:, -1]
+                columns_to_concat.append(pd.DataFrame({var_name: data}))
+
+        if not columns_to_concat:
+            # Only scalar results, nothing to export as timeseries
+            error_message = (
+                "Results contain no time series variables, "
+                "can not export results as timeseries."
+            )
+            logger.error(error_message)
+            raise ValueError(error_message)
+
+        time_index = pd.date_range(
             start=self.df_input.index[0],
-            periods=len(all_timeseries),
+            periods=len(columns_to_concat[0]),  # assume equal column lengths
             freq=self.df_input.index.freq,
             tz=self.df_input_timezone,
         )
+        columns_to_concat.append(pd.DataFrame({"time": time_index}))
+        all_timeseries = pd.concat(columns_to_concat, axis=1)
         all_timeseries.set_index("time", inplace=True)
         # drop last row, because it is often incomplete due to the way the optimization works
         all_timeseries.drop(index=all_timeseries.index[-1], inplace=True)
+        all_timeseries = all_timeseries.copy()
+
         return all_timeseries
 
     def _reset_output_data(self) -> None:

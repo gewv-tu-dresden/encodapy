@@ -60,6 +60,7 @@ def test_prepare_component_loads_model_from_dict() -> None:
         "config_data",
         SimpleNamespace(
             log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
             flixopt_model=DataPointFlixoptModelConfig.model_validate(
                 {"value": _minimal_model_dict()}
             ),
@@ -154,7 +155,15 @@ def test_run_optimization_returns_none_on_modeling_error(
         lambda optimization: None,
     )
     setattr(component, "flixopt_model", SimpleNamespace())
-    setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
+    setattr(
+        component,
+        "config_data",
+        SimpleNamespace(
+            get_solver=lambda: "dummy",
+            log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
+        ),
+    )
 
     result = getattr(component, "run_optimization")()
 
@@ -182,7 +191,15 @@ def test_run_optimization_returns_none_when_model_missing_after_build() -> None:
         lambda optimization: None,
     )
     setattr(component, "flixopt_model", SimpleNamespace())
-    setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
+    setattr(
+        component,
+        "config_data",
+        SimpleNamespace(
+            get_solver=lambda: "dummy",
+            log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
+        ),
+    )
 
     result = getattr(component, "run_optimization")()
 
@@ -216,7 +233,15 @@ def test_run_optimization_returns_none_on_solver_runtime_error(
         lambda optimization: None,
     )
     setattr(component, "flixopt_model", SimpleNamespace())
-    setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
+    setattr(
+        component,
+        "config_data",
+        SimpleNamespace(
+            get_solver=lambda: "dummy",
+            log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
+        ),
+    )
 
     result = getattr(component, "run_optimization")()
 
@@ -249,7 +274,15 @@ def test_run_optimization_returns_results_on_success(
         lambda optimization: None,
     )
     setattr(component, "flixopt_model", SimpleNamespace())
-    setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
+    setattr(
+        component,
+        "config_data",
+        SimpleNamespace(
+            get_solver=lambda: "dummy",
+            log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
+        ),
+    )
 
     result = getattr(component, "run_optimization")()
 
@@ -277,7 +310,15 @@ def test_run_optimization_returns_none_when_solution_missing() -> None:
         lambda optimization: None,
     )
     setattr(component, "flixopt_model", SimpleNamespace())
-    setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
+    setattr(
+        component,
+        "config_data",
+        SimpleNamespace(
+            get_solver=lambda: "dummy",
+            log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
+        ),
+    )
 
     result = getattr(component, "run_optimization")()
 
@@ -306,7 +347,15 @@ def test_run_optimization_reads_objective_from_solution_attrs() -> None:
         lambda optimization: None,
     )
     setattr(component, "flixopt_model", SimpleNamespace())
-    setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
+    setattr(
+        component,
+        "config_data",
+        SimpleNamespace(
+            get_solver=lambda: "dummy",
+            log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
+        ),
+    )
 
     result = getattr(component, "run_optimization")()
 
@@ -364,3 +413,55 @@ def test_get_converters_dispatches_all_supported_types() -> None:
         "bidir:bidir:a",
         "bidir:bidir:b",
     ]
+
+
+def test_run_optimization_passes_progress_flag_for_preset() -> None:
+    """linopy progress bars are only enabled in verbose presets."""
+    from types import SimpleNamespace as _NS
+
+    for preset, expected_progress in (
+        (FlixoptLogLevel.SILENT, False),
+        (FlixoptLogLevel.PRODUCTION, False),
+        (FlixoptLogLevel.EXPLORING, True),
+        (FlixoptLogLevel.DEBUG, True),
+    ):
+        component = _create_component()
+        solve_kwargs: dict[str, Any] = {}
+
+        def _solve(_solver: Any, **kwargs: Any) -> None:
+            solve_kwargs.clear()
+            solve_kwargs.update(kwargs)
+
+        flow_system = _NS(
+            add_elements=lambda element: None,
+            build_model=lambda: None,
+            solve=_solve,
+            solution=_NS(attrs={"objective": 1.0}),
+            durations={"modeling": 0.1, "solving": 0.2},
+            model=_NS(get_coords=lambda: []),
+        )
+        setattr(component, "_prepare_flixopt_flow_system", lambda: flow_system)
+        setattr(component, "_get_converters", lambda: [])
+        setattr(component, "_get_storages", lambda: [])
+        setattr(component, "_get_sinks_and_sources", lambda: [])
+        setattr(
+            component,
+            "_add_bidirectional_substation_constraints",
+            lambda optimization: None,
+        )
+        setattr(component, "flixopt_model", SimpleNamespace())
+        setattr(
+            component,
+            "config_data",
+            SimpleNamespace(
+                get_solver=lambda: "dummy",
+                log_level=SimpleNamespace(value=preset),
+                get_effective_log_level=lambda: preset,
+            ),
+        )
+
+        getattr(component, "run_optimization")()
+
+        assert solve_kwargs.get("progress") is expected_progress, (
+            f"progress flag mismatch for preset {preset}"
+        )
