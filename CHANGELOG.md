@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/gewv-tu-dresden/encodapy/compare/v0.13.0...v0.14.0) (2026-11-09)
+
+
+### Features
+
+* flixopt component adjustments - storage soc margin and unified logging ([#165](https://github.com/gewv-tu-dresden/encodapy/issues/165)) ([53e33e0](https://github.com/gewv-tu-dresden/encodapy/commit/53e33e0a8c998a1088a430ffd102719cf74d38d2))
+
 ## [0.13.0](https://github.com/gewv-tu-dresden/encodapy/compare/v0.12.0...v0.13.0) (2026-10-26)
 
 
