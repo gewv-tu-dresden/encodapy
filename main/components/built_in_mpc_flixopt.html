@@ -194,6 +194,21 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">log_level</span></code> (optional):</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">exploring</span></code>, <code class="docutils literal notranslate"><span class="pre">debug</span></code>, <code class="docutils literal notranslate"><span class="pre">production</span></code>, <code class="docutils literal notranslate"><span class="pre">silent</span></code></p></li>
+<li><p><strong>Optional</strong> - if not set, the preset is derived from the central EnCoDaPy
+log level: a service at <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> gets the <code class="docutils literal notranslate"><span class="pre">debug</span></code> preset, every other level
+gets <code class="docutils literal notranslate"><span class="pre">silent</span></code> (quiet MPC operation)</p></li>
+<li><p>Selects the FlixOpt operating preset (<code class="docutils literal notranslate"><span class="pre">flixopt.CONFIG</span></code>), which controls what
+the library itself produces: solver log capture, main results logging, etc.</p></li>
+<li><p>This is <strong>not</strong> a filter for what you see on the console:
+all log output of the embedded libraries (FlixOpt, its solver log stream
+and linopy) is routed through the central EnCoDaPy loguru logger, where the
+central <code class="docutils literal notranslate"><span class="pre">LOG_LEVEL</span></code> decides what is visible. Direct outputs of the libraries
+on console or into files are suppressed, so no <code class="docutils literal notranslate"><span class="pre">flixopt.log</span></code> is written
+(with the <code class="docutils literal notranslate"><span class="pre">production</span></code> preset, the unused file is placed in the system
+temporary directory).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">silent</span></code> additionally suppresses solver console output
+(gurobipy stdout banner, HiGHS/Gurobi solve logs) and the
+lp-file writing progress bars in every optimization cycle</p></li>
 </ul>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">excess_penalty</span></code> (optional):</p>

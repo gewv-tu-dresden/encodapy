@@ -88,7 +88,7 @@
 <span class="sd">Defines the configuration data models for the new component.</span>
 <span class="sd">"""</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span><span class="p">,</span> <span class="n">ConfigDict</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">flixopt</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fx</span>  <span class="c1"># type: ignore[import-untyped]</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.components.basic_component_config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -102,6 +102,7 @@
     <span class="n">FlixoptSolverSettings</span><span class="p">,</span>
     <span class="n">FlixoptLogLevel</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">encodapy.config.env_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasicEnvVariables</span>
 
 
 <div class="viewcode-block" id="FlixoptModelComponentInputData">
@@ -145,12 +146,22 @@
 <a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptLogLevel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataPointFlixoptLogLevel</span><span class="p">(</span><span class="n">DataPointGeneral</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    DataPoint for Flixopt log level</span>
+<span class="sd">    DataPoint for the Flixopt operating preset.</span>
+<span class="sd">    Controls what the flixopt framework produces (solver log capture,</span>
+<span class="sd">    main result logging); visibility of all forwarded records is governed</span>
+<span class="sd">    by the central EnCoDaPy log level.</span>
+<span class="sd">    A value of None derives the preset from the central EnCoDaPy log level</span>
+<span class="sd">    (DEBUG -&gt; `debug`, otherwise -&gt; `silent`).</span>
 <span class="sd">    """</span>
 
-    <span class="n">value</span><span class="p">:</span> <span class="n">FlixoptLogLevel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">SILENT</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">"Log level for the flixopt framework"</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FlixoptLogLevel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">"Operating preset for the flixopt framework "</span>
+            <span class="s2">"(silent, production, exploring, debug); "</span>
+            <span class="s2">"None derives it from the central EnCoDaPy log level "</span>
+            <span class="s2">"(DEBUG -&gt; debug, otherwise -&gt; silent)"</span>
+        <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
@@ -213,7 +224,13 @@
 
     <span class="n">log_level</span><span class="p">:</span> <span class="n">DataPointFlixoptLogLevel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="n">DataPointFlixoptLogLevel</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({}),</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">"Log level for the flixopt framework"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">"Flixopt operating preset (silent, production, exploring, debug). "</span>
+            <span class="s2">"If not set, the preset is derived from the central EnCoDaPy log "</span>
+            <span class="s2">"level (DEBUG -&gt; debug, otherwise -&gt; silent); visibility of the "</span>
+            <span class="s2">"forwarded flixopt logs is controlled by the central EnCoDaPy "</span>
+            <span class="s2">"log level"</span>
+        <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">solver_settings</span><span class="p">:</span> <span class="n">DataPointFlixoptSolverSettings</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="n">DataPointFlixoptSolverSettings</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({}),</span>
@@ -230,6 +247,29 @@
 <span class="s2">        Default to None. A valid flixopt model configuration must be provided.</span>
 <span class="s2">        """</span><span class="p">,</span>
     <span class="p">)</span>
+
+<div class="viewcode-block" id="FlixoptModelComponentConfigData.get_effective_log_level">
+<a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.get_effective_log_level">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_effective_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FlixoptLogLevel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Resolve the flixopt operating preset to apply.</span>
+
+<span class="sd">        An explicitly configured preset wins. If none is configured, the</span>
+<span class="sd">        preset is derived from the central EnCoDaPy log level (the same</span>
+<span class="sd">        source the service logger uses): a DEBUG service gets the fully</span>
+<span class="sd">        instrumented flixopt `debug` preset, all other levels get the</span>
+<span class="sd">        quiet `silent` preset.</span>
+<span class="sd">        """</span>
+        <span class="n">configured</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_level</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">if</span> <span class="n">configured</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">configured</span>
+        <span class="c1"># BasicEnvVariables normalizes the level to upper case</span>
+        <span class="n">central_level</span> <span class="o">=</span> <span class="n">BasicEnvVariables</span><span class="p">()</span><span class="o">.</span><span class="n">log_level</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">DEBUG</span>
+            <span class="k">if</span> <span class="n">central_level</span> <span class="o">==</span> <span class="s2">"DEBUG"</span>
+            <span class="k">else</span> <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">SILENT</span>
+        <span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="FlixoptModelComponentConfigData.get_solver">
 <a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.get_solver">[docs]</a>
@@ -293,6 +333,13 @@
             <span class="n">extra_options</span><span class="p">[</span><span class="n">option_key_map</span><span class="p">[</span><span class="s2">"cuts"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">cuts</span>
         <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">additional_options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">extra_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">cfg</span><span class="o">.</span><span class="n">additional_options</span><span class="p">))</span>
+        <span class="c1"># In silent operation, gurobipy prints its license banner and lp-file</span>
+        <span class="c1"># reading info directly to stdout before linopy can apply any solver</span>
+        <span class="c1"># options. 'env' is forwarded to linopy as environment startup</span>
+        <span class="c1"># parameters, which is the only way to suppress these prints during</span>
+        <span class="c1"># each optimization cycle.</span>
+        <span class="k">if</span> <span class="n">is_gurobi</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_effective_log_level</span><span class="p">()</span> <span class="o">==</span> <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">SILENT</span><span class="p">:</span>
+            <span class="n">extra_options</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"env"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"OutputFlag"</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
         <span class="k">if</span> <span class="n">extra_options</span><span class="p">:</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s2">"extra_options"</span><span class="p">]</span> <span class="o">=</span> <span class="n">extra_options</span>
 

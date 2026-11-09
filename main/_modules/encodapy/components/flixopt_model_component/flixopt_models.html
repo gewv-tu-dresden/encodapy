@@ -89,10 +89,13 @@
 <span class="sd">Authors: Martin Altenburger</span>
 <span class="sd">"""</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">model_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">flixopt</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fx</span>  <span class="c1"># type: ignore[import-untyped]</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">model_validator</span>
 
 
 <div class="viewcode-block" id="FlixOptSolverName">
@@ -164,10 +167,15 @@
 <a class="viewcode-back" href="../../../../components/built_in_mpc_flixopt_models.html#encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FlixoptLogLevel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Log-Levels from flixopt configuration - see: flixopt.CONFIG</span>
+<span class="sd">    Operating presets of the flixopt framework - see: flixopt.CONFIG</span>
+
+<span class="sd">    The preset controls what the framework itself PRODUCES</span>
+<span class="sd">    (e.g. solver log capture, main result logging, progress bars).</span>
+<span class="sd">    Which of the forwarded records is VISIBLE is governed solely by the</span>
+<span class="sd">    central EnCoDaPy log level, not by this preset.</span>
 
 <span class="sd">    FLIXOPT_CONFIG_MAP is used to map the enum values \</span>
-<span class="sd">        to the actual flixopt configuration functions</span>
+<span class="sd">        to the flixopt configuration functions</span>
 
 <span class="sd">    """</span>
 
@@ -178,10 +186,24 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_apply_production_preset</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Apply the flixopt production preset without writing to the working dir.</span>
+
+<span class="sd">    All flixopt log records are routed through the EnCoDaPy loguru logger by the</span>
+<span class="sd">    component (see FlixoptModelComponent._configure_library_logging), so flixopt's</span>
+<span class="sd">    own file logging is never used. The preset opens its file handler before the</span>
+<span class="sd">    redirect removes it, therefore the unused log file is placed in the system</span>
+<span class="sd">    temporary directory instead of the working directory.</span>
+<span class="sd">    """</span>
+    <span class="n">fx</span><span class="o">.</span><span class="n">CONFIG</span><span class="o">.</span><span class="n">production</span><span class="p">(</span>
+        <span class="n">log_file</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">())</span> <span class="o">/</span> <span class="s2">"flixopt.log"</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
 <span class="n">FLIXOPT_CONFIG_MAP</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">EXPLORING</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">CONFIG</span><span class="o">.</span><span class="n">exploring</span><span class="p">,</span>
     <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">CONFIG</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span>
-    <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">PRODUCTION</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">CONFIG</span><span class="o">.</span><span class="n">production</span><span class="p">,</span>
+    <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">PRODUCTION</span><span class="p">:</span> <span class="n">_apply_production_preset</span><span class="p">,</span>
     <span class="n">FlixoptLogLevel</span><span class="o">.</span><span class="n">SILENT</span><span class="p">:</span> <span class="n">fx</span><span class="o">.</span><span class="n">CONFIG</span><span class="o">.</span><span class="n">silent</span><span class="p">,</span>
 <span class="p">}</span>
 
@@ -456,6 +478,16 @@
         <span class="n">description</span><span class="o">=</span><span class="s2">"""Percentage of the start_soc which should be reached at the end</span>
 <span class="s2">        of the optimization period, used to define the required final SOC at the end</span>
 <span class="s2">        of the optimization period (final_soc = start_soc * final_soc_percentage / 100)"""</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">soc_safety_margin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"""</span>
+<span class="s2">        Safety margin for the SOC of the storage in percentage of the nominal capacity,</span>
+<span class="s2">        which is used to define the minimal and maximal SOC of the storage</span>
+<span class="s2">        (minimal_soc = minimal_soc + soc_safety_margin,</span>
+<span class="s2">        maximal_soc = maximal_soc - soc_safety_margin)</span>
+<span class="s2">        """</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 

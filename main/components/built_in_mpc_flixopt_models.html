@@ -110,17 +110,29 @@
 <dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptLogLevel">
 <span class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">encodapy.components.flixopt_model_component.flixopt_model_component_config.</span></span><span class="sig-name descname"><span class="pre">DataPointFlixoptLogLevel</span></span><a class="reference internal" href="../_modules/encodapy/components/flixopt_model_component/flixopt_model_component_config.html#DataPointFlixoptLogLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptLogLevel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="../basic_service/utils_models.html#encodapy.utils.datapoints.DataPointGeneral" title="encodapy.utils.datapoints.DataPointGeneral"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataPointGeneral</span></code></a></p>
-<p>DataPoint for Flixopt log level</p>
+<p>DataPoint for the Flixopt operating preset.
+Controls what the flixopt framework produces (solver log capture,
+main result logging); visibility of all forwarded records is governed
+by the central EnCoDaPy log level.
+A value of None derives the preset from the central EnCoDaPy log level
+(DEBUG -&gt; <cite>debug</cite>, otherwise -&gt; <cite>silent</cite>).</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPointFlixoptLogLevel"</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPoint for Flixopt log level"</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPoint for the Flixopt operating preset.\nControls what the flixopt framework produces (solver log capture,\nmain result logging); visibility of all forwarded records is governed\nby the central EnCoDaPy log level.\nA value of None derives the preset from the central EnCoDaPy log level\n(DEBUG -&gt; `debug`, otherwise -&gt; `silent`)."</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
 <span class="w">   </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixoptLogLevel"</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="s2">"silent"</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Log level for the flixopt framework"</span>
+<span class="w">         </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixoptLogLevel"</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"null"</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Operating preset for the flixopt framework (silent, production, exploring, debug); None derives it from the central EnCoDaPy log level (DEBUG -&gt; debug, otherwise -&gt; silent)"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -185,7 +197,7 @@
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"FlixoptLogLevel"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Log-Levels from flixopt configuration - see: flixopt.CONFIG\n\nFLIXOPT_CONFIG_MAP is used to map the enum values         to the actual flixopt configuration functions"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Operating presets of the flixopt framework - see: flixopt.CONFIG\n\nThe preset controls what the framework itself PRODUCES\n(e.g. solver log capture, main result logging, progress bars).\nWhich of the forwarded records is VISIBLE is governed solely by the\ncentral EnCoDaPy log level, not by this preset.\n\nFLIXOPT_CONFIG_MAP is used to map the enum values         to the flixopt configuration functions"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"exploring"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"debug"</span><span class="p">,</span>
@@ -201,8 +213,8 @@
 </div>
 </details></p><dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptLogLevel.value">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">value</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel" title="encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel"><span class="pre">FlixoptLogLevel</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">FlixoptLogLevel.SILENT</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptLogLevel.value" title="Link to this definition"></a></dt>
-<dd><p>Log level for the flixopt framework</p>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">value</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel" title="encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel"><span class="pre">FlixoptLogLevel</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptLogLevel.value" title="Link to this definition"></a></dt>
+<dd><p>Operating preset for the flixopt framework (silent, production, exploring, debug); None derives it from the central EnCoDaPy log level (DEBUG -&gt; debug, otherwise -&gt; silent)</p>
 </dd></dl>
 
 </dd></dl>
@@ -568,11 +580,11 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">      </span><span class="nt">"log_level"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointFlixoptLogLevel"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"silent"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
 <span class="w">            </span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
 <span class="w">         </span><span class="p">},</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Log level for the flixopt framework"</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Flixopt operating preset (silent, production, exploring, debug). If not set, the preset is derived from the central EnCoDaPy log level (DEBUG -&gt; debug, otherwise -&gt; silent); visibility of the forwarded flixopt logs is controlled by the central EnCoDaPy log level"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"solver_settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">         </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/DataPointFlixoptSolverSettings"</span><span class="p">,</span>
@@ -609,12 +621,19 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">"$defs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">"DataPointFlixoptLogLevel"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPoint for Flixopt log level"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DataPoint for the Flixopt operating preset.\nControls what the flixopt framework produces (solver log capture,\nmain result logging); visibility of all forwarded records is governed\nby the central EnCoDaPy log level.\nA value of None derives the preset from the central EnCoDaPy log level\n(DEBUG -&gt; `debug`, otherwise -&gt; `silent`)."</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">               </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixoptLogLevel"</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="s2">"silent"</span><span class="p">,</span>
-<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Log level for the flixopt framework"</span>
+<span class="w">               </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/FlixoptLogLevel"</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"null"</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Operating preset for the flixopt framework (silent, production, exploring, debug); None derives it from the central EnCoDaPy log level (DEBUG -&gt; debug, otherwise -&gt; silent)"</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">            </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">               </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -828,7 +847,7 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="w">         </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">"FlixoptLogLevel"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Log-Levels from flixopt configuration - see: flixopt.CONFIG\n\nFLIXOPT_CONFIG_MAP is used to map the enum values         to the actual flixopt configuration functions"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Operating presets of the flixopt framework - see: flixopt.CONFIG\n\nThe preset controls what the framework itself PRODUCES\n(e.g. solver log capture, main result logging, progress bars).\nWhich of the forwarded records is VISIBLE is governed solely by the\ncentral EnCoDaPy log level, not by this preset.\n\nFLIXOPT_CONFIG_MAP is used to map the enum values         to the flixopt configuration functions"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"enum"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">            </span><span class="s2">"exploring"</span><span class="p">,</span>
 <span class="w">            </span><span class="s2">"debug"</span><span class="p">,</span>
@@ -982,8 +1001,8 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 </div>
 </details></p><dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.log_level">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">log_level</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptLogLevel" title="encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptLogLevel"><span class="pre">DataPointFlixoptLogLevel</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">DataPointFlixoptLogLevel(value=&lt;FlixoptLogLevel.SILENT:</span> <span class="pre">'silent'&gt;,</span> <span class="pre">unit=None,</span> <span class="pre">time=None)</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.log_level" title="Link to this definition"></a></dt>
-<dd><p>Log level for the flixopt framework</p>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">log_level</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptLogLevel" title="encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptLogLevel"><span class="pre">DataPointFlixoptLogLevel</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">DataPointFlixoptLogLevel(value=None,</span> <span class="pre">unit=None,</span> <span class="pre">time=None)</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.log_level" title="Link to this definition"></a></dt>
+<dd><p>Flixopt operating preset (silent, production, exploring, debug). If not set, the preset is derived from the central EnCoDaPy log level (DEBUG -&gt; debug, otherwise -&gt; silent); visibility of the forwarded flixopt logs is controlled by the central EnCoDaPy log level</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -1003,6 +1022,22 @@ Leaves solver parameters unset so flixopt can use its own defaults.</p>
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">flixopt_model</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptModelConfig" title="encodapy.components.flixopt_model_component.flixopt_model_component_config.DataPointFlixoptModelConfig"><span class="pre">DataPointFlixoptModelConfig</span></a></span><span class="property"> <span class="pre">[Required]</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.flixopt_model" title="Link to this definition"></a></dt>
 <dd><p>Flixopt model configuration as dict or a path to a json file as <code class="docutils literal notranslate"><span class="pre">DataPointFlixoptModelConfig</span></code>.
 Default to None. A valid flixopt model configuration must be provided.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.get_effective_log_level">
+<span class="sig-name descname"><span class="pre">get_effective_log_level</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel" title="encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel"><span class="pre">FlixoptLogLevel</span></a></span></span><a class="reference internal" href="../_modules/encodapy/components/flixopt_model_component/flixopt_model_component_config.html#FlixoptModelComponentConfigData.get_effective_log_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_model_component_config.FlixoptModelComponentConfigData.get_effective_log_level" title="Link to this definition"></a></dt>
+<dd><p>Resolve the flixopt operating preset to apply.</p>
+<p>An explicitly configured preset wins. If none is configured, the
+preset is derived from the central EnCoDaPy log level (the same
+source the service logger uses): a DEBUG service gets the fully
+instrumented flixopt <cite>debug</cite> preset, all other levels get the
+quiet <cite>silent</cite> preset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel" title="encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlixoptLogLevel</span></code></a></span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2701,6 +2736,27 @@ You can add more subfunctions to this function to add constraints.</p>
 <span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="mf">50.0</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Percentage of the start_soc which should be reached at the end\n        of the optimization period, used to define the required final SOC at the end\n        of the optimization period (final_soc = start_soc * final_soc_percentage / 100)"</span><span class="p">,</span>
 <span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Final Soc Percentage"</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">"soc_safety_margin"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                        </span><span class="p">{</span>
+<span class="w">                           </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
+<span class="w">                        </span><span class="p">},</span>
+<span class="w">                        </span><span class="p">{</span>
+<span class="w">                           </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integer"</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                     </span><span class="p">],</span>
+<span class="w">                     </span><span class="nt">"ge"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"null"</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Safety margin for the SOC of the storage in percentage of the nominal capacity,\n        which is used to define the minimal and maximal SOC of the storage\n        (minimal_soc = minimal_soc + soc_safety_margin,\n        maximal_soc = maximal_soc - soc_safety_margin)\n        "</span><span class="p">,</span>
+<span class="w">               </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Soc Safety Margin"</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">         </span><span class="p">},</span>
 <span class="w">         </span><span class="nt">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -3372,6 +3428,27 @@ and the value is the amount of the effect per startup</p>
 <span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="mf">50.0</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Percentage of the start_soc which should be reached at the end\n        of the optimization period, used to define the required final SOC at the end\n        of the optimization period (final_soc = start_soc * final_soc_percentage / 100)"</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Final Soc Percentage"</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">"soc_safety_margin"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"anyOf"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span>
+<span class="w">                  </span><span class="p">},</span>
+<span class="w">                  </span><span class="p">{</span>
+<span class="w">                     </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integer"</span>
+<span class="w">                  </span><span class="p">}</span>
+<span class="w">               </span><span class="p">],</span>
+<span class="w">               </span><span class="nt">"ge"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">               </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"null"</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">         </span><span class="p">],</span>
+<span class="w">         </span><span class="nt">"default"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"\n        Safety margin for the SOC of the storage in percentage of the nominal capacity,\n        which is used to define the minimal and maximal SOC of the storage\n        (minimal_soc = minimal_soc + soc_safety_margin,\n        maximal_soc = maximal_soc - soc_safety_margin)\n        "</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Soc Safety Margin"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">},</span>
 <span class="w">   </span><span class="nt">"additionalProperties"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
@@ -3459,14 +3536,34 @@ of the optimization period, used to define the required final SOC at the end
 of the optimization period (final_soc = start_soc * final_soc_percentage / 100)</p>
 </dd></dl>
 
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_models.FlixOptStorage.soc_safety_margin">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">soc_safety_margin</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixOptStorage.soc_safety_margin" title="Link to this definition"></a></dt>
+<dd><p>Safety margin for the SOC of the storage in percentage of the nominal capacity,
+which is used to define the minimal and maximal SOC of the storage
+(minimal_soc = minimal_soc + soc_safety_margin,
+maximal_soc = maximal_soc - soc_safety_margin)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ge</strong> = 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">encodapy.components.flixopt_model_component.flixopt_models.</span></span><span class="sig-name descname"><span class="pre">FlixoptLogLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/encodapy/components/flixopt_model_component/flixopt_models.html#FlixoptLogLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
-<p>Log-Levels from flixopt configuration - see: flixopt.CONFIG</p>
-<p>FLIXOPT_CONFIG_MAP is used to map the enum values         to the actual flixopt configuration functions</p>
+<p>Operating presets of the flixopt framework - see: flixopt.CONFIG</p>
+<p>The preset controls what the framework itself PRODUCES
+(e.g. solver log capture, main result logging, progress bars).
+Which of the forwarded records is VISIBLE is governed solely by the
+central EnCoDaPy log level, not by this preset.</p>
+<p>FLIXOPT_CONFIG_MAP is used to map the enum values         to the flixopt configuration functions</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel.DEBUG">
 <span class="sig-name descname"><span class="pre">DEBUG</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'debug'</span></span><a class="headerlink" href="#encodapy.components.flixopt_model_component.flixopt_models.FlixoptLogLevel.DEBUG" title="Link to this definition"></a></dt>
