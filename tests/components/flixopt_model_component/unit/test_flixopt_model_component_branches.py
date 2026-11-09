@@ -94,6 +94,7 @@ def test_prepare_component_file_not_found_raises() -> None:
         "config_data",
         SimpleNamespace(
             log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
             flixopt_model=DataPointFlixoptModelConfig.model_validate(
                 {"value": "this_file_does_not_exist_abc123.json"}
             ),
@@ -112,6 +113,7 @@ def test_prepare_component_raises_validation_error_for_invalid_model() -> None:
         "config_data",
         SimpleNamespace(
             log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
             flixopt_model=DataPointFlixoptModelConfig.model_validate(
                 {"value": {"buses": [], "effects": []}}
             ),
@@ -132,6 +134,7 @@ def test_prepare_component_reaches_non_dict_non_path_value_branch() -> None:
         "config_data",
         SimpleNamespace(
             log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
             flixopt_model=invalid_dp,
         ),
     )
@@ -155,6 +158,7 @@ def test_prepare_component_loads_constraint_and_element_helpers(
         "config_data",
         SimpleNamespace(
             log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
             flixopt_model=DataPointFlixoptModelConfig.model_validate(
                 {"value": model_with_helpers}
             ),
@@ -181,6 +185,43 @@ def test_prepare_component_loads_constraint_and_element_helpers(
     assert getattr(component, "manual_elements_function") is f_elements
     assert ("dummy_constraints.py", "add_constraints") in calls
     assert ("dummy_elements.py", "add_elements") in calls
+
+
+def test_prepare_component_applies_effective_log_level(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """prepare_component applies the flixopt preset of the effective log level."""
+    import encodapy.components.flixopt_model_component.flixopt_model_component as flix_module
+
+    applied: list[str] = []
+
+    def _fake_preset(preset_name: str):
+        def _apply() -> None:
+            applied.append(preset_name)
+
+        return _apply
+
+    for preset in FlixoptLogLevel:
+        monkeypatch.setitem(
+            flix_module.FLIXOPT_CONFIG_MAP, preset, _fake_preset(preset.value)
+        )
+
+    component = _component()
+    setattr(
+        component,
+        "config_data",
+        SimpleNamespace(
+            log_level=SimpleNamespace(value=FlixoptLogLevel.EXPLORING),
+            get_effective_log_level=lambda: FlixoptLogLevel.EXPLORING,
+            flixopt_model=DataPointFlixoptModelConfig.model_validate(
+                {"value": _model_dict()}
+            ),
+        ),
+    )
+
+    getattr(component, "prepare_component")()
+
+    assert applied == ["exploring"]
 
 
 def test_load_helper_functions_import_errors(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -602,7 +643,15 @@ def test_run_optimization_calls_constraint_function(
         "_add_bidirectional_substation_constraints",
         lambda optimization: None,
     )
-    setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
+    setattr(
+        component,
+        "config_data",
+        SimpleNamespace(
+            get_solver=lambda: "dummy",
+            log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
+        ),
+    )
     setattr(component, "flixopt_model", SimpleNamespace())
     called = {"constraint": False}
     setattr(
@@ -663,7 +712,15 @@ def test_run_optimization_returns_none_on_file_not_found(
         "_add_bidirectional_substation_constraints",
         lambda optimization: None,
     )
-    setattr(component, "config_data", SimpleNamespace(get_solver=lambda: "dummy"))
+    setattr(
+        component,
+        "config_data",
+        SimpleNamespace(
+            get_solver=lambda: "dummy",
+            log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
+        ),
+    )
     setattr(component, "flixopt_model", SimpleNamespace())
 
     assert getattr(component, "run_optimization")() is None
@@ -700,6 +757,22 @@ def test_export_results_as_timeseries_handles_scalar_data_var() -> None:
 
     assert "status" in out.columns
     assert "scalar" not in out.columns
+
+
+def test_export_results_as_timeseries_raises_when_only_scalars() -> None:
+    """Raise a clear error when the results contain no time series variables."""
+    component = _component()
+    setattr(
+        component,
+        "df_input",
+        pd.DataFrame(index=pd.date_range("2026-01-01", periods=3, freq="h")),
+    )
+    setattr(component, "df_input_timezone", None)
+
+    dataset = xr.Dataset(data_vars={"scalar": ((), 7.0)})
+
+    with pytest.raises(ValueError, match="no time series variables"):
+        getattr(component, "export_results_as_timeseries")(dataset)
 
 
 def test_prepare_output_data_maps_chp_and_exchanger_io() -> None:
@@ -765,6 +838,37 @@ def test_prepare_output_data_maps_chp_and_exchanger_io() -> None:
     assert getattr(out, "ex_src_output").value.tolist() == [2.0, 2.1, 2.2]
 
 
+def test_get_effective_log_level_derives_from_central_level(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Without an explicit preset, derive it from the central log level."""
+    monkeypatch.setenv("LOG_LEVEL", "DEBUG")
+    config_data = FlixoptModelComponentConfigData.model_validate(
+        {"flixopt_model": {"value": _model_dict()}}
+    )
+    assert config_data.get_effective_log_level() == FlixoptLogLevel.DEBUG
+
+    monkeypatch.setenv("LOG_LEVEL", "INFO")
+    assert config_data.get_effective_log_level() == FlixoptLogLevel.SILENT
+
+    monkeypatch.setenv("LOG_LEVEL", "WARNING")
+    assert config_data.get_effective_log_level() == FlixoptLogLevel.SILENT
+
+
+def test_get_effective_log_level_explicit_preset_wins(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An explicitly configured preset overrides the derivation."""
+    monkeypatch.setenv("LOG_LEVEL", "INFO")
+    config_data = FlixoptModelComponentConfigData.model_validate(
+        {
+            "log_level": {"value": "exploring"},
+            "flixopt_model": {"value": _model_dict()},
+        }
+    )
+    assert config_data.get_effective_log_level() == FlixoptLogLevel.EXPLORING
+
+
 def test_get_solver_forwards_time_limit_seconds(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -803,6 +907,9 @@ def test_get_solver_forwards_advanced_settings_via_extra_options(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Forward advanced tuning settings via flixopt's extra_options argument."""
+    # Deterministic derivation: no explicit preset and central level INFO
+    # derives the silent preset, which silences the gurobipy console banner.
+    monkeypatch.setenv("LOG_LEVEL", "INFO")
 
     class _FakeGurobiSolver:  # pylint: disable=too-few-public-methods
         def __init__(self, **kwargs: Any) -> None:
@@ -844,8 +951,43 @@ def test_get_solver_forwards_advanced_settings_via_extra_options(
             "Presolve": 2,
             "Cuts": 1,
             "NodefileStart": 0.5,
+            "env": {"OutputFlag": 0},
         },
     }
+
+
+def test_get_solver_gurobi_verbose_keeps_console_output(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Do not suppress gurobipy console output in verbose log modes."""
+
+    class _FakeGurobiSolver:  # pylint: disable=too-few-public-methods
+        def __init__(self, **kwargs: Any) -> None:
+            self.kwargs = kwargs
+
+    monkeypatch.setattr(
+        config_module.fx,
+        "solvers",
+        SimpleNamespace(GurobiSolver=_FakeGurobiSolver),
+    )
+
+    for log_level in ("debug", "exploring", "production"):
+        config_data = FlixoptModelComponentConfigData.model_validate(
+            {
+                "log_level": {"value": log_level},
+                "solver_settings": {
+                    "value": {
+                        "name": "GurobiSolver",
+                    }
+                },
+                "flixopt_model": {"value": _model_dict()},
+            }
+        )
+
+        solver = config_data.get_solver()
+
+        assert isinstance(solver, _FakeGurobiSolver)
+        assert "extra_options" not in solver.kwargs
 
 
 def test_get_solver_forwards_highs_advanced_settings_via_extra_options(

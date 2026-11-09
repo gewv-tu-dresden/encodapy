@@ -4,24 +4,27 @@ The tests in this module focus on small helper functions, input parsing,
 logging forwarding, and basic control-flow checks.
 """
 
-from datetime import timezone
 import logging
+from datetime import timezone
 from types import SimpleNamespace
 from typing import Any, cast
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from encodapy.components.flixopt_model_component.flixopt_model_component import (
-    _LoguruForwardHandler,
     FlixoptModelComponent,
+    _LoguruForwardHandler,
 )
 from encodapy.components.flixopt_model_component.flixopt_models import (
     EnergyDirection,
     FlixOptConverter,
     FlixOptConverterTypes,
-    FlixOptModel,
     FlixoptLogLevel,
+    FlixOptModel,
+    FlixOptStorage,
+    _apply_production_preset,
 )
 from encodapy.utils.datapoints import DataPointTimeSeries
 
@@ -72,6 +75,20 @@ def _create_minimal_model() -> FlixOptModel:
             ],
         }
     )
+
+
+def test_storage_rejects_negative_soc_safety_margin() -> None:
+    """Reject a negative SOC margin instead of silently widening the limits."""
+    with pytest.raises(ValueError, match="greater than or equal to 0"):
+        FlixOptStorage.model_validate(
+            {
+                "label": "storage_1",
+                "bus": "heat",
+                "nominal_power": 25,
+                "nominal_capacity": 100,
+                "soc_safety_margin": -5,
+            }
+        )
 
 
 def test_get_input_value_returns_literal_numbers() -> None:
@@ -182,6 +199,7 @@ def test_prepare_component_rejects_invalid_model_payload() -> None:
         "config_data",
         SimpleNamespace(
             log_level=SimpleNamespace(value=FlixoptLogLevel.SILENT),
+            get_effective_log_level=lambda: FlixoptLogLevel.SILENT,
             flixopt_model=SimpleNamespace(value=123),
         ),
     )
@@ -345,31 +363,66 @@ def test_loguru_forward_handler_handles_format_errors() -> None:
     assert handler.handled is True
 
 
-def test_configure_linopy_logging_is_idempotent() -> None:
-    """Verify that linopy logging setup can run more than once safely."""
+def test_configure_library_logging_routes_loggers_through_loguru() -> None:
+    """Library loggers keep their own output, only forward to loguru.
+
+    All own handlers (console/file handlers of the flixopt CONFIG presets)
+    must be removed, records are forwarded at their original level, and the
+    configuration must be repeatable without duplicating handlers.
+    """
     # pylint: disable=protected-access
     cls = FlixoptModelComponent
-    original_state = cls._linopy_logger_redirect_configured
-    linopy_logger = __import__("logging").getLogger("linopy")
-    original_handlers = list(linopy_logger.handlers)
-    original_propagate = linopy_logger.propagate
-    original_level = linopy_logger.level
+    saved_state: dict[str, tuple[list, int, bool]] = {}
+    for logger_name in ("flixopt", "flixopt.solver", "linopy"):
+        library_logger = logging.getLogger(logger_name)
+        saved_state[logger_name] = (
+            list(library_logger.handlers),
+            library_logger.level,
+            library_logger.propagate,
+        )
 
     try:
-        cls._linopy_logger_redirect_configured = False
-        cls._configure_linopy_logging()
-        first_count = len(linopy_logger.handlers)
-        cls._configure_linopy_logging()
-        second_count = len(linopy_logger.handlers)
+        # Simulate a flixopt preset having attached its own console handler.
+        console_handler = logging.StreamHandler()
+        logging.getLogger("flixopt").addHandler(console_handler)
 
-        assert cls._linopy_logger_redirect_configured is True
-        assert first_count == second_count == 1
-        assert linopy_logger.propagate is False
+        cls._configure_library_logging()
+        cls._configure_library_logging()  # idempotent
+
+        for logger_name in ("flixopt", "flixopt.solver", "linopy"):
+            library_logger = logging.getLogger(logger_name)
+            handlers = library_logger.handlers
+            assert len(handlers) == 1
+            assert isinstance(handlers[0], _LoguruForwardHandler)
+            assert console_handler not in handlers
+            assert library_logger.propagate is False
+            assert library_logger.level == logging.DEBUG
+
+        # Records are forwarded (not written directly and not propagated).
+        forwarded: list[str] = []
+
+        def _capture(message: Any) -> None:  # pragma: no cover - test helper
+            forwarded.append(str(message))
+
+        from loguru import logger as _logger
+
+        sink_id = _logger.add(_capture, level="INFO")
+        try:
+            logging.getLogger("flixopt").info("forwarded flixopt record")
+        finally:
+            _logger.remove(sink_id)
+
+        assert any("forwarded flixopt record" in line for line in forwarded)
     finally:
-        linopy_logger.handlers = original_handlers
-        linopy_logger.propagate = original_propagate
-        linopy_logger.setLevel(original_level)
-        cls._linopy_logger_redirect_configured = original_state
+        for logger_name, (
+            handlers,
+            level,
+            propagate,
+        ) in saved_state.items():
+            library_logger = logging.getLogger(logger_name)
+            library_logger.handlers = handlers
+            library_logger.setLevel(level)
+            library_logger.propagate = propagate
 
 
 def test_load_helper_functions_raises_for_missing_symbol(tmp_path) -> None:
@@ -460,3 +513,173 @@ def test_calculate_runs_output_preparation_on_success() -> None:
     getattr(component, "calculate")()
 
     assert called["prepare_output"] is True
+
+
+def test_loguru_forward_handler_falls_back_to_numeric_level() -> None:
+    """Unknown stdlib level names are forwarded at the numeric level."""
+    from loguru import logger as _logger
+
+    forwarded: list[str] = []
+
+    def _capture(message: Any) -> None:  # pragma: no cover - test helper
+        forwarded.append(str(message))
+
+    record = logging.LogRecord(
+        name="test",
+        level=100,  # no registered name -> loguru can not resolve 'Level 100'
+        pathname=__file__,
+        lineno=1,
+        msg="numeric fallback record",
+        args=(),
+        exc_info=None,
+    )
+
+    handler = _LoguruForwardHandler()
+    sink_id = _logger.add(_capture, level=0)
+    try:
+        handler.emit(record)
+    finally:
+        _logger.remove(sink_id)
+
+    assert any("numeric fallback record" in line for line in forwarded)
+
+
+def test_production_preset_writes_no_logfile_to_cwd(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The production preset must not leave a flixopt.log in the working dir."""
+    # pylint: disable=protected-access
+    import os
+
+    monkeypatch.chdir(tmp_path)
+
+    _apply_production_preset()
+
+    assert list(tmp_path.iterdir()) == []
+    assert not os.path.exists("flixopt.log")
+
+
+def test_loguru_forward_handler_reports_errors_when_all_forwards_fail(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Fall back to the handler error routine if loguru rejects all levels."""
+    import encodapy.components.flixopt_model_component.flixopt_model_component as flix_module
+
+    class _RaisingLogger:
+        def opt(self, **_kwargs: Any) -> Any:
+            return self
+
+        def log(self, *_args: Any, **_kwargs: Any) -> None:
+            raise ValueError("loguru rejected the level")
+
+    class _TrackingHandler(flix_module._LoguruForwardHandler):
+        def __init__(self) -> None:
+            super().__init__()
+            self.handled = False
+
+        def handleError(self, record: Any) -> None:
+            del record
+            self.handled = True
+
+    monkeypatch.setattr(flix_module, "logger", _RaisingLogger())
+
+    handler = _TrackingHandler()
+    record = logging.LogRecord(
+        name="test",
+        level=logging.INFO,
+        pathname=__file__,
+        lineno=1,
+        msg="unreportable record",
+        args=(),
+        exc_info=None,
+    )
+
+    handler.emit(record)
+
+    assert handler.handled is True
+
+
+def test_get_storages_raises_for_soc_below_bounds() -> None:
+    """Raise when the effective minimal SOC is below the valid range."""
+    component: Any = _create_component()
+    setattr(
+        component,
+        "input_data",
+        SimpleNamespace(
+            model_dump=lambda: {
+                "storage_capacity": {"value": 100},
+                "storage_start": {"value": 50},
+                "storage_min": {"value": -10},
+                "storage_max": {"value": 80},
+            }
+        ),
+    )
+    setattr(
+        component,
+        "flixopt_model",
+        FlixOptModel.model_validate(
+            {
+                "buses": [{"label": "heat"}],
+                "effects": [{"label": "costs", "unit": "EUR"}],
+                "converters": [],
+                "exchangers": [],
+                "storages": [
+                    {
+                        "label": "storage_1",
+                        "bus": "heat",
+                        "nominal_power": 25,
+                        "nominal_capacity": "storage_capacity",
+                        "start_soc": "storage_start",
+                        "minimal_soc": "storage_min",
+                        "maximal_soc": "storage_max",
+                    }
+                ],
+            }
+        ),
+    )
+
+    with pytest.raises(ValueError, match="invalid SOC limits"):
+        getattr(component, "_get_storages")()
+
+
+def test_get_storages_raises_for_min_soc_above_max_soc() -> None:
+    """Raise when the effective minimal SOC is not below the maximal SOC."""
+    component: Any = _create_component()
+    setattr(
+        component,
+        "input_data",
+        SimpleNamespace(
+            model_dump=lambda: {
+                "storage_capacity": {"value": 100},
+                "storage_start": {"value": 50},
+                "storage_min": {"value": 60},
+                "storage_max": {"value": 50},
+            }
+        ),
+    )
+    setattr(
+        component,
+        "flixopt_model",
+        FlixOptModel.model_validate(
+            {
+                "buses": [{"label": "heat"}],
+                "effects": [{"label": "costs", "unit": "EUR"}],
+                "converters": [],
+                "exchangers": [],
+                "storages": [
+                    {
+                        "label": "storage_1",
+                        "bus": "heat",
+                        "nominal_power": 25,
+                        "nominal_capacity": "storage_capacity",
+                        "start_soc": "storage_start",
+                        "minimal_soc": "storage_min",
+                        "maximal_soc": "storage_max",
+                    }
+                ],
+            }
+        ),
+    )
+
+    with pytest.raises(ValueError, match="minimal_soc >= maximal_soc"):
+        getattr(component, "_get_storages")()
