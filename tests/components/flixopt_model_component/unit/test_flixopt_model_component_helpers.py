@@ -4,8 +4,8 @@ The tests in this module focus on small helper functions, input parsing,
 logging forwarding, and basic control-flow checks.
 """
 
-from datetime import timezone
 import logging
+from datetime import timezone
 from types import SimpleNamespace
 from typing import Any, cast
 
@@ -14,15 +14,16 @@ import pandas as pd
 import pytest
 
 from encodapy.components.flixopt_model_component.flixopt_model_component import (
-    _LoguruForwardHandler,
     FlixoptModelComponent,
+    _LoguruForwardHandler,
 )
 from encodapy.components.flixopt_model_component.flixopt_models import (
     EnergyDirection,
     FlixOptConverter,
     FlixOptConverterTypes,
-    FlixOptModel,
     FlixoptLogLevel,
+    FlixOptModel,
+    FlixOptStorage,
     _apply_production_preset,
 )
 from encodapy.utils.datapoints import DataPointTimeSeries
@@ -74,6 +75,20 @@ def _create_minimal_model() -> FlixOptModel:
             ],
         }
     )
+
+
+def test_storage_rejects_negative_soc_safety_margin() -> None:
+    """Reject a negative SOC margin instead of silently widening the limits."""
+    with pytest.raises(ValueError, match="greater than or equal to 0"):
+        FlixOptStorage.model_validate(
+            {
+                "label": "storage_1",
+                "bus": "heat",
+                "nominal_power": 25,
+                "nominal_capacity": 100,
+                "soc_safety_margin": -5,
+            }
+        )
 
 
 def test_get_input_value_returns_literal_numbers() -> None:

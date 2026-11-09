@@ -4,11 +4,12 @@ Authors: Martin Altenburger
 """
 
 import tempfile
+from enum import Enum
 from pathlib import Path
 from typing import Optional
-from enum import Enum
-from pydantic import BaseModel, Field, ConfigDict, model_validator
+
 import flixopt as fx  # type: ignore[import-untyped]
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class FlixOptSolverName(Enum):
@@ -362,6 +363,7 @@ class FlixOptStorage(BaseModel):
     )
     soc_safety_margin: Optional[float | int] = Field(
         0.0,
+        ge=0,
         description="""
         Safety margin for the SOC of the storage in percentage of the nominal capacity,
         which is used to define the minimal and maximal SOC of the storage
